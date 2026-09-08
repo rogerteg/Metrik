@@ -1,6 +1,8 @@
 /**
  * Metrik Domain Types & State Models
- * Specification: specs/001-core-kanban-board/spec.md
+ * Specifications:
+ * - specs/001-core-kanban-board/spec.md
+ * - specs/002-wip-limits-and-flow-metrics/spec.md
  */
 
 export enum ColumnType {
@@ -23,11 +25,17 @@ export interface TaskModel {
   /** Cor ou tag temática opcional */
   color?: string;
 
-  /** Timestamp ISO 8601 da criação */
+  /** Timestamp ISO 8601 da criação (criação do cartão) */
   createdAt: string;
 
   /** Timestamp ISO 8601 da última atualização */
   updatedAt?: string;
+
+  /** Timestamp ISO 8601 do primeiro ingresso em In Progress */
+  startedAt?: string;
+
+  /** Timestamp ISO 8601 da conclusão (ingresso em Completed) */
+  completedAt?: string;
 }
 
 export interface ColumnConfig {
@@ -38,3 +46,24 @@ export interface ColumnConfig {
 }
 
 export type BoardState = Record<ColumnType, TaskModel[]>;
+
+/** Limites de WIP por coluna (número inteiro >= 1 ou null para sem limite) */
+export type WipLimitsState = Record<ColumnType, number | null>;
+
+/** Estrutura sumarizada das métricas de fluxo do quadro */
+export interface FlowMetricsSummary {
+  /** Quantidade total de tarefas concluídas */
+  throughput: number;
+
+  /** Média do Lead Time em milissegundos (ou null se throughput == 0) */
+  avgLeadTimeMs: number | null;
+
+  /** Média do Cycle Time em milissegundos (ou null se throughput == 0) */
+  avgCycleTimeMs: number | null;
+
+  /** Texto formatado do Lead Time Médio (ex: "1h 30m", "< 1m" ou "-") */
+  formattedAvgLeadTime: string;
+
+  /** Texto formatado do Cycle Time Médio (ex: "45m", "< 1m" ou "-") */
+  formattedAvgCycleTime: string;
+}

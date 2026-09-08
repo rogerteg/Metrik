@@ -55,11 +55,14 @@ export function useTaskCollection(): UseTaskCollectionReturn {
   }, [board]);
 
   const addTask = useCallback((column: ColumnType, title = ''): TaskModel => {
+    const now = new Date().toISOString();
     const newTask: TaskModel = {
       id: uuidv4(),
       title,
       column,
-      createdAt: new Date().toISOString(),
+      createdAt: now,
+      startedAt: column === ColumnType.IN_PROGRESS ? now : undefined,
+      completedAt: column === ColumnType.COMPLETED ? now : undefined,
     };
 
     setBoard((prev) => ({
@@ -141,10 +144,32 @@ export function useTaskCollection(): UseTaskCollectionReturn {
       }
 
       if (targetTask) {
+        const now = new Date().toISOString();
+        let startedAt = targetTask.startedAt;
+        let completedAt = targetTask.completedAt;
+
+        // Se moveu para In Progress pela primeira vez
+        if (targetColumn === ColumnType.IN_PROGRESS && !startedAt) {
+          startedAt = now;
+        }
+
+        // Se moveu para Completed
+        if (targetColumn === ColumnType.COMPLETED) {
+          completedAt = now;
+          if (!startedAt) {
+            startedAt = targetTask.createdAt || now;
+          }
+        } else {
+          // Se saiu de Completed para qualquer outra coluna, limpa completedAt
+          completedAt = undefined;
+        }
+
         const updatedTask: TaskModel = {
           ...targetTask,
           column: targetColumn,
-          updatedAt: new Date().toISOString(),
+          updatedAt: now,
+          startedAt,
+          completedAt,
         };
         nextBoard[targetColumn] = [...nextBoard[targetColumn], updatedTask];
       }

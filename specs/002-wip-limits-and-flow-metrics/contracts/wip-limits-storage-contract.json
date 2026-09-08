@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MetrikWipLimitsStorageContract",
+  "description": "Contrato de serialização dos limites de WIP por coluna persistidos no LocalStorage sob a chave metrik_column_wip_limits",
+  "type": "object",
+  "properties": {
+    "Todo": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "In Progress": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "Blocked": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "Completed": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    }
+  },
+  "required": ["Todo", "In Progress", "Blocked", "Completed"],
+  "additionalProperties": false
+}

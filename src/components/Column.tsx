@@ -1,11 +1,14 @@
 import React from 'react';
 import { ColumnType } from '../types/kanban';
+import { WipLimitBadge } from './WipLimitBadge';
 
 export interface ColumnProps {
   type: ColumnType;
   title: string;
   count: number;
   onAddTask?: (column: ColumnType) => void;
+  wipLimit?: number | null;
+  onUpdateWipLimit?: (column: ColumnType, limit: number | null) => void;
   children?: React.ReactNode;
 }
 
@@ -44,17 +47,34 @@ export const Column: React.FC<ColumnProps> = ({
   title,
   count,
   onAddTask,
+  wipLimit = null,
+  onUpdateWipLimit,
   children,
 }) => {
   const badgeClass = getBadgeClass(type);
   const modifierClass = getColumnModifierClass(type);
+  const isOverloaded = wipLimit !== null && count > wipLimit;
 
   return (
-    <section className={`kanban-column ${modifierClass}`} aria-label={`Coluna ${title}`}>
+    <section
+      className={`kanban-column ${modifierClass} ${isOverloaded ? 'kanban-column-wip-exceeded' : ''}`}
+      aria-label={`Coluna ${title}`}
+    >
       <header className="column-header">
         <div className="column-header-left">
           <span className={`column-badge ${badgeClass}`}>{title}</span>
-          <span className="column-count" aria-label={`${count} tarefas`}>{count}</span>
+          {onUpdateWipLimit ? (
+            <WipLimitBadge
+              column={type}
+              currentCount={count}
+              limit={wipLimit}
+              onUpdateLimit={onUpdateWipLimit}
+            />
+          ) : (
+            <span className="column-count" aria-label={`${count} tarefas`}>
+              {count}
+            </span>
+          )}
         </div>
         {onAddTask && (
           <button
@@ -69,9 +89,7 @@ export const Column: React.FC<ColumnProps> = ({
         )}
       </header>
 
-      <div className="tasks-list">
-        {children}
-      </div>
+      <div className="tasks-list">{children}</div>
     </section>
   );
 };

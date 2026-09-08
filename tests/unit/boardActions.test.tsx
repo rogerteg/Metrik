@@ -35,9 +35,9 @@ describe('Global Board Actions (US5)', () => {
 
     expect(window.confirm).toHaveBeenCalled();
 
-    // Check that board counts are now 0
-    const counts = screen.getAllByText('0');
-    expect(counts.length).toBeGreaterThanOrEqual(4);
+    // Check that board counts are now 0 (Todo/Completed show 0, In Progress shows 0/3, Blocked shows 0/2)
+    expect(screen.getByText('0/3')).toBeInTheDocument();
+    expect(screen.getByText('0/2')).toBeInTheDocument();
 
     // Verify localStorage was updated with empty columns
     const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');

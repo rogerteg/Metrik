@@ -1,5 +1,8 @@
 import React from 'react';
 import { useTaskCollection } from './hooks/useTaskCollection';
+import { useWipLimits } from './hooks/useWipLimits';
+import { useFlowMetrics } from './hooks/useFlowMetrics';
+import { MetricsBar } from './components/MetricsBar';
 import { Board } from './components/Board';
 import { Task } from './components/Task';
 import { ColumnType } from './types/kanban';
@@ -23,6 +26,11 @@ export const App: React.FC = () => {
     clearTasks,
     resetToSeed,
   } = useTaskCollection();
+
+  const { wipLimits, setWipLimit } = useWipLimits();
+
+  const completedTasks = board[ColumnType.COMPLETED] || [];
+  const flowMetrics = useFlowMetrics(completedTasks);
 
   const handleClearBoard = () => {
     const confirmed = window.confirm(
@@ -72,8 +80,12 @@ export const App: React.FC = () => {
         </div>
       </header>
 
+      <MetricsBar metrics={flowMetrics} />
+
       <Board
         board={board}
+        wipLimits={wipLimits}
+        onUpdateWipLimit={setWipLimit}
         onAddTask={handleAddTask}
         renderTask={(task, column) => {
           const currentIndex = COLUMN_ORDER.indexOf(column);

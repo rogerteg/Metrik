@@ -1,6 +1,11 @@
 import React from 'react';
-import { TaskModel } from '../types/kanban';
+import { ColumnType, TaskModel } from '../types/kanban';
 import { AutoResizeTextarea } from './AutoResizeTextarea';
+import {
+  calculateLeadTimeMs,
+  calculateCycleTimeMs,
+  formatDuration,
+} from '../utils/timeFormatters';
 
 export interface TaskProps {
   task: TaskModel;
@@ -29,6 +34,12 @@ export const Task: React.FC<TaskProps> = ({
     }
   };
 
+  const isCompleted = task.column === ColumnType.COMPLETED && !!task.completedAt;
+  const leadTimeMs = isCompleted ? calculateLeadTimeMs(task) : null;
+  const cycleTimeMs = isCompleted ? calculateCycleTimeMs(task) : null;
+  const leadTimeStr = formatDuration(leadTimeMs);
+  const cycleTimeStr = formatDuration(cycleTimeMs);
+
   return (
     <article
       className="task-card"
@@ -43,6 +54,23 @@ export const Task: React.FC<TaskProps> = ({
           placeholder="Nova tarefa..."
           aria-label="Título da tarefa"
         />
+
+        {isCompleted && (
+          <div className="task-metrics-badges" aria-label="Métricas de fluxo do cartão">
+            <span
+              className="badge-metric-time badge-lead-time"
+              title="Lead Time: Tempo total decorrido da criação até a conclusão"
+            >
+              Lead: {leadTimeStr}
+            </span>
+            <span
+              className="badge-metric-time badge-cycle-time"
+              title="Cycle Time: Tempo de processamento efetivo do início até a conclusão"
+            >
+              Cycle: {cycleTimeStr}
+            </span>
+          </div>
+        )}
       </div>
 
       <footer className="task-card-footer">
