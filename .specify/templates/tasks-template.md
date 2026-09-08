@@ -45,6 +45,35 @@ description: "Task list template for feature implementation"
   ============================================================================
 -->
 
+## 🧠 Modelos de Raciocínio Analítico Pré-Tarefas (Mandatório)
+
+> **Regra Constitucional VI:** Preencha e valide os modelos analíticos ANTES de listar as tarefas de implementação. Nenhuma tarefa pode ser executada sem esta reflexão preliminar documentada.
+
+### 1. Decomposição por Primeiros Princípios (First-Principles Thinking)
+- **Verdades fundamentais e invariantes:** [Identifique as regras irredutíveis de dados, estado e regras de negócio essenciais]
+- **Premissas acidentais descartadas:** [O que foi eliminado por ser complexidade acidental, suposição não testada ou convenção dispensável?]
+
+### 2. Análise Pré-Mortem & Inversão (Premortem & Inversion)
+- **Cenários de falha antecipados:** [Como esta feature pode falhar silenciosamente, quebrar concorrência ou violar contratos de API?]
+- **Mitigações desenhadas nas tarefas:** [Quais proteções específicas estão inseridas nas tarefas para neutralizar essas falhas?]
+
+### 3. Validação MECE (Mutually Exclusive, Collectively Exhaustive)
+- **Exclusividade Mútua (Zero Duplicação):** [Garantir que as tarefas possuem escopos limpos, sem sobreposição de arquivos ou responsabilidades]
+- **Exaustão Coletiva (Cobertura 100%):** [Conferir que todos os critérios de aceitação e fluxos da spec.md estão cobertos por ao menos uma tarefa]
+
+### 4. Árvore de Decisão & Poda de Alternativas (Tree of Thoughts)
+- **Caminhos de arquitetura/design avaliados:** [Opção 1 vs Opção 2]
+- **Critério de poda e trade-offs:** [Por que o caminho selecionado é superior em termos de acoplamento, simplicidade e manutenibilidade?]
+
+### 5. Critério de Falsificabilidade & TDD (Red-Bar First)
+- **Falha demonstrável (Red Bar):** [Qual teste automatizado ou script de validação deve falhar antes de iniciar a codificação?]
+- **Critério determinístico de aceite (Green Bar):** [Como o sucesso da tarefa é auditado de forma automatizada e inquestionável?]
+
+### 6. Triangulação Adversarial & Conformidade Constitucional
+- **Validação com a Constitution:** [Confirmação de que nenhuma tarefa viola Simplicidade (YAGNI), Modularidade ou Padrões de Segurança]
+
+---
+
 ## Phase 1: Setup (Shared Infrastructure)
 
 **Purpose**: Project initialization and basic structure

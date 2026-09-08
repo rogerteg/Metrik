@@ -68,6 +68,13 @@ You **MUST** consider the user input before proceeding (if not empty).
    - If data-model.md exists: Extract entities and map to user stories
    - If contracts/ exists: Map interface contracts to user stories
    - If research.md exists: Extract decisions for setup tasks
+   - **Execute Analytical Reasoning Models (Constitution VI)**:
+     - Formulate First-Principles truths and invariants
+     - Execute Inversion & Premortem failure mode analysis
+     - Verify MECE coverage (zero overlap, 100% acceptance criteria coverage)
+     - Trace Tree of Thoughts and prune rejected alternatives
+     - Formulate Falsifiability criteria and TDD Red-Bar verification
+     - Verify Constitutional compliance (YAGNI, modularity, security)
    - Generate tasks organized by user story (see Task Generation Rules below)
    - Generate dependency graph showing user story completion order
    - Create parallel execution examples per user story
@@ -75,6 +82,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 4. **Generate tasks.md**: Use TASKS_TEMPLATE_CONTENT (from the JSON output above) as the structure. For compatibility with older setup scripts that omit TASKS_TEMPLATE_CONTENT, read TASKS_TEMPLATE instead. Fill with:
    - Correct feature name from plan.md
+   - **Analytical Reasoning Models Section (Mandatory per Constitution VI)**: Populate all 6 models with concrete, feature-specific analysis
    - Phase 1: Setup tasks (project initialization)
    - Phase 2: Foundational tasks (blocking prerequisites for all user stories)
    - Phase 3+: One phase per user story (in priority order from spec.md)
@@ -138,6 +146,18 @@ The tasks.md should be immediately executable - each task must be specific enoug
 ## Task Generation Rules
 
 **CRITICAL**: Tasks MUST be organized by user story to enable independent implementation and testing.
+
+### Analytical Reasoning Models (MANDATORY BEFORE TASKS)
+
+> **Constitution VI Enforcement:**  
+> The generated `tasks.md` MUST include the populated `## 🧠 Modelos de Raciocínio Analítico Pré-Tarefas (Mandatório)` section BEFORE Phase 1.  
+> You MUST explicitly write out:
+> 1. **First-Principles Thinking**: Fundamental business/data invariants and discarded assumptions.
+> 2. **Inversion & Premortem Analysis**: Potential failure modes, race conditions, and contract regressions with built-in mitigations.
+> 3. **MECE Validation**: Verification that tasks do not overlap and collectively cover 100% of acceptance criteria.
+> 4. **Tree of Thoughts**: Explored implementation branches and pruning rationale.
+> 5. **Falsifiability & TDD**: Objective fail-first criteria and deterministic pass conditions.
+> 6. **Constitutional Compliance**: Verification against simplicity, modularity, and security rules.
 
 **Tests are OPTIONAL**: Only generate test tasks if explicitly requested in the feature specification or if user requests TDD approach.
 

@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MetrikBoardStorageContract",
+  "description": "Contrato de serialização do estado do quadro Kanban persistido no LocalStorage",
+  "type": "object",
+  "properties": {
+    "Todo": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Task" }
+    },
+    "In Progress": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Task" }
+    },
+    "Blocked": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Task" }
+    },
+    "Completed": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Task" }
+    }
+  },
+  "required": ["Todo", "In Progress", "Blocked", "Completed"],
+  "additionalProperties": false,
+  "definitions": {
+    "Task": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "UUID v4 universal e imutável"
+        },
+        "title": {
+          "type": "string",
+          "description": "Texto do cartão"
+        },
+        "column": {
+          "type": "string",
+          "enum": ["Todo", "In Progress", "Blocked", "Completed"]
+        },
+        "color": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "title", "column", "createdAt"],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,17 +1,11 @@
 <!--
 Sync Impact Report:
-- Version change: Uninitialized Template → 1.0.0
+- Version change: 1.0.0 → 1.1.0
 - List of modified principles:
-  - [PRINCIPLE_1_NAME] → I. Specification-Driven Development (NON-NEGOTIABLE)
-  - [PRINCIPLE_2_NAME] → II. Code Quality & Modularity
-  - [PRINCIPLE_3_NAME] → III. Automated Verification & Testing
-  - [PRINCIPLE_4_NAME] → IV. Observability & Structured Logging
-  - [PRINCIPLE_5_NAME] → V. Simplicity & YAGNI
-- Added sections:
-  - Security & Technical Standards
-  - Development Workflow & Quality Gates
+  - Added: VI. Analytical Reasoning Pre-Task Creation (NON-NEGOTIABLE)
+- Added sections: None
 - Removed sections: None
-- Follow-up TODOs: None (all placeholders populated)
+- Follow-up TODOs: None
 -->
 
 # Metrik Constitution
@@ -33,6 +27,15 @@ Systems MUST implement structured logging, clear error reporting, and informativ
 ### V. Simplicity & YAGNI
 Implement the simplest complete solution that satisfies the specification requirements. Speculative functionality, premature optimizations, and unrequested abstraction layers are strictly forbidden.
 
+### VI. Analytical Reasoning Pre-Task Creation (NON-NEGOTIABLE)
+Prior to creating, decomposing, or formalizing ANY set of implementation tasks (in `tasks.md`, issue trackers, sub-agent task allocations, or execution plans), the agent or engineer MUST formulate and output explicit **Analytical Reasoning Models**. Every task breakdown MUST be preceded by:
+1. **First-Principles Thinking**: Isolating irreducible requirements and business invariants.
+2. **Inversion & Premortem Analysis**: Mapping catastrophic failure modes, race conditions, and contract regressions before writing tasks.
+3. **MECE Validation**: Ensuring tasks are Mutually Exclusive (zero overlap/duplication) and Collectively Exhaustive (100% acceptance criteria coverage).
+4. **Tree of Thoughts & Trade-off Pruning**: Evaluating alternative implementation branches with explicit criteria for pruned paths.
+5. **Falsifiability & TDD (Red-Bar First)**: Defining objective, automated verification criteria that fail before implementation and pass upon completion.
+Tasks generated without this preceding analytical reasoning are null, void, and violate project governance.
+
 ## Security & Technical Standards
 
 Secrets, API keys, and sensitive environment variables MUST NEVER be committed to source control. Code and automation scripts MUST maintain cross-platform compatibility, with explicit support for Windows environments and PowerShell execution.
@@ -45,4 +48,5 @@ Every implementation task MUST be verified against defined acceptance criteria b
 
 This Constitution serves as the primary governance document for Metrik and supersedes informal practices. Amendments MUST be documented, assigned appropriate semantic version updates, and ratified by project owners before taking effect.
 
-**Version**: 1.0.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-08
+**Version**: 1.1.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-08
+
