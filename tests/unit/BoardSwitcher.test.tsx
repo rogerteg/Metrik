@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { BoardSwitcher } from '../../src/components/BoardSwitcher';
 import { BoardModel } from '../../src/types/kanban';
 
