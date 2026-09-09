@@ -8,6 +8,7 @@ import { FilterBar } from './components/FilterBar';
 import { Board } from './components/Board';
 import { Task } from './components/Task';
 import { TaskDetailsModal } from './components/TaskDetailsModal';
+import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -33,6 +34,7 @@ export const App: React.FC = () => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
+  const [view, setView] = React.useState<'board' | 'analytics'>('board');
 
   const filterData = useBoardFilters(board);
 
@@ -110,6 +112,24 @@ export const App: React.FC = () => {
             style={{ display: 'none' }}
             aria-hidden="true"
           />
+          
+          <div className="view-toggle">
+            <button
+              type="button"
+              className={`btn ${view === 'board' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setView('board')}
+            >
+              Quadro
+            </button>
+            <button
+              type="button"
+              className={`btn ${view === 'analytics' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setView('analytics')}
+            >
+              Analytics
+            </button>
+          </div>
+
           <button
             type="button"
             className="btn btn-secondary"
@@ -149,63 +169,69 @@ export const App: React.FC = () => {
         </div>
       </header>
 
-      <MetricsBar metrics={flowMetrics} />
+      {view === 'board' ? (
+        <>
+          <MetricsBar metrics={flowMetrics} />
 
-      <FilterBar
-        filters={filterData.filters}
-        onSearchChange={filterData.setSearchQuery}
-        onPriorityChange={filterData.setPriorityFilter}
-        onToggleTag={filterData.toggleTagFilter}
-        onClearFilters={filterData.clearFilters}
-        hasActiveFilters={filterData.hasActiveFilters}
-        availableTags={filterData.availableTags}
-        visibleCount={filterData.visibleCount}
-        totalCount={filterData.totalCount}
-      />
+          <FilterBar
+            filters={filterData.filters}
+            onSearchChange={filterData.setSearchQuery}
+            onPriorityChange={filterData.setPriorityFilter}
+            onToggleTag={filterData.toggleTagFilter}
+            onClearFilters={filterData.clearFilters}
+            hasActiveFilters={filterData.hasActiveFilters}
+            availableTags={filterData.availableTags}
+            visibleCount={filterData.visibleCount}
+            totalCount={filterData.totalCount}
+          />
 
-      <Board
-        board={filterData.filteredBoard}
-        rawBoard={board}
-        hasActiveFilters={filterData.hasActiveFilters}
-        onAddTask={handleAddTask}
-        onUpdateColumn={updateColumn}
-        onDeleteColumn={deleteColumn}
-        onDropTask={reorderOrMoveTask}
-        renderTask={(task, columnId) => {
-          const currentIndex = board.columns.findIndex(c => c.id === columnId);
-          const currentColumn = board.columns[currentIndex];
-          const canMoveLeft = currentIndex > 0;
-          const canMoveRight = currentIndex < board.columns.length - 1;
+          <Board
+            board={filterData.filteredBoard}
+            rawBoard={board}
+            hasActiveFilters={filterData.hasActiveFilters}
+            onAddTask={handleAddTask}
+            onUpdateColumn={updateColumn}
+            onDeleteColumn={deleteColumn}
+            onDropTask={reorderOrMoveTask}
+            renderTask={(task, columnId) => {
+              const currentIndex = board.columns.findIndex(c => c.id === columnId);
+              const currentColumn = board.columns[currentIndex];
+              const canMoveLeft = currentIndex > 0;
+              const canMoveRight = currentIndex < board.columns.length - 1;
 
-          return (
-            <Task
-              key={task.id}
-              task={task}
-              onClick={() => setSelectedTaskId(task.id)}
-              onUpdateTitle={(id, title) => updateTask(id, { title })}
-              onDelete={deleteTask}
-              onDiscardIfEmpty={discardIfEmpty}
-              onUpdatePriority={setTaskPriority}
-              onAddTag={addTaskTag}
-              onRemoveTag={removeTaskTag}
-              onDropTask={reorderOrMoveTask}
-              isCompleted={currentColumn?.category === 'done'}
-              canMoveLeft={canMoveLeft}
-              canMoveRight={canMoveRight}
-              onMoveLeft={() => {
-                if (canMoveLeft) {
-                  moveTask(task.id, board.columns[currentIndex - 1].id);
-                }
-              }}
-              onMoveRight={() => {
-                if (canMoveRight) {
-                  moveTask(task.id, board.columns[currentIndex + 1].id);
-                }
-              }}
-            />
-          );
-        }}
-      />
+              return (
+                <Task
+                  key={task.id}
+                  task={task}
+                  onClick={() => setSelectedTaskId(task.id)}
+                  onUpdateTitle={(id, title) => updateTask(id, { title })}
+                  onDelete={deleteTask}
+                  onDiscardIfEmpty={discardIfEmpty}
+                  onUpdatePriority={setTaskPriority}
+                  onAddTag={addTaskTag}
+                  onRemoveTag={removeTaskTag}
+                  onDropTask={reorderOrMoveTask}
+                  isCompleted={currentColumn?.category === 'done'}
+                  canMoveLeft={canMoveLeft}
+                  canMoveRight={canMoveRight}
+                  onMoveLeft={() => {
+                    if (canMoveLeft) {
+                      moveTask(task.id, board.columns[currentIndex - 1].id);
+                    }
+                  }}
+                  onMoveRight={() => {
+                    if (canMoveRight) {
+                      moveTask(task.id, board.columns[currentIndex + 1].id);
+                    }
+                  }}
+                />
+              );
+            }}
+          />
+        </>
+      ) : (
+        <AnalyticsDashboard tasks={Object.values(board.tasks).flat()} />
+      )}
 
       {selectedTaskId && (
         <TaskDetailsModal

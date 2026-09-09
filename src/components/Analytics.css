@@ -1,0 +1,201 @@
+/* Dashboard Container */
+.analytics-dashboard {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  height: 100%;
+}
+
+.dashboard-metrics-row {
+  width: 100%;
+}
+
+.dashboard-charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .dashboard-charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Base Chart Container */
+.chart-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 300px;
+}
+
+.chart-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0 0 1.5rem 0;
+  color: var(--text-primary);
+}
+
+.chart-y-axis-label {
+  position: absolute;
+  top: 50%;
+  left: -0.5rem;
+  transform: translateY(-50%) rotate(-90deg);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Grid Lines Shared */
+.chart-grid-lines {
+  position: absolute;
+  top: 0;
+  left: 2rem; /* space for label */
+  right: 0;
+  bottom: 0;
+  pointer-events: none; /* Let clicks pass through */
+  z-index: 0;
+}
+
+.grid-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.grid-line-label {
+  position: absolute;
+  left: -2rem;
+  bottom: -0.4rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Bar Chart (Throughput) */
+.bar-chart-area {
+  position: relative;
+  flex: 1;
+  display: flex;
+  margin-left: 2rem; /* space for y-axis labels */
+  padding-bottom: 1.5rem; /* space for x-axis labels */
+}
+
+.bar-chart-bars {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  gap: 4px;
+}
+
+.bar-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+  group: bar;
+}
+
+.bar {
+  width: 100%;
+  max-width: 32px;
+  background: linear-gradient(180deg, var(--accent-blue) 0%, rgba(59, 130, 246, 0.2) 100%);
+  border-radius: 4px 4px 0 0;
+  min-height: 2px; /* ensure zero values still show a tiny tick or at least exist */
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 0.25rem;
+}
+
+.bar-wrapper:hover .bar {
+  filter: brightness(1.2);
+}
+
+.bar-value {
+  font-size: 0.75rem;
+  color: #fff;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.bar-wrapper:hover .bar-value {
+  opacity: 1;
+}
+
+.bar-label {
+  position: absolute;
+  bottom: -1.5rem;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  transform: rotate(-45deg);
+  transform-origin: top left;
+  white-space: nowrap;
+}
+
+/* Scatter Chart (Lead Time) */
+.scatter-chart-area {
+  position: relative;
+  flex: 1;
+  margin-left: 2rem;
+  padding-bottom: 1.5rem;
+}
+
+.scatter-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+.svg-grid-line {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-dasharray: 4;
+  stroke-width: 1;
+}
+
+.scatter-point {
+  fill: var(--accent-red);
+  stroke: var(--bg-card);
+  stroke-width: 1.5;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.scatter-point:hover {
+  r: 5;
+  fill: #ff6b6b;
+  filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.6));
+}
+
+.scatter-x-axis {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
