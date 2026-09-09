@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { BoardState, ColumnType, PriorityLevel } from '../types/kanban';
+import { BoardState, PriorityLevel, TaskModel } from '../types/kanban';
 import { FilterState, UseBoardFiltersReturn } from '../types/filter';
 
 const INITIAL_FILTER_STATE: FilterState = {
@@ -43,7 +43,7 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
 
   const availableTags = useMemo(() => {
     const tagsSet = new Set<string>();
-    Object.values(board).forEach((tasks) => {
+    Object.values(board.tasks).forEach((tasks) => {
       tasks.forEach((task) => {
         task.tags?.forEach((tag) => {
           const trimmed = tag.trim();
@@ -57,22 +57,17 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
   }, [board]);
 
   const totalCount = useMemo(() => {
-    return Object.values(board).reduce((acc, tasks) => acc + tasks.length, 0);
+    return Object.values(board.tasks).reduce((acc, tasks) => acc + tasks.length, 0);
   }, [board]);
 
   const filteredBoard = useMemo<BoardState>(() => {
     const trimmedQuery = filters.searchQuery.trim().toLowerCase();
 
-    const result: BoardState = {
-      [ColumnType.TO_DO]: [],
-      [ColumnType.IN_PROGRESS]: [],
-      [ColumnType.BLOCKED]: [],
-      [ColumnType.COMPLETED]: [],
-    };
+    const resultTasks: Record<string, TaskModel[]> = {};
 
-    (Object.keys(result) as ColumnType[]).forEach((col) => {
-      const tasks = board[col] ?? [];
-      result[col] = tasks.filter((task) => {
+    Object.keys(board.tasks).forEach((colId) => {
+      const tasks = board.tasks[colId] ?? [];
+      resultTasks[colId] = tasks.filter((task) => {
         // 1. Search Query Filter (task title)
         if (trimmedQuery && !task.title.toLowerCase().includes(trimmedQuery)) {
           return false;
@@ -98,11 +93,14 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
       });
     });
 
-    return result;
+    return {
+      columns: board.columns,
+      tasks: resultTasks,
+    };
   }, [board, filters]);
 
   const visibleCount = useMemo(() => {
-    return Object.values(filteredBoard).reduce((acc, tasks) => acc + tasks.length, 0);
+    return Object.values(filteredBoard.tasks).reduce((acc, tasks) => acc + tasks.length, 0);
   }, [filteredBoard]);
 
   return {

@@ -4,13 +4,13 @@ import {
   calculateCycleTimeMs,
   formatDuration,
 } from '../../src/utils/timeFormatters';
-import { ColumnType, TaskModel } from '../../src/types/kanban';
+import { TaskModel } from '../../src/types/kanban';
 
 describe('timeFormatters Utility (T003 - Red-Bar First)', () => {
   const baseTask: TaskModel = {
     id: 'test-task',
     title: 'Tarefa Teste',
-    column: ColumnType.COMPLETED,
+    column: 'completed',
     createdAt: '2026-09-08T10:00:00.000Z',
     startedAt: '2026-09-08T10:15:00.000Z',
     completedAt: '2026-09-08T11:00:00.000Z',
@@ -41,7 +41,7 @@ describe('timeFormatters Utility (T003 - Red-Bar First)', () => {
   it('returns null if completedAt is missing', () => {
     const incompleteTask: TaskModel = {
       ...baseTask,
-      column: ColumnType.IN_PROGRESS,
+      column: 'in-progress',
       completedAt: undefined,
     };
 

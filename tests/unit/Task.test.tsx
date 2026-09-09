@@ -1,12 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Task } from '../../src/components/Task';
-import { ColumnType, TaskModel } from '../../src/types/kanban';
+import { TaskModel } from '../../src/types/kanban';
 
 const mockTask: TaskModel = {
   id: 'task-test-01',
   title: 'Implementar Persistência Local',
-  column: ColumnType.IN_PROGRESS,
+  column: 'in-progress',
   createdAt: '2026-09-08T12:00:00.000Z',
 };
 
@@ -47,7 +47,7 @@ describe('Task Component (US2 & US4)', () => {
     const emptyTask: TaskModel = {
       id: 'task-empty',
       title: '   ',
-      column: ColumnType.TO_DO,
+      column: 'todo',
       createdAt: '2026-09-08T12:00:00.000Z',
     };
 

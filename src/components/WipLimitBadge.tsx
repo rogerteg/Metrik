@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { ColumnType } from '../types/kanban';
 
 export interface WipLimitBadgeProps {
-  column: ColumnType;
+  columnId: string;
   currentCount: number;
   limit: number | null;
-  onUpdateLimit: (column: ColumnType, limit: number | null) => void;
+  onUpdateLimit: (columnId: string, limit: number | null) => void;
 }
 
 export const WipLimitBadge: React.FC<WipLimitBadgeProps> = ({
-  column,
+  columnId,
   currentCount,
   limit,
   onUpdateLimit,
@@ -27,13 +26,13 @@ export const WipLimitBadge: React.FC<WipLimitBadgeProps> = ({
     setIsEditing(false);
     const trimmed = inputValue.trim();
     if (!trimmed) {
-      onUpdateLimit(column, null);
+      onUpdateLimit(columnId, null);
       return;
     }
 
     const parsed = parseInt(trimmed, 10);
     if (!isNaN(parsed) && parsed >= 1) {
-      onUpdateLimit(column, parsed);
+      onUpdateLimit(columnId, parsed);
     } else {
       // Revert if invalid
       setInputValue(limit !== null ? String(limit) : '');
@@ -61,7 +60,7 @@ export const WipLimitBadge: React.FC<WipLimitBadgeProps> = ({
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={commitValue}
-          aria-label={`Editar limite de WIP para ${column}`}
+          aria-label={`Editar limite de WIP para ${columnId}`}
         />
       </span>
     );

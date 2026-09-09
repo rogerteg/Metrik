@@ -1,62 +1,50 @@
 import React, { useState, useRef } from 'react';
-import { ColumnType } from '../types/kanban';
+import { ColumnModel } from '../types/kanban';
 import { WipLimitBadge } from './WipLimitBadge';
 import { ReorderOptions } from '../types/dnd';
 
 export interface ColumnProps {
-  type: ColumnType;
-  title: string;
+  column: ColumnModel;
   count: number;
-  onAddTask?: (column: ColumnType) => void;
-  wipLimit?: number | null;
-  onUpdateWipLimit?: (column: ColumnType, limit: number | null) => void;
+  onAddTask?: () => void;
+  onUpdateColumn?: (id: string, updates: Partial<ColumnModel>) => void;
+  onDeleteColumn?: (id: string) => void;
   onDropTask?: (options: ReorderOptions) => void;
   children?: React.ReactNode;
 }
 
-const getBadgeClass = (type: ColumnType): string => {
-  switch (type) {
-    case ColumnType.TO_DO:
-      return 'badge-todo';
-    case ColumnType.IN_PROGRESS:
-      return 'badge-progress';
-    case ColumnType.BLOCKED:
-      return 'badge-blocked';
-    case ColumnType.COMPLETED:
-      return 'badge-completed';
-    default:
-      return 'badge-todo';
+const getBadgeClass = (colorScheme: string): string => {
+  switch (colorScheme) {
+    case 'todo': return 'badge-todo';
+    case 'progress': return 'badge-progress';
+    case 'blocked': return 'badge-blocked';
+    case 'completed': return 'badge-completed';
+    default: return 'badge-todo';
   }
 };
 
-const getColumnModifierClass = (type: ColumnType): string => {
-  switch (type) {
-    case ColumnType.TO_DO:
-      return 'kanban-column-todo';
-    case ColumnType.IN_PROGRESS:
-      return 'kanban-column-progress';
-    case ColumnType.BLOCKED:
-      return 'kanban-column-blocked';
-    case ColumnType.COMPLETED:
-      return 'kanban-column-completed';
-    default:
-      return '';
+const getColumnModifierClass = (colorScheme: string): string => {
+  switch (colorScheme) {
+    case 'todo': return 'kanban-column-todo';
+    case 'progress': return 'kanban-column-progress';
+    case 'blocked': return 'kanban-column-blocked';
+    case 'completed': return 'kanban-column-completed';
+    default: return '';
   }
 };
 
 export const Column: React.FC<ColumnProps> = ({
-  type,
-  title,
+  column,
   count,
   onAddTask,
-  wipLimit = null,
-  onUpdateWipLimit,
+  onUpdateColumn,
+  onDeleteColumn,
   onDropTask,
   children,
 }) => {
-  const badgeClass = getBadgeClass(type);
-  const modifierClass = getColumnModifierClass(type);
-  const isOverloaded = wipLimit !== null && count > wipLimit;
+  const badgeClass = getBadgeClass(column.colorScheme);
+  const modifierClass = getColumnModifierClass(column.colorScheme);
+  const isOverloaded = column.wipLimit !== null && count > column.wipLimit;
 
   const [isDropTarget, setIsDropTarget] = useState(false);
   const dragDepthRef = useRef(0);
@@ -94,15 +82,33 @@ export const Column: React.FC<ColumnProps> = ({
     if (activeTaskId && onDropTask) {
       onDropTask({
         activeTaskId,
-        targetColumn: type,
+        targetColumn: column.id,
       });
+    }
+  };
+
+  const handleDelete = () => {
+    if (count > 0) {
+      alert('Não é possível excluir uma coluna que contém tarefas. Mova ou exclua as tarefas primeiro.');
+      return;
+    }
+    if (onDeleteColumn && window.confirm(`Tem certeza que deseja excluir a coluna "${column.title}"?`)) {
+      onDeleteColumn(column.id);
+    }
+  };
+
+  const handleEditTitle = () => {
+    if (!onUpdateColumn) return;
+    const newTitle = window.prompt('Digite o novo nome da coluna:', column.title);
+    if (newTitle && newTitle.trim() !== '') {
+      onUpdateColumn(column.id, { title: newTitle.trim() });
     }
   };
 
   return (
     <section
       className={`kanban-column ${modifierClass} ${isOverloaded ? 'kanban-column-wip-exceeded' : ''} ${isDropTarget ? 'kanban-column-drop-target' : ''}`}
-      aria-label={`Coluna ${title}`}
+      aria-label={`Coluna ${column.title}`}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -110,13 +116,15 @@ export const Column: React.FC<ColumnProps> = ({
     >
       <header className="column-header">
         <div className="column-header-left">
-          <span className={`column-badge ${badgeClass}`}>{title}</span>
-          {onUpdateWipLimit ? (
+          <span className={`column-badge ${badgeClass}`} onClick={handleEditTitle} style={{ cursor: onUpdateColumn ? 'pointer' : 'default' }} title="Clique para editar">
+            {column.title}
+          </span>
+          {onUpdateColumn ? (
             <WipLimitBadge
-              column={type}
+              columnId={column.id}
               currentCount={count}
-              limit={wipLimit}
-              onUpdateLimit={onUpdateWipLimit}
+              limit={column.wipLimit}
+              onUpdateLimit={(id, limit) => onUpdateColumn(id, { wipLimit: limit })}
             />
           ) : (
             <span className="column-count" aria-label={`${count} tarefas`}>
@@ -124,17 +132,29 @@ export const Column: React.FC<ColumnProps> = ({
             </span>
           )}
         </div>
-        {onAddTask && (
-          <button
-            type="button"
-            className="btn-add-task"
-            onClick={() => onAddTask(type)}
-            aria-label={`Adicionar tarefa em ${title}`}
-            title={`Adicionar tarefa em ${title}`}
-          >
-            +
-          </button>
-        )}
+        <div className="column-header-actions">
+          {onDeleteColumn && count === 0 && (
+            <button
+              type="button"
+              className="btn-column-action btn-delete"
+              onClick={handleDelete}
+              title="Excluir coluna"
+            >
+              ×
+            </button>
+          )}
+          {onAddTask && (
+            <button
+              type="button"
+              className="btn-add-task"
+              onClick={onAddTask}
+              aria-label={`Adicionar tarefa em ${column.title}`}
+              title={`Adicionar tarefa em ${column.title}`}
+            >
+              +
+            </button>
+          )}
+        </div>
       </header>
 
       <div className="tasks-list">

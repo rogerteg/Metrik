@@ -1,15 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Column } from '../../src/components/Column';
-import { ColumnType } from '../../src/types/kanban';
+import { ColumnModel } from '../../src/types/kanban';
 
 describe('Column Drop Target (US1 & US2)', () => {
+  const inProgressCol: ColumnModel = { id: 'in_progress', title: 'In Progress', category: 'in_progress', wipLimit: null, colorScheme: 'progress' };
+  const completedCol: ColumnModel = { id: 'completed', title: 'Completed', category: 'done', wipLimit: null, colorScheme: 'completed' };
+
   it('applies drop target highlight class on dragenter and prevents default on dragover', () => {
     const handleDrop = vi.fn();
     render(
       <Column
-        type={ColumnType.IN_PROGRESS}
-        title="In Progress"
+        column={inProgressCol}
         count={0}
         onDropTask={handleDrop}
       />
@@ -33,8 +35,7 @@ describe('Column Drop Target (US1 & US2)', () => {
     const handleDrop = vi.fn();
     render(
       <Column
-        type={ColumnType.COMPLETED}
-        title="Completed"
+        column={completedCol}
         count={0}
         onDropTask={handleDrop}
       />
@@ -50,7 +51,7 @@ describe('Column Drop Target (US1 & US2)', () => {
 
     expect(handleDrop).toHaveBeenCalledWith({
       activeTaskId: 'task-dropped-1',
-      targetColumn: ColumnType.COMPLETED,
+      targetColumn: 'completed',
     });
     expect(column.className).not.toContain('kanban-column-drop-target');
   });

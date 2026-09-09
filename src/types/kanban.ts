@@ -3,13 +3,22 @@
  * Specifications:
  * - specs/001-core-kanban-board/spec.md
  * - specs/002-wip-limits-and-flow-metrics/spec.md
+ * - specs/005-column-management/spec.md
  */
 
-export enum ColumnType {
-  TO_DO = 'Todo',
-  IN_PROGRESS = 'In Progress',
-  BLOCKED = 'Blocked',
-  COMPLETED = 'Completed',
+export type ColumnCategory = 'todo' | 'in_progress' | 'done';
+
+export interface ColumnModel {
+  /** Identificador único da coluna */
+  id: string;
+  /** Nome visível da coluna */
+  title: string;
+  /** Categoria semântica para cálculo de métricas de fluxo */
+  category: ColumnCategory;
+  /** Limite de WIP (null = sem limite) */
+  wipLimit: number | null;
+  /** Esquema de cor opcional da coluna */
+  colorScheme: 'todo' | 'progress' | 'blocked' | 'completed';
 }
 
 export type PriorityLevel = 'urgent' | 'high' | 'medium' | 'low';
@@ -21,8 +30,8 @@ export interface TaskModel {
   /** Conteúdo textual da tarefa */
   title: string;
 
-  /** Coluna / estado atual da tarefa */
-  column: ColumnType;
+  /** ID da Coluna atual da tarefa */
+  column: string;
 
   /** Cor ou tag temática opcional */
   color?: string;
@@ -33,10 +42,10 @@ export interface TaskModel {
   /** Timestamp ISO 8601 da última atualização */
   updatedAt?: string;
 
-  /** Timestamp ISO 8601 do primeiro ingresso em In Progress */
+  /** Timestamp ISO 8601 do primeiro ingresso em in_progress ou done */
   startedAt?: string;
 
-  /** Timestamp ISO 8601 da conclusão (ingresso em Completed) */
+  /** Timestamp ISO 8601 da conclusão (ingresso em done) */
   completedAt?: string;
 
   /** Nível de criticidade / prioridade (Feature 004) */
@@ -46,17 +55,10 @@ export interface TaskModel {
   tags?: string[];
 }
 
-export interface ColumnConfig {
-  type: ColumnType;
-  title: string;
-  badgeLabel: string;
-  colorScheme: 'todo' | 'progress' | 'blocked' | 'completed';
+export interface BoardState {
+  columns: ColumnModel[];
+  tasks: Record<string, TaskModel[]>; // key is column.id
 }
-
-export type BoardState = Record<ColumnType, TaskModel[]>;
-
-/** Limites de WIP por coluna (número inteiro >= 1 ou null para sem limite) */
-export type WipLimitsState = Record<ColumnType, number | null>;
 
 /** Estrutura sumarizada das métricas de fluxo do quadro */
 export interface FlowMetricsSummary {

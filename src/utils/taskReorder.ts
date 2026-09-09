@@ -1,4 +1,4 @@
-import { BoardState, ColumnType, TaskModel } from '../types/kanban';
+import { BoardState, TaskModel } from '../types/kanban';
 import { ReorderOptions } from '../types/dnd';
 
 /**
@@ -12,14 +12,13 @@ export function reorderBoard(
 ): BoardState {
   const { activeTaskId, targetColumn, targetTaskId, position = 'before' } = options;
 
-  // Localiza a tarefa ativa e sua coluna de origem
-  let sourceColumn: ColumnType | undefined;
+  let sourceColumn: string | undefined;
   let activeTask: TaskModel | undefined;
 
-  for (const col of Object.values(ColumnType)) {
-    const found = board[col].find((t) => t.id === activeTaskId);
+  for (const colId of Object.keys(board.tasks)) {
+    const found = board.tasks[colId].find((t) => t.id === activeTaskId);
     if (found) {
-      sourceColumn = col;
+      sourceColumn = colId;
       activeTask = found;
       break;
     }
@@ -29,36 +28,39 @@ export function reorderBoard(
     return board;
   }
 
-  // Soltura sobre si mesmo na mesma coluna é no-op
+  // No-op if dropped on itself in the same column
   if (sourceColumn === targetColumn && targetTaskId === activeTaskId) {
     return board;
   }
 
-  // Clona o board sem a tarefa ativa
-  const nextBoard: BoardState = {
-    [ColumnType.TO_DO]: board[ColumnType.TO_DO].filter((t) => t.id !== activeTaskId),
-    [ColumnType.IN_PROGRESS]: board[ColumnType.IN_PROGRESS].filter((t) => t.id !== activeTaskId),
-    [ColumnType.BLOCKED]: board[ColumnType.BLOCKED].filter((t) => t.id !== activeTaskId),
-    [ColumnType.COMPLETED]: board[ColumnType.COMPLETED].filter((t) => t.id !== activeTaskId),
-  };
+  const nextTasks: Record<string, TaskModel[]> = {};
+  for (const colId of Object.keys(board.tasks)) {
+    nextTasks[colId] = board.tasks[colId].filter((t) => t.id !== activeTaskId);
+  }
 
-  // Atualização dos timestamps de ciclo de vida
+  const targetColModel = board.columns.find(c => c.id === targetColumn);
   let startedAt = activeTask.startedAt;
   let completedAt = activeTask.completedAt;
 
-  if (targetColumn === ColumnType.COMPLETED) {
-    completedAt = nowIso;
-    if (!startedAt) {
-      startedAt = activeTask.createdAt || nowIso;
-    }
-  } else {
-    // Se saiu de completed, limpa completedAt
-    if (sourceColumn === ColumnType.COMPLETED) {
-      completedAt = undefined;
-    }
-    // Se entrou em in_progress ou blocked pela primeira vez
-    if ((targetColumn === ColumnType.IN_PROGRESS || targetColumn === ColumnType.BLOCKED) && !startedAt) {
-      startedAt = nowIso;
+  if (targetColModel) {
+    const isTargetDone = targetColModel.category === 'done';
+    const isTargetInProgress = targetColModel.category === 'in_progress';
+
+    if (isTargetDone) {
+      completedAt = nowIso;
+      if (!startedAt) {
+        startedAt = activeTask.createdAt || nowIso;
+      }
+    } else {
+      // If moving out of done, clear completedAt
+      const sourceColModel = board.columns.find(c => c.id === sourceColumn);
+      if (sourceColModel && sourceColModel.category === 'done') {
+        completedAt = undefined;
+      }
+
+      if (isTargetInProgress && !startedAt) {
+        startedAt = nowIso;
+      }
     }
   }
 
@@ -70,21 +72,19 @@ export function reorderBoard(
     completedAt,
   };
 
-  const targetList = [...nextBoard[targetColumn]];
+  const targetList = [...(nextTasks[targetColumn] || [])];
 
-  // Se houver um targetTaskId especificado na coluna destino
   if (targetTaskId && targetTaskId !== activeTaskId) {
     const targetIdx = targetList.findIndex((t) => t.id === targetTaskId);
     if (targetIdx !== -1) {
       const insertIdx = position === 'before' ? targetIdx : targetIdx + 1;
       targetList.splice(insertIdx, 0, updatedTask);
-      nextBoard[targetColumn] = targetList;
-      return nextBoard;
+      nextTasks[targetColumn] = targetList;
+      return { ...board, tasks: nextTasks };
     }
   }
 
-  // Sem targetTaskId ou alvo não encontrado: insere no final da coluna destino
   targetList.push(updatedTask);
-  nextBoard[targetColumn] = targetList;
-  return nextBoard;
+  nextTasks[targetColumn] = targetList;
+  return { ...board, tasks: nextTasks };
 }

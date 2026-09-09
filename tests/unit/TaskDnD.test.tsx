@@ -1,13 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 import { Task } from '../../src/components/Task';
-import { ColumnType, TaskModel } from '../../src/types/kanban';
+import { TaskModel } from '../../src/types/kanban';
 
 describe('Task Drag and Drop (US1 & US2)', () => {
   const sampleTask: TaskModel = {
     id: 'task-test-1',
     title: 'Testar Drag and Drop',
-    column: ColumnType.TO_DO,
+    column: 'todo',
     createdAt: '2026-09-08T10:00:00Z',
   };
 
@@ -113,7 +113,7 @@ describe('Task Drag and Drop (US1 & US2)', () => {
 
     expect(handleDrop).toHaveBeenCalledWith({
       activeTaskId: 'incoming-task',
-      targetColumn: ColumnType.TO_DO,
+      targetColumn: 'todo',
       targetTaskId: 'task-test-1',
       position: 'before',
     });

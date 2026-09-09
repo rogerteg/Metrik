@@ -1,13 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { WipLimitBadge } from '../../src/components/WipLimitBadge';
-import { ColumnType } from '../../src/types/kanban';
 
 describe('WipLimitBadge Component (T008)', () => {
   it('renders count/limit when limit is configured', () => {
     render(
       <WipLimitBadge
-        column={ColumnType.IN_PROGRESS}
+        columnId="in-progress"
         currentCount={2}
         limit={3}
         onUpdateLimit={vi.fn()}
@@ -20,7 +19,7 @@ describe('WipLimitBadge Component (T008)', () => {
   it('renders count only when limit is null', () => {
     render(
       <WipLimitBadge
-        column={ColumnType.TO_DO}
+        columnId="todo"
         currentCount={5}
         limit={null}
         onUpdateLimit={vi.fn()}
@@ -33,7 +32,7 @@ describe('WipLimitBadge Component (T008)', () => {
   it('renders overload style when currentCount exceeds limit', () => {
     const { container } = render(
       <WipLimitBadge
-        column={ColumnType.IN_PROGRESS}
+        columnId="in-progress"
         currentCount={4}
         limit={3}
         onUpdateLimit={vi.fn()}
@@ -48,7 +47,7 @@ describe('WipLimitBadge Component (T008)', () => {
     const handleUpdate = vi.fn();
     render(
       <WipLimitBadge
-        column={ColumnType.IN_PROGRESS}
+        columnId="in-progress"
         currentCount={2}
         limit={3}
         onUpdateLimit={handleUpdate}
@@ -64,14 +63,14 @@ describe('WipLimitBadge Component (T008)', () => {
     fireEvent.change(input, { target: { value: '5' } });
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
 
-    expect(handleUpdate).toHaveBeenCalledWith(ColumnType.IN_PROGRESS, 5);
+    expect(handleUpdate).toHaveBeenCalledWith('in-progress', 5);
   });
 
   it('clears limit when input is submitted empty', () => {
     const handleUpdate = vi.fn();
     render(
       <WipLimitBadge
-        column={ColumnType.IN_PROGRESS}
+        columnId="in-progress"
         currentCount={2}
         limit={3}
         onUpdateLimit={handleUpdate}
@@ -85,6 +84,6 @@ describe('WipLimitBadge Component (T008)', () => {
     fireEvent.change(input, { target: { value: '' } });
     fireEvent.blur(input);
 
-    expect(handleUpdate).toHaveBeenCalledWith(ColumnType.IN_PROGRESS, null);
+    expect(handleUpdate).toHaveBeenCalledWith('in-progress', null);
   });
 });

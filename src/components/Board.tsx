@@ -1,5 +1,5 @@
 import React from 'react';
-import { BoardState, ColumnType, TaskModel, WipLimitsState } from '../types/kanban';
+import { BoardState, ColumnModel, TaskModel } from '../types/kanban';
 import { ReorderOptions } from '../types/dnd';
 import { Column } from './Column';
 
@@ -7,47 +7,40 @@ export interface BoardProps {
   board: BoardState;
   rawBoard?: BoardState;
   hasActiveFilters?: boolean;
-  onAddTask: (column: ColumnType) => void;
-  wipLimits?: WipLimitsState;
-  onUpdateWipLimit?: (column: ColumnType, limit: number | null) => void;
+  onAddTask: (columnId: string) => void;
+  onUpdateColumn?: (id: string, updates: Partial<ColumnModel>) => void;
+  onDeleteColumn?: (id: string) => void;
   onDropTask?: (options: ReorderOptions) => void;
-  renderTask?: (task: TaskModel, column: ColumnType) => React.ReactNode;
+  renderTask?: (task: TaskModel, columnId: string) => React.ReactNode;
 }
-
-const COLUMNS_CONFIG: { type: ColumnType; title: string }[] = [
-  { type: ColumnType.TO_DO, title: 'Todo' },
-  { type: ColumnType.IN_PROGRESS, title: 'In Progress' },
-  { type: ColumnType.BLOCKED, title: 'Blocked' },
-  { type: ColumnType.COMPLETED, title: 'Completed' },
-];
 
 export const Board: React.FC<BoardProps> = ({
   board,
   rawBoard,
   hasActiveFilters = false,
   onAddTask,
-  wipLimits,
-  onUpdateWipLimit,
+  onUpdateColumn,
+  onDeleteColumn,
   onDropTask,
   renderTask,
 }) => {
+  const columns = board.columns || [];
+
   return (
     <main className="kanban-board-grid" aria-label="Quadro Kanban Metrik">
-      {COLUMNS_CONFIG.map(({ type, title }) => {
-        const visibleTasks = board[type] || [];
-        const rawTasks = rawBoard ? rawBoard[type] || [] : visibleTasks;
-        const limit = wipLimits ? wipLimits[type] : null;
+      {columns.map((col) => {
+        const visibleTasks = board.tasks[col.id] || [];
+        const rawTasks = rawBoard ? rawBoard.tasks[col.id] || [] : visibleTasks;
         const isFilteredEmpty = hasActiveFilters && rawTasks.length > 0 && visibleTasks.length === 0;
 
         return (
           <Column
-            key={type}
-            type={type}
-            title={title}
+            key={col.id}
+            column={col}
             count={rawTasks.length}
-            onAddTask={onAddTask}
-            wipLimit={limit}
-            onUpdateWipLimit={onUpdateWipLimit}
+            onAddTask={() => onAddTask(col.id)}
+            onUpdateColumn={onUpdateColumn}
+            onDeleteColumn={onDeleteColumn}
             onDropTask={onDropTask}
           >
             {isFilteredEmpty ? (
@@ -58,7 +51,7 @@ export const Board: React.FC<BoardProps> = ({
                 Nenhuma tarefa corresponde aos filtros aplicados
               </div>
             ) : renderTask ? (
-              visibleTasks.map((task) => renderTask(task, type))
+              visibleTasks.map((task) => renderTask(task, col.id))
             ) : null}
           </Column>
         );

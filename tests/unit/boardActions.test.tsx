@@ -41,10 +41,10 @@ describe('Global Board Actions (US5)', () => {
 
     // Verify localStorage was updated with empty columns
     const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
-    expect(saved.Todo).toEqual([]);
-    expect(saved['In Progress']).toEqual([]);
-    expect(saved.Blocked).toEqual([]);
-    expect(saved.Completed).toEqual([]);
+    expect(saved.tasks.todo).toEqual([]);
+    expect(saved.tasks['in-progress']).toEqual([]);
+    expect(saved.tasks.blocked).toEqual([]);
+    expect(saved.tasks.completed).toEqual([]);
   });
 
   it('allows restoring seed data via Reset Demo button', () => {

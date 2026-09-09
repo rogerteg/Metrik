@@ -1,13 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Task } from '../../src/components/Task';
-import { ColumnType, TaskModel } from '../../src/types/kanban';
+import { TaskModel } from '../../src/types/kanban';
 
 describe('DnD Accessibility & Directional Buttons (US4)', () => {
   const sampleTask: TaskModel = {
     id: 'task-nav-1',
     title: 'Tarefa com Navegação Acessível',
-    column: ColumnType.IN_PROGRESS,
+    column: 'in-progress',
     createdAt: '2026-09-08T10:00:00Z',
   };
 

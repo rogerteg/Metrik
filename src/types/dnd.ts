@@ -1,21 +1,23 @@
-import { ColumnType } from './kanban';
-
 export interface DragItemData {
   taskId: string;
-  sourceColumn: ColumnType;
+  sourceColumn: string;
+}
+
+export interface DragColumnData {
+  columnId: string;
 }
 
 export type DropPosition = 'before' | 'after';
 
 export interface DropTargetLocation {
-  column: ColumnType;
+  column: string;
   targetTaskId?: string;
   position?: DropPosition;
 }
 
 export interface ReorderOptions {
   activeTaskId: string;
-  targetColumn: ColumnType;
+  targetColumn: string;
   targetTaskId?: string;
   position?: DropPosition;
 }

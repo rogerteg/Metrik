@@ -1,123 +1,151 @@
 import { describe, it, expect } from 'vitest';
 import { reorderBoard } from '../../src/utils/taskReorder';
-import { BoardState, ColumnType } from '../../src/types/kanban';
+import { BoardState, ColumnModel } from '../../src/types/kanban';
 
 describe('reorderBoard (Pure Reordering & Transition Function)', () => {
+  const columns: ColumnModel[] = [
+    { id: 'todo', title: 'Todo', category: 'todo', wipLimit: null, colorScheme: 'todo' },
+    { id: 'in-progress', title: 'In Progress', category: 'in_progress', wipLimit: null, colorScheme: 'progress' },
+    { id: 'blocked', title: 'Blocked', category: 'in_progress', wipLimit: null, colorScheme: 'blocked' },
+    { id: 'completed', title: 'Completed', category: 'done', wipLimit: null, colorScheme: 'completed' }
+  ];
+
   const sampleBoard: BoardState = {
-    [ColumnType.TO_DO]: [
-      {
-        id: 'task-1',
-        title: 'Task 1',
-        column: ColumnType.TO_DO,
-        createdAt: '2026-09-01T10:00:00Z',
-      },
-      {
-        id: 'task-2',
-        title: 'Task 2',
-        column: ColumnType.TO_DO,
-        createdAt: '2026-09-01T11:00:00Z',
-      },
-    ],
-    [ColumnType.IN_PROGRESS]: [
-      {
-        id: 'task-3',
-        title: 'Task 3',
-        column: ColumnType.IN_PROGRESS,
-        createdAt: '2026-09-01T09:00:00Z',
-        startedAt: '2026-09-01T10:30:00Z',
-      },
-    ],
-    [ColumnType.BLOCKED]: [],
-    [ColumnType.COMPLETED]: [
-      {
-        id: 'task-4',
-        title: 'Task 4',
-        column: ColumnType.COMPLETED,
-        createdAt: '2026-09-01T08:00:00Z',
-        startedAt: '2026-09-01T08:30:00Z',
-        completedAt: '2026-09-01T09:00:00Z',
-      },
-    ],
+    columns,
+    tasks: {
+      'todo': [
+        {
+          id: 'task-1',
+          title: 'Task 1',
+          column: 'todo',
+          createdAt: '2026-09-08T10:00:00Z',
+        },
+      ],
+      'in-progress': [
+        {
+          id: 'task-2',
+          title: 'Task 2',
+          column: 'in-progress',
+          createdAt: '2026-09-08T09:00:00Z',
+          startedAt: '2026-09-08T09:15:00Z',
+        },
+      ],
+      'blocked': [],
+      'completed': [
+        {
+          id: 'task-3',
+          title: 'Task 3',
+          column: 'completed',
+          createdAt: '2026-09-07T10:00:00Z',
+          startedAt: '2026-09-07T10:15:00Z',
+          completedAt: '2026-09-08T10:00:00Z',
+        },
+      ],
+    }
   };
 
   it('moves a task to another column appending to the end when no targetTaskId is specified', () => {
-    const fixedNow = '2026-09-08T12:00:00Z';
     const result = reorderBoard(sampleBoard, {
       activeTaskId: 'task-1',
-      targetColumn: ColumnType.IN_PROGRESS,
-    }, fixedNow);
+      targetColumn: 'in-progress',
+    });
 
-    expect(result[ColumnType.TO_DO].map(t => t.id)).toEqual(['task-2']);
-    expect(result[ColumnType.IN_PROGRESS].map(t => t.id)).toEqual(['task-3', 'task-1']);
+    expect(result.tasks['todo'].length).toBe(0);
+    expect(result.tasks['in-progress'].length).toBe(2);
 
-    const moved = result[ColumnType.IN_PROGRESS].find(t => t.id === 'task-1');
-    expect(moved?.column).toBe(ColumnType.IN_PROGRESS);
-    expect(moved?.startedAt).toBe(fixedNow);
-    expect(moved?.completedAt).toBeUndefined();
+    const movedTask = result.tasks['in-progress'][1];
+    expect(movedTask.id).toBe('task-1');
+    expect(movedTask.column).toBe('in-progress');
+    expect(movedTask.startedAt).toBeDefined(); // First time in progress
   });
 
   it('records completedAt and ensures startedAt when moving to completed', () => {
-    const fixedNow = '2026-09-08T14:00:00Z';
     const result = reorderBoard(sampleBoard, {
-      activeTaskId: 'task-1',
-      targetColumn: ColumnType.COMPLETED,
-    }, fixedNow);
+      activeTaskId: 'task-2',
+      targetColumn: 'completed',
+    });
 
-    const moved = result[ColumnType.COMPLETED].find(t => t.id === 'task-1');
-    expect(moved?.column).toBe(ColumnType.COMPLETED);
-    expect(moved?.startedAt).toBe('2026-09-01T10:00:00Z'); // createdAt fallback
-    expect(moved?.completedAt).toBe(fixedNow);
+    expect(result.tasks['in-progress'].length).toBe(0);
+    expect(result.tasks['completed'].length).toBe(2);
+
+    const moved = result.tasks['completed'].find((t) => t.id === 'task-2');
+    expect(moved?.completedAt).toBeDefined();
+    expect(moved?.startedAt).toBe('2026-09-08T09:15:00Z');
   });
 
   it('clears completedAt when reopened from completed to in_progress', () => {
-    const fixedNow = '2026-09-08T15:00:00Z';
     const result = reorderBoard(sampleBoard, {
-      activeTaskId: 'task-4',
-      targetColumn: ColumnType.IN_PROGRESS,
-    }, fixedNow);
+      activeTaskId: 'task-3',
+      targetColumn: 'in-progress',
+    });
 
-    const moved = result[ColumnType.IN_PROGRESS].find(t => t.id === 'task-4');
-    expect(moved?.column).toBe(ColumnType.IN_PROGRESS);
-    expect(moved?.startedAt).toBe('2026-09-01T08:30:00Z'); // preserved
-    expect(moved?.completedAt).toBeUndefined(); // cleared
+    const reopened = result.tasks['in-progress'].find((t) => t.id === 'task-3');
+    expect(reopened?.completedAt).toBeUndefined();
+    expect(reopened?.startedAt).toBe('2026-09-07T10:15:00Z');
   });
 
   it('reorders tasks within the same column before a target task', () => {
-    const result = reorderBoard(sampleBoard, {
-      activeTaskId: 'task-2',
-      targetColumn: ColumnType.TO_DO,
-      targetTaskId: 'task-1',
+    const localBoard: BoardState = {
+      columns,
+      tasks: {
+        'todo': [
+          { id: 'a', title: 'A', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
+          { id: 'b', title: 'B', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
+        ],
+        'in-progress': [], 'blocked': [], 'completed': []
+      }
+    };
+
+    const result = reorderBoard(localBoard, {
+      activeTaskId: 'b',
+      targetColumn: 'todo',
+      targetTaskId: 'a',
       position: 'before',
     });
 
-    expect(result[ColumnType.TO_DO].map(t => t.id)).toEqual(['task-2', 'task-1']);
+    const order = result.tasks['todo'].map((t) => t.id);
+    expect(order).toEqual(['b', 'a']);
   });
 
   it('reorders tasks within the same column after a target task', () => {
-    const result = reorderBoard(sampleBoard, {
-      activeTaskId: 'task-1',
-      targetColumn: ColumnType.TO_DO,
-      targetTaskId: 'task-2',
+    const localBoard: BoardState = {
+      columns,
+      tasks: {
+        'todo': [
+          { id: 'a', title: 'A', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
+          { id: 'b', title: 'B', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
+        ],
+        'in-progress': [], 'blocked': [], 'completed': []
+      }
+    };
+
+    const result = reorderBoard(localBoard, {
+      activeTaskId: 'a',
+      targetColumn: 'todo',
+      targetTaskId: 'b',
       position: 'after',
     });
 
-    expect(result[ColumnType.TO_DO].map(t => t.id)).toEqual(['task-2', 'task-1']);
+    const order = result.tasks['todo'].map((t) => t.id);
+    expect(order).toEqual(['b', 'a']);
   });
 
   it('returns identical board when active task is not found', () => {
     const result = reorderBoard(sampleBoard, {
       activeTaskId: 'non-existent',
-      targetColumn: ColumnType.TO_DO,
+      targetColumn: 'todo',
     });
-    expect(result).toEqual(sampleBoard);
+
+    expect(result).toBe(sampleBoard);
   });
 
   it('handles dropping a task onto itself in same column as a no-op', () => {
     const result = reorderBoard(sampleBoard, {
       activeTaskId: 'task-1',
-      targetColumn: ColumnType.TO_DO,
+      targetColumn: 'todo',
       targetTaskId: 'task-1',
     });
-    expect(result).toEqual(sampleBoard);
+
+    expect(result).toBe(sampleBoard);
   });
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ColumnType, PriorityLevel, TaskModel } from '../types/kanban';
+import { PriorityLevel, TaskModel } from '../types/kanban';
 import { AutoResizeTextarea } from './AutoResizeTextarea';
 import { PriorityBadge } from './PriorityBadge';
 import { TagList } from './TagList';
@@ -23,6 +23,7 @@ export interface TaskProps {
   canMoveLeft?: boolean;
   canMoveRight?: boolean;
   onDropTask?: (options: ReorderOptions) => void;
+  isCompleted?: boolean;
 }
 
 export const Task: React.FC<TaskProps> = ({
@@ -38,6 +39,7 @@ export const Task: React.FC<TaskProps> = ({
   canMoveLeft = false,
   canMoveRight = false,
   onDropTask,
+  isCompleted = false,
 }) => {
   const [isDragging, setIsDragging] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
@@ -101,9 +103,9 @@ export const Task: React.FC<TaskProps> = ({
     }
   };
 
-  const isCompleted = task.column === ColumnType.COMPLETED && !!task.completedAt;
-  const leadTimeMs = isCompleted ? calculateLeadTimeMs(task) : null;
-  const cycleTimeMs = isCompleted ? calculateCycleTimeMs(task) : null;
+  const hasCompletedAt = isCompleted && !!task.completedAt;
+  const leadTimeMs = hasCompletedAt ? calculateLeadTimeMs(task) : null;
+  const cycleTimeMs = hasCompletedAt ? calculateCycleTimeMs(task) : null;
   const leadTimeStr = formatDuration(leadTimeMs);
   const cycleTimeStr = formatDuration(cycleTimeMs);
 
@@ -159,7 +161,7 @@ export const Task: React.FC<TaskProps> = ({
           onRemoveTag={(tag) => onRemoveTag?.(task.id, tag)}
         />
 
-        {isCompleted && (
+        {hasCompletedAt && (
           <div className="task-metrics-badges" aria-label="Métricas de fluxo do cartão">
             <span
               className="badge-metric-time badge-lead-time"

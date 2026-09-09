@@ -1,21 +1,13 @@
 import React from 'react';
 import { useTaskCollection } from './hooks/useTaskCollection';
-import { useWipLimits } from './hooks/useWipLimits';
 import { useFlowMetrics } from './hooks/useFlowMetrics';
 import { useBoardFilters } from './hooks/useBoardFilters';
+import { useDataPortability } from './hooks/useDataPortability';
 import { MetricsBar } from './components/MetricsBar';
 import { FilterBar } from './components/FilterBar';
 import { Board } from './components/Board';
 import { Task } from './components/Task';
-import { ColumnType } from './types/kanban';
 import './App.css';
-
-const COLUMN_ORDER: ColumnType[] = [
-  ColumnType.TO_DO,
-  ColumnType.IN_PROGRESS,
-  ColumnType.BLOCKED,
-  ColumnType.COMPLETED,
-];
 
 export const App: React.FC = () => {
   const {
@@ -23,6 +15,8 @@ export const App: React.FC = () => {
     addTask,
     updateTask,
     deleteTask,
+    updateColumn,
+    deleteColumn,
     moveTask,
     reorderOrMoveTask,
     setTaskPriority,
@@ -31,13 +25,18 @@ export const App: React.FC = () => {
     discardIfEmpty,
     clearTasks,
     resetToSeed,
+    overwriteBoard,
   } = useTaskCollection();
 
-  const { wipLimits, setWipLimit } = useWipLimits();
+  const { exportData, importData } = useDataPortability();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const filterData = useBoardFilters(board);
 
-  const completedTasks = board[ColumnType.COMPLETED] || [];
+  const completedTasks = board.columns
+    .filter((col) => col.category === 'done')
+    .flatMap((col) => board.tasks[col.id] || []);
+  
   const flowMetrics = useFlowMetrics(completedTasks);
 
   const handleClearBoard = () => {
@@ -49,8 +48,41 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleAddTask = (column: ColumnType) => {
-    addTask(column, '');
+  const handleAddTask = (columnId: string) => {
+    addTask(columnId, '');
+  };
+
+  const handleExport = () => {
+    exportData(board);
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const confirmed = window.confirm(
+      'A importação irá substituir completamente o seu quadro atual. Deseja continuar?'
+    );
+
+    if (confirmed) {
+      importData(
+        file,
+        (newBoard) => {
+          overwriteBoard(newBoard);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+        },
+        (errorMsg) => {
+          alert(errorMsg);
+          if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+      );
+    } else {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   return (
@@ -67,6 +99,32 @@ export const App: React.FC = () => {
         </div>
 
         <div className="header-actions">
+          <input
+            type="file"
+            accept=".json"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+            aria-hidden="true"
+          />
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleImportClick}
+            aria-label="Importar Quadro"
+            title="Importar dados do quadro a partir de um arquivo JSON"
+          >
+            Importar
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleExport}
+            aria-label="Exportar Quadro"
+            title="Exportar dados do quadro para um arquivo JSON"
+          >
+            Exportar
+          </button>
           <button
             type="button"
             className="btn btn-secondary"
@@ -106,14 +164,15 @@ export const App: React.FC = () => {
         board={filterData.filteredBoard}
         rawBoard={board}
         hasActiveFilters={filterData.hasActiveFilters}
-        wipLimits={wipLimits}
-        onUpdateWipLimit={setWipLimit}
         onAddTask={handleAddTask}
+        onUpdateColumn={updateColumn}
+        onDeleteColumn={deleteColumn}
         onDropTask={reorderOrMoveTask}
-        renderTask={(task, column) => {
-          const currentIndex = COLUMN_ORDER.indexOf(column);
+        renderTask={(task, columnId) => {
+          const currentIndex = board.columns.findIndex(c => c.id === columnId);
+          const currentColumn = board.columns[currentIndex];
           const canMoveLeft = currentIndex > 0;
-          const canMoveRight = currentIndex < COLUMN_ORDER.length - 1;
+          const canMoveRight = currentIndex < board.columns.length - 1;
 
           return (
             <Task
@@ -126,16 +185,17 @@ export const App: React.FC = () => {
               onAddTag={addTaskTag}
               onRemoveTag={removeTaskTag}
               onDropTask={reorderOrMoveTask}
+              isCompleted={currentColumn?.category === 'done'}
               canMoveLeft={canMoveLeft}
               canMoveRight={canMoveRight}
               onMoveLeft={() => {
                 if (canMoveLeft) {
-                  moveTask(task.id, COLUMN_ORDER[currentIndex - 1]);
+                  moveTask(task.id, board.columns[currentIndex - 1].id);
                 }
               }}
               onMoveRight={() => {
                 if (canMoveRight) {
-                  moveTask(task.id, COLUMN_ORDER[currentIndex + 1]);
+                  moveTask(task.id, board.columns[currentIndex + 1].id);
                 }
               }}
             />
