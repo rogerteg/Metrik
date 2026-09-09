@@ -1,8 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { BoardState, ColumnCategory, ColumnModel, PriorityLevel, TaskModel } from '../types/kanban';
+import {
+  BoardState,
+  ColumnCategory,
+  ColumnModel,
+  PriorityLevel,
+  TaskModel,
+  MAX_COLUMNS,
+  FLOW_REGRESSION_WARNING_MESSAGE,
+} from '../types/kanban';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
-import { reorderBoard } from '../utils/taskReorder';
+import { reorderBoard, isBackwardColumnMove } from '../utils/taskReorder';
 import { ReorderOptions } from '../types/dnd';
 
 export interface UseTaskCollectionReturn {
@@ -90,6 +98,11 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
 
   const addColumn = useCallback((title: string, category: ColumnCategory, wipLimit: number | null = null) => {
     setBoard((prev) => {
+      if (prev.columns.length >= MAX_COLUMNS) {
+        console.warn(`[Metrik] Limite máximo de ${MAX_COLUMNS} colunas atingido.`);
+        return prev;
+      }
+
       const newColId = uuidv4();
       
       let colorScheme: 'todo' | 'progress' | 'blocked' | 'completed' = 'todo';
@@ -225,26 +238,56 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
   const moveTask = useCallback((id: string, targetColumnId: string) => {
     setBoard((prev) => {
       let targetTask: TaskModel | undefined;
+      let sourceColumnId: string | undefined;
       const nextTasks: Record<string, TaskModel[]> = {};
 
       for (const colId of Object.keys(prev.tasks)) {
         nextTasks[colId] = prev.tasks[colId].filter((task) => {
           if (task.id === id) {
             targetTask = task;
+            sourceColumnId = colId;
             return false;
           }
           return true;
         });
       }
 
-      if (targetTask) {
+      if (targetTask && sourceColumnId) {
+        const isBackward = isBackwardColumnMove(prev.columns, sourceColumnId, targetColumnId);
+        if (isBackward) {
+          if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+            try {
+              const confirmed = window.confirm(FLOW_REGRESSION_WARNING_MESSAGE);
+              if (!confirmed) {
+                return prev; // Bloqueia o movimento!
+              }
+            } catch {
+              // Ignore if confirm not implemented
+            }
+          }
+        }
+
         const targetCol = prev.columns.find(c => c.id === targetColumnId);
-        
         const now = new Date().toISOString();
         let startedAt = targetTask.startedAt;
         let completedAt = targetTask.completedAt;
+        let totalBlockedMs = targetTask.totalBlockedMs;
+        let blocked = targetTask.blocked;
+        let blockedAt = targetTask.blockedAt;
+        let blockedReason = targetTask.blockedReason;
 
-        if (targetCol) {
+        if (isBackward) {
+          completedAt = undefined;
+          totalBlockedMs = undefined;
+          blocked = false;
+          blockedAt = undefined;
+          blockedReason = undefined;
+          if (targetCol && targetCol.category === 'in_progress') {
+            startedAt = targetTask.startedAt || now;
+          } else {
+            startedAt = undefined;
+          }
+        } else if (targetCol) {
           if ((targetCol.category === 'in_progress' || targetCol.category === 'done') && !startedAt) {
             startedAt = now;
           }
@@ -264,6 +307,10 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
           column: targetColumnId,
           startedAt,
           completedAt,
+          totalBlockedMs,
+          blocked,
+          blockedAt,
+          blockedReason,
           updatedAt: now,
         };
 
@@ -276,7 +323,30 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
   }, []);
 
   const reorderOrMoveTask = useCallback((options: ReorderOptions) => {
-    setBoard((prev) => reorderBoard(prev, options));
+    setBoard((prev) => {
+      let sourceColumnId: string | undefined;
+      for (const colId of Object.keys(prev.tasks)) {
+        if (prev.tasks[colId].some((t) => t.id === options.activeTaskId)) {
+          sourceColumnId = colId;
+          break;
+        }
+      }
+
+      if (sourceColumnId && isBackwardColumnMove(prev.columns, sourceColumnId, options.targetColumn)) {
+        if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+          try {
+            const confirmed = window.confirm(FLOW_REGRESSION_WARNING_MESSAGE);
+            if (!confirmed) {
+              return prev; // Bloqueia o movimento!
+            }
+          } catch {
+            // Ignore if confirm not implemented
+          }
+        }
+      }
+
+      return reorderBoard(prev, options);
+    });
   }, []);
 
   const setTaskPriority = useCallback((taskId: string, priority?: PriorityLevel) => {

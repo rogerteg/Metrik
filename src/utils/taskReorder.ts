@@ -2,6 +2,19 @@ import { BoardState, TaskModel } from '../types/kanban';
 import { ReorderOptions } from '../types/dnd';
 
 /**
+ * Verifica se um movimento entre duas colunas é retrógrado (da direita para a esquerda).
+ */
+export function isBackwardColumnMove(
+  columns: { id: string }[],
+  sourceColumnId: string,
+  targetColumnId: string
+): boolean {
+  const sourceIdx = columns.findIndex((c) => c.id === sourceColumnId);
+  const targetIdx = columns.findIndex((c) => c.id === targetColumnId);
+  return sourceIdx !== -1 && targetIdx !== -1 && targetIdx < sourceIdx;
+}
+
+/**
  * Reorganiza o estado do quadro Kanban (BoardState) movendo e/ou reordenando uma tarefa.
  * Atualiza determinística e idempotentemente os timestamps de fluxo.
  */
@@ -39,10 +52,28 @@ export function reorderBoard(
   }
 
   const targetColModel = board.columns.find(c => c.id === targetColumn);
+  const isBackwardMove = isBackwardColumnMove(board.columns, sourceColumn, targetColumn);
+
   let startedAt = activeTask.startedAt;
   let completedAt = activeTask.completedAt;
+  let totalBlockedMs = activeTask.totalBlockedMs;
+  let blocked = activeTask.blocked;
+  let blockedAt = activeTask.blockedAt;
+  let blockedReason = activeTask.blockedReason;
 
-  if (targetColModel) {
+  if (isBackwardMove) {
+    // Movimento retrógrado (sentido contrário): perda de métricas de fluxo
+    completedAt = undefined;
+    totalBlockedMs = undefined;
+    blocked = false;
+    blockedAt = undefined;
+    blockedReason = undefined;
+    if (targetColModel && targetColModel.category === 'in_progress') {
+      startedAt = activeTask.startedAt || nowIso;
+    } else {
+      startedAt = undefined;
+    }
+  } else if (targetColModel) {
     const isTargetDone = targetColModel.category === 'done';
     const isTargetInProgress = targetColModel.category === 'in_progress';
 
@@ -70,6 +101,10 @@ export function reorderBoard(
     updatedAt: nowIso,
     startedAt,
     completedAt,
+    totalBlockedMs,
+    blocked,
+    blockedAt,
+    blockedReason,
   };
 
   const targetList = [...(nextTasks[targetColumn] || [])];

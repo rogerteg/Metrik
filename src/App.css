@@ -1154,3 +1154,167 @@ body {
   margin: 8px 0;
 }
 
+/* Feature 014: Column Limit Warning Banner & Add Column Card */
+.board-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.column-limit-warning-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 12px;
+  color: #fbbf24;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+  animation: fadeIn 0.25s ease-out;
+}
+
+.warning-banner-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.warning-banner-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.875rem;
+}
+
+.warning-banner-content strong {
+  font-weight: 700;
+  color: #fef08a;
+  letter-spacing: 0.01em;
+}
+
+.warning-banner-content span {
+  color: rgba(254, 240, 138, 0.85);
+  font-size: 0.8rem;
+}
+
+/* Add Column Card on Board Grid */
+.add-column-card {
+  min-width: 260px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-add-column {
+  width: 100%;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 24px 16px;
+}
+
+.btn-add-column:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.06);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.btn-add-column:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.02);
+}
+
+.add-column-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.add-column-text {
+  font-size: 0.9rem;
+}
+
+.add-column-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* New Column Modal Custom Styles */
+.new-column-modal {
+  max-width: 520px;
+}
+
+.modal-warning-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin: 16px 24px 0 24px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  color: #fbbf24;
+  font-size: 0.825rem;
+}
+
+.modal-error-message {
+  padding: 10px 14px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 0.825rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.form-select {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-select:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+}
+
+.form-select option {
+  background: #1e1e2d;
+  color: var(--text-primary);
+}
+
+.form-helper-text {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+

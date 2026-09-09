@@ -12,6 +12,7 @@ import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 import { useBoards } from './hooks/useBoards';
 import { BoardSwitcher } from './components/BoardSwitcher';
 import { BoardManagementModal } from './components/BoardManagementModal';
+import { NewColumnModal } from './components/NewColumnModal';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -25,9 +26,11 @@ export const App: React.FC = () => {
   } = useBoards();
 
   const [isBoardModalOpen, setIsBoardModalOpen] = React.useState(false);
+  const [isNewColumnModalOpen, setIsNewColumnModalOpen] = React.useState(false);
 
   const {
     board,
+    addColumn,
     addTask,
     updateTask,
     toggleTaskBlocked,
@@ -225,6 +228,7 @@ export const App: React.FC = () => {
             onUpdateColumn={updateColumn}
             onDeleteColumn={deleteColumn}
             onDropTask={reorderOrMoveTask}
+            onOpenNewColumnModal={() => setIsNewColumnModalOpen(true)}
             renderTask={(task, columnId) => {
               const currentIndex = board.columns.findIndex(c => c.id === columnId);
               const currentColumn = board.columns[currentIndex];
@@ -284,6 +288,13 @@ export const App: React.FC = () => {
         onRenameBoard={renameBoard}
         onDeleteBoard={deleteBoard}
         onSwitchBoard={switchBoard}
+      />
+
+      <NewColumnModal
+        isOpen={isNewColumnModalOpen}
+        onClose={() => setIsNewColumnModalOpen(false)}
+        onAddColumn={addColumn}
+        currentColumnCount={board.columns.length}
       />
     </div>
   );

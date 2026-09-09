@@ -112,3 +112,11 @@ export interface FlowMetricsSummary {
   /** Texto formatado da Eficiência de Fluxo (ex: "85%", "< 1%" ou "-") */
   formattedFlowEfficiency: string;
 }
+
+/** Limite máximo recomendado e operacional de colunas no quadro (Feature 014) */
+export const MAX_COLUMNS = 12;
+
+/** Mensagem de alerta para tentativa de movimentação em sentido retrógrado (Feature 014) */
+export const FLOW_REGRESSION_WARNING_MESSAGE =
+  'Você irá perder todas as métricas do fluxo. Card em sentido único, somente da esquerda para a direita.';
+
