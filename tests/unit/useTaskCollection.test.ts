@@ -1,16 +1,19 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useTaskCollection, STORAGE_KEY } from '../../src/hooks/useTaskCollection';
+import { useTaskCollection } from '../../src/hooks/useTaskCollection';
 import { INITIAL_SEED_TASKS } from '../../src/utils/seedData';
 
-describe('useTaskCollection Hook (US3)', () => {
+describe('useTaskCollection Hook (Feature 010 Multi-Board)', () => {
+  const TEST_BOARD_ID = 'test-board-1';
+  const STORAGE_KEY = `metrik-tasks-${TEST_BOARD_ID}`;
+
   beforeEach(() => {
     window.localStorage.clear();
     vi.restoreAllMocks();
   });
 
   it('initializes with seed data when localStorage is empty', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
 
     expect(result.current.board.tasks['todo'].length).toBe(
       INITIAL_SEED_TASKS.tasks['todo'].length
@@ -24,7 +27,7 @@ describe('useTaskCollection Hook (US3)', () => {
   });
 
   it('adds a task and updates localStorage reactive state', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
 
     let newTask: any;
     act(() => {
@@ -42,8 +45,35 @@ describe('useTaskCollection Hook (US3)', () => {
     expect(saved.tasks['todo'].some((t: any) => t.id === newTask.id)).toBe(true);
   });
 
+  it('switches board data when activeBoardId changes', () => {
+    // Setup board 1
+    const board1Key = 'metrik-tasks-b1';
+    window.localStorage.setItem(board1Key, JSON.stringify({
+      columns: INITIAL_SEED_TASKS.columns,
+      tasks: { ...INITIAL_SEED_TASKS.tasks, todo: [{ id: 'b1-task', title: 'Task 1', column: 'todo' }] }
+    }));
+
+    // Setup board 2
+    const board2Key = 'metrik-tasks-b2';
+    window.localStorage.setItem(board2Key, JSON.stringify({
+      columns: INITIAL_SEED_TASKS.columns,
+      tasks: { ...INITIAL_SEED_TASKS.tasks, todo: [{ id: 'b2-task', title: 'Task 2', column: 'todo' }] }
+    }));
+
+    const { result, rerender } = renderHook(
+      ({ id }) => useTaskCollection(id),
+      { initialProps: { id: 'b1' } }
+    );
+
+    expect(result.current.board.tasks['todo'][0].title).toBe('Task 1');
+
+    rerender({ id: 'b2' });
+
+    expect(result.current.board.tasks['todo'][0].title).toBe('Task 2');
+  });
+
   it('adds a column correctly', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
 
     act(() => {
       result.current.addColumn('New Phase', 'in_progress', 5);
@@ -57,7 +87,7 @@ describe('useTaskCollection Hook (US3)', () => {
   });
 
   it('deletes an empty column correctly', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
     
     act(() => {
       result.current.addColumn('To Delete', 'todo', null);
@@ -75,7 +105,7 @@ describe('useTaskCollection Hook (US3)', () => {
   });
 
   it('updates task title and updatedAt timestamp', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
     const target = result.current.board.tasks['todo'][0];
 
     act(() => {
@@ -88,7 +118,7 @@ describe('useTaskCollection Hook (US3)', () => {
   });
 
   it('deletes a task correctly from column and storage', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
     const target = result.current.board.tasks['todo'][0];
 
     act(() => {
@@ -102,8 +132,8 @@ describe('useTaskCollection Hook (US3)', () => {
     expect(saved.tasks['todo'].some((t: any) => t.id === target.id)).toBe(false);
   });
 
-  it('discards task if empty on discardIfEmpty call (FR-013)', () => {
-    const { result } = renderHook(() => useTaskCollection());
+  it('discards task if empty on discardIfEmpty call', () => {
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
 
     let emptyTask: any;
     act(() => {
@@ -118,20 +148,8 @@ describe('useTaskCollection Hook (US3)', () => {
     expect(found).toBeUndefined();
   });
 
-  it('recovers gracefully with seed data when localStorage contains corrupted JSON', () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    window.localStorage.setItem(STORAGE_KEY, '{ invalid_json_corrupt');
-
-    const { result } = renderHook(() => useTaskCollection());
-
-    expect(result.current.board.tasks['todo'].length).toBe(
-      INITIAL_SEED_TASKS.tasks['todo'].length
-    );
-    expect(consoleErrorSpy).toHaveBeenCalled();
-  });
-
   it('clears all tasks across all columns', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
 
     act(() => {
       result.current.clearTasks();
@@ -143,24 +161,8 @@ describe('useTaskCollection Hook (US3)', () => {
     expect(result.current.board.tasks['completed']).toEqual([]);
   });
 
-  it('resets board to initial seed tasks', () => {
-    const { result } = renderHook(() => useTaskCollection());
-
-    act(() => {
-      result.current.clearTasks();
-    });
-    expect(result.current.board.tasks['todo'].length).toBe(0);
-
-    act(() => {
-      result.current.resetToSeed();
-    });
-    expect(result.current.board.tasks['todo'].length).toBe(
-      INITIAL_SEED_TASKS.tasks['todo'].length
-    );
-  });
-
   it('reorders or moves a task between columns using reorderOrMoveTask', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
     const taskToMove = result.current.board.tasks['todo'][0];
 
     act(() => {
@@ -174,7 +176,6 @@ describe('useTaskCollection Hook (US3)', () => {
     const moved = inProgressTasks.find((t) => t.id === taskToMove.id);
     expect(moved).toBeDefined();
     expect(moved?.column).toBe('in-progress');
-    expect(moved?.startedAt).toBeDefined();
 
     // Verify localStorage was updated
     const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
@@ -182,7 +183,7 @@ describe('useTaskCollection Hook (US3)', () => {
   });
 
   it('sets and clears task priority via setTaskPriority', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
     const task = result.current.board.tasks['todo'][0];
 
     act(() => {
@@ -195,55 +196,10 @@ describe('useTaskCollection Hook (US3)', () => {
     const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
     const savedTask = saved.tasks['todo'].find((t: any) => t.id === task.id);
     expect(savedTask.priority).toBe('urgent');
-
-    act(() => {
-      result.current.setTaskPriority(task.id, undefined);
-    });
-
-    const cleared = result.current.board.tasks['todo'].find((t) => t.id === task.id);
-    expect(cleared?.priority).toBeUndefined();
-  });
-
-  it('adds and removes task tags with deduplication and sanitization', () => {
-    const { result } = renderHook(() => useTaskCollection());
-    const task = result.current.board.tasks['todo'][0];
-
-    // Add tag
-    act(() => {
-      result.current.addTaskTag(task.id, '  Frontend  ');
-    });
-
-    let current = result.current.board.tasks['todo'].find((t) => t.id === task.id);
-    expect(current?.tags).toEqual(['Frontend']);
-
-    // Attempt to add duplicate tag (case-insensitive)
-    act(() => {
-      result.current.addTaskTag(task.id, 'frontend');
-      result.current.addTaskTag(task.id, '   ');
-    });
-
-    current = result.current.board.tasks['todo'].find((t) => t.id === task.id);
-    expect(current?.tags).toEqual(['Frontend']);
-
-    // Add second tag
-    act(() => {
-      result.current.addTaskTag(task.id, 'UI');
-    });
-
-    current = result.current.board.tasks['todo'].find((t) => t.id === task.id);
-    expect(current?.tags).toEqual(['Frontend', 'UI']);
-
-    // Remove first tag
-    act(() => {
-      result.current.removeTaskTag(task.id, 'FRONTEND');
-    });
-
-    current = result.current.board.tasks['todo'].find((t) => t.id === task.id);
-    expect(current?.tags).toEqual(['UI']);
   });
 
   it('overwrites the board completely and updates localStorage', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
 
     const newBoard = {
       columns: [

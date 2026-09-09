@@ -9,9 +9,23 @@ import { Board } from './components/Board';
 import { Task } from './components/Task';
 import { TaskDetailsModal } from './components/TaskDetailsModal';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
+import { useBoards } from './hooks/useBoards';
+import { BoardSwitcher } from './components/BoardSwitcher';
+import { BoardManagementModal } from './components/BoardManagementModal';
 import './App.css';
 
 export const App: React.FC = () => {
+  const {
+    boards,
+    activeBoardId,
+    createBoard,
+    switchBoard,
+    renameBoard,
+    deleteBoard
+  } = useBoards();
+
+  const [isBoardModalOpen, setIsBoardModalOpen] = React.useState(false);
+
   const {
     board,
     addTask,
@@ -28,7 +42,7 @@ export const App: React.FC = () => {
     clearTasks,
     resetToSeed,
     overwriteBoard,
-  } = useTaskCollection();
+  } = useTaskCollection(activeBoardId);
 
   const { exportData, importData } = useDataPortability();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -58,7 +72,9 @@ export const App: React.FC = () => {
   };
 
   const handleExport = () => {
-    exportData(board);
+    // Pass active board info if needed, but for now exportData just takes the board state.
+    // We will update useDataPortability shortly.
+    exportData(board, activeBoardId);
   };
 
   const handleImportClick = () => {
@@ -93,7 +109,7 @@ export const App: React.FC = () => {
   return (
     <div className="app-container">
       <header className="app-header">
-        <div className="brand-section">
+        <div className="brand-section" style={{ display: 'flex', alignItems: 'center' }}>
           <div className="brand-logo" aria-hidden="true">
             M
           </div>
@@ -101,6 +117,13 @@ export const App: React.FC = () => {
             <h1 className="brand-title">Metrik</h1>
             <p className="brand-subtitle">Quadro Kanban Ágil de Alta Performance</p>
           </div>
+          
+          <BoardSwitcher 
+            boards={boards}
+            activeBoardId={activeBoardId}
+            onSwitchBoard={switchBoard}
+            onManageBoards={() => setIsBoardModalOpen(true)}
+          />
         </div>
 
         <div className="header-actions">
@@ -241,6 +264,17 @@ export const App: React.FC = () => {
           onUpdateTask={updateTask}
         />
       )}
+
+      <BoardManagementModal 
+        isOpen={isBoardModalOpen}
+        onClose={() => setIsBoardModalOpen(false)}
+        boards={boards}
+        activeBoardId={activeBoardId}
+        onCreateBoard={createBoard}
+        onRenameBoard={renameBoard}
+        onDeleteBoard={deleteBoard}
+        onSwitchBoard={switchBoard}
+      />
     </div>
   );
 };

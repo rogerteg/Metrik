@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from '../../src/App';
-import { STORAGE_KEY } from '../../src/hooks/useTaskCollection';
+import { BOARDS_INDEX_KEY } from '../../src/hooks/useBoards';
 
 describe('Global Board Actions (US5)', () => {
   beforeEach(() => {
@@ -40,7 +40,9 @@ describe('Global Board Actions (US5)', () => {
     expect(screen.getByText('0/2')).toBeInTheDocument();
 
     // Verify localStorage was updated with empty columns
-    const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
+    const boards = JSON.parse(window.localStorage.getItem(BOARDS_INDEX_KEY) || '[]');
+    const activeBoardId = boards[0].id;
+    const saved = JSON.parse(window.localStorage.getItem(`metrik-tasks-${activeBoardId}`) || '{}');
     expect(saved.tasks.todo).toEqual([]);
     expect(saved.tasks['in-progress']).toEqual([]);
     expect(saved.tasks.blocked).toEqual([]);

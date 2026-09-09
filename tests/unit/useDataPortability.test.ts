@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useDataPortability } from '../../src/hooks/useDataPortability';
 import { INITIAL_SEED_TASKS } from '../../src/utils/seedData';
 
@@ -21,7 +21,9 @@ describe('useDataPortability Hook', () => {
 
     const { result } = renderHook(() => useDataPortability());
 
-    result.current.exportData(INITIAL_SEED_TASKS);
+    act(() => {
+      result.current.exportData(INITIAL_SEED_TASKS, 'test-board');
+    });
 
     // Verify Blob creation
     expect(createObjectURLMock).toHaveBeenCalled();

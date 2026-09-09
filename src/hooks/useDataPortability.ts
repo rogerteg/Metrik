@@ -3,7 +3,7 @@ import { BoardState } from '../types/kanban';
 import { isValidBoardState } from '../utils/seedData';
 
 export function useDataPortability() {
-  const exportData = useCallback((board: BoardState) => {
+  const exportData = useCallback((board: BoardState, boardId?: string | null) => {
     try {
       const dataStr = JSON.stringify(board, null, 2);
       const blob = new Blob([dataStr], { type: 'application/json' });
@@ -11,7 +11,8 @@ export function useDataPortability() {
       
       const a = document.createElement('a');
       a.href = url;
-      a.download = `metrik-board-export-${new Date().toISOString().slice(0, 10)}.json`;
+      const fileNameSuffix = boardId ? `-${boardId}` : '';
+      a.download = `metrik-board${fileNameSuffix}-export-${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(a);
       a.click();
       

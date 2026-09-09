@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { BoardState, ColumnCategory, ColumnModel, PriorityLevel, TaskModel } from '../types/kanban';
-import { DEFAULT_COLUMNS, INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
+import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
 import { reorderBoard } from '../utils/taskReorder';
 import { ReorderOptions } from '../types/dnd';
-
-export const STORAGE_KEY = 'metrik_kanban_tasks';
 
 export interface UseTaskCollectionReturn {
   board: BoardState;
@@ -18,7 +16,7 @@ export interface UseTaskCollectionReturn {
 
   // Task Methods
   addTask: (columnId: string, title?: string) => TaskModel;
-  updateTask: (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags' | 'description' | 'subtasks'>>) => void;
+  updateTask: (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags' | 'description' | 'subtasks' | 'dueDate'>>) => void;
   deleteTask: (id: string) => void;
   moveTask: (id: string, targetColumnId: string) => void;
   reorderOrMoveTask: (options: ReorderOptions) => void;
@@ -31,62 +29,21 @@ export interface UseTaskCollectionReturn {
   overwriteBoard: (newState: BoardState) => void;
 }
 
-const getInitialState = (): BoardState => {
-  if (typeof window === 'undefined' || !window.localStorage) {
+const getBoardStateFromStorage = (boardId: string | null): BoardState => {
+  if (!boardId || typeof window === 'undefined' || !window.localStorage) {
     return INITIAL_SEED_TASKS;
   }
 
+  const storageKey = `metrik-tasks-${boardId}`;
   try {
-    const rawData = window.localStorage.getItem(STORAGE_KEY);
+    const rawData = window.localStorage.getItem(storageKey);
     if (!rawData) {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SEED_TASKS));
+      window.localStorage.setItem(storageKey, JSON.stringify(INITIAL_SEED_TASKS));
       return INITIAL_SEED_TASKS;
     }
 
     const parsed = JSON.parse(rawData);
     
-    // Migration: Detect legacy static structure Record<ColumnType, Task[]>
-    if (parsed && !parsed.columns && !parsed.tasks) {
-      console.log('[Metrik Storage] Migrating old static board to dynamic board V2.');
-      
-      const migratedTasks: Record<string, TaskModel[]> = {};
-      
-      const mapLegacyToNewId = (legacyType: string) => {
-        switch(legacyType) {
-          case 'Todo': return 'todo';
-          case 'In Progress': return 'in-progress';
-          case 'Blocked': return 'blocked';
-          case 'Completed': return 'completed';
-          default: return 'todo';
-        }
-      };
-
-      for (const legacyKey of Object.keys(parsed)) {
-        const newId = mapLegacyToNewId(legacyKey);
-        if (!migratedTasks[newId]) migratedTasks[newId] = [];
-        
-        const oldTasks = Array.isArray(parsed[legacyKey]) ? parsed[legacyKey] : [];
-        migratedTasks[newId] = oldTasks.map((t: any) => ({
-          ...t,
-          column: newId
-        }));
-      }
-      
-      for (const col of DEFAULT_COLUMNS) {
-        if (!migratedTasks[col.id]) {
-          migratedTasks[col.id] = [];
-        }
-      }
-      
-      const migratedState: BoardState = {
-        columns: DEFAULT_COLUMNS,
-        tasks: migratedTasks
-      };
-      
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(migratedState));
-      return migratedState;
-    }
-
     if (isValidBoardState(parsed)) {
       // Ensure all columns defined in board.columns exist in tasks map
       for (const col of parsed.columns) {
@@ -97,26 +54,33 @@ const getInitialState = (): BoardState => {
       return parsed;
     }
 
-    console.warn('[Metrik Storage] Invalid board state in localStorage. Falling back to seed data.');
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SEED_TASKS));
+    console.warn(`[Metrik Storage] Invalid board state for ${boardId}. Falling back to seed data.`);
+    window.localStorage.setItem(storageKey, JSON.stringify(INITIAL_SEED_TASKS));
     return INITIAL_SEED_TASKS;
   } catch (error) {
-    console.error('[Metrik Storage] Failed to load board from localStorage:', error);
+    console.error(`[Metrik Storage] Failed to load board ${boardId}:`, error);
     return INITIAL_SEED_TASKS;
   }
 };
 
-export function useTaskCollection(): UseTaskCollectionReturn {
-  const [board, setBoard] = useState<BoardState>(getInitialState);
+export function useTaskCollection(activeBoardId: string | null): UseTaskCollectionReturn {
+  const [board, setBoard] = useState<BoardState>(() => getBoardStateFromStorage(activeBoardId));
+
+  // When active board changes, load its data
+  useEffect(() => {
+    setBoard(getBoardStateFromStorage(activeBoardId));
+  }, [activeBoardId]);
 
   // Sync with localStorage
   useEffect(() => {
+    if (!activeBoardId) return;
+    const storageKey = `metrik-tasks-${activeBoardId}`;
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(board));
+      window.localStorage.setItem(storageKey, JSON.stringify(board));
     } catch (error) {
       console.error('Failed to save board state to localStorage', error);
     }
-  }, [board]);
+  }, [board, activeBoardId]);
 
   // ============================================================================
   // COLUMN METHODS
@@ -126,7 +90,6 @@ export function useTaskCollection(): UseTaskCollectionReturn {
     setBoard((prev) => {
       const newColId = uuidv4();
       
-      // Inherit a default color scheme based on category
       let colorScheme: 'todo' | 'progress' | 'blocked' | 'completed' = 'todo';
       if (category === 'in_progress') colorScheme = 'progress';
       if (category === 'done') colorScheme = 'completed';
@@ -158,7 +121,6 @@ export function useTaskCollection(): UseTaskCollectionReturn {
 
   const deleteColumn = useCallback((id: string) => {
     setBoard((prev) => {
-      // Invariant: Cannot delete a column if it has tasks
       if (prev.tasks[id] && prev.tasks[id].length > 0) {
         console.warn('Cannot delete a column that contains tasks.');
         return prev;
@@ -199,7 +161,6 @@ export function useTaskCollection(): UseTaskCollectionReturn {
     };
 
     setBoard((prev) => {
-      // Determine if we need to set startedAt/completedAt based on column category
       const targetCol = prev.columns.find(c => c.id === columnId);
       if (targetCol) {
         if (targetCol.category === 'in_progress') {
@@ -223,7 +184,7 @@ export function useTaskCollection(): UseTaskCollectionReturn {
   }, []);
 
   const updateTask = useCallback(
-    (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags' | 'description' | 'subtasks'>>) => {
+    (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags' | 'description' | 'subtasks' | 'dueDate'>>) => {
       setBoard((prev) => {
         const nextTasks: Record<string, TaskModel[]> = {};
         const now = new Date().toISOString();

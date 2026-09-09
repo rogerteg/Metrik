@@ -8,7 +8,7 @@ describe('Task Transitions & Timestamps (US4 & Feature 002)', () => {
   });
 
   it('moves task from Todo to In Progress and registers startedAt', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection('test-board'));
 
     let task: any;
     act(() => {
@@ -29,7 +29,7 @@ describe('Task Transitions & Timestamps (US4 & Feature 002)', () => {
   });
 
   it('moves task from In Progress to Blocked preserving startedAt', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection('test-board'));
 
     let task: any;
     act(() => {
@@ -49,7 +49,7 @@ describe('Task Transitions & Timestamps (US4 & Feature 002)', () => {
   });
 
   it('moves task from Blocked to Completed and registers completedAt', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection('test-board'));
 
     let task: any;
     act(() => {
@@ -68,7 +68,7 @@ describe('Task Transitions & Timestamps (US4 & Feature 002)', () => {
   });
 
   it('clears completedAt when task is reopened from Completed', () => {
-    const { result } = renderHook(() => useTaskCollection());
+    const { result } = renderHook(() => useTaskCollection('test-board'));
 
     let task: any;
     act(() => {

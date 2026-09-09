@@ -68,6 +68,13 @@ export interface TaskModel {
   dueDate?: string; // ISO 8601 string, e.g., '2026-10-15'
 }
 
+export interface BoardModel {
+  id: string;
+  name: string;
+  createdAt: string;
+  lastAccessed: string;
+}
+
 export interface BoardState {
   columns: ColumnModel[];
   tasks: Record<string, TaskModel[]>; // key is column.id
