@@ -6,6 +6,7 @@ const INITIAL_FILTER_STATE: FilterState = {
   searchQuery: '',
   priorityFilter: 'all',
   selectedTags: [],
+  onlyBlocked: false,
 };
 
 export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
@@ -31,6 +32,10 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
     });
   }, []);
 
+  const toggleOnlyBlocked = useCallback(() => {
+    setFilters((prev) => ({ ...prev, onlyBlocked: !prev.onlyBlocked }));
+  }, []);
+
   const clearFilters = useCallback(() => {
     setFilters(INITIAL_FILTER_STATE);
   }, []);
@@ -38,7 +43,8 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
   const hasActiveFilters = Boolean(
     filters.searchQuery.trim() !== '' ||
     filters.priorityFilter !== 'all' ||
-    filters.selectedTags.length > 0
+    filters.selectedTags.length > 0 ||
+    filters.onlyBlocked
   );
 
   const availableTags = useMemo(() => {
@@ -58,6 +64,13 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
 
   const totalCount = useMemo(() => {
     return Object.values(board.tasks).reduce((acc, tasks) => acc + tasks.length, 0);
+  }, [board]);
+
+  const blockedCount = useMemo(() => {
+    return Object.values(board.tasks).reduce(
+      (acc, tasks) => acc + tasks.filter((t) => t.blocked).length,
+      0
+    );
   }, [board]);
 
   const filteredBoard = useMemo<BoardState>(() => {
@@ -89,6 +102,11 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
           }
         }
 
+        // 4. Only Blocked Filter (Feature 013)
+        if (filters.onlyBlocked && !task.blocked) {
+          return false;
+        }
+
         return true;
       });
     });
@@ -108,11 +126,13 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
     setSearchQuery,
     setPriorityFilter,
     toggleTagFilter,
+    toggleOnlyBlocked,
     clearFilters,
     hasActiveFilters,
     filteredBoard,
     availableTags,
     visibleCount,
     totalCount,
+    blockedCount,
   };
 }

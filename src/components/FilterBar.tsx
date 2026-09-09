@@ -9,11 +9,13 @@ export interface FilterBarProps {
   onSearchChange: (query: string) => void;
   onPriorityChange: (priority: PriorityLevel | 'all') => void;
   onToggleTag: (tag: string) => void;
+  onToggleOnlyBlocked?: () => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
   availableTags: string[];
   visibleCount: number;
   totalCount: number;
+  blockedCount?: number;
 }
 
 const PRIORITY_OPTIONS: { level: PriorityLevel | 'all'; label: string; color?: string }[] = [
@@ -29,11 +31,13 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onSearchChange,
   onPriorityChange,
   onToggleTag,
+  onToggleOnlyBlocked,
   onClearFilters,
   hasActiveFilters,
   availableTags,
   visibleCount,
   totalCount,
+  blockedCount,
 }) => {
   return (
     <section className="filter-bar" aria-label="Barra de filtros e busca">
@@ -147,6 +151,44 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                   </button>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {/* Filtro de Bloqueados (Feature 013) */}
+        {onToggleOnlyBlocked && (
+          <div className="filter-group filter-group--blocked" role="group" aria-label="Filtrar por impedimento">
+            <span className="filter-group__label">Status:</span>
+            <div className="filter-pills">
+              <button
+                type="button"
+                className={`filter-pill filter-pill--blocked ${filters.onlyBlocked ? 'is-selected' : ''}`}
+                onClick={onToggleOnlyBlocked}
+                aria-pressed={filters.onlyBlocked}
+                data-testid="filter-only-blocked"
+                style={
+                  filters.onlyBlocked
+                    ? { borderColor: '#ef4444', color: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.15)' }
+                    : undefined
+                }
+              >
+                <span>⛔ Apenas Bloqueados</span>
+                {typeof blockedCount === 'number' && blockedCount > 0 && (
+                  <span
+                    style={{
+                      marginLeft: '6px',
+                      background: '#ef4444',
+                      color: '#ffffff',
+                      borderRadius: '10px',
+                      padding: '1px 6px',
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {blockedCount}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         )}

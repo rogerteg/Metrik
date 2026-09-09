@@ -53,11 +53,17 @@ export const App: React.FC = () => {
 
   const filterData = useBoardFilters(board);
 
-  const completedTasks = board.columns
-    .filter((col) => col.category === 'done')
-    .flatMap((col) => board.tasks[col.id] || []);
+  const allBoardTasks = React.useMemo(() => {
+    return Object.values(board.tasks).flat();
+  }, [board.tasks]);
+
+  const completedTasks = React.useMemo(() => {
+    return board.columns
+      .filter((col) => col.category === 'done')
+      .flatMap((col) => board.tasks[col.id] || []);
+  }, [board.columns, board.tasks]);
   
-  const flowMetrics = useFlowMetrics(completedTasks);
+  const flowMetrics = useFlowMetrics(completedTasks, allBoardTasks);
 
   const handleClearBoard = () => {
     const confirmed = window.confirm(
@@ -202,11 +208,13 @@ export const App: React.FC = () => {
             onSearchChange={filterData.setSearchQuery}
             onPriorityChange={filterData.setPriorityFilter}
             onToggleTag={filterData.toggleTagFilter}
+            onToggleOnlyBlocked={filterData.toggleOnlyBlocked}
             onClearFilters={filterData.clearFilters}
             hasActiveFilters={filterData.hasActiveFilters}
             availableTags={filterData.availableTags}
             visibleCount={filterData.visibleCount}
             totalCount={filterData.totalCount}
+            blockedCount={filterData.blockedCount}
           />
 
           <Board

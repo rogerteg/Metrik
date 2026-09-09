@@ -102,4 +102,13 @@ export interface FlowMetricsSummary {
 
   /** Texto formatado do Cycle Time Médio (ex: "45m", "< 1m" ou "-") */
   formattedAvgCycleTime: string;
+
+  /** Quantidade de tarefas atualmente bloqueadas no quadro (Feature 013) */
+  blockedCount: number;
+
+  /** Eficiência de Fluxo percentual [0, 100] ou null se sem tarefas concluídas */
+  flowEfficiency: number | null;
+
+  /** Texto formatado da Eficiência de Fluxo (ex: "85%", "< 1%" ou "-") */
+  formattedFlowEfficiency: string;
 }

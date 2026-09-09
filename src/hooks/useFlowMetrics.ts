@@ -6,9 +6,14 @@ import {
   formatDuration,
 } from '../utils/timeFormatters';
 
-export function useFlowMetrics(completedTasks: TaskModel[]): FlowMetricsSummary {
+export function useFlowMetrics(
+  completedTasks: TaskModel[],
+  allBoardTasks?: TaskModel[]
+): FlowMetricsSummary {
   return useMemo(() => {
     const throughput = completedTasks.length;
+    const taskPoolForBlocked = allBoardTasks || completedTasks;
+    const blockedCount = taskPoolForBlocked.filter((t) => t.blocked).length;
 
     if (throughput === 0) {
       return {
@@ -17,6 +22,9 @@ export function useFlowMetrics(completedTasks: TaskModel[]): FlowMetricsSummary 
         avgCycleTimeMs: null,
         formattedAvgLeadTime: '-',
         formattedAvgCycleTime: '-',
+        blockedCount,
+        flowEfficiency: null,
+        formattedFlowEfficiency: '-',
       };
     }
 
@@ -25,6 +33,7 @@ export function useFlowMetrics(completedTasks: TaskModel[]): FlowMetricsSummary 
 
     let totalCycleTimeMs = 0;
     let validCycleTimeCount = 0;
+    let totalActiveTimeMs = 0;
 
     for (const task of completedTasks) {
       const leadMs = calculateLeadTimeMs(task);
@@ -37,6 +46,10 @@ export function useFlowMetrics(completedTasks: TaskModel[]): FlowMetricsSummary 
       if (cycleMs !== null) {
         totalCycleTimeMs += cycleMs;
         validCycleTimeCount += 1;
+
+        const blockedMs = task.totalBlockedMs || 0;
+        const activeMs = Math.max(0, cycleMs - blockedMs);
+        totalActiveTimeMs += activeMs;
       }
     }
 
@@ -45,12 +58,23 @@ export function useFlowMetrics(completedTasks: TaskModel[]): FlowMetricsSummary 
     const avgCycleTimeMs =
       validCycleTimeCount > 0 ? Math.round(totalCycleTimeMs / validCycleTimeCount) : null;
 
+    let flowEfficiency: number | null = null;
+    let formattedFlowEfficiency = '-';
+
+    if (totalCycleTimeMs > 0) {
+      flowEfficiency = Math.min(100, Math.max(0, Math.round((totalActiveTimeMs / totalCycleTimeMs) * 100)));
+      formattedFlowEfficiency = `${flowEfficiency}%`;
+    }
+
     return {
       throughput,
       avgLeadTimeMs,
       avgCycleTimeMs,
       formattedAvgLeadTime: formatDuration(avgLeadTimeMs),
       formattedAvgCycleTime: formatDuration(avgCycleTimeMs),
+      blockedCount,
+      flowEfficiency,
+      formattedFlowEfficiency,
     };
-  }, [completedTasks]);
+  }, [completedTasks, allBoardTasks]);
 }

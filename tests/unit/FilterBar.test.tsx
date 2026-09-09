@@ -3,11 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { FilterBar } from '../../src/components/FilterBar';
 import { FilterState } from '../../src/types/filter';
 
-describe('FilterBar Component (US3 & US4)', () => {
+describe('FilterBar Component (US3, US4 & Feature 013)', () => {
   const defaultFilters: FilterState = {
     searchQuery: '',
     priorityFilter: 'all',
     selectedTags: [],
+    onlyBlocked: false,
   };
 
   it('renders search input, priority buttons, tags, and counter', () => {
@@ -103,6 +104,7 @@ describe('FilterBar Component (US3 & US4)', () => {
       searchQuery: 'api',
       priorityFilter: 'high',
       selectedTags: ['Backend'],
+      onlyBlocked: false,
     };
 
     render(
@@ -124,5 +126,31 @@ describe('FilterBar Component (US3 & US4)', () => {
 
     fireEvent.click(clearBtn);
     expect(handleClear).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders "⛔ Apenas Bloqueados" and handles toggle click', () => {
+    const handleToggleBlocked = vi.fn();
+    render(
+      <FilterBar
+        filters={defaultFilters}
+        onSearchChange={vi.fn()}
+        onPriorityChange={vi.fn()}
+        onToggleTag={vi.fn()}
+        onToggleOnlyBlocked={handleToggleBlocked}
+        onClearFilters={vi.fn()}
+        hasActiveFilters={false}
+        availableTags={[]}
+        visibleCount={3}
+        totalCount={10}
+        blockedCount={2}
+      />
+    );
+
+    const blockedBtn = screen.getByRole('button', { name: /apenas bloqueados/i });
+    expect(blockedBtn).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
+
+    fireEvent.click(blockedBtn);
+    expect(handleToggleBlocked).toHaveBeenCalledTimes(1);
   });
 });

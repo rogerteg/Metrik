@@ -689,6 +689,11 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+.metric-value-danger {
+  color: #ef4444;
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
 /* Responsive Media Queries */
 @media (max-width: 1024px) {
   .kanban-board-grid {
@@ -1115,6 +1120,18 @@ body {
   border-color: rgba(56, 189, 248, 0.4);
   color: #38bdf8;
   font-weight: 600;
+}
+
+.filter-pill--blocked:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+
+.filter-pill--blocked.is-selected {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+  color: #ef4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.25);
 }
 
 .filter-pill__dot {

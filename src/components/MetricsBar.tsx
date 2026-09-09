@@ -28,6 +28,27 @@ export const MetricsBar: React.FC<MetricsBarProps> = ({ metrics }) => {
           {metrics.formattedAvgCycleTime}
         </span>
       </div>
+
+      <div className="metric-item">
+        <span className="metric-label">Eficiência de Fluxo</span>
+        <span
+          className={`metric-value ${metrics.flowEfficiency !== null && metrics.flowEfficiency >= 70 ? 'metric-value-highlight' : ''}`}
+          aria-label={`Eficiência de Fluxo: ${metrics.formattedFlowEfficiency}`}
+        >
+          {metrics.formattedFlowEfficiency}
+        </span>
+      </div>
+
+      <div className="metric-item">
+        <span className="metric-label">Bloqueios Ativos</span>
+        <span
+          className={`metric-value ${metrics.blockedCount > 0 ? 'metric-value-danger' : ''}`}
+          style={metrics.blockedCount > 0 ? { color: '#ef4444' } : undefined}
+          aria-label={`Bloqueios Ativos: ${metrics.blockedCount}`}
+        >
+          {metrics.blockedCount}
+        </span>
+      </div>
     </section>
   );
 };

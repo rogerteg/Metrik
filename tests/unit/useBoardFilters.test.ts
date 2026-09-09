@@ -137,4 +137,46 @@ describe('useBoardFilters Hook (Foundational)', () => {
     expect(result.current.filters.selectedTags).toEqual([]);
     expect(result.current.visibleCount).toBe(4);
   });
+
+  it('filters by onlyBlocked and computes blockedCount (Feature 013)', () => {
+    const boardWithBlocked: BoardState = {
+      ...sampleBoard,
+      tasks: {
+        ...sampleBoard.tasks,
+        'todo': [
+          ...sampleBoard.tasks['todo'],
+          {
+            id: 't-blocked',
+            title: 'Tarefa Bloqueada',
+            column: 'todo',
+            createdAt: '2026-09-01T10:00:00Z',
+            blocked: true,
+            blockedReason: 'Falta spec',
+          }
+        ]
+      }
+    };
+
+    const { result } = renderHook(() => useBoardFilters(boardWithBlocked));
+
+    expect(result.current.blockedCount).toBe(1);
+    expect(result.current.filters.onlyBlocked).toBe(false);
+    expect(result.current.visibleCount).toBe(5);
+
+    act(() => {
+      result.current.toggleOnlyBlocked();
+    });
+
+    expect(result.current.hasActiveFilters).toBe(true);
+    expect(result.current.filters.onlyBlocked).toBe(true);
+    expect(result.current.visibleCount).toBe(1);
+    expect(result.current.filteredBoard.tasks['todo'].map(t => t.id)).toEqual(['t-blocked']);
+
+    // Toggle back
+    act(() => {
+      result.current.toggleOnlyBlocked();
+    });
+    expect(result.current.filters.onlyBlocked).toBe(false);
+    expect(result.current.visibleCount).toBe(5);
+  });
 });
