@@ -64,3 +64,47 @@ export function formatDuration(ms: number | null): string {
 
   return `${totalMinutes}m`;
 }
+
+export type DueDateStatus = 'overdue' | 'warning' | 'normal' | 'completed';
+
+/**
+ * Returns the status of the due date compared to today.
+ * - 'completed': task is done, no warning needed.
+ * - 'overdue': dueDate is in the past.
+ * - 'warning': dueDate is today or tomorrow (<= 48h roughly).
+ * - 'normal': dueDate is in the future.
+ */
+export const getDueDateStatus = (dueDateStr: string, isTaskCompleted: boolean): DueDateStatus => {
+  if (isTaskCompleted) return 'completed';
+
+  // Extract YYYY-MM-DD from today
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayTime = today.getTime();
+
+  // Create Date object for due date (treating it as local midnight)
+  const [year, month, day] = dueDateStr.split('-');
+  const due = new Date(Number(year), Number(month) - 1, Number(day));
+  due.setHours(0, 0, 0, 0);
+  const dueTime = due.getTime();
+
+  const diffMs = dueTime - todayTime;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return 'overdue';
+  if (diffDays <= 1) return 'warning'; // 0 = today, 1 = tomorrow
+  return 'normal';
+};
+
+/**
+ * Formats a YYYY-MM-DD string into a short date like "15 Out" or "15/10"
+ */
+export const formatDateShort = (dateStr: string): string => {
+  const [year, month, day] = dateStr.split('-');
+  const date = new Date(Number(year), Number(month) - 1, Number(day));
+  
+  return date.toLocaleDateString('pt-BR', {
+    day: 'numeric',
+    month: 'short'
+  }).replace('.', ''); // some browsers add a dot to short months
+};

@@ -19,6 +19,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 }) => {
   const [localTitle, setLocalTitle] = useState(task.title);
   const [localDescription, setLocalDescription] = useState(task.description || '');
+  const [localDueDate, setLocalDueDate] = useState(task.dueDate || '');
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
 
   // Sync state when a different task is opened
@@ -26,6 +27,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     if (isOpen) {
       setLocalTitle(task.title);
       setLocalDescription(task.description || '');
+      setLocalDueDate(task.dueDate || '');
       setNewSubtaskTitle('');
     }
   }, [task, isOpen]);
@@ -41,6 +43,13 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const handleDescriptionBlur = () => {
     if (localDescription !== (task.description || '')) {
       onUpdateTask(task.id, { description: localDescription });
+    }
+  };
+
+  const handleDueDateBlur = () => {
+    if (localDueDate !== (task.dueDate || '')) {
+      // Pass undefined if empty string to cleanly remove the date
+      onUpdateTask(task.id, { dueDate: localDueDate || undefined });
     }
   };
 
@@ -92,6 +101,19 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             onChange={(e) => setLocalTitle(e.target.value)}
             onBlur={handleTitleBlur}
             onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+          />
+        </section>
+
+        {/* Due Date Section */}
+        <section className="td-section">
+          <label htmlFor="td-dueDate" className="td-label">Data de Entrega</label>
+          <input
+            id="td-dueDate"
+            type="date"
+            className="td-input td-date-input"
+            value={localDueDate}
+            onChange={(e) => setLocalDueDate(e.target.value)}
+            onBlur={handleDueDateBlur}
           />
         </section>
 

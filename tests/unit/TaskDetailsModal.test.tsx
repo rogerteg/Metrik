@@ -58,6 +58,36 @@ describe('TaskDetailsModal', () => {
     expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { description: 'New description' });
   });
 
+  it('calls onUpdateTask when due date is changed and blurred', () => {
+    render(<TaskDetailsModal task={mockTask} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
+    
+    // The input should exist (type=date)
+    // We can query it by its label or ID, or placeholder if we added one, but let's just find the date input.
+    // In our implementation, we added: <label htmlFor="td-dueDate" className="td-label">Data de Entrega</label>
+    const dateInput = screen.getByLabelText('Data de Entrega');
+    
+    fireEvent.change(dateInput, { target: { value: '2026-10-15' } });
+    fireEvent.blur(dateInput);
+    
+    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { dueDate: '2026-10-15' });
+  });
+
+  it('calls onUpdateTask with undefined when due date is cleared', () => {
+    const taskWithDueDate: TaskModel = {
+      ...mockTask,
+      dueDate: '2026-10-15'
+    };
+    
+    render(<TaskDetailsModal task={taskWithDueDate} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
+    
+    const dateInput = screen.getByLabelText('Data de Entrega');
+    
+    fireEvent.change(dateInput, { target: { value: '' } });
+    fireEvent.blur(dateInput);
+
+    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { dueDate: undefined });
+  });
+
   it('adds a new subtask', () => {
     render(<TaskDetailsModal task={mockTask} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
     

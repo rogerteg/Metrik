@@ -202,6 +202,33 @@ describe('Task Component (US2 & US4)', () => {
     expect(screen.getByText('1/2')).toBeInTheDocument();
   });
 
+  it('renders visual indicator for due date', () => {
+    // 2030 is safely in the future so it gets "normal" status
+    const taskWithDueDate: TaskModel = {
+      ...mockTask,
+      dueDate: '2030-10-15',
+    };
+
+    render(
+      <Task
+        task={taskWithDueDate}
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+      />
+    );
+
+    const badges = screen.getAllByRole('generic').filter(el => el.classList.contains('task-indicator-badge'));
+    expect(badges.length).toBe(1);
+    
+    // Using formatDateShort('2030-10-15') gives '15 Out' or '15/10' depending on locale
+    // We just check if it contains '15' which is the day
+    expect(screen.getByText(/15/)).toBeInTheDocument();
+    
+    // Check if it has the correct color class
+    expect(badges[0].classList.contains('due-date-normal')).toBe(true);
+  });
+
   it('calls onClick when clicking on the card body', () => {
     const handleClick = vi.fn();
     render(

@@ -65,6 +65,7 @@ export interface TaskModel {
 
   /** Subtarefas / checklist (Feature 007) */
   subtasks?: SubtaskModel[];
+  dueDate?: string; // ISO 8601 string, e.g., '2026-10-15'
 }
 
 export interface BoardState {
