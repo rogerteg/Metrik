@@ -4,7 +4,9 @@ import {
   calculateCycleTimeMs,
   formatDuration,
   getDueDateStatus,
-  formatDateShort
+  formatDateShort,
+  calculateTaskBlockedTimeMs,
+  formatBlockedTime
 } from '../../src/utils/timeFormatters';
 import { TaskModel } from '../../src/types/kanban';
 
@@ -115,4 +117,45 @@ describe('timeFormatters Utility (T003 - Red-Bar First)', () => {
       expect(formatted).toMatch(/9/);
     });
   });
+
+  describe('Blocked Time Calculations (Feature 012)', () => {
+    it('returns accumulated blocked time when task is currently unblocked', () => {
+      const task: TaskModel = {
+        ...baseTask,
+        blocked: false,
+        totalBlockedMs: 120000, // 2 minutes
+      };
+
+      expect(calculateTaskBlockedTimeMs(task)).toBe(120000);
+      expect(formatBlockedTime(120000)).toBe('2m');
+    });
+
+    it('returns 0 when task has never been blocked', () => {
+      const task: TaskModel = {
+        ...baseTask,
+      };
+
+      expect(calculateTaskBlockedTimeMs(task)).toBe(0);
+      expect(formatBlockedTime(0)).toBe('< 1m');
+    });
+
+    it('adds currently elapsed time when task is currently blocked', () => {
+      const blockedAt = new Date('2026-09-08T10:00:00.000Z').toISOString();
+      const task: TaskModel = {
+        ...baseTask,
+        blocked: true,
+        blockedAt,
+        totalBlockedMs: 60000, // already had 1 min from previous block
+      };
+
+      // 15 minutes later
+      const nowMs = new Date('2026-09-08T10:15:00.000Z').getTime();
+      const total = calculateTaskBlockedTimeMs(task, nowMs);
+
+      // 60000 + 15 * 60 * 1000 = 60000 + 900000 = 960000 ms (16m)
+      expect(total).toBe(960000);
+      expect(formatBlockedTime(total)).toBe('16m');
+    });
+  });
 });
+

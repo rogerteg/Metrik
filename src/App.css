@@ -307,6 +307,32 @@ body {
   transform: translateY(-1px);
 }
 
+/* Blocked Task Styles (Feature 012) */
+.task-card.task-card-blocked {
+  border-left: 4px solid #ef4444 !important;
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, var(--bg-card) 25%);
+}
+
+.task-card.task-card-blocked:hover {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.12) 0%, var(--bg-card-hover) 25%);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.task-blocked-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
 /* Drag and Drop Styles (Feature 003) */
 .task-card[draggable="true"] {
   cursor: grab;

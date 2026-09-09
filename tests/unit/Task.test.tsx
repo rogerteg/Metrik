@@ -246,6 +246,31 @@ describe('Task Component (US2 & US4)', () => {
 
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
+
+  it('renders blocked badge and applies task-card-blocked class when blocked (Feature 012)', () => {
+    const blockedTask: TaskModel = {
+      ...mockTask,
+      blocked: true,
+      blockedReason: 'Aguardando Aprovação de Segurança',
+    };
+
+    render(
+      <Task
+        task={blockedTask}
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+      />
+    );
+
+    const article = screen.getByRole('article');
+    expect(article.classList.contains('task-card-blocked')).toBe(true);
+
+    const badge = screen.getByTestId('task-blocked-badge');
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent(/Bloqueado/i);
+    expect(badge).toHaveAttribute('title', 'Bloqueado: Aguardando Aprovação de Segurança');
+  });
 });
 
 

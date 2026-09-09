@@ -212,3 +212,16 @@
   color-scheme: dark;
   max-width: 200px;
 }
+
+.td-blocked-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+
+.td-blocked-section.is-blocked {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.04);
+}
+

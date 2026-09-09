@@ -66,6 +66,12 @@ export interface TaskModel {
   /** Subtarefas / checklist (Feature 007) */
   subtasks?: SubtaskModel[];
   dueDate?: string; // ISO 8601 string, e.g., '2026-10-15'
+
+  /** Sinalização de impedimento / bloqueio (Feature 012) */
+  blocked?: boolean;
+  blockedReason?: string;
+  blockedAt?: string; // Timestamp ISO de quando foi bloqueada
+  totalBlockedMs?: number; // Duração acumulada de bloqueio em ms
 }
 
 export interface BoardModel {

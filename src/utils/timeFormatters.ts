@@ -108,3 +108,28 @@ export const formatDateShort = (dateStr: string): string => {
     month: 'short'
   }).replace('.', ''); // some browsers add a dot to short months
 };
+
+/**
+ * Calcula o tempo acumulado de bloqueio de uma tarefa em milissegundos.
+ * Se a tarefa estiver atualmente bloqueada, adiciona o tempo decorrido desde blockedAt até nowMs.
+ */
+export function calculateTaskBlockedTimeMs(task: TaskModel, nowMs: number = Date.now()): number {
+  const accumulated = task.totalBlockedMs || 0;
+  if (!task.blocked || !task.blockedAt) {
+    return accumulated;
+  }
+
+  const blockedAtMs = new Date(task.blockedAt).getTime();
+  if (isNaN(blockedAtMs)) return accumulated;
+
+  const currentSegment = Math.max(0, nowMs - blockedAtMs);
+  return accumulated + currentSegment;
+}
+
+/**
+ * Formata o tempo bloqueado para exibição amigável.
+ */
+export function formatBlockedTime(ms: number): string {
+  return formatDuration(ms);
+}
+

@@ -16,7 +16,9 @@ export interface UseTaskCollectionReturn {
 
   // Task Methods
   addTask: (columnId: string, title?: string) => TaskModel;
-  updateTask: (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags' | 'description' | 'subtasks' | 'dueDate'>>) => void;
+  updateTask: (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags' | 'description' | 'subtasks' | 'dueDate' | 'blocked' | 'blockedReason'>>) => void;
+  toggleTaskBlocked: (taskId: string, reason?: string) => void;
+  updateBlockedReason: (taskId: string, reason: string) => void;
   deleteTask: (id: string) => void;
   moveTask: (id: string, targetColumnId: string) => void;
   reorderOrMoveTask: (options: ReorderOptions) => void;
@@ -380,6 +382,70 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
     []
   );
 
+  const toggleTaskBlocked = useCallback((taskId: string, reason?: string) => {
+    setBoard((prev) => {
+      const nextTasks: Record<string, TaskModel[]> = {};
+      let found = false;
+
+      for (const [colId, tasks] of Object.entries(prev.tasks)) {
+        nextTasks[colId] = tasks.map((task) => {
+          if (task.id === taskId) {
+            found = true;
+            const now = new Date().toISOString();
+            if (!task.blocked) {
+              return {
+                ...task,
+                blocked: true,
+                blockedReason: reason !== undefined ? reason : (task.blockedReason || ''),
+                blockedAt: now,
+                updatedAt: now,
+              };
+            } else {
+              const startMs = task.blockedAt ? new Date(task.blockedAt).getTime() : Date.now();
+              const elapsed = Math.max(0, Date.now() - startMs);
+              const totalBlockedMs = (task.totalBlockedMs || 0) + elapsed;
+              return {
+                ...task,
+                blocked: false,
+                blockedAt: undefined,
+                totalBlockedMs,
+                updatedAt: now,
+              };
+            }
+          }
+          return task;
+        });
+      }
+
+      if (!found) return prev;
+      return { ...prev, tasks: nextTasks };
+    });
+  }, []);
+
+  const updateBlockedReason = useCallback((taskId: string, reason: string) => {
+    setBoard((prev) => {
+      const nextTasks: Record<string, TaskModel[]> = {};
+      let found = false;
+
+      for (const [colId, tasks] of Object.entries(prev.tasks)) {
+        nextTasks[colId] = tasks.map((task) => {
+          if (task.id === taskId) {
+            found = true;
+            return {
+              ...task,
+              blockedReason: reason,
+              updatedAt: new Date().toISOString(),
+            };
+          }
+          return task;
+        });
+      }
+
+      if (!found) return prev;
+      return { ...prev, tasks: nextTasks };
+    });
+  }, []);
+
   const clearTasks = useCallback(() => {
     setBoard(prev => {
       const nextTasks: Record<string, TaskModel[]> = {};
@@ -409,6 +475,8 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
     reorderColumn,
     addTask,
     updateTask,
+    toggleTaskBlocked,
+    updateBlockedReason,
     deleteTask,
     moveTask,
     reorderOrMoveTask,

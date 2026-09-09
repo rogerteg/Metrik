@@ -223,4 +223,50 @@ describe('useTaskCollection Hook (Feature 010 Multi-Board)', () => {
     expect(saved.columns[0].id).toBe('custom-col');
     expect(saved.tasks['custom-col'][0].id).toBe('c-1');
   });
+
+  it('toggles task blocked status, sets reason, and tracks accumulated duration (Feature 012)', () => {
+    vi.useFakeTimers();
+    const startTime = new Date('2026-09-09T10:00:00.000Z');
+    vi.setSystemTime(startTime);
+
+    const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
+
+    let task: any;
+    act(() => {
+      task = result.current.addTask('todo', 'Task to Block');
+    });
+
+    // 1. Block the task
+    act(() => {
+      result.current.toggleTaskBlocked(task.id, 'Aguardando Aprovação de Infra');
+    });
+
+    let current = result.current.board.tasks['todo'].find((t) => t.id === task.id);
+    expect(current?.blocked).toBe(true);
+    expect(current?.blockedReason).toBe('Aguardando Aprovação de Infra');
+    expect(current?.blockedAt).toBe(startTime.toISOString());
+
+    // 2. Update the blocked reason
+    act(() => {
+      result.current.updateBlockedReason(task.id, 'Dependência de Backend Externa');
+    });
+
+    current = result.current.board.tasks['todo'].find((t) => t.id === task.id);
+    expect(current?.blockedReason).toBe('Dependência de Backend Externa');
+    expect(current?.blocked).toBe(true);
+
+    // 3. Advance time by 30 minutes and unblock
+    vi.advanceTimersByTime(30 * 60 * 1000);
+
+    act(() => {
+      result.current.toggleTaskBlocked(task.id);
+    });
+
+    current = result.current.board.tasks['todo'].find((t) => t.id === task.id);
+    expect(current?.blocked).toBe(false);
+    expect(current?.blockedAt).toBeUndefined();
+    expect(current?.totalBlockedMs).toBe(30 * 60 * 1000); // 1,800,000 ms
+
+    vi.useRealTimers();
+  });
 });

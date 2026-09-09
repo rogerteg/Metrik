@@ -30,6 +30,7 @@ export const App: React.FC = () => {
     board,
     addTask,
     updateTask,
+    toggleTaskBlocked,
     deleteTask,
     updateColumn,
     deleteColumn,
@@ -262,6 +263,7 @@ export const App: React.FC = () => {
           isOpen={!!selectedTaskId}
           onClose={() => setSelectedTaskId(null)}
           onUpdateTask={updateTask}
+          onToggleBlocked={toggleTaskBlocked}
         />
       )}
 

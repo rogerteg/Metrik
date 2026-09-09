@@ -136,4 +136,51 @@ describe('TaskDetailsModal', () => {
     
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
+
+  it('toggles blocked status and updates impediment reason (Feature 012)', () => {
+    const onToggleBlocked = vi.fn();
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+        onToggleBlocked={onToggleBlocked}
+      />
+    );
+
+    const blockBtn = screen.getByRole('button', { name: /marcar como bloqueada/i });
+    fireEvent.click(blockBtn);
+
+    expect(onToggleBlocked).toHaveBeenCalledWith('t1', '');
+  });
+
+  it('renders blocked state, reason input, and saves reason on blur', () => {
+    const blockedTask: TaskModel = {
+      ...mockTask,
+      blocked: true,
+      blockedReason: 'Motivo Antigo',
+      blockedAt: '2026-09-08T10:00:00.000Z',
+    };
+
+    render(
+      <TaskDetailsModal
+        task={blockedTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />
+    );
+
+    expect(screen.getByText('Tarefa atualmente impedida')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /desbloquear tarefa/i })).toBeInTheDocument();
+
+    const reasonInput = screen.getByPlaceholderText('Descreva o motivo do bloqueio...');
+    expect(reasonInput).toHaveValue('Motivo Antigo');
+
+    fireEvent.change(reasonInput, { target: { value: 'Novo Motivo do Impedimento' } });
+    fireEvent.blur(reasonInput);
+
+    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { blockedReason: 'Novo Motivo do Impedimento' });
+  });
 });

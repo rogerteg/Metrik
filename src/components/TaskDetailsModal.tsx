@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { TaskModel, SubtaskModel } from '../types/kanban';
+import { calculateTaskBlockedTimeMs, formatBlockedTime } from '../utils/timeFormatters';
 import { Modal } from './Modal';
 import './TaskDetailsModal.css';
 
@@ -9,6 +10,7 @@ interface TaskDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdateTask: (id: string, updates: Partial<TaskModel>) => void;
+  onToggleBlocked?: (id: string, reason?: string) => void;
 }
 
 export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
@@ -16,10 +18,12 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   isOpen,
   onClose,
   onUpdateTask,
+  onToggleBlocked,
 }) => {
   const [localTitle, setLocalTitle] = useState(task.title);
   const [localDescription, setLocalDescription] = useState(task.description || '');
   const [localDueDate, setLocalDueDate] = useState(task.dueDate || '');
+  const [localBlockedReason, setLocalBlockedReason] = useState(task.blockedReason || '');
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
 
   // Sync state when a different task is opened
@@ -28,6 +32,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
       setLocalTitle(task.title);
       setLocalDescription(task.description || '');
       setLocalDueDate(task.dueDate || '');
+      setLocalBlockedReason(task.blockedReason || '');
       setNewSubtaskTitle('');
     }
   }, [task, isOpen]);
@@ -48,8 +53,36 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
   const handleDueDateBlur = () => {
     if (localDueDate !== (task.dueDate || '')) {
-      // Pass undefined if empty string to cleanly remove the date
       onUpdateTask(task.id, { dueDate: localDueDate || undefined });
+    }
+  };
+
+  const handleBlockedReasonBlur = () => {
+    if (localBlockedReason !== (task.blockedReason || '')) {
+      onUpdateTask(task.id, { blockedReason: localBlockedReason });
+    }
+  };
+
+  const handleToggleBlocked = () => {
+    if (onToggleBlocked) {
+      onToggleBlocked(task.id, localBlockedReason);
+    } else {
+      const now = new Date().toISOString();
+      if (!task.blocked) {
+        onUpdateTask(task.id, {
+          blocked: true,
+          blockedReason: localBlockedReason,
+          blockedAt: now,
+        });
+      } else {
+        const startMs = task.blockedAt ? new Date(task.blockedAt).getTime() : Date.now();
+        const elapsed = Math.max(0, Date.now() - startMs);
+        onUpdateTask(task.id, {
+          blocked: false,
+          blockedAt: undefined,
+          totalBlockedMs: (task.totalBlockedMs || 0) + elapsed,
+        });
+      }
     }
   };
 
@@ -86,6 +119,9 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const completedCount = subtasks.filter(st => st.completed).length;
   const progress = subtasks.length > 0 ? Math.round((completedCount / subtasks.length) * 100) : 0;
 
+  const blockedTimeMs = calculateTaskBlockedTimeMs(task);
+  const formattedBlockedTime = formatBlockedTime(blockedTimeMs);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Detalhes da Tarefa">
       <div className="task-details">
@@ -115,6 +151,49 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             onChange={(e) => setLocalDueDate(e.target.value)}
             onBlur={handleDueDateBlur}
           />
+        </section>
+
+        {/* Impediment / Blocked Section */}
+        <section className={`td-section td-blocked-section ${task.blocked ? 'is-blocked' : ''}`} data-testid="td-blocked-section">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <label htmlFor="td-blocked-reason" className="td-label" style={{ margin: 0 }}>
+              Impedimento / Bloqueio
+            </label>
+            {blockedTimeMs > 0 && (
+              <span className="td-blocked-time" style={{ fontSize: '0.8rem', color: task.blocked ? '#ef4444' : 'var(--text-secondary)' }}>
+                Tempo bloqueado: <strong>{formattedBlockedTime}</strong>
+              </span>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: task.blocked ? '8px' : '0' }}>
+            <button
+              type="button"
+              className={`btn ${task.blocked ? 'btn-danger' : 'btn-secondary'}`}
+              onClick={handleToggleBlocked}
+              style={{ fontSize: '0.85rem', padding: '6px 12px' }}
+            >
+              {task.blocked ? '⛔ Desbloquear Tarefa' : '🚫 Marcar como Bloqueada'}
+            </button>
+            {task.blocked && (
+              <span style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 600 }}>
+                Tarefa atualmente impedida
+              </span>
+            )}
+          </div>
+
+          {task.blocked && (
+            <input
+              id="td-blocked-reason"
+              type="text"
+              className="td-input"
+              placeholder="Descreva o motivo do bloqueio..."
+              value={localBlockedReason}
+              onChange={(e) => setLocalBlockedReason(e.target.value)}
+              onBlur={handleBlockedReasonBlur}
+              style={{ marginTop: '8px' }}
+            />
+          )}
         </section>
 
         {/* Description Section */}

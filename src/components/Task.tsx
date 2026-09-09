@@ -128,7 +128,7 @@ export const Task: React.FC<TaskProps> = ({
 
   return (
     <article
-      className={`task-card ${isDragging ? 'task-card-dragging' : ''} ${dropClass}`}
+      className={`task-card ${isDragging ? 'task-card-dragging' : ''} ${task.blocked ? 'task-card-blocked' : ''} ${dropClass}`}
       id={`task-${task.id}`}
       aria-label={`Cartão de tarefa: ${task.title || 'Sem título'}`}
       draggable={!isEditing}
@@ -149,11 +149,21 @@ export const Task: React.FC<TaskProps> = ({
       <div
         className="task-card-header"
         onPointerDown={(e) => e.stopPropagation()}
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
         <PriorityBadge
           priority={task.priority}
           onChange={(newPriority) => onUpdatePriority?.(task.id, newPriority)}
         />
+        {task.blocked && (
+          <span
+            className="task-blocked-badge"
+            title={task.blockedReason ? `Bloqueado: ${task.blockedReason}` : 'Tarefa bloqueada'}
+            data-testid="task-blocked-badge"
+          >
+            ⛔ Bloqueado
+          </span>
+        )}
       </div>
 
       <div
