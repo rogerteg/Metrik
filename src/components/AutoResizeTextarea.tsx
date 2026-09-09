@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 export interface AutoResizeTextareaProps {
   value: string;
   onChange: (value: string) => void;
+  onFocus?: () => void;
   onBlur?: () => void;
   onKeyDown?: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
@@ -16,6 +17,7 @@ export interface AutoResizeTextareaProps {
 export const AutoResizeTextarea: React.FC<AutoResizeTextareaProps> = ({
   value,
   onChange,
+  onFocus,
   onBlur,
   onKeyDown,
   placeholder = 'Nova tarefa...',
@@ -50,6 +52,7 @@ export const AutoResizeTextarea: React.FC<AutoResizeTextareaProps> = ({
       id={id}
       value={value}
       onChange={handleChange}
+      onFocus={onFocus}
       onBlur={onBlur}
       onKeyDown={onKeyDown}
       placeholder={placeholder}

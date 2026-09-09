@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { ColumnType } from '../types/kanban';
 import { WipLimitBadge } from './WipLimitBadge';
+import { ReorderOptions } from '../types/dnd';
 
 export interface ColumnProps {
   type: ColumnType;
@@ -9,6 +10,7 @@ export interface ColumnProps {
   onAddTask?: (column: ColumnType) => void;
   wipLimit?: number | null;
   onUpdateWipLimit?: (column: ColumnType, limit: number | null) => void;
+  onDropTask?: (options: ReorderOptions) => void;
   children?: React.ReactNode;
 }
 
@@ -49,16 +51,62 @@ export const Column: React.FC<ColumnProps> = ({
   onAddTask,
   wipLimit = null,
   onUpdateWipLimit,
+  onDropTask,
   children,
 }) => {
   const badgeClass = getBadgeClass(type);
   const modifierClass = getColumnModifierClass(type);
   const isOverloaded = wipLimit !== null && count > wipLimit;
 
+  const [isDropTarget, setIsDropTarget] = useState(false);
+  const dragDepthRef = useRef(0);
+
+  const handleDragEnter = (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    dragDepthRef.current += 1;
+    if (dragDepthRef.current === 1) {
+      setIsDropTarget(true);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    dragDepthRef.current -= 1;
+    if (dragDepthRef.current <= 0) {
+      dragDepthRef.current = 0;
+      setIsDropTarget(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    dragDepthRef.current = 0;
+    setIsDropTarget(false);
+
+    const activeTaskId = e.dataTransfer ? e.dataTransfer.getData('text/plain') : '';
+    if (activeTaskId && onDropTask) {
+      onDropTask({
+        activeTaskId,
+        targetColumn: type,
+      });
+    }
+  };
+
   return (
     <section
-      className={`kanban-column ${modifierClass} ${isOverloaded ? 'kanban-column-wip-exceeded' : ''}`}
+      className={`kanban-column ${modifierClass} ${isOverloaded ? 'kanban-column-wip-exceeded' : ''} ${isDropTarget ? 'kanban-column-drop-target' : ''}`}
       aria-label={`Coluna ${title}`}
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
       <header className="column-header">
         <div className="column-header-left">
@@ -89,7 +137,15 @@ export const Column: React.FC<ColumnProps> = ({
         )}
       </header>
 
-      <div className="tasks-list">{children}</div>
+      <div className="tasks-list">
+        {count === 0 ? (
+          <div className="empty-column-drop-zone" aria-label="Coluna vazia. Arraste um cartão aqui.">
+            Arraste um cartão aqui
+          </div>
+        ) : (
+          children
+        )}
+      </div>
     </section>
   );
 };

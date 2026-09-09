@@ -127,4 +127,26 @@ describe('useTaskCollection Hook (US3)', () => {
       INITIAL_SEED_TASKS[ColumnType.TO_DO].length
     );
   });
+
+  it('reorders or moves a task between columns using reorderOrMoveTask', () => {
+    const { result } = renderHook(() => useTaskCollection());
+    const taskToMove = result.current.board[ColumnType.TO_DO][0];
+
+    act(() => {
+      result.current.reorderOrMoveTask({
+        activeTaskId: taskToMove.id,
+        targetColumn: ColumnType.IN_PROGRESS,
+      });
+    });
+
+    const inProgressTasks = result.current.board[ColumnType.IN_PROGRESS];
+    const moved = inProgressTasks.find((t) => t.id === taskToMove.id);
+    expect(moved).toBeDefined();
+    expect(moved?.column).toBe(ColumnType.IN_PROGRESS);
+    expect(moved?.startedAt).toBeDefined();
+
+    // Verify localStorage was updated
+    const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
+    expect(saved[ColumnType.IN_PROGRESS].some((t: any) => t.id === taskToMove.id)).toBe(true);
+  });
 });

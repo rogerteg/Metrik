@@ -307,6 +307,59 @@ body {
   transform: translateY(-1px);
 }
 
+/* Drag and Drop Styles (Feature 003) */
+.task-card[draggable="true"] {
+  cursor: grab;
+}
+
+.task-card[draggable="true"]:active,
+.task-card-dragging {
+  cursor: grabbing !important;
+}
+
+.task-card-dragging {
+  opacity: 0.45;
+  transform: scale(0.98);
+  box-shadow: var(--shadow-lg);
+  border: 1px dashed var(--border-focus);
+}
+
+.task-card-drop-before {
+  border-top: 2px solid var(--color-progress) !important;
+}
+
+.task-card-drop-after {
+  border-bottom: 2px solid var(--color-progress) !important;
+}
+
+.kanban-column-drop-target {
+  border-color: rgba(56, 189, 248, 0.6) !important;
+  background: rgba(16, 25, 45, 0.95) !important;
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.2), inset 0 0 14px rgba(56, 189, 248, 0.08) !important;
+  transition: all 0.15s ease;
+}
+
+.empty-column-drop-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  border: 2px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-family: var(--font-family);
+  user-select: none;
+  background: rgba(255, 255, 255, 0.02);
+  transition: var(--transition-smooth);
+}
+
+.kanban-column-drop-target .empty-column-drop-zone {
+  border-color: rgba(56, 189, 248, 0.5);
+  color: var(--color-progress);
+  background: rgba(56, 189, 248, 0.08);
+}
+
 /* Blocked Column Task Highlight */
 .kanban-column-blocked .task-card {
   border-left: 3px solid var(--color-blocked);

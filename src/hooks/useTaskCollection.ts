@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { BoardState, ColumnType, TaskModel } from '../types/kanban';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
+import { reorderBoard } from '../utils/taskReorder';
+import { ReorderOptions } from '../types/dnd';
 
 export const STORAGE_KEY = 'metrik_kanban_tasks';
 
@@ -11,6 +13,7 @@ export interface UseTaskCollectionReturn {
   updateTask: (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column'>>) => void;
   deleteTask: (id: string) => void;
   moveTask: (id: string, targetColumn: ColumnType) => void;
+  reorderOrMoveTask: (options: ReorderOptions) => void;
   discardIfEmpty: (id: string) => void;
   clearTasks: () => void;
   resetToSeed: () => void;
@@ -178,6 +181,10 @@ export function useTaskCollection(): UseTaskCollectionReturn {
     });
   }, []);
 
+  const reorderOrMoveTask = useCallback((options: ReorderOptions) => {
+    setBoard((prev) => reorderBoard(prev, options));
+  }, []);
+
   const discardIfEmpty = useCallback(
     (id: string) => {
       setBoard((prev) => {
@@ -230,6 +237,7 @@ export function useTaskCollection(): UseTaskCollectionReturn {
     updateTask,
     deleteTask,
     moveTask,
+    reorderOrMoveTask,
     discardIfEmpty,
     clearTasks,
     resetToSeed,

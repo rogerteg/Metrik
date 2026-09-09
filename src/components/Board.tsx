@@ -1,5 +1,6 @@
 import React from 'react';
 import { BoardState, ColumnType, TaskModel, WipLimitsState } from '../types/kanban';
+import { ReorderOptions } from '../types/dnd';
 import { Column } from './Column';
 
 export interface BoardProps {
@@ -7,6 +8,7 @@ export interface BoardProps {
   onAddTask: (column: ColumnType) => void;
   wipLimits?: WipLimitsState;
   onUpdateWipLimit?: (column: ColumnType, limit: number | null) => void;
+  onDropTask?: (options: ReorderOptions) => void;
   renderTask?: (task: TaskModel, column: ColumnType) => React.ReactNode;
 }
 
@@ -22,6 +24,7 @@ export const Board: React.FC<BoardProps> = ({
   onAddTask,
   wipLimits,
   onUpdateWipLimit,
+  onDropTask,
   renderTask,
 }) => {
   return (
@@ -39,6 +42,7 @@ export const Board: React.FC<BoardProps> = ({
             onAddTask={onAddTask}
             wipLimit={limit}
             onUpdateWipLimit={onUpdateWipLimit}
+            onDropTask={onDropTask}
           >
             {renderTask ? tasks.map((task) => renderTask(task, type)) : null}
           </Column>

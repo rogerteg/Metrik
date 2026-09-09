@@ -1,6 +1,7 @@
 import React from 'react';
 import { ColumnType, TaskModel } from '../types/kanban';
 import { AutoResizeTextarea } from './AutoResizeTextarea';
+import { ReorderOptions } from '../types/dnd';
 import {
   calculateLeadTimeMs,
   calculateCycleTimeMs,
@@ -16,6 +17,7 @@ export interface TaskProps {
   onMoveRight?: (id: string) => void;
   canMoveLeft?: boolean;
   canMoveRight?: boolean;
+  onDropTask?: (options: ReorderOptions) => void;
 }
 
 export const Task: React.FC<TaskProps> = ({
@@ -27,10 +29,67 @@ export const Task: React.FC<TaskProps> = ({
   onMoveRight,
   canMoveLeft = false,
   canMoveRight = false,
+  onDropTask,
 }) => {
+  const [isDragging, setIsDragging] = React.useState(false);
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [dropIndicator, setDropIndicator] = React.useState<'before' | 'after' | null>(null);
+
   const handleBlur = () => {
+    setIsEditing(false);
     if (!task.title || task.title.trim() === '') {
       onDiscardIfEmpty(task.id);
+    }
+  };
+
+  const handleDragStart = (e: React.DragEvent<HTMLElement>) => {
+    setIsDragging(true);
+    if (e.dataTransfer) {
+      e.dataTransfer.setData('text/plain', task.id);
+      e.dataTransfer.effectAllowed = 'move';
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    setDropIndicator(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    const midY = rect.top + rect.height / 2;
+    const clientY = typeof e.clientY === 'number' ? e.clientY : midY - 1;
+    const pos = clientY < midY ? 'before' : 'after';
+    setDropIndicator(pos);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDropIndicator(null);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const position = dropIndicator || 'before';
+    setDropIndicator(null);
+
+    const activeTaskId = e.dataTransfer ? e.dataTransfer.getData('text/plain') : '';
+    if (activeTaskId && onDropTask) {
+      onDropTask({
+        activeTaskId,
+        targetColumn: task.column,
+        targetTaskId: task.id,
+        position,
+      });
     }
   };
 
@@ -40,16 +99,37 @@ export const Task: React.FC<TaskProps> = ({
   const leadTimeStr = formatDuration(leadTimeMs);
   const cycleTimeStr = formatDuration(cycleTimeMs);
 
+  const dropClass = dropIndicator === 'before'
+    ? 'task-card-drop-before'
+    : dropIndicator === 'after'
+    ? 'task-card-drop-after'
+    : '';
+
   return (
     <article
-      className="task-card"
+      className={`task-card ${isDragging ? 'task-card-dragging' : ''} ${dropClass}`}
       id={`task-${task.id}`}
       aria-label={`Cartão de tarefa: ${task.title || 'Sem título'}`}
+      draggable={!isEditing}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
-      <div className="task-card-content">
+      <div
+        className="task-card-content"
+        onPointerDown={(e) => {
+          // Isola seleção de texto do drag
+          if (isEditing) {
+            e.stopPropagation();
+          }
+        }}
+      >
         <AutoResizeTextarea
           value={task.title}
           onChange={(val) => onUpdateTitle(task.id, val)}
+          onFocus={() => setIsEditing(true)}
           onBlur={handleBlur}
           placeholder="Nova tarefa..."
           aria-label="Título da tarefa"
@@ -73,7 +153,10 @@ export const Task: React.FC<TaskProps> = ({
         )}
       </div>
 
-      <footer className="task-card-footer">
+      <footer
+        className="task-card-footer"
+        onPointerDown={(e) => e.stopPropagation()}
+      >
         <div className="task-nav-buttons">
           {canMoveLeft && onMoveLeft && (
             <button

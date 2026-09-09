@@ -22,6 +22,7 @@ export const App: React.FC = () => {
     updateTask,
     deleteTask,
     moveTask,
+    reorderOrMoveTask,
     discardIfEmpty,
     clearTasks,
     resetToSeed,
@@ -87,6 +88,7 @@ export const App: React.FC = () => {
         wipLimits={wipLimits}
         onUpdateWipLimit={setWipLimit}
         onAddTask={handleAddTask}
+        onDropTask={reorderOrMoveTask}
         renderTask={(task, column) => {
           const currentIndex = COLUMN_ORDER.indexOf(column);
           const canMoveLeft = currentIndex > 0;
@@ -99,6 +101,7 @@ export const App: React.FC = () => {
               onUpdateTitle={(id, title) => updateTask(id, { title })}
               onDelete={deleteTask}
               onDiscardIfEmpty={discardIfEmpty}
+              onDropTask={reorderOrMoveTask}
               canMoveLeft={canMoveLeft}
               canMoveRight={canMoveRight}
               onMoveLeft={() => {
