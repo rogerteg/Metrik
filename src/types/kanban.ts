@@ -12,6 +12,8 @@ export enum ColumnType {
   COMPLETED = 'Completed',
 }
 
+export type PriorityLevel = 'urgent' | 'high' | 'medium' | 'low';
+
 export interface TaskModel {
   /** Identificador único universal (UUID v4) */
   id: string;
@@ -36,6 +38,12 @@ export interface TaskModel {
 
   /** Timestamp ISO 8601 da conclusão (ingresso em Completed) */
   completedAt?: string;
+
+  /** Nível de criticidade / prioridade (Feature 004) */
+  priority?: PriorityLevel;
+
+  /** Lista de etiquetas/tags personalizadas (Feature 004) */
+  tags?: string[];
 }
 
 export interface ColumnConfig {

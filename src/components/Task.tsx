@@ -1,6 +1,8 @@
 import React from 'react';
-import { ColumnType, TaskModel } from '../types/kanban';
+import { ColumnType, PriorityLevel, TaskModel } from '../types/kanban';
 import { AutoResizeTextarea } from './AutoResizeTextarea';
+import { PriorityBadge } from './PriorityBadge';
+import { TagList } from './TagList';
 import { ReorderOptions } from '../types/dnd';
 import {
   calculateLeadTimeMs,
@@ -13,6 +15,9 @@ export interface TaskProps {
   onUpdateTitle: (id: string, newTitle: string) => void;
   onDelete: (id: string) => void;
   onDiscardIfEmpty: (id: string) => void;
+  onUpdatePriority?: (id: string, priority?: PriorityLevel) => void;
+  onAddTag?: (id: string, tag: string) => void;
+  onRemoveTag?: (id: string, tag: string) => void;
   onMoveLeft?: (id: string) => void;
   onMoveRight?: (id: string) => void;
   canMoveLeft?: boolean;
@@ -25,6 +30,9 @@ export const Task: React.FC<TaskProps> = ({
   onUpdateTitle,
   onDelete,
   onDiscardIfEmpty,
+  onUpdatePriority,
+  onAddTag,
+  onRemoveTag,
   onMoveLeft,
   onMoveRight,
   canMoveLeft = false,
@@ -118,6 +126,16 @@ export const Task: React.FC<TaskProps> = ({
       onDrop={handleDrop}
     >
       <div
+        className="task-card-header"
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <PriorityBadge
+          priority={task.priority}
+          onChange={(newPriority) => onUpdatePriority?.(task.id, newPriority)}
+        />
+      </div>
+
+      <div
         className="task-card-content"
         onPointerDown={(e) => {
           // Isola seleção de texto do drag
@@ -133,6 +151,12 @@ export const Task: React.FC<TaskProps> = ({
           onBlur={handleBlur}
           placeholder="Nova tarefa..."
           aria-label="Título da tarefa"
+        />
+
+        <TagList
+          tags={task.tags}
+          onAddTag={(tag) => onAddTag?.(task.id, tag)}
+          onRemoveTag={(tag) => onRemoveTag?.(task.id, tag)}
         />
 
         {isCompleted && (

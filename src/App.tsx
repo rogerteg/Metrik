@@ -2,7 +2,9 @@ import React from 'react';
 import { useTaskCollection } from './hooks/useTaskCollection';
 import { useWipLimits } from './hooks/useWipLimits';
 import { useFlowMetrics } from './hooks/useFlowMetrics';
+import { useBoardFilters } from './hooks/useBoardFilters';
 import { MetricsBar } from './components/MetricsBar';
+import { FilterBar } from './components/FilterBar';
 import { Board } from './components/Board';
 import { Task } from './components/Task';
 import { ColumnType } from './types/kanban';
@@ -23,12 +25,17 @@ export const App: React.FC = () => {
     deleteTask,
     moveTask,
     reorderOrMoveTask,
+    setTaskPriority,
+    addTaskTag,
+    removeTaskTag,
     discardIfEmpty,
     clearTasks,
     resetToSeed,
   } = useTaskCollection();
 
   const { wipLimits, setWipLimit } = useWipLimits();
+
+  const filterData = useBoardFilters(board);
 
   const completedTasks = board[ColumnType.COMPLETED] || [];
   const flowMetrics = useFlowMetrics(completedTasks);
@@ -55,7 +62,7 @@ export const App: React.FC = () => {
           </div>
           <div>
             <h1 className="brand-title">Metrik</h1>
-            <p className="brand-subtitle">Quadro Ágil com Persistência Local</p>
+            <p className="brand-subtitle">Quadro Kanban Ágil de Alta Performance</p>
           </div>
         </div>
 
@@ -83,8 +90,22 @@ export const App: React.FC = () => {
 
       <MetricsBar metrics={flowMetrics} />
 
+      <FilterBar
+        filters={filterData.filters}
+        onSearchChange={filterData.setSearchQuery}
+        onPriorityChange={filterData.setPriorityFilter}
+        onToggleTag={filterData.toggleTagFilter}
+        onClearFilters={filterData.clearFilters}
+        hasActiveFilters={filterData.hasActiveFilters}
+        availableTags={filterData.availableTags}
+        visibleCount={filterData.visibleCount}
+        totalCount={filterData.totalCount}
+      />
+
       <Board
-        board={board}
+        board={filterData.filteredBoard}
+        rawBoard={board}
+        hasActiveFilters={filterData.hasActiveFilters}
         wipLimits={wipLimits}
         onUpdateWipLimit={setWipLimit}
         onAddTask={handleAddTask}
@@ -101,6 +122,9 @@ export const App: React.FC = () => {
               onUpdateTitle={(id, title) => updateTask(id, { title })}
               onDelete={deleteTask}
               onDiscardIfEmpty={discardIfEmpty}
+              onUpdatePriority={setTaskPriority}
+              onAddTag={addTaskTag}
+              onRemoveTag={removeTaskTag}
               onDropTask={reorderOrMoveTask}
               canMoveLeft={canMoveLeft}
               canMoveRight={canMoveRight}

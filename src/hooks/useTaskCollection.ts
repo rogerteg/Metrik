@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { BoardState, ColumnType, TaskModel } from '../types/kanban';
+import { BoardState, ColumnType, PriorityLevel, TaskModel } from '../types/kanban';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
 import { reorderBoard } from '../utils/taskReorder';
 import { ReorderOptions } from '../types/dnd';
@@ -10,10 +10,13 @@ export const STORAGE_KEY = 'metrik_kanban_tasks';
 export interface UseTaskCollectionReturn {
   board: BoardState;
   addTask: (column: ColumnType, title?: string) => TaskModel;
-  updateTask: (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column'>>) => void;
+  updateTask: (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags'>>) => void;
   deleteTask: (id: string) => void;
   moveTask: (id: string, targetColumn: ColumnType) => void;
   reorderOrMoveTask: (options: ReorderOptions) => void;
+  setTaskPriority: (taskId: string, priority?: PriorityLevel) => void;
+  addTaskTag: (taskId: string, tag: string) => void;
+  removeTaskTag: (taskId: string, tag: string) => void;
   discardIfEmpty: (id: string) => void;
   clearTasks: () => void;
   resetToSeed: () => void;
@@ -48,36 +51,35 @@ const getInitialState = (): BoardState => {
 export function useTaskCollection(): UseTaskCollectionReturn {
   const [board, setBoard] = useState<BoardState>(getInitialState);
 
-  // Sync with localStorage on changes
+  // Sync with localStorage
   useEffect(() => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(board));
     } catch (error) {
-      console.error('[Metrik Storage] Failed to persist board to localStorage:', error);
+      console.error('Failed to save board state to localStorage', error);
     }
   }, [board]);
 
-  const addTask = useCallback((column: ColumnType, title = ''): TaskModel => {
-    const now = new Date().toISOString();
+  const addTask = useCallback((column: ColumnType, title: string = '') => {
     const newTask: TaskModel = {
       id: uuidv4(),
       title,
       column,
-      createdAt: now,
-      startedAt: column === ColumnType.IN_PROGRESS ? now : undefined,
-      completedAt: column === ColumnType.COMPLETED ? now : undefined,
+      createdAt: new Date().toISOString(),
+      ...(column === ColumnType.IN_PROGRESS ? { startedAt: new Date().toISOString() } : {}),
+      ...(column === ColumnType.COMPLETED ? { startedAt: new Date().toISOString(), completedAt: new Date().toISOString() } : {}),
     };
 
     setBoard((prev) => ({
       ...prev,
-      [column]: [...prev[column], newTask],
+      [column]: [newTask, ...prev[column]],
     }));
 
     return newTask;
   }, []);
 
   const updateTask = useCallback(
-    (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column'>>) => {
+    (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags'>>) => {
       setBoard((prev) => {
         const nextBoard: BoardState = {
           [ColumnType.TO_DO]: [],
@@ -128,7 +130,6 @@ export function useTaskCollection(): UseTaskCollectionReturn {
     setBoard((prev) => {
       let targetTask: TaskModel | undefined;
 
-      // Find the task and remove from previous column
       const nextBoard: BoardState = {
         [ColumnType.TO_DO]: [],
         [ColumnType.IN_PROGRESS]: [],
@@ -151,7 +152,6 @@ export function useTaskCollection(): UseTaskCollectionReturn {
         let startedAt = targetTask.startedAt;
         let completedAt = targetTask.completedAt;
 
-        // Se moveu para In Progress pela primeira vez
         if (targetColumn === ColumnType.IN_PROGRESS && !startedAt) {
           startedAt = now;
         }
@@ -170,11 +170,12 @@ export function useTaskCollection(): UseTaskCollectionReturn {
         const updatedTask: TaskModel = {
           ...targetTask,
           column: targetColumn,
-          updatedAt: now,
           startedAt,
           completedAt,
+          updatedAt: now,
         };
-        nextBoard[targetColumn] = [...nextBoard[targetColumn], updatedTask];
+
+        nextBoard[targetColumn] = [updatedTask, ...nextBoard[targetColumn]];
       }
 
       return nextBoard;
@@ -185,14 +186,105 @@ export function useTaskCollection(): UseTaskCollectionReturn {
     setBoard((prev) => reorderBoard(prev, options));
   }, []);
 
+  const setTaskPriority = useCallback((taskId: string, priority?: PriorityLevel) => {
+    setBoard((prev) => {
+      const nextBoard: BoardState = {
+        [ColumnType.TO_DO]: [],
+        [ColumnType.IN_PROGRESS]: [],
+        [ColumnType.BLOCKED]: [],
+        [ColumnType.COMPLETED]: [],
+      };
+      const now = new Date().toISOString();
+
+      for (const col of Object.values(ColumnType)) {
+        nextBoard[col] = prev[col].map((task) => {
+          if (task.id === taskId) {
+            return {
+              ...task,
+              priority,
+              updatedAt: now,
+            };
+          }
+          return task;
+        });
+      }
+      return nextBoard;
+    });
+  }, []);
+
+  const addTaskTag = useCallback((taskId: string, tag: string) => {
+    const cleanTag = tag.trim().slice(0, 20);
+    if (!cleanTag) return;
+
+    setBoard((prev) => {
+      const nextBoard: BoardState = {
+        [ColumnType.TO_DO]: [],
+        [ColumnType.IN_PROGRESS]: [],
+        [ColumnType.BLOCKED]: [],
+        [ColumnType.COMPLETED]: [],
+      };
+      const now = new Date().toISOString();
+
+      for (const col of Object.values(ColumnType)) {
+        nextBoard[col] = prev[col].map((task) => {
+          if (task.id === taskId) {
+            const currentTags = task.tags ?? [];
+            const isDuplicate = currentTags.some(
+              (t) => t.toLowerCase() === cleanTag.toLowerCase()
+            );
+            if (isDuplicate) return task;
+
+            return {
+              ...task,
+              tags: [...currentTags, cleanTag],
+              updatedAt: now,
+            };
+          }
+          return task;
+        });
+      }
+      return nextBoard;
+    });
+  }, []);
+
+  const removeTaskTag = useCallback((taskId: string, tag: string) => {
+    const targetTag = tag.trim().toLowerCase();
+    setBoard((prev) => {
+      const nextBoard: BoardState = {
+        [ColumnType.TO_DO]: [],
+        [ColumnType.IN_PROGRESS]: [],
+        [ColumnType.BLOCKED]: [],
+        [ColumnType.COMPLETED]: [],
+      };
+      const now = new Date().toISOString();
+
+      for (const col of Object.values(ColumnType)) {
+        nextBoard[col] = prev[col].map((task) => {
+          if (task.id === taskId) {
+            const currentTags = task.tags ?? [];
+            const nextTags = currentTags.filter(
+              (t) => t.trim().toLowerCase() !== targetTag
+            );
+            return {
+              ...task,
+              tags: nextTags,
+              updatedAt: now,
+            };
+          }
+          return task;
+        });
+      }
+      return nextBoard;
+    });
+  }, []);
+
   const discardIfEmpty = useCallback(
     (id: string) => {
       setBoard((prev) => {
         let shouldDelete = false;
-
         for (const col of Object.values(ColumnType)) {
-          const found = prev[col].find((task) => task.id === id);
-          if (found && (!found.title || found.title.trim() === '')) {
+          const task = prev[col].find((t) => t.id === id);
+          if (task && task.title.trim() === '') {
             shouldDelete = true;
             break;
           }
@@ -238,6 +330,9 @@ export function useTaskCollection(): UseTaskCollectionReturn {
     deleteTask,
     moveTask,
     reorderOrMoveTask,
+    setTaskPriority,
+    addTaskTag,
+    removeTaskTag,
     discardIfEmpty,
     clearTasks,
     resetToSeed,

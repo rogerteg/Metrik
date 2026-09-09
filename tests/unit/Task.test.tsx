@@ -112,4 +112,69 @@ describe('Task Component (US2 & US4)', () => {
     fireEvent.click(nextBtn);
     expect(handleMoveRight).toHaveBeenCalledWith('task-test-01');
   });
+
+  it('renders PriorityBadge and triggers onUpdatePriority on change', () => {
+    const handleUpdatePriority = vi.fn();
+    const taskWithPriority: TaskModel = {
+      ...mockTask,
+      priority: 'high',
+    };
+
+    render(
+      <Task
+        task={taskWithPriority}
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+        onUpdatePriority={handleUpdatePriority}
+      />
+    );
+
+    const badge = screen.getByRole('button', { name: /prioridade: alta/i });
+    expect(badge).toBeInTheDocument();
+
+    fireEvent.click(badge);
+    fireEvent.click(screen.getByText('Urgente'));
+
+    expect(handleUpdatePriority).toHaveBeenCalledWith('task-test-01', 'urgent');
+  });
+
+  it('renders TagList and triggers onAddTag and onRemoveTag', () => {
+    const handleAddTag = vi.fn();
+    const handleRemoveTag = vi.fn();
+    const taskWithTags: TaskModel = {
+      ...mockTask,
+      tags: ['Bug', 'UI'],
+    };
+
+    render(
+      <Task
+        task={taskWithTags}
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+        onAddTag={handleAddTag}
+        onRemoveTag={handleRemoveTag}
+      />
+    );
+
+    expect(screen.getByText('Bug')).toBeInTheDocument();
+    expect(screen.getByText('UI')).toBeInTheDocument();
+
+    const removeBtn = screen.getByRole('button', { name: /remover tag bug/i });
+    fireEvent.click(removeBtn);
+
+    expect(handleRemoveTag).toHaveBeenCalledWith('task-test-01', 'Bug');
+
+    const addBtn = screen.getByRole('button', { name: /adicionar tag/i });
+    fireEvent.click(addBtn);
+
+    const input = screen.getByPlaceholderText(/nova tag/i);
+    fireEvent.change(input, { target: { value: 'Docs' } });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
+    expect(handleAddTag).toHaveBeenCalledWith('task-test-01', 'Docs');
+  });
 });
+
+

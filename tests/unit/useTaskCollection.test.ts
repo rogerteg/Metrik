@@ -149,4 +149,66 @@ describe('useTaskCollection Hook (US3)', () => {
     const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
     expect(saved[ColumnType.IN_PROGRESS].some((t: any) => t.id === taskToMove.id)).toBe(true);
   });
+
+  it('sets and clears task priority via setTaskPriority', () => {
+    const { result } = renderHook(() => useTaskCollection());
+    const task = result.current.board[ColumnType.TO_DO][0];
+
+    act(() => {
+      result.current.setTaskPriority(task.id, 'urgent');
+    });
+
+    const updated = result.current.board[ColumnType.TO_DO].find((t) => t.id === task.id);
+    expect(updated?.priority).toBe('urgent');
+
+    const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
+    const savedTask = saved[ColumnType.TO_DO].find((t: any) => t.id === task.id);
+    expect(savedTask.priority).toBe('urgent');
+
+    act(() => {
+      result.current.setTaskPriority(task.id, undefined);
+    });
+
+    const cleared = result.current.board[ColumnType.TO_DO].find((t) => t.id === task.id);
+    expect(cleared?.priority).toBeUndefined();
+  });
+
+  it('adds and removes task tags with deduplication and sanitization', () => {
+    const { result } = renderHook(() => useTaskCollection());
+    const task = result.current.board[ColumnType.TO_DO][0];
+
+    // Add tag
+    act(() => {
+      result.current.addTaskTag(task.id, '  Frontend  ');
+    });
+
+    let current = result.current.board[ColumnType.TO_DO].find((t) => t.id === task.id);
+    expect(current?.tags).toEqual(['Frontend']);
+
+    // Attempt to add duplicate tag (case-insensitive)
+    act(() => {
+      result.current.addTaskTag(task.id, 'frontend');
+      result.current.addTaskTag(task.id, '   ');
+    });
+
+    current = result.current.board[ColumnType.TO_DO].find((t) => t.id === task.id);
+    expect(current?.tags).toEqual(['Frontend']);
+
+    // Add second tag
+    act(() => {
+      result.current.addTaskTag(task.id, 'UI');
+    });
+
+    current = result.current.board[ColumnType.TO_DO].find((t) => t.id === task.id);
+    expect(current?.tags).toEqual(['Frontend', 'UI']);
+
+    // Remove first tag
+    act(() => {
+      result.current.removeTaskTag(task.id, 'FRONTEND');
+    });
+
+    current = result.current.board[ColumnType.TO_DO].find((t) => t.id === task.id);
+    expect(current?.tags).toEqual(['UI']);
+  });
 });
+
