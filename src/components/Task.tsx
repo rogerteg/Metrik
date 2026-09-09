@@ -24,6 +24,7 @@ export interface TaskProps {
   canMoveRight?: boolean;
   onDropTask?: (options: ReorderOptions) => void;
   isCompleted?: boolean;
+  onClick?: () => void;
 }
 
 export const Task: React.FC<TaskProps> = ({
@@ -40,6 +41,7 @@ export const Task: React.FC<TaskProps> = ({
   canMoveRight = false,
   onDropTask,
   isCompleted = false,
+  onClick,
 }) => {
   const [isDragging, setIsDragging] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
@@ -115,6 +117,11 @@ export const Task: React.FC<TaskProps> = ({
     ? 'task-card-drop-after'
     : '';
 
+  const hasDescription = !!(task.description && task.description.trim().length > 0);
+  const subtasks = task.subtasks || [];
+  const completedSubtasks = subtasks.filter(st => st.completed).length;
+  const hasSubtasks = subtasks.length > 0;
+
   return (
     <article
       className={`task-card ${isDragging ? 'task-card-dragging' : ''} ${dropClass}`}
@@ -126,6 +133,14 @@ export const Task: React.FC<TaskProps> = ({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      onClick={(e) => {
+        // Only trigger modal click if we're not dragging, not editing, and click didn't originate from a button/input
+        const target = e.target as HTMLElement;
+        const isInteractive = target.closest('button, input, textarea');
+        if (!isDragging && !isEditing && !isInteractive && onClick) {
+          onClick();
+        }
+      }}
     >
       <div
         className="task-card-header"
@@ -160,6 +175,30 @@ export const Task: React.FC<TaskProps> = ({
           onAddTag={(tag) => onAddTag?.(task.id, tag)}
           onRemoveTag={(tag) => onRemoveTag?.(task.id, tag)}
         />
+
+        {(hasDescription || hasSubtasks) && (
+          <div className="task-indicators" aria-label="Indicadores da tarefa">
+            {hasDescription && (
+              <span className="task-indicator-badge" title="Esta tarefa possui uma descrição">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="21" y1="10" x2="3" y2="10"></line>
+                  <line x1="21" y1="6" x2="3" y2="6"></line>
+                  <line x1="21" y1="14" x2="3" y2="14"></line>
+                  <line x1="21" y1="18" x2="3" y2="18"></line>
+                </svg>
+              </span>
+            )}
+            {hasSubtasks && (
+              <span className="task-indicator-badge" title={`${completedSubtasks} de ${subtasks.length} subtarefas concluídas`}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                  <polyline points="9 11 12 14 22 4"></polyline>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                {completedSubtasks}/{subtasks.length}
+              </span>
+            )}
+          </div>
+        )}
 
         {hasCompletedAt && (
           <div className="task-metrics-badges" aria-label="Métricas de fluxo do cartão">

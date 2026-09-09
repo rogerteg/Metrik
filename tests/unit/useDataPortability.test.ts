@@ -44,7 +44,7 @@ describe('useDataPortability Hook', () => {
 
     // Mock FileReader to be synchronous for tests
     const fileReaderMock = {
-      readAsText: function(this: any, file: Blob) {
+      readAsText: function(this: any, _file: Blob) {
         this.onload({ target: { result: validJson } } as any);
       }
     };
@@ -66,7 +66,7 @@ describe('useDataPortability Hook', () => {
     const onError = vi.fn();
 
     const fileReaderMock = {
-      readAsText: function(this: any, file: Blob) {
+      readAsText: function(this: any, _file: Blob) {
         this.onload({ target: { result: invalidJson } } as any);
       }
     };
@@ -88,7 +88,7 @@ describe('useDataPortability Hook', () => {
     const onError = vi.fn();
 
     const fileReaderMock = {
-      readAsText: function(this: any, file: Blob) {
+      readAsText: function(this: any, _file: Blob) {
         this.onload({ target: { result: invalidSchema } } as any);
       }
     };

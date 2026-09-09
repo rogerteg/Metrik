@@ -7,6 +7,7 @@ import { MetricsBar } from './components/MetricsBar';
 import { FilterBar } from './components/FilterBar';
 import { Board } from './components/Board';
 import { Task } from './components/Task';
+import { TaskDetailsModal } from './components/TaskDetailsModal';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -30,6 +31,8 @@ export const App: React.FC = () => {
 
   const { exportData, importData } = useDataPortability();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
 
   const filterData = useBoardFilters(board);
 
@@ -178,6 +181,7 @@ export const App: React.FC = () => {
             <Task
               key={task.id}
               task={task}
+              onClick={() => setSelectedTaskId(task.id)}
               onUpdateTitle={(id, title) => updateTask(id, { title })}
               onDelete={deleteTask}
               onDiscardIfEmpty={discardIfEmpty}
@@ -202,6 +206,15 @@ export const App: React.FC = () => {
           );
         }}
       />
+
+      {selectedTaskId && (
+        <TaskDetailsModal
+          task={Object.values(board.tasks).flat().find(t => t.id === selectedTaskId)!}
+          isOpen={!!selectedTaskId}
+          onClose={() => setSelectedTaskId(null)}
+          onUpdateTask={updateTask}
+        />
+      )}
     </div>
   );
 };

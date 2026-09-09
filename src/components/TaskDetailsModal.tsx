@@ -1,0 +1,192 @@
+import React, { useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { TaskModel, SubtaskModel } from '../types/kanban';
+import { Modal } from './Modal';
+import './TaskDetailsModal.css';
+
+interface TaskDetailsModalProps {
+  task: TaskModel;
+  isOpen: boolean;
+  onClose: () => void;
+  onUpdateTask: (id: string, updates: Partial<TaskModel>) => void;
+}
+
+export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
+  task,
+  isOpen,
+  onClose,
+  onUpdateTask,
+}) => {
+  const [localTitle, setLocalTitle] = useState(task.title);
+  const [localDescription, setLocalDescription] = useState(task.description || '');
+  const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
+
+  // Sync state when a different task is opened
+  useEffect(() => {
+    if (isOpen) {
+      setLocalTitle(task.title);
+      setLocalDescription(task.description || '');
+      setNewSubtaskTitle('');
+    }
+  }, [task, isOpen]);
+
+  const handleTitleBlur = () => {
+    if (localTitle.trim() !== task.title && localTitle.trim() !== '') {
+      onUpdateTask(task.id, { title: localTitle.trim() });
+    } else {
+      setLocalTitle(task.title); // reset if empty
+    }
+  };
+
+  const handleDescriptionBlur = () => {
+    if (localDescription !== (task.description || '')) {
+      onUpdateTask(task.id, { description: localDescription });
+    }
+  };
+
+  const handleAddSubtask = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSubtaskTitle.trim()) return;
+
+    const newSubtask: SubtaskModel = {
+      id: uuidv4(),
+      title: newSubtaskTitle.trim(),
+      completed: false,
+    };
+
+    const nextSubtasks = [...(task.subtasks || []), newSubtask];
+    onUpdateTask(task.id, { subtasks: nextSubtasks });
+    setNewSubtaskTitle('');
+  };
+
+  const handleToggleSubtask = (subtaskId: string) => {
+    const currentSubtasks = task.subtasks || [];
+    const nextSubtasks = currentSubtasks.map(st => 
+      st.id === subtaskId ? { ...st, completed: !st.completed } : st
+    );
+    onUpdateTask(task.id, { subtasks: nextSubtasks });
+  };
+
+  const handleDeleteSubtask = (subtaskId: string) => {
+    const currentSubtasks = task.subtasks || [];
+    const nextSubtasks = currentSubtasks.filter(st => st.id !== subtaskId);
+    onUpdateTask(task.id, { subtasks: nextSubtasks });
+  };
+
+  const subtasks = task.subtasks || [];
+  const completedCount = subtasks.filter(st => st.completed).length;
+  const progress = subtasks.length > 0 ? Math.round((completedCount / subtasks.length) * 100) : 0;
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Detalhes da Tarefa">
+      <div className="task-details">
+        
+        {/* Title Section */}
+        <section className="td-section">
+          <label htmlFor="td-title" className="td-label">Título</label>
+          <input
+            id="td-title"
+            type="text"
+            className="td-input td-title-input"
+            value={localTitle}
+            onChange={(e) => setLocalTitle(e.target.value)}
+            onBlur={handleTitleBlur}
+            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+          />
+        </section>
+
+        {/* Description Section */}
+        <section className="td-section">
+          <label htmlFor="td-description" className="td-label">Descrição</label>
+          <textarea
+            id="td-description"
+            className="td-textarea"
+            placeholder="Adicione detalhes sobre a tarefa..."
+            value={localDescription}
+            onChange={(e) => setLocalDescription(e.target.value)}
+            onBlur={handleDescriptionBlur}
+            rows={5}
+          />
+        </section>
+
+        {/* Subtasks Section */}
+        <section className="td-section">
+          <div className="td-subtasks-header">
+            <label className="td-label">Checklist</label>
+            {subtasks.length > 0 && (
+              <span className="td-progress-text">{progress}% ({completedCount}/{subtasks.length})</span>
+            )}
+          </div>
+          
+          {subtasks.length > 0 && (
+            <div className="td-progress-bar-bg">
+              <div 
+                className="td-progress-bar-fill" 
+                style={{ width: `${progress}%`, backgroundColor: progress === 100 ? 'var(--success-color)' : 'var(--primary-color)' }}
+              />
+            </div>
+          )}
+
+          <ul className="td-subtasks-list">
+            {subtasks.map((st) => (
+              <li key={st.id} className={`td-subtask-item ${st.completed ? 'completed' : ''}`}>
+                <label className="td-subtask-label">
+                  <input
+                    type="checkbox"
+                    checked={st.completed}
+                    onChange={() => handleToggleSubtask(st.id)}
+                    className="td-checkbox"
+                  />
+                  <span className="td-subtask-title">{st.title}</span>
+                </label>
+                <button
+                  type="button"
+                  className="td-subtask-delete"
+                  onClick={() => handleDeleteSubtask(st.id)}
+                  aria-label="Excluir subtarefa"
+                  title="Excluir subtarefa"
+                >
+                  ×
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <form onSubmit={handleAddSubtask} className="td-add-subtask-form">
+            <input
+              type="text"
+              className="td-input td-add-subtask-input"
+              placeholder="Adicionar um item..."
+              value={newSubtaskTitle}
+              onChange={(e) => setNewSubtaskTitle(e.target.value)}
+            />
+            <button type="submit" className="btn btn-secondary td-add-subtask-btn" disabled={!newSubtaskTitle.trim()}>
+              Adicionar
+            </button>
+          </form>
+        </section>
+
+        {/* Metadata Section */}
+        <section className="td-metadata">
+          <div className="td-meta-item">
+            <span className="td-meta-label">Criado em:</span>
+            <span className="td-meta-value">{new Date(task.createdAt).toLocaleString('pt-BR')}</span>
+          </div>
+          {task.startedAt && (
+            <div className="td-meta-item">
+              <span className="td-meta-label">Iniciado em:</span>
+              <span className="td-meta-value">{new Date(task.startedAt).toLocaleString('pt-BR')}</span>
+            </div>
+          )}
+          {task.completedAt && (
+            <div className="td-meta-item">
+              <span className="td-meta-label">Concluído em:</span>
+              <span className="td-meta-value">{new Date(task.completedAt).toLocaleString('pt-BR')}</span>
+            </div>
+          )}
+        </section>
+
+      </div>
+    </Modal>
+  );
+};

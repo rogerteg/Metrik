@@ -23,6 +23,12 @@ export interface ColumnModel {
 
 export type PriorityLevel = 'urgent' | 'high' | 'medium' | 'low';
 
+export interface SubtaskModel {
+  id: string;
+  title: string;
+  completed: boolean;
+}
+
 export interface TaskModel {
   /** Identificador único universal (UUID v4) */
   id: string;
@@ -53,6 +59,12 @@ export interface TaskModel {
 
   /** Lista de etiquetas/tags personalizadas (Feature 004) */
   tags?: string[];
+
+  /** Descrição detalhada da tarefa (Feature 007) */
+  description?: string;
+
+  /** Subtarefas / checklist (Feature 007) */
+  subtasks?: SubtaskModel[];
 }
 
 export interface BoardState {

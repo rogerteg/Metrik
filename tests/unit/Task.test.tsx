@@ -175,6 +175,50 @@ describe('Task Component (US2 & US4)', () => {
 
     expect(handleAddTag).toHaveBeenCalledWith('task-test-01', 'Docs');
   });
+
+  it('renders visual indicators for description and subtasks', () => {
+    const taskWithIndicators: TaskModel = {
+      ...mockTask,
+      description: 'Test description',
+      subtasks: [
+        { id: '1', title: 'Sub 1', completed: true },
+        { id: '2', title: 'Sub 2', completed: false }
+      ]
+    };
+
+    render(
+      <Task
+        task={taskWithIndicators}
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+      />
+    );
+
+    const badges = screen.getAllByRole('generic').filter(el => el.classList.contains('task-indicator-badge'));
+    expect(badges.length).toBe(2);
+    
+    // Check if the subtasks text is present
+    expect(screen.getByText('1/2')).toBeInTheDocument();
+  });
+
+  it('calls onClick when clicking on the card body', () => {
+    const handleClick = vi.fn();
+    render(
+      <Task
+        task={mockTask}
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+        onClick={handleClick}
+      />
+    );
+
+    const article = screen.getByRole('article');
+    fireEvent.click(article);
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
 });
 
 

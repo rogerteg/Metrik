@@ -519,6 +519,28 @@ body {
 }
 
 /* Card Time Metrics Badges */
+/* Task Indicators */
+.task-indicators {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.task-indicator-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sm);
+  line-height: 1;
+}
+
+.task-indicator-badge svg {
+  opacity: 0.7;
+}
+
 .task-metrics-badges {
   display: flex;
   flex-wrap: wrap;

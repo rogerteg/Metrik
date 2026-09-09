@@ -18,7 +18,7 @@ export interface UseTaskCollectionReturn {
 
   // Task Methods
   addTask: (columnId: string, title?: string) => TaskModel;
-  updateTask: (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags'>>) => void;
+  updateTask: (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags' | 'description' | 'subtasks'>>) => void;
   deleteTask: (id: string) => void;
   moveTask: (id: string, targetColumnId: string) => void;
   reorderOrMoveTask: (options: ReorderOptions) => void;
@@ -223,7 +223,7 @@ export function useTaskCollection(): UseTaskCollectionReturn {
   }, []);
 
   const updateTask = useCallback(
-    (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags'>>) => {
+    (id: string, updates: Partial<Pick<TaskModel, 'title' | 'color' | 'column' | 'priority' | 'tags' | 'description' | 'subtasks'>>) => {
       setBoard((prev) => {
         const nextTasks: Record<string, TaskModel[]> = {};
         const now = new Date().toISOString();
