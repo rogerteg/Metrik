@@ -3,15 +3,15 @@ import { ReorderOptions } from '../types/dnd';
 
 /**
  * Valida se uma coluna pode ser movida entre sourceIndex e targetIndex.
- * Regra estrita: A primeira coluna (índice 0, ex: To Do) e a última coluna (índice length - 1, ex: Completed)
- * são fixas e JAMAIS podem ser movidas ou ter outra coluna colocada em seu lugar.
+ * Regra estrita: A primeira coluna (índice 0, ex: To Do) é fixa e JAMAIS pode ser movida
+ * ou ter outra coluna colocada em seu lugar. As demais colunas (incluindo a última) podem ser reordenadas livremente.
  */
 export function canMoveColumn(
   columnsCount: number,
   sourceIndex: number,
   targetIndex: number
 ): boolean {
-  if (columnsCount <= 2) {
+  if (columnsCount <= 1) {
     return false;
   }
   if (sourceIndex === targetIndex) {
@@ -21,9 +21,7 @@ export function canMoveColumn(
   if (sourceIndex <= 0 || targetIndex <= 0) {
     return false;
   }
-  // Última coluna é fixa (não pode ser a origem nem o destino)
-  const lastIndex = columnsCount - 1;
-  if (sourceIndex >= lastIndex || targetIndex >= lastIndex) {
+  if (sourceIndex >= columnsCount || targetIndex >= columnsCount) {
     return false;
   }
   return true;

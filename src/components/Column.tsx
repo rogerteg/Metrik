@@ -58,13 +58,11 @@ export const Column: React.FC<ColumnProps> = ({
   const modifierClass = getColumnModifierClass(column.colorScheme);
   const isOverloaded = column.wipLimit !== null && count > column.wipLimit;
 
-  // Regra fundamental: Primeira coluna (índice 0) e Última coluna (índice totalColumns - 1) são fixas
-  const isFirstColumn = columnIndex === 0;
-  const isLastColumn = typeof columnIndex === 'number' && totalColumns > 0 && columnIndex === totalColumns - 1;
-  const isFixed = isFirstColumn || isLastColumn;
+  // Regra fundamental: Apenas a primeira coluna (índice 0, ex: To Do) é fixa
+  const isFixed = columnIndex === 0;
 
   const canMoveLeft = !isFixed && typeof columnIndex === 'number' && columnIndex > 1;
-  const canMoveRight = !isFixed && typeof columnIndex === 'number' && totalColumns > 0 && columnIndex < totalColumns - 2;
+  const canMoveRight = !isFixed && typeof columnIndex === 'number' && totalColumns > 0 && columnIndex < totalColumns - 1;
 
   const [isDropTarget, setIsDropTarget] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -243,7 +241,7 @@ export const Column: React.FC<ColumnProps> = ({
           {isFixed && (
             <span
               className="column-fixed-badge"
-              title={isFirstColumn ? 'Primeira coluna (fixa, sentido inicial do fluxo)' : 'Última coluna (fixa, conclusão do fluxo)'}
+              title="Primeira coluna (fixa, sentido inicial do fluxo)"
               aria-label="Coluna fixa"
             >
               🔒
@@ -282,7 +280,7 @@ export const Column: React.FC<ColumnProps> = ({
                 className="btn-move-column"
                 onClick={() => canMoveRight && onMoveColumn(columnIndex, columnIndex + 1)}
                 disabled={!canMoveRight}
-                title={canMoveRight ? 'Mover coluna para a direita' : 'Não pode mover para a última coluna'}
+                title={canMoveRight ? 'Mover coluna para a direita' : 'Já está na última posição'}
                 aria-label={`Mover coluna ${column.title} para a direita`}
               >
                 →
