@@ -115,8 +115,8 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
   });
 
   describe('useTaskCollection Unidirectional Flow Guard Dialog', () => {
-    it('blocks backward move if user cancels confirmation dialog', () => {
-      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    it('blocks backward move, alerts Cuidado warning, and maintains card in current column', () => {
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
       const { result } = renderHook(() => useTaskCollection('test-board-guard'));
       const inProgressColId = result.current.board.columns[1].id;
@@ -134,15 +134,15 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
         result.current.moveTask(createdTaskId, todoColId);
       });
 
-      expect(confirmSpy).toHaveBeenCalledWith(FLOW_REGRESSION_WARNING_MESSAGE);
+      expect(alertSpy).toHaveBeenCalledWith(FLOW_REGRESSION_WARNING_MESSAGE);
 
-      // Task should still remain in 'in-progress' because user cancelled
+      // Task must remain in current column ('in-progress') and NOT move to 'todo'
       expect(result.current.board.tasks[inProgressColId].some((t) => t.id === createdTaskId)).toBe(true);
       expect(result.current.board.tasks[todoColId].some((t) => t.id === createdTaskId)).toBe(false);
     });
 
-    it('allows backward move and resets flow metrics if user confirms dialog', () => {
-      const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    it('blocks backward move via reorderOrMoveTask (drag and drop) and maintains card in current column', () => {
+      const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
       const { result } = renderHook(() => useTaskCollection('test-board-guard-2'));
       const completedColId = result.current.board.columns[3].id;
@@ -155,18 +155,19 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
         createdTaskId = task.id;
       });
 
-      // Move backward to 'todo'
+      // Move backward to 'todo' via reorderOrMoveTask
       act(() => {
-        result.current.moveTask(createdTaskId, todoColId);
+        result.current.reorderOrMoveTask({
+          activeTaskId: createdTaskId,
+          targetColumn: todoColId,
+        });
       });
 
-      expect(confirmSpy).toHaveBeenCalledWith(FLOW_REGRESSION_WARNING_MESSAGE);
+      expect(alertSpy).toHaveBeenCalledWith(FLOW_REGRESSION_WARNING_MESSAGE);
 
-      // Task should now be in 'todo' with metrics reset
-      const taskInTodo = result.current.board.tasks[todoColId].find((t) => t.id === createdTaskId);
-      expect(taskInTodo).toBeDefined();
-      expect(taskInTodo?.completedAt).toBeUndefined();
-      expect(taskInTodo?.startedAt).toBeUndefined();
+      // Task must strictly remain in completedColId
+      expect(result.current.board.tasks[completedColId].some((t) => t.id === createdTaskId)).toBe(true);
+      expect(result.current.board.tasks[todoColId].some((t) => t.id === createdTaskId)).toBe(false);
     });
 
     it('does not prompt confirmation dialog for forward move', () => {

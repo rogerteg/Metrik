@@ -256,16 +256,22 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
       if (targetTask && sourceColumnId) {
         const isBackward = isBackwardColumnMove(prev.columns, sourceColumnId, targetColumnId);
         if (isBackward) {
-          if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-            try {
-              const confirmed = window.confirm(FLOW_REGRESSION_WARNING_MESSAGE);
-              if (!confirmed) {
-                return prev; // Bloqueia o movimento!
+          if (typeof window !== 'undefined') {
+            if (typeof window.alert === 'function') {
+              try {
+                window.alert(FLOW_REGRESSION_WARNING_MESSAGE);
+              } catch {
+                // Ignore alert errors
               }
-            } catch {
-              // Ignore if confirm not implemented
+            } else if (typeof window.confirm === 'function') {
+              try {
+                window.confirm(FLOW_REGRESSION_WARNING_MESSAGE);
+              } catch {
+                // Ignore confirm errors
+              }
             }
           }
+          return prev; // Mantém o card na coluna vigente e bloqueia estritamente o retorno!
         }
 
         const targetCol = prev.columns.find(c => c.id === targetColumnId);
@@ -334,16 +340,22 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
       }
 
       if (sourceColumnId && isBackwardColumnMove(prev.columns, sourceColumnId, options.targetColumn)) {
-        if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
-          try {
-            const confirmed = window.confirm(FLOW_REGRESSION_WARNING_MESSAGE);
-            if (!confirmed) {
-              return prev; // Bloqueia o movimento!
+        if (typeof window !== 'undefined') {
+          if (typeof window.alert === 'function') {
+            try {
+              window.alert(FLOW_REGRESSION_WARNING_MESSAGE);
+            } catch {
+              // Ignore alert errors
             }
-          } catch {
-            // Ignore if confirm not implemented
+          } else if (typeof window.confirm === 'function') {
+            try {
+              window.confirm(FLOW_REGRESSION_WARNING_MESSAGE);
+            } catch {
+              // Ignore confirm errors
+            }
           }
         }
+        return prev; // Mantém o card na coluna vigente e bloqueia estritamente o retorno!
       }
 
       return reorderBoard(prev, options);

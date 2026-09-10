@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useTaskCollection } from '../../src/hooks/useTaskCollection';
 
@@ -67,31 +67,25 @@ describe('Task Transitions & Timestamps (US4 & Feature 002)', () => {
     expect(completed?.startedAt).toBeDefined();
   });
 
-  it('clears completedAt when task is reopened from Completed', () => {
+  it('blocks backward move when task is attempted to be reopened/moved backward', () => {
+    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     const { result } = renderHook(() => useTaskCollection('test-board'));
 
     let task: any;
     act(() => {
-      task = result.current.addTask('completed', 'Item reaberto');
+      task = result.current.addTask('completed', 'Item finalizado');
     });
 
     expect(task.completedAt).toBeDefined();
 
-    act(() => {
-      result.current.moveTask(task.id, 'blocked');
-    });
-
-    const blocked = result.current.board.tasks['blocked'].find((t) => t.id === task.id);
-    expect(blocked?.completedAt).toBeUndefined();
-
+    // Tentativa de mover para trás (completed -> in-progress) deve ser bloqueada
     act(() => {
       result.current.moveTask(task.id, 'in-progress');
     });
-    expect(result.current.board.tasks['in-progress'].some((t) => t.id === task.id)).toBe(true);
 
-    act(() => {
-      result.current.moveTask(task.id, 'todo');
-    });
-    expect(result.current.board.tasks['todo'].some((t) => t.id === task.id)).toBe(true);
+    expect(alertSpy).toHaveBeenCalled();
+    // Tarefa deve ser mantida na coluna vigente ('completed')
+    expect(result.current.board.tasks['completed'].some((t) => t.id === task.id)).toBe(true);
+    expect(result.current.board.tasks['in-progress'].some((t) => t.id === task.id)).toBe(false);
   });
 });
