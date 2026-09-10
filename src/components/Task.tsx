@@ -59,6 +59,10 @@ export const Task: React.FC<TaskProps> = ({
   };
 
   const handleDragStart = (e: React.DragEvent<HTMLElement>) => {
+    if (task.blocked) {
+      e.preventDefault();
+      return;
+    }
     setIsDragging(true);
     if (e.dataTransfer) {
       e.dataTransfer.setData('text/plain', task.id);
@@ -144,7 +148,7 @@ export const Task: React.FC<TaskProps> = ({
             }
           : undefined
       }
-      draggable={!isEditing}
+      draggable={!isEditing && !task.blocked}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}

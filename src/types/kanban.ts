@@ -177,3 +177,7 @@ export const MAX_COLUMNS = 12;
 export const FLOW_REGRESSION_WARNING_MESSAGE =
   'Cuidado! Você irá perder todas as métricas do fluxo. Card em sentido único, somente da esquerda para a direita.';
 
+/** Mensagem de alerta para tentativa de movimentação de tarefa bloqueada */
+export const BLOCKED_TASK_MOVE_WARNING_MESSAGE =
+  'Esta tarefa está bloqueada e não pode ser movida de coluna. Desbloqueie a tarefa para movimentá-la.';
+

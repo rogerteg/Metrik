@@ -8,6 +8,7 @@ import {
   TaskModel,
   MAX_COLUMNS,
   FLOW_REGRESSION_WARNING_MESSAGE,
+  BLOCKED_TASK_MOVE_WARNING_MESSAGE,
 } from '../types/kanban';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
 import { reorderBoard, isBackwardColumnMove, reorderColumnList } from '../utils/taskReorder';
@@ -257,6 +258,25 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
       }
 
       if (targetTask && sourceColumnId) {
+        if (targetTask.blocked && sourceColumnId !== targetColumnId) {
+          if (typeof window !== 'undefined') {
+            if (typeof window.alert === 'function') {
+              try {
+                window.alert(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
+              } catch {
+                // Ignore alert errors
+              }
+            } else if (typeof window.confirm === 'function') {
+              try {
+                window.confirm(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
+              } catch {
+                // Ignore confirm errors
+              }
+            }
+          }
+          return prev; // Tarefa bloqueada não pode mover de coluna!
+        }
+
         const isBackward = isBackwardColumnMove(prev.columns, sourceColumnId, targetColumnId);
         if (isBackward) {
           if (typeof window !== 'undefined') {
@@ -335,11 +355,33 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
   const reorderOrMoveTask = useCallback((options: ReorderOptions) => {
     setBoard((prev) => {
       let sourceColumnId: string | undefined;
+      let activeTask: TaskModel | undefined;
       for (const colId of Object.keys(prev.tasks)) {
-        if (prev.tasks[colId].some((t) => t.id === options.activeTaskId)) {
+        const found = prev.tasks[colId].find((t) => t.id === options.activeTaskId);
+        if (found) {
           sourceColumnId = colId;
+          activeTask = found;
           break;
         }
+      }
+
+      if (activeTask && sourceColumnId && activeTask.blocked && sourceColumnId !== options.targetColumn) {
+        if (typeof window !== 'undefined') {
+          if (typeof window.alert === 'function') {
+            try {
+              window.alert(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
+            } catch {
+              // Ignore alert errors
+            }
+          } else if (typeof window.confirm === 'function') {
+            try {
+              window.confirm(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
+            } catch {
+              // Ignore confirm errors
+            }
+          }
+        }
+        return prev; // Tarefa bloqueada não pode mover de coluna!
       }
 
       if (sourceColumnId && isBackwardColumnMove(prev.columns, sourceColumnId, options.targetColumn)) {

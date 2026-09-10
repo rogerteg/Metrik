@@ -530,6 +530,10 @@ body {
   border-color: rgba(239, 68, 68, 0.4);
 }
 
+.task-card.task-card-blocked:not([draggable="true"]) {
+  cursor: default;
+}
+
 /* Stagnant Task Styles (Card Parado / Marrom) */
 .task-card.task-card-stagnant:not(.task-card-blocked) {
   border-left: 4px solid #8B4513 !important;

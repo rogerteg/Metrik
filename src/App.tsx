@@ -242,8 +242,8 @@ export const App: React.FC = () => {
             renderTask={(task, columnId) => {
               const currentIndex = board.columns.findIndex(c => c.id === columnId);
               const currentColumn = board.columns[currentIndex];
-              const canMoveLeft = currentIndex > 0;
-              const canMoveRight = currentIndex < board.columns.length - 1;
+              const canMoveLeft = currentIndex > 0 && !task.blocked;
+              const canMoveRight = currentIndex < board.columns.length - 1 && !task.blocked;
               const colColor = getDefaultColumnColor(currentColumn);
 
               return (
