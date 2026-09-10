@@ -28,6 +28,7 @@ export interface TaskProps {
   onDropTask?: (options: ReorderOptions) => void;
   isCompleted?: boolean;
   onClick?: () => void;
+  onUpdateTask?: (id: string, updates: Partial<TaskModel>) => void;
 }
 
 export const Task: React.FC<TaskProps> = ({
@@ -46,6 +47,7 @@ export const Task: React.FC<TaskProps> = ({
   onDropTask,
   isCompleted = false,
   onClick,
+  onUpdateTask,
 }) => {
   const [isDragging, setIsDragging] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
@@ -135,6 +137,12 @@ export const Task: React.FC<TaskProps> = ({
   const isStagnant = isTaskStagnant(task, isCompleted);
   const effectiveCardColor = isStagnant ? STAGNANT_BROWN_COLOR : columnColor;
 
+  const hasAcceptanceCriteria = !!(task.acceptanceCriteria && task.acceptanceCriteria.trim().length > 0);
+  const hasTestScenarios = !!(task.testScenarios && task.testScenarios.trim().length > 0);
+
+  const [isEditingAC, setIsEditingAC] = React.useState(false);
+  const [isEditingTS, setIsEditingTS] = React.useState(false);
+
   return (
     <article
       className={`task-card ${isDragging ? 'task-card-dragging' : ''} ${task.blocked ? 'task-card-blocked' : ''} ${isStagnant ? 'task-card-stagnant' : ''} ${dropClass}`}
@@ -148,7 +156,7 @@ export const Task: React.FC<TaskProps> = ({
             }
           : undefined
       }
-      draggable={!isEditing && !task.blocked}
+      draggable={!isEditing && !isEditingAC && !isEditingTS && !task.blocked}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
@@ -158,7 +166,7 @@ export const Task: React.FC<TaskProps> = ({
         // Only trigger modal click if we're not dragging, not editing, and click didn't originate from a button/input
         const target = e.target as HTMLElement;
         const isInteractive = target.closest('button, input, textarea');
-        if (!isDragging && !isEditing && !isInteractive && onClick) {
+        if (!isDragging && !isEditing && !isEditingAC && !isEditingTS && !isInteractive && onClick) {
           onClick();
         }
       }}
@@ -198,7 +206,7 @@ export const Task: React.FC<TaskProps> = ({
         className="task-card-content"
         onPointerDown={(e) => {
           // Isola seleção de texto do drag
-          if (isEditing) {
+          if (isEditing || isEditingAC || isEditingTS) {
             e.stopPropagation();
           }
         }}
@@ -217,6 +225,56 @@ export const Task: React.FC<TaskProps> = ({
           onAddTag={(tag) => onAddTag?.(task.id, tag)}
           onRemoveTag={(tag) => onRemoveTag?.(task.id, tag)}
         />
+
+        {/* Campos de Engenharia & Qualidade: Critérios de Aceitação e Cenários de Testes */}
+        <div className="task-qa-fields" data-testid="task-qa-fields">
+          <div className="task-field-box">
+            <div className="task-field-header">
+              <span className="task-field-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4"></polyline>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                Critérios de Aceitação
+              </span>
+            </div>
+            <textarea
+              className="task-field-textarea"
+              value={task.acceptanceCriteria || ''}
+              placeholder="Critérios de aceitação..."
+              aria-label="Critérios de aceitação"
+              rows={hasAcceptanceCriteria ? 2 : 1}
+              onFocus={() => setIsEditingAC(true)}
+              onBlur={() => setIsEditingAC(false)}
+              onChange={(e) => onUpdateTask?.(task.id, { acceptanceCriteria: e.target.value })}
+            />
+          </div>
+
+          <div className="task-field-box">
+            <div className="task-field-header">
+              <span className="task-field-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Cenários de Testes
+              </span>
+            </div>
+            <textarea
+              className="task-field-textarea"
+              value={task.testScenarios || ''}
+              placeholder="Cenários de testes..."
+              aria-label="Cenários de testes"
+              rows={hasTestScenarios ? 2 : 1}
+              onFocus={() => setIsEditingTS(true)}
+              onBlur={() => setIsEditingTS(false)}
+              onChange={(e) => onUpdateTask?.(task.id, { testScenarios: e.target.value })}
+            />
+          </div>
+        </div>
 
         {(hasDescription || hasSubtasks || hasDueDate || task.startDate || task.endDate) && (
           <div className="task-indicators" aria-label="Indicadores da tarefa">

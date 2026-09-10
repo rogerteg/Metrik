@@ -60,7 +60,7 @@ describe('Task Component (US2 & US4)', () => {
       />
     );
 
-    const textarea = screen.getByRole('textbox');
+    const textarea = screen.getByRole('textbox', { name: /título da tarefa/i });
     fireEvent.blur(textarea);
 
     expect(handleDiscard).toHaveBeenCalledWith('task-empty');
@@ -357,6 +357,37 @@ describe('Task Component (US2 & US4)', () => {
 
     expect(screen.getByText(/Início:/i)).toBeInTheDocument();
     expect(screen.getByText(/Fim:/i)).toBeInTheDocument();
+  });
+
+  it('renders and allows updating acceptance criteria and test scenarios on card', () => {
+    const handleUpdateTask = vi.fn();
+    const taskWithQA: TaskModel = {
+      ...mockTask,
+      acceptanceCriteria: 'Deve conter validação de email',
+      testScenarios: 'Cenário 1: Email inválido retorna erro 400',
+    };
+
+    render(
+      <Task
+        task={taskWithQA}
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+        onUpdateTask={handleUpdateTask}
+      />
+    );
+
+    const acTextarea = screen.getByLabelText('Critérios de aceitação');
+    const tsTextarea = screen.getByLabelText('Cenários de testes');
+
+    expect(acTextarea).toHaveValue('Deve conter validação de email');
+    expect(tsTextarea).toHaveValue('Cenário 1: Email inválido retorna erro 400');
+
+    fireEvent.change(acTextarea, { target: { value: 'Novo critério de aceitação' } });
+    expect(handleUpdateTask).toHaveBeenCalledWith('task-test-01', { acceptanceCriteria: 'Novo critério de aceitação' });
+
+    fireEvent.change(tsTextarea, { target: { value: 'Novo cenário de teste' } });
+    expect(handleUpdateTask).toHaveBeenCalledWith('task-test-01', { testScenarios: 'Novo cenário de teste' });
   });
 });
 

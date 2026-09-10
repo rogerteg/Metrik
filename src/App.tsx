@@ -262,6 +262,7 @@ export const App: React.FC = () => {
                   isCompleted={currentColumn?.category === 'done'}
                   canMoveLeft={canMoveLeft}
                   canMoveRight={canMoveRight}
+                  onUpdateTask={updateTask}
                   onMoveLeft={() => {
                     if (canMoveLeft) {
                       moveTask(task.id, board.columns[currentIndex - 1].id);

@@ -25,6 +25,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const [localDueDate, setLocalDueDate] = useState(task.dueDate || '');
   const [localStartDate, setLocalStartDate] = useState(task.startDate || '');
   const [localEndDate, setLocalEndDate] = useState(task.endDate || '');
+  const [localAcceptanceCriteria, setLocalAcceptanceCriteria] = useState(task.acceptanceCriteria || '');
+  const [localTestScenarios, setLocalTestScenarios] = useState(task.testScenarios || '');
   const [localBlockedReason, setLocalBlockedReason] = useState(task.blockedReason || '');
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
 
@@ -36,6 +38,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
       setLocalDueDate(task.dueDate || '');
       setLocalStartDate(task.startDate || '');
       setLocalEndDate(task.endDate || '');
+      setLocalAcceptanceCriteria(task.acceptanceCriteria || '');
+      setLocalTestScenarios(task.testScenarios || '');
       setLocalBlockedReason(task.blockedReason || '');
       setNewSubtaskTitle('');
     }
@@ -70,6 +74,18 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const handleEndDateBlur = () => {
     if (localEndDate !== (task.endDate || '')) {
       onUpdateTask(task.id, { endDate: localEndDate || undefined });
+    }
+  };
+
+  const handleAcceptanceCriteriaBlur = () => {
+    if (localAcceptanceCriteria !== (task.acceptanceCriteria || '')) {
+      onUpdateTask(task.id, { acceptanceCriteria: localAcceptanceCriteria });
+    }
+  };
+
+  const handleTestScenariosBlur = () => {
+    if (localTestScenarios !== (task.testScenarios || '')) {
+      onUpdateTask(task.id, { testScenarios: localTestScenarios });
     }
   };
 
@@ -251,7 +267,35 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             value={localDescription}
             onChange={(e) => setLocalDescription(e.target.value)}
             onBlur={handleDescriptionBlur}
-            rows={5}
+            rows={4}
+          />
+        </section>
+
+        {/* Acceptance Criteria Section */}
+        <section className="td-section">
+          <label htmlFor="td-acceptance-criteria" className="td-label">Critérios de Aceitação</label>
+          <textarea
+            id="td-acceptance-criteria"
+            className="td-textarea"
+            placeholder="Defina os critérios de aceitação para considerar a tarefa pronta..."
+            value={localAcceptanceCriteria}
+            onChange={(e) => setLocalAcceptanceCriteria(e.target.value)}
+            onBlur={handleAcceptanceCriteriaBlur}
+            rows={3}
+          />
+        </section>
+
+        {/* Test Scenarios Section */}
+        <section className="td-section">
+          <label htmlFor="td-test-scenarios" className="td-label">Cenários de Testes</label>
+          <textarea
+            id="td-test-scenarios"
+            className="td-textarea"
+            placeholder="Descreva os cenários de testes e validações (ex: BDD Dado/Quando/Então)..."
+            value={localTestScenarios}
+            onChange={(e) => setLocalTestScenarios(e.target.value)}
+            onBlur={handleTestScenariosBlur}
+            rows={3}
           />
         </section>
 

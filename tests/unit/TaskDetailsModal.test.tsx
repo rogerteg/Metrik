@@ -204,4 +204,25 @@ describe('TaskDetailsModal', () => {
     fireEvent.blur(endDateInput);
     expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { endDate: '2026-09-15' });
   });
+
+  it('updates acceptanceCriteria and testScenarios when changed and blurred', () => {
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />
+    );
+
+    const acInput = screen.getByLabelText('Critérios de Aceitação');
+    fireEvent.change(acInput, { target: { value: 'O sistema deve aceitar apenas emails válidos.' } });
+    fireEvent.blur(acInput);
+    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { acceptanceCriteria: 'O sistema deve aceitar apenas emails válidos.' });
+
+    const tsInput = screen.getByLabelText('Cenários de Testes');
+    fireEvent.change(tsInput, { target: { value: 'Dado um email sem @, quando submetido, então exibe erro.' } });
+    fireEvent.blur(tsInput);
+    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { testScenarios: 'Dado um email sem @, quando submetido, então exibe erro.' });
+  });
 });

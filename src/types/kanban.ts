@@ -102,6 +102,12 @@ export interface TaskModel {
   /** Data de Fim da Tarefa (planejada ou conclusão) */
   endDate?: string;
 
+  /** Critérios de Aceitação da tarefa (Acceptance Criteria) */
+  acceptanceCriteria?: string;
+
+  /** Cenários de Testes da tarefa (Test Scenarios / BDD) */
+  testScenarios?: string;
+
   /** Sinalização de impedimento / bloqueio (Feature 012) */
   blocked?: boolean;
   blockedReason?: string;
