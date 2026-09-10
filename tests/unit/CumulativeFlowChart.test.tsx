@@ -118,4 +118,38 @@ describe('CumulativeFlowChart Component (Feature 011)', () => {
     expect(screen.getByTestId('cfd-polygon-dev')).toBeInTheDocument();
     expect(screen.getByTestId('cfd-polygon-review')).toBeInTheDocument();
   });
+
+  it('dynamically adapts CFD wave polygon and legend colors to column.color chosen in board', () => {
+    const columnsWithCustomColors = [
+      { id: 'todo', title: 'To Do', category: 'todo' as const, wipLimit: null, colorScheme: 'todo' as const, color: '#a855f7' },
+      { id: 'wip', title: 'Work In Progress', category: 'in_progress' as const, wipLimit: null, colorScheme: 'progress' as const, color: '#ec4899' },
+      { id: 'done', title: 'Done', category: 'done' as const, wipLimit: null, colorScheme: 'completed' as const, color: '#10b981' },
+    ];
+
+    const cfdData: CfdDataPoint[] = [
+      {
+        date: '2026-09-01',
+        done: 1,
+        inProgress: 2,
+        todo: 3,
+        total: 6,
+        cumulativeStarted: 3,
+        cumulativeDone: 1,
+        stageCounts: { todo: 3, wip: 2, done: 1 },
+        cumulativeStages: { done: 1, wip: 3, todo: 6 },
+      },
+    ];
+
+    render(<CumulativeFlowChart data={cfdData} maxTotal={6} columns={columnsWithCustomColors} />);
+
+    // Wave polygons must match the exact column colors
+    const todoPoly = screen.getByTestId('cfd-polygon-todo');
+    expect(todoPoly).toHaveAttribute('fill', '#a855f7');
+
+    const wipPoly = screen.getByTestId('cfd-polygon-wip');
+    expect(wipPoly).toHaveAttribute('fill', '#ec4899');
+
+    const donePoly = screen.getByTestId('cfd-polygon-done');
+    expect(donePoly).toHaveAttribute('fill', '#10b981');
+  });
 });

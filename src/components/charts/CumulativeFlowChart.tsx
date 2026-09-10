@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { CfdDataPoint } from '../../types/analytics';
-import { ColumnModel } from '../../types/kanban';
+import { ColumnModel, getDefaultColumnColor } from '../../types/kanban';
 
 export interface CumulativeFlowChartProps {
   data: CfdDataPoint[];
@@ -11,33 +11,8 @@ export interface CumulativeFlowChartProps {
   isExpanded?: boolean;
 }
 
-const DEFAULT_STAGE_COLORS = [
-  '#6366f1', // Indigo (Backlog/To Do)
-  '#38bdf8', // Sky blue
-  '#f59e0b', // Amber
-  '#ec4899', // Pink
-  '#a855f7', // Purple
-  '#f43f5e', // Rose
-  '#10b981', // Emerald (Done)
-];
-
-const getColumnColor = (col: ColumnModel, index: number, total: number): string => {
-  if (col.color) {
-    return col.color;
-  }
-  if (col.colorScheme === 'completed' || col.category === 'done' || index === total - 1) {
-    return '#10b981'; // Green for Done
-  }
-  if (col.colorScheme === 'todo' || col.category === 'todo' || index === 0) {
-    return '#6366f1'; // Indigo for To Do
-  }
-  if (col.colorScheme === 'blocked') {
-    return '#f43f5e'; // Red for Blocked
-  }
-  if (col.colorScheme === 'progress') {
-    return index % 2 === 0 ? '#38bdf8' : '#f59e0b';
-  }
-  return DEFAULT_STAGE_COLORS[index % DEFAULT_STAGE_COLORS.length];
+const getColumnColor = (col: ColumnModel): string => {
+  return getDefaultColumnColor(col);
 };
 
 export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
@@ -92,7 +67,7 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
 
   // Polígonos dinâmicos por etapa (da direita para a esquerda: do final para o início)
   const stagePolygons = hasDynamicStages && columns ? columns.map((col, idx) => {
-    const color = getColumnColor(col, idx, columns.length);
+    const color = getColumnColor(col);
     // Limite superior é a cumulativa deste estágio
     // Limite inferior é a cumulativa do estágio à sua direita (ou baseline se for a última coluna)
     const isLastCol = idx === columns.length - 1;
@@ -183,8 +158,8 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
         {/* Dynamic Legend */}
         <div className="cfd-legend" style={{ display: 'flex', gap: '12px', fontSize: '0.75rem', flexWrap: 'wrap' }}>
           {hasDynamicStages && columns ? (
-            columns.map((col, idx) => {
-              const color = getColumnColor(col, idx, columns.length);
+            columns.map((col) => {
+              const color = getColumnColor(col);
               return (
                 <div key={col.id} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: color, display: 'inline-block' }} />
@@ -294,9 +269,9 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
                 strokeWidth="1.5"
               />
               {hasDynamicStages && columns ? (
-                columns.map((col, idx) => {
+                columns.map((col) => {
                   const y = activeCoord.stageY[col.id];
-                  const color = getColumnColor(col, idx, columns.length);
+                  const color = getColumnColor(col);
                   return (
                     <circle
                       key={col.id}
@@ -388,8 +363,8 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
             </div>
 
             {hasDynamicStages && columns ? (
-              columns.map((col, idx) => {
-                const color = getColumnColor(col, idx, columns.length);
+              columns.map((col) => {
+                const color = getColumnColor(col);
                 const count = activeCoord.data.stageCounts?.[col.id] || 0;
                 return (
                   <div key={col.id} style={{ display: 'flex', justifyContent: 'space-between', color, marginBottom: '2px' }}>

@@ -218,23 +218,29 @@
 .bar {
   width: 100%;
   max-width: 32px;
-  background: linear-gradient(180deg, var(--accent-blue) 0%, rgba(59, 130, 246, 0.2) 100%);
-  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #38bdf8 0%, rgba(56, 189, 248, 0.25) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
   min-height: 2px; /* ensure zero values still show a tiny tick or at least exist */
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding-top: 0.25rem;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
 }
 
 .bar-wrapper:hover .bar {
   filter: brightness(1.2);
+  background: linear-gradient(180deg, #7dd3fc 0%, rgba(56, 189, 248, 0.45) 100%);
+  border-color: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
 }
 
 .bar-value {
   font-size: 0.75rem;
-  color: #fff;
+  color: #f8fafc;
   font-weight: 600;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -271,23 +277,26 @@
 }
 
 .svg-grid-line {
-  stroke: rgba(255, 255, 255, 0.1);
+  stroke: rgba(255, 255, 255, 0.08);
   stroke-dasharray: 4;
   stroke-width: 1;
 }
 
 .scatter-point {
-  fill: var(--accent-red);
-  stroke: var(--bg-card);
+  fill: #818cf8;
+  stroke: #c7d2fe;
   stroke-width: 1.5;
   transition: all 0.2s ease;
   cursor: pointer;
+  filter: drop-shadow(0 0 4px rgba(129, 140, 248, 0.35));
 }
 
 .scatter-point:hover {
   r: 5;
-  fill: #ff6b6b;
-  filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.6));
+  fill: #a5b4fc;
+  stroke: #ffffff;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 8px rgba(165, 180, 252, 0.8));
 }
 
 .scatter-x-axis {
