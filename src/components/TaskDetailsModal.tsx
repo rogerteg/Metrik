@@ -23,6 +23,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const [localTitle, setLocalTitle] = useState(task.title);
   const [localDescription, setLocalDescription] = useState(task.description || '');
   const [localDueDate, setLocalDueDate] = useState(task.dueDate || '');
+  const [localStartDate, setLocalStartDate] = useState(task.startDate || '');
+  const [localEndDate, setLocalEndDate] = useState(task.endDate || '');
   const [localBlockedReason, setLocalBlockedReason] = useState(task.blockedReason || '');
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
 
@@ -32,6 +34,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
       setLocalTitle(task.title);
       setLocalDescription(task.description || '');
       setLocalDueDate(task.dueDate || '');
+      setLocalStartDate(task.startDate || '');
+      setLocalEndDate(task.endDate || '');
       setLocalBlockedReason(task.blockedReason || '');
       setNewSubtaskTitle('');
     }
@@ -54,6 +58,18 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const handleDueDateBlur = () => {
     if (localDueDate !== (task.dueDate || '')) {
       onUpdateTask(task.id, { dueDate: localDueDate || undefined });
+    }
+  };
+
+  const handleStartDateBlur = () => {
+    if (localStartDate !== (task.startDate || '')) {
+      onUpdateTask(task.id, { startDate: localStartDate || undefined });
+    }
+  };
+
+  const handleEndDateBlur = () => {
+    if (localEndDate !== (task.endDate || '')) {
+      onUpdateTask(task.id, { endDate: localEndDate || undefined });
     }
   };
 
@@ -140,17 +156,46 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           />
         </section>
 
-        {/* Due Date Section */}
+        {/* Dates Section (Início, Fim, Entrega) */}
         <section className="td-section">
-          <label htmlFor="td-dueDate" className="td-label">Data de Entrega</label>
-          <input
-            id="td-dueDate"
-            type="date"
-            className="td-input td-date-input"
-            value={localDueDate}
-            onChange={(e) => setLocalDueDate(e.target.value)}
-            onBlur={handleDueDateBlur}
-          />
+          <div className="td-dates-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
+            <div>
+              <label htmlFor="td-startDate" className="td-label">Início da Tarefa</label>
+              <input
+                id="td-startDate"
+                type="date"
+                className="td-input td-date-input"
+                value={localStartDate}
+                onChange={(e) => setLocalStartDate(e.target.value)}
+                onBlur={handleStartDateBlur}
+                aria-label="Início da Tarefa"
+              />
+            </div>
+            <div>
+              <label htmlFor="td-endDate" className="td-label">Fim da Tarefa</label>
+              <input
+                id="td-endDate"
+                type="date"
+                className="td-input td-date-input"
+                value={localEndDate}
+                onChange={(e) => setLocalEndDate(e.target.value)}
+                onBlur={handleEndDateBlur}
+                aria-label="Fim da Tarefa"
+              />
+            </div>
+            <div>
+              <label htmlFor="td-dueDate" className="td-label">Data de Entrega</label>
+              <input
+                id="td-dueDate"
+                type="date"
+                className="td-input td-date-input"
+                value={localDueDate}
+                onChange={(e) => setLocalDueDate(e.target.value)}
+                onBlur={handleDueDateBlur}
+                aria-label="Data de Entrega"
+              />
+            </div>
+          </div>
         </section>
 
         {/* Impediment / Blocked Section */}

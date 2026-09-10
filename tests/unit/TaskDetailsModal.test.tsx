@@ -183,4 +183,25 @@ describe('TaskDetailsModal', () => {
 
     expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { blockedReason: 'Novo Motivo do Impedimento' });
   });
+
+  it('updates startDate and endDate when changed and blurred', () => {
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />
+    );
+
+    const startDateInput = screen.getByLabelText('Início da Tarefa');
+    fireEvent.change(startDateInput, { target: { value: '2026-09-01' } });
+    fireEvent.blur(startDateInput);
+    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { startDate: '2026-09-01' });
+
+    const endDateInput = screen.getByLabelText('Fim da Tarefa');
+    fireEvent.change(endDateInput, { target: { value: '2026-09-15' } });
+    fireEvent.blur(endDateInput);
+    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { endDate: '2026-09-15' });
+  });
 });

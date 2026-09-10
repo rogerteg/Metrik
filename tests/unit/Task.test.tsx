@@ -309,6 +309,55 @@ describe('Task Component (US2 & US4)', () => {
     // Border left style should not overwrite blocked class
     expect(article.style.borderLeft).toBe('');
   });
+
+  it('turns brown with stagnant badge when task is inactive for more than 3 days', () => {
+    // 5 days ago
+    const oldDate = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString();
+    const stagnantTask: TaskModel = {
+      ...mockTask,
+      createdAt: oldDate,
+      updatedAt: oldDate,
+    };
+
+    render(
+      <Task
+        task={stagnantTask}
+        columnColor="#38bdf8"
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+      />
+    );
+
+    const article = screen.getByRole('article');
+    expect(article.classList.contains('task-card-stagnant')).toBe(true);
+    // Border left should be brown (#8B4513)
+    expect(article).toHaveStyle({ borderLeft: '4px solid #8B4513' });
+
+    // Should display stagnant badge
+    expect(screen.getByTestId('task-stagnant-badge')).toBeInTheDocument();
+    expect(screen.getByText(/Parado/i)).toBeInTheDocument();
+  });
+
+  it('renders startDate and endDate badges when present', () => {
+    const taskWithDates: TaskModel = {
+      ...mockTask,
+      startDate: '2026-09-01',
+      endDate: '2026-09-15',
+    };
+
+    render(
+      <Task
+        task={taskWithDates}
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText(/Início:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Fim:/i)).toBeInTheDocument();
+  });
 });
 
 

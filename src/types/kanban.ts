@@ -96,11 +96,39 @@ export interface TaskModel {
   subtasks?: SubtaskModel[];
   dueDate?: string; // ISO 8601 string, e.g., '2026-10-15'
 
+  /** Data de Início da Tarefa (planejada ou de execução) */
+  startDate?: string;
+
+  /** Data de Fim da Tarefa (planejada ou conclusão) */
+  endDate?: string;
+
   /** Sinalização de impedimento / bloqueio (Feature 012) */
   blocked?: boolean;
   blockedReason?: string;
   blockedAt?: string; // Timestamp ISO de quando foi bloqueada
   totalBlockedMs?: number; // Duração acumulada de bloqueio em ms
+}
+
+/** Dias sem movimentação para considerar o cartão estagnado (marrom) */
+export const STAGNATION_THRESHOLD_DAYS = 3;
+export const STAGNANT_BROWN_COLOR = '#8B4513'; // Saddle Brown / Marrom
+
+/**
+ * Verifica se a tarefa está há muito tempo parada no board sem movimentação.
+ * Regra: tarefas que não estejam na coluna concluída ('done') cujo tempo
+ * desde a última movimentação (updatedAt ou createdAt) seja superior ao limite em dias.
+ */
+export function isTaskStagnant(task: TaskModel, isCompletedColumn: boolean = false, thresholdDays: number = STAGNATION_THRESHOLD_DAYS, nowMs: number = Date.now()): boolean {
+  if (isCompletedColumn) return false;
+
+  const referenceDateStr = task.updatedAt || task.createdAt;
+  if (!referenceDateStr) return false;
+
+  const refMs = new Date(referenceDateStr).getTime();
+  if (isNaN(refMs)) return false;
+
+  const elapsedDays = (nowMs - refMs) / (1000 * 60 * 60 * 24);
+  return elapsedDays >= thresholdDays;
 }
 
 export interface BoardModel {
