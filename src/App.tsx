@@ -15,6 +15,7 @@ import { BoardManagementModal } from './components/BoardManagementModal';
 import { NewColumnModal } from './components/NewColumnModal';
 import { useColumnWidths } from './hooks/useColumnWidths';
 import { getDefaultColumnColor } from './types/kanban';
+import metrikLogo from './assets/metrik-logo.png';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -125,12 +126,12 @@ export const App: React.FC = () => {
     <div className="app-container">
       <header className="app-header">
         <div className="brand-section" style={{ display: 'flex', alignItems: 'center' }}>
-          <div className="brand-logo" aria-hidden="true">
-            M
+          <div className="brand-logo-container" aria-label="Logotipo Metrik">
+            <img src={metrikLogo} alt="Metrik — Métricas para Gestão Ágil" className="brand-logo-img" />
           </div>
           <div>
             <h1 className="brand-title">Metrik</h1>
-            <p className="brand-subtitle">Quadro Kanban Ágil de Alta Performance</p>
+            <p className="brand-subtitle">Métricas para Gestão Ágil</p>
           </div>
           
           <BoardSwitcher 
