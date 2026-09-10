@@ -22,6 +22,9 @@ const DEFAULT_STAGE_COLORS = [
 ];
 
 const getColumnColor = (col: ColumnModel, index: number, total: number): string => {
+  if (col.color) {
+    return col.color;
+  }
   if (col.colorScheme === 'completed' || col.category === 'done' || index === total - 1) {
     return '#10b981'; // Green for Done
   }

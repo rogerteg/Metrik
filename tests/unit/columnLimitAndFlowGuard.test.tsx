@@ -277,7 +277,7 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
       fireEvent.change(wipInput, { target: { value: '4' } });
       fireEvent.click(submitBtn);
 
-      expect(handleAddColumn).toHaveBeenCalledWith('Code Review', 'in_progress', 4);
+      expect(handleAddColumn).toHaveBeenCalledWith('Code Review', 'in_progress', 4, '#38bdf8');
       expect(handleClose).toHaveBeenCalledTimes(1);
     });
 

@@ -14,6 +14,7 @@ import { BoardSwitcher } from './components/BoardSwitcher';
 import { BoardManagementModal } from './components/BoardManagementModal';
 import { NewColumnModal } from './components/NewColumnModal';
 import { useColumnWidths } from './hooks/useColumnWidths';
+import { getDefaultColumnColor } from './types/kanban';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -242,11 +243,13 @@ export const App: React.FC = () => {
               const currentColumn = board.columns[currentIndex];
               const canMoveLeft = currentIndex > 0;
               const canMoveRight = currentIndex < board.columns.length - 1;
+              const colColor = getDefaultColumnColor(currentColumn);
 
               return (
                 <Task
                   key={task.id}
                   task={task}
+                  columnColor={colColor}
                   onClick={() => setSelectedTaskId(task.id)}
                   onUpdateTitle={(id, title) => updateTask(id, { title })}
                   onDelete={deleteTask}

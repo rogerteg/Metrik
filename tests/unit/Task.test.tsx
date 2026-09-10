@@ -271,6 +271,44 @@ describe('Task Component (US2 & US4)', () => {
     expect(badge).toHaveTextContent(/Bloqueado/i);
     expect(badge).toHaveAttribute('title', 'Bloqueado: Aguardando Aprovação de Segurança');
   });
+
+  it('applies columnColor style to task card matching the preconfigured column color', () => {
+    render(
+      <Task
+        task={mockTask}
+        columnColor="#10b981"
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+      />
+    );
+
+    const article = screen.getByRole('article');
+    expect(article).toHaveStyle({ borderLeft: '4px solid #10b981' });
+  });
+
+  it('keeps red blocked border when task is blocked even if columnColor is provided', () => {
+    const blockedTask: TaskModel = {
+      ...mockTask,
+      blocked: true,
+      blockedReason: 'API fora do ar',
+    };
+
+    render(
+      <Task
+        task={blockedTask}
+        columnColor="#38bdf8"
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+      />
+    );
+
+    const article = screen.getByRole('article');
+    expect(article.classList.contains('task-card-blocked')).toBe(true);
+    // Border left style should not overwrite blocked class
+    expect(article.style.borderLeft).toBe('');
+  });
 });
 
 

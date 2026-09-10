@@ -19,7 +19,36 @@ export interface ColumnModel {
   wipLimit: number | null;
   /** Esquema de cor opcional da coluna */
   colorScheme: 'todo' | 'progress' | 'blocked' | 'completed';
+  /** Cor personalizada ou pré-configurada da coluna (formato hex) */
+  color?: string;
 }
+
+export const PRESET_COLUMN_COLORS: { name: string; hex: string }[] = [
+  { name: 'Indigo', hex: '#6366f1' },
+  { name: 'Sky Blue', hex: '#38bdf8' },
+  { name: 'Amber', hex: '#f59e0b' },
+  { name: 'Purple', hex: '#a855f7' },
+  { name: 'Pink', hex: '#ec4899' },
+  { name: 'Rose', hex: '#f43f5e' },
+  { name: 'Emerald', hex: '#10b981' },
+  { name: 'Slate', hex: '#64748b' },
+];
+
+export const getDefaultColumnColor = (column?: { colorScheme?: string; category?: ColumnCategory; color?: string } | null): string => {
+  if (!column) return '#38bdf8';
+  if (column.color) return column.color;
+  switch (column.colorScheme) {
+    case 'todo': return '#6366f1';
+    case 'progress': return '#38bdf8';
+    case 'blocked': return '#f43f5e';
+    case 'completed': return '#10b981';
+    default:
+      if (column.category === 'todo') return '#6366f1';
+      if (column.category === 'done') return '#10b981';
+      return '#38bdf8';
+  }
+};
+
 
 export type PriorityLevel = 'urgent' | 'high' | 'medium' | 'low';
 

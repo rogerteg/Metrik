@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { ColumnModel } from '../types/kanban';
+import React, { useState, useRef, useEffect } from 'react';
+import { ColumnModel, PRESET_COLUMN_COLORS, getDefaultColumnColor } from '../types/kanban';
 import { WipLimitBadge } from './WipLimitBadge';
 import { ReorderOptions } from '../types/dnd';
 
@@ -57,6 +57,7 @@ export const Column: React.FC<ColumnProps> = ({
   const badgeClass = getBadgeClass(column.colorScheme);
   const modifierClass = getColumnModifierClass(column.colorScheme);
   const isOverloaded = column.wipLimit !== null && count > column.wipLimit;
+  const columnColor = getDefaultColumnColor(column);
 
   // Regra fundamental: Apenas a primeira coluna (índice 0, ex: To Do) é fixa
   const isFixed = columnIndex === 0;
@@ -68,10 +69,27 @@ export const Column: React.FC<ColumnProps> = ({
   const [isResizing, setIsResizing] = useState(false);
   const [isColumnDragging, setIsColumnDragging] = useState(false);
   const [columnDropIndicator, setColumnDropIndicator] = useState<'before' | 'after' | null>(null);
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 
+  const colorPickerRef = useRef<HTMLDivElement>(null);
   const dragDepthRef = useRef(0);
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (colorPickerRef.current && !colorPickerRef.current.contains(e.target as Node)) {
+        setIsColorPickerOpen(false);
+      }
+    };
+    if (isColorPickerOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isColorPickerOpen]);
+
 
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -212,7 +230,11 @@ export const Column: React.FC<ColumnProps> = ({
   return (
     <section
       className={`kanban-column ${modifierClass} ${isOverloaded ? 'kanban-column-wip-exceeded' : ''} ${isDropTarget ? 'kanban-column-drop-target' : ''} ${isResizing ? 'is-resizing' : ''} ${isColumnDragging ? 'is-column-dragging' : ''} ${columnDropIndicator === 'before' ? 'column-drop-before' : ''} ${columnDropIndicator === 'after' ? 'column-drop-after' : ''} ${isFixed ? 'is-fixed-column' : ''}`}
-      style={width ? { width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` } : undefined}
+      style={{
+        ...(width ? { width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` } : {}),
+        borderTopColor: columnColor,
+        borderTopWidth: '3px',
+      }}
       aria-label={`Coluna ${column.title}`}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
@@ -234,7 +256,16 @@ export const Column: React.FC<ColumnProps> = ({
             </div>
           )}
 
-          <span className={`column-badge ${badgeClass}`} onClick={handleEditTitle} style={{ cursor: onUpdateColumn ? 'pointer' : 'default' }} title="Clique para editar">
+          <span
+            className={`column-badge ${badgeClass}`}
+            onClick={handleEditTitle}
+            style={{
+              cursor: onUpdateColumn ? 'pointer' : 'default',
+              borderColor: `${columnColor}55`,
+              boxShadow: `0 0 10px ${columnColor}22`,
+            }}
+            title="Clique para editar nome"
+          >
             {column.title}
           </span>
 
@@ -263,6 +294,58 @@ export const Column: React.FC<ColumnProps> = ({
         </div>
 
         <div className="column-header-actions">
+          {onUpdateColumn && (
+            <div className="column-color-picker-wrapper" ref={colorPickerRef}>
+              <button
+                type="button"
+                className="btn-column-action btn-column-color"
+                onClick={() => setIsColorPickerOpen((prev) => !prev)}
+                title="Alterar cor da coluna"
+                aria-label={`Alterar cor da coluna ${column.title}`}
+                style={{
+                  backgroundColor: columnColor,
+                  boxShadow: `0 0 8px ${columnColor}66`,
+                }}
+              />
+
+              {isColorPickerOpen && (
+                <div className="column-color-palette-popover" role="dialog" aria-label="Paleta de cores da coluna">
+                  <div className="column-color-palette-title">Cor da Coluna</div>
+                  <div className="column-color-presets-grid">
+                    {PRESET_COLUMN_COLORS.map((preset) => (
+                      <button
+                        key={preset.hex}
+                        type="button"
+                        className={`color-preset-swatch ${columnColor.toLowerCase() === preset.hex.toLowerCase() ? 'active' : ''}`}
+                        style={{ backgroundColor: preset.hex }}
+                        onClick={() => {
+                          onUpdateColumn(column.id, { color: preset.hex });
+                          setIsColorPickerOpen(false);
+                        }}
+                        title={preset.name}
+                        aria-label={`Cor ${preset.name}`}
+                      />
+                    ))}
+                  </div>
+                  <div className="column-custom-color-row">
+                    <label htmlFor={`color-input-${column.id}`} className="column-custom-color-label">Personalizada:</label>
+                    <input
+                      id={`color-input-${column.id}`}
+                      type="color"
+                      className="column-native-color-picker"
+                      value={columnColor.startsWith('#') ? columnColor : '#38bdf8'}
+                      onChange={(e) => {
+                        onUpdateColumn(column.id, { color: e.target.value });
+                      }}
+                      title="Escolher cor personalizada"
+                      aria-label="Escolher cor personalizada"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {!isFixed && onMoveColumn && typeof columnIndex === 'number' && (
             <div className="column-move-btn-group" role="group" aria-label="Mover coluna">
               <button

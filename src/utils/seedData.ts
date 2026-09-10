@@ -7,6 +7,7 @@ export const DEFAULT_COLUMNS: ColumnModel[] = [
     category: 'todo',
     wipLimit: null,
     colorScheme: 'todo',
+    color: '#6366f1',
   },
   {
     id: 'in-progress',
@@ -14,6 +15,7 @@ export const DEFAULT_COLUMNS: ColumnModel[] = [
     category: 'in_progress',
     wipLimit: 3,
     colorScheme: 'progress',
+    color: '#38bdf8',
   },
   {
     id: 'blocked',
@@ -21,6 +23,7 @@ export const DEFAULT_COLUMNS: ColumnModel[] = [
     category: 'in_progress',
     wipLimit: 2,
     colorScheme: 'blocked',
+    color: '#f43f5e',
   },
   {
     id: 'completed',
@@ -28,6 +31,7 @@ export const DEFAULT_COLUMNS: ColumnModel[] = [
     category: 'done',
     wipLimit: null,
     colorScheme: 'completed',
+    color: '#10b981',
   },
 ];
 

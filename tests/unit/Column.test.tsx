@@ -56,4 +56,29 @@ describe('Column Component (US1)', () => {
     expect(screen.getByTestId('mock-task')).toBeInTheDocument();
     expect(screen.queryByText('Arraste um cartão aqui')).not.toBeInTheDocument();
   });
+
+  it('allows changing column color via color palette button', () => {
+    const handleUpdateColumn = vi.fn();
+    render(
+      <Column
+        column={{ ...inProgressCol, color: '#38bdf8' }}
+        count={2}
+        onUpdateColumn={handleUpdateColumn}
+      />
+    );
+
+    const colorButton = screen.getByRole('button', { name: /Alterar cor da coluna/i });
+    expect(colorButton).toBeInTheDocument();
+    expect(colorButton).toHaveStyle({ backgroundColor: 'rgb(56, 189, 248)' });
+
+    // Open popover
+    fireEvent.click(colorButton);
+    expect(screen.getByText('Cor da Coluna')).toBeInTheDocument();
+
+    // Select Emerald swatch
+    const emeraldSwatch = screen.getByRole('button', { name: 'Cor Emerald' });
+    fireEvent.click(emeraldSwatch);
+
+    expect(handleUpdateColumn).toHaveBeenCalledWith('in_progress', { color: '#10b981' });
+  });
 });

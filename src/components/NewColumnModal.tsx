@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ColumnCategory, MAX_COLUMNS } from '../types/kanban';
+import { ColumnCategory, MAX_COLUMNS, PRESET_COLUMN_COLORS } from '../types/kanban';
 import './Modal.css';
 
 export interface NewColumnModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddColumn: (title: string, category: ColumnCategory, wipLimit: number | null) => void;
+  onAddColumn: (title: string, category: ColumnCategory, wipLimit: number | null, color?: string) => void;
   currentColumnCount: number;
 }
 
@@ -18,6 +18,7 @@ export const NewColumnModal: React.FC<NewColumnModalProps> = ({
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<ColumnCategory>('in_progress');
   const [wipLimit, setWipLimit] = useState<string>('');
+  const [color, setColor] = useState<string>(PRESET_COLUMN_COLORS[1].hex);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export const NewColumnModal: React.FC<NewColumnModalProps> = ({
       setTitle('');
       setCategory('in_progress');
       setWipLimit('');
+      setColor(PRESET_COLUMN_COLORS[1].hex); // Sky Blue default
       setError(null);
     }
   }, [isOpen]);
@@ -66,7 +68,7 @@ export const NewColumnModal: React.FC<NewColumnModalProps> = ({
       parsedWip = parsed;
     }
 
-    onAddColumn(cleanTitle, category, parsedWip);
+    onAddColumn(cleanTitle, category, parsedWip, color);
     onClose();
   };
 
@@ -154,6 +156,38 @@ export const NewColumnModal: React.FC<NewColumnModalProps> = ({
             />
             <small className="form-helper-text">
               Quantidade máxima de cartões simultâneos permitidos nesta coluna.
+            </small>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">
+              Cor da Coluna
+            </label>
+            <div className="modal-color-presets-row">
+              {PRESET_COLUMN_COLORS.map((preset) => (
+                <button
+                  key={preset.hex}
+                  type="button"
+                  className={`color-preset-swatch ${color.toLowerCase() === preset.hex.toLowerCase() ? 'active' : ''}`}
+                  style={{ backgroundColor: preset.hex }}
+                  onClick={() => setColor(preset.hex)}
+                  title={preset.name}
+                  aria-label={`Cor ${preset.name}`}
+                  disabled={isAtLimit}
+                />
+              ))}
+              <input
+                type="color"
+                className="column-native-color-picker modal-color-input"
+                value={color.startsWith('#') ? color : '#38bdf8'}
+                onChange={(e) => setColor(e.target.value)}
+                title="Cor personalizada"
+                aria-label="Cor personalizada"
+                disabled={isAtLimit}
+              />
+            </div>
+            <small className="form-helper-text">
+              Os cartões inseridos nesta coluna herdarão sua cor configurada.
             </small>
           </div>
 

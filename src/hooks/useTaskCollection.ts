@@ -96,7 +96,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
   // COLUMN METHODS
   // ============================================================================
 
-  const addColumn = useCallback((title: string, category: ColumnCategory, wipLimit: number | null = null) => {
+  const addColumn = useCallback((title: string, category: ColumnCategory, wipLimit: number | null = null, color?: string) => {
     setBoard((prev) => {
       if (prev.columns.length >= MAX_COLUMNS) {
         console.warn(`[Metrik] Limite máximo de ${MAX_COLUMNS} colunas atingido.`);
@@ -109,12 +109,15 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
       if (category === 'in_progress') colorScheme = 'progress';
       if (category === 'done') colorScheme = 'completed';
 
+      const resolvedColor = color || (category === 'todo' ? '#6366f1' : category === 'done' ? '#10b981' : '#38bdf8');
+
       const newColumn: ColumnModel = {
         id: newColId,
         title,
         category,
         wipLimit,
         colorScheme,
+        color: resolvedColor,
       };
 
       return {

@@ -14,6 +14,7 @@ import {
 
 export interface TaskProps {
   task: TaskModel;
+  columnColor?: string;
   onUpdateTitle: (id: string, newTitle: string) => void;
   onDelete: (id: string) => void;
   onDiscardIfEmpty: (id: string) => void;
@@ -31,6 +32,7 @@ export interface TaskProps {
 
 export const Task: React.FC<TaskProps> = ({
   task,
+  columnColor,
   onUpdateTitle,
   onDelete,
   onDiscardIfEmpty,
@@ -131,6 +133,14 @@ export const Task: React.FC<TaskProps> = ({
       className={`task-card ${isDragging ? 'task-card-dragging' : ''} ${task.blocked ? 'task-card-blocked' : ''} ${dropClass}`}
       id={`task-${task.id}`}
       aria-label={`Cartão de tarefa: ${task.title || 'Sem título'}`}
+      style={
+        columnColor && !task.blocked
+          ? {
+              borderLeft: `4px solid ${columnColor}`,
+              borderTopColor: `${columnColor}40`,
+            }
+          : undefined
+      }
       draggable={!isEditing}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
