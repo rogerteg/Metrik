@@ -13,6 +13,7 @@ import { useBoards } from './hooks/useBoards';
 import { BoardSwitcher } from './components/BoardSwitcher';
 import { BoardManagementModal } from './components/BoardManagementModal';
 import { NewColumnModal } from './components/NewColumnModal';
+import { useColumnWidths } from './hooks/useColumnWidths';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -27,6 +28,8 @@ export const App: React.FC = () => {
 
   const [isBoardModalOpen, setIsBoardModalOpen] = React.useState(false);
   const [isNewColumnModalOpen, setIsNewColumnModalOpen] = React.useState(false);
+
+  const { columnWidths, setColumnWidth, resetColumnWidth } = useColumnWidths(activeBoardId);
 
   const {
     board,
@@ -224,6 +227,9 @@ export const App: React.FC = () => {
             board={filterData.filteredBoard}
             rawBoard={board}
             hasActiveFilters={filterData.hasActiveFilters}
+            columnWidths={columnWidths}
+            onResizeColumnWidth={setColumnWidth}
+            onResetColumnWidth={resetColumnWidth}
             onAddTask={handleAddTask}
             onUpdateColumn={updateColumn}
             onDeleteColumn={deleteColumn}

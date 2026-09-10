@@ -6,6 +6,9 @@ import { ReorderOptions } from '../types/dnd';
 export interface ColumnProps {
   column: ColumnModel;
   count: number;
+  width?: number;
+  onResizeWidth?: (columnId: string, width: number) => void;
+  onResetWidth?: (columnId: string) => void;
   onAddTask?: () => void;
   onUpdateColumn?: (id: string, updates: Partial<ColumnModel>) => void;
   onDeleteColumn?: (id: string) => void;
@@ -36,6 +39,9 @@ const getColumnModifierClass = (colorScheme: string): string => {
 export const Column: React.FC<ColumnProps> = ({
   column,
   count,
+  width,
+  onResizeWidth,
+  onResetWidth,
   onAddTask,
   onUpdateColumn,
   onDeleteColumn,
@@ -47,7 +53,33 @@ export const Column: React.FC<ColumnProps> = ({
   const isOverloaded = column.wipLimit !== null && count > column.wipLimit;
 
   const [isDropTarget, setIsDropTarget] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   const dragDepthRef = useRef(0);
+  const startXRef = useRef(0);
+  const startWidthRef = useRef(0);
+
+  const handleResizeMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsResizing(true);
+    startXRef.current = e.clientX;
+    startWidthRef.current = width || 280;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const delta = moveEvent.clientX - startXRef.current;
+      const newWidth = Math.max(200, Math.min(650, startWidthRef.current + delta));
+      onResizeWidth?.(column.id, newWidth);
+    };
+
+    const onMouseUp = () => {
+      setIsResizing(false);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
 
   const handleDragEnter = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
@@ -107,7 +139,8 @@ export const Column: React.FC<ColumnProps> = ({
 
   return (
     <section
-      className={`kanban-column ${modifierClass} ${isOverloaded ? 'kanban-column-wip-exceeded' : ''} ${isDropTarget ? 'kanban-column-drop-target' : ''}`}
+      className={`kanban-column ${modifierClass} ${isOverloaded ? 'kanban-column-wip-exceeded' : ''} ${isDropTarget ? 'kanban-column-drop-target' : ''} ${isResizing ? 'is-resizing' : ''}`}
+      style={width ? { width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` } : undefined}
       aria-label={`Coluna ${column.title}`}
       onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
@@ -166,6 +199,18 @@ export const Column: React.FC<ColumnProps> = ({
           children
         )}
       </div>
+
+      {onResizeWidth && (
+        <div
+          className="column-resize-handle"
+          onMouseDown={handleResizeMouseDown}
+          onDoubleClick={() => onResetWidth ? onResetWidth(column.id) : onResizeWidth(column.id, 280)}
+          title="Arraste para redimensionar a largura da coluna (duplo clique para redefinir)"
+          aria-label={`Ajustar largura da coluna ${column.title}`}
+          role="separator"
+          aria-orientation="vertical"
+        />
+      )}
     </section>
   );
 };

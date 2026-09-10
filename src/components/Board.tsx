@@ -7,6 +7,9 @@ export interface BoardProps {
   board: BoardState;
   rawBoard?: BoardState;
   hasActiveFilters?: boolean;
+  columnWidths?: Record<string, number>;
+  onResizeColumnWidth?: (columnId: string, width: number) => void;
+  onResetColumnWidth?: (columnId: string) => void;
   onAddTask: (columnId: string) => void;
   onUpdateColumn?: (id: string, updates: Partial<ColumnModel>) => void;
   onDeleteColumn?: (id: string) => void;
@@ -19,6 +22,9 @@ export const Board: React.FC<BoardProps> = ({
   board,
   rawBoard,
   hasActiveFilters = false,
+  columnWidths,
+  onResizeColumnWidth,
+  onResetColumnWidth,
   onAddTask,
   onUpdateColumn,
   onDeleteColumn,
@@ -52,6 +58,9 @@ export const Board: React.FC<BoardProps> = ({
               key={col.id}
               column={col}
               count={rawTasks.length}
+              width={columnWidths?.[col.id]}
+              onResizeWidth={onResizeColumnWidth}
+              onResetWidth={onResetColumnWidth}
               onAddTask={() => onAddTask(col.id)}
               onUpdateColumn={onUpdateColumn}
               onDeleteColumn={onDeleteColumn}
