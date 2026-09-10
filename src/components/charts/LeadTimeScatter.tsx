@@ -1,12 +1,19 @@
 import React from 'react';
 import { ScatterDataPoint } from '../../hooks/useAnalyticsData';
 
-interface LeadTimeScatterProps {
+export interface LeadTimeScatterProps {
   data: ScatterDataPoint[];
   maxLeadTime: number;
+  onToggleExpand?: () => void;
+  isExpanded?: boolean;
 }
 
-export const LeadTimeScatter: React.FC<LeadTimeScatterProps> = ({ data, maxLeadTime }) => {
+export const LeadTimeScatter: React.FC<LeadTimeScatterProps> = ({
+  data,
+  maxLeadTime,
+  onToggleExpand,
+  isExpanded = false,
+}) => {
   // Define coordinate space
   const chartWidth = 100;
   const chartHeight = 100;
@@ -22,8 +29,21 @@ export const LeadTimeScatter: React.FC<LeadTimeScatterProps> = ({ data, maxLeadT
   const startMs = windowStart.getTime();
 
   return (
-    <div className="chart-container">
-      <h3 className="chart-title">Lead Time (Dias)</h3>
+    <div className={`chart-container ${isExpanded ? 'is-chart-expanded' : ''}`}>
+      <div className="chart-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <h3 className="chart-title" style={{ margin: 0 }}>Lead Time (Dias)</h3>
+        {onToggleExpand && (
+          <button
+            type="button"
+            className="btn-chart-expand"
+            onClick={onToggleExpand}
+            title={isExpanded ? 'Restaurar tamanho' : 'Expandir gráfico'}
+            aria-label={isExpanded ? 'Restaurar gráfico Lead Time' : 'Expandir gráfico Lead Time'}
+          >
+            {isExpanded ? '✕ Fechar' : '⛶ Expandir'}
+          </button>
+        )}
+      </div>
       <div className="chart-y-axis-label">Tempo (Dias)</div>
 
       <div className="scatter-chart-area">

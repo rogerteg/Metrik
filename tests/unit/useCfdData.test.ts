@@ -118,4 +118,39 @@ describe('useCfdData & calculateCfd (Feature 011)', () => {
       expect(p.done).toBe(0);
     });
   });
+
+  it('calculates full board stages when custom columns are provided', () => {
+    const days = getLastNDays(14);
+    const targetDay = days[13];
+
+    const columns = [
+      { id: 'c-todo', title: 'To Do', category: 'todo' as const, wipLimit: null, colorScheme: 'todo' as const },
+      { id: 'c-dev', title: 'Development', category: 'in_progress' as const, wipLimit: null, colorScheme: 'progress' as const },
+      { id: 'c-qa', title: 'QA Review', category: 'in_progress' as const, wipLimit: null, colorScheme: 'blocked' as const },
+      { id: 'c-done', title: 'Concluído', category: 'done' as const, wipLimit: null, colorScheme: 'completed' as const },
+    ];
+
+    const tasks: TaskModel[] = [
+      { id: 't1', title: 'Task 1', column: 'c-todo', createdAt: `${targetDay}T08:00:00Z` },
+      { id: 't2', title: 'Task 2', column: 'c-dev', createdAt: `${targetDay}T08:00:00Z`, startedAt: `${targetDay}T09:00:00Z` },
+      { id: 't3', title: 'Task 3', column: 'c-qa', createdAt: `${targetDay}T08:00:00Z`, startedAt: `${targetDay}T09:30:00Z` },
+      { id: 't4', title: 'Task 4', column: 'c-done', createdAt: `${targetDay}T08:00:00Z`, startedAt: `${targetDay}T09:00:00Z`, completedAt: `${targetDay}T10:00:00Z` },
+    ];
+
+    const data = calculateCfd(tasks, 14, columns);
+    expect(data.columns).toEqual(columns);
+
+    const todayPoint = data.points.find((p) => p.date === targetDay);
+    expect(todayPoint).toBeDefined();
+    expect(todayPoint?.stageCounts?.['c-todo']).toBe(1);
+    expect(todayPoint?.stageCounts?.['c-dev']).toBe(1);
+    expect(todayPoint?.stageCounts?.['c-qa']).toBe(1);
+    expect(todayPoint?.stageCounts?.['c-done']).toBe(1);
+
+    // Cumulative check (from right to left)
+    expect(todayPoint?.cumulativeStages?.['c-done']).toBe(1);
+    expect(todayPoint?.cumulativeStages?.['c-qa']).toBe(2);
+    expect(todayPoint?.cumulativeStages?.['c-dev']).toBe(3);
+    expect(todayPoint?.cumulativeStages?.['c-todo']).toBe(4);
+  });
 });

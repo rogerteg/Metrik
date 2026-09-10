@@ -1,22 +1,55 @@
 import React, { useState, useRef } from 'react';
 import { CfdDataPoint } from '../../types/analytics';
+import { ColumnModel } from '../../types/kanban';
 
-interface CumulativeFlowChartProps {
+export interface CumulativeFlowChartProps {
   data: CfdDataPoint[];
   maxTotal: number;
   isEmpty?: boolean;
+  columns?: ColumnModel[];
+  onToggleExpand?: () => void;
+  isExpanded?: boolean;
 }
+
+const DEFAULT_STAGE_COLORS = [
+  '#6366f1', // Indigo (Backlog/To Do)
+  '#38bdf8', // Sky blue
+  '#f59e0b', // Amber
+  '#ec4899', // Pink
+  '#a855f7', // Purple
+  '#f43f5e', // Rose
+  '#10b981', // Emerald (Done)
+];
+
+const getColumnColor = (col: ColumnModel, index: number, total: number): string => {
+  if (col.colorScheme === 'completed' || col.category === 'done' || index === total - 1) {
+    return '#10b981'; // Green for Done
+  }
+  if (col.colorScheme === 'todo' || col.category === 'todo' || index === 0) {
+    return '#6366f1'; // Indigo for To Do
+  }
+  if (col.colorScheme === 'blocked') {
+    return '#f43f5e'; // Red for Blocked
+  }
+  if (col.colorScheme === 'progress') {
+    return index % 2 === 0 ? '#38bdf8' : '#f59e0b';
+  }
+  return DEFAULT_STAGE_COLORS[index % DEFAULT_STAGE_COLORS.length];
+};
 
 export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
   data,
   maxTotal,
   isEmpty = false,
+  columns,
+  onToggleExpand,
+  isExpanded = false,
 }) => {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const viewBoxWidth = 600;
-  const viewBoxHeight = 240;
+  const viewBoxHeight = isExpanded ? 320 : 240;
   const paddingLeft = 45;
   const paddingRight = 20;
   const paddingTop = 25;
@@ -27,42 +60,76 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
   const yBaseline = paddingTop + plotHeight;
 
   const pointCount = data.length;
+  const safeMax = Math.max(1, maxTotal);
 
+  // Se colunas foram fornecidas, usamos as etapas completas do board
+  const hasDynamicStages = Boolean(columns && columns.length > 0 && data[0]?.stageCounts);
+
+  // Mapeamento de coordenadas
   const coords = data.map((d, i) => {
     const x = pointCount > 1 
       ? paddingLeft + (i / (pointCount - 1)) * plotWidth
       : paddingLeft + plotWidth / 2;
 
-    const safeMax = Math.max(1, maxTotal);
-
     const yDone = yBaseline - (d.cumulativeDone / safeMax) * plotHeight;
     const yStarted = yBaseline - (d.cumulativeStarted / safeMax) * plotHeight;
     const yTotal = yBaseline - (d.total / safeMax) * plotHeight;
 
-    return { x, yDone, yStarted, yTotal, data: d };
+    // Se temos estágios dinâmicos, computamos o Y para cada coluna
+    const stageY: Record<string, number> = {};
+    if (hasDynamicStages && columns && d.cumulativeStages) {
+      columns.forEach((col) => {
+        const cumVal = d.cumulativeStages?.[col.id] || 0;
+        stageY[col.id] = yBaseline - (cumVal / safeMax) * plotHeight;
+      });
+    }
+
+    return { x, yDone, yStarted, yTotal, stageY, data: d };
   });
 
-  // Polygons
-  // 1. Done Area (from baseline up to yDone)
+  // Polígonos dinâmicos por etapa (da direita para a esquerda: do final para o início)
+  const stagePolygons = hasDynamicStages && columns ? columns.map((col, idx) => {
+    const color = getColumnColor(col, idx, columns.length);
+    // Limite superior é a cumulativa deste estágio
+    // Limite inferior é a cumulativa do estágio à sua direita (ou baseline se for a última coluna)
+    const isLastCol = idx === columns.length - 1;
+    const nextCol = !isLastCol ? columns[idx + 1] : null;
+
+    const topPoints = coords.map((c) => `${c.x},${c.stageY[col.id]}`);
+    const bottomPoints = [...coords].reverse().map((c) => {
+      const yBottom = nextCol ? c.stageY[nextCol.id] : yBaseline;
+      return `${c.x},${yBottom}`;
+    });
+
+    const points = `${topPoints.join(' ')} ${bottomPoints.join(' ')}`;
+    const strokeLine = topPoints.join(' ');
+
+    return {
+      col,
+      color,
+      points,
+      strokeLine,
+      cumValueName: col.id,
+    };
+  }) : null;
+
+  // Fallback para os 3 estágios padrão
   const donePoints = coords.length > 0 ? [
     `${coords[0].x},${yBaseline}`,
     ...coords.map((c) => `${c.x},${c.yDone}`),
     `${coords[coords.length - 1].x},${yBaseline}`,
   ].join(' ') : '';
 
-  // 2. In Progress Area (between yDone and yStarted)
   const progressPoints = coords.length > 0 ? [
     ...coords.map((c) => `${c.x},${c.yStarted}`),
     ...[...coords].reverse().map((c) => `${c.x},${c.yDone}`),
   ].join(' ') : '';
 
-  // 3. Todo Area (between yStarted and yTotal)
   const todoPoints = coords.length > 0 ? [
     ...coords.map((c) => `${c.x},${c.yTotal}`),
     ...[...coords].reverse().map((c) => `${c.x},${c.yStarted}`),
   ].join(' ') : '';
 
-  // Lines
   const lineTotal = coords.map((c) => `${c.x},${c.yTotal}`).join(' ');
   const lineStarted = coords.map((c) => `${c.x},${c.yStarted}`).join(' ');
   const lineDone = coords.map((c) => `${c.x},${c.yDone}`).join(' ');
@@ -93,24 +160,51 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
   const activeCoord = hoverIndex !== null ? coords[hoverIndex] : null;
 
   return (
-    <div className="chart-container cfd-chart-container" style={{ position: 'relative' }}>
-      <div className="chart-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-        <h3 className="chart-title" style={{ margin: 0 }}>Diagrama de Fluxo Cumulativo (CFD)</h3>
+    <div className={`chart-container cfd-chart-container ${isExpanded ? 'is-chart-expanded' : ''}`} style={{ position: 'relative' }}>
+      <div className="chart-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h3 className="chart-title" style={{ margin: 0 }}>Diagrama de Fluxo Cumulativo (CFD)</h3>
+          {onToggleExpand && (
+            <button
+              type="button"
+              className="btn-chart-expand"
+              onClick={onToggleExpand}
+              title={isExpanded ? 'Restaurar tamanho' : 'Expandir gráfico'}
+              aria-label={isExpanded ? 'Restaurar gráfico CFD' : 'Expandir gráfico CFD'}
+            >
+              {isExpanded ? '✕ Fechar' : '⛶ Expandir'}
+            </button>
+          )}
+        </div>
         
-        {/* Legend */}
-        <div className="cfd-legend" style={{ display: 'flex', gap: '16px', fontSize: '0.8rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#6366f1', display: 'inline-block' }} />
-            <span>A Fazer (Backlog)</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#f59e0b', display: 'inline-block' }} />
-            <span>Em Progresso (WIP)</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#10b981', display: 'inline-block' }} />
-            <span>Concluído</span>
-          </div>
+        {/* Dynamic Legend */}
+        <div className="cfd-legend" style={{ display: 'flex', gap: '12px', fontSize: '0.75rem', flexWrap: 'wrap' }}>
+          {hasDynamicStages && columns ? (
+            columns.map((col, idx) => {
+              const color = getColumnColor(col, idx, columns.length);
+              return (
+                <div key={col.id} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: color, display: 'inline-block' }} />
+                  <span>{col.title}</span>
+                </div>
+              );
+            })
+          ) : (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#6366f1', display: 'inline-block' }} />
+                <span>A Fazer (Backlog)</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#f59e0b', display: 'inline-block' }} />
+                <span>Em Progresso (WIP)</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#10b981', display: 'inline-block' }} />
+                <span>Concluído</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -149,17 +243,38 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
           {/* Stacked Areas */}
           {!isEmpty && (
             <>
-              {/* Todo Area */}
-              <polygon points={todoPoints} fill="url(#cfd-grad-todo)" />
-              {/* In Progress Area */}
-              <polygon points={progressPoints} fill="url(#cfd-grad-progress)" />
-              {/* Done Area */}
-              <polygon points={donePoints} fill="url(#cfd-grad-done)" />
+              {hasDynamicStages && stagePolygons ? (
+                stagePolygons.map((sp) => (
+                  <g key={sp.col.id}>
+                    <polygon
+                      points={sp.points}
+                      fill={sp.color}
+                      fillOpacity="0.38"
+                      data-testid={`cfd-polygon-${sp.col.id}`}
+                    />
+                    <polyline
+                      points={sp.strokeLine}
+                      fill="none"
+                      stroke={sp.color}
+                      strokeWidth="2"
+                    />
+                  </g>
+                ))
+              ) : (
+                <>
+                  {/* Todo Area */}
+                  <polygon points={todoPoints} fill="url(#cfd-grad-todo)" />
+                  {/* In Progress Area */}
+                  <polygon points={progressPoints} fill="url(#cfd-grad-progress)" />
+                  {/* Done Area */}
+                  <polygon points={donePoints} fill="url(#cfd-grad-done)" />
 
-              {/* Boundary Stroke Lines */}
-              <polyline points={lineTotal} fill="none" stroke="#818cf8" strokeWidth="2" />
-              <polyline points={lineStarted} fill="none" stroke="#fbbf24" strokeWidth="2" />
-              <polyline points={lineDone} fill="none" stroke="#34d399" strokeWidth="2" />
+                  {/* Boundary Stroke Lines */}
+                  <polyline points={lineTotal} fill="none" stroke="#818cf8" strokeWidth="2" />
+                  <polyline points={lineStarted} fill="none" stroke="#fbbf24" strokeWidth="2" />
+                  <polyline points={lineDone} fill="none" stroke="#34d399" strokeWidth="2" />
+                </>
+              )}
             </>
           )}
 
@@ -175,9 +290,29 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
                 strokeDasharray="4 4"
                 strokeWidth="1.5"
               />
-              <circle cx={activeCoord.x} cy={activeCoord.yTotal} r="4" fill="#818cf8" stroke="#ffffff" strokeWidth="1.5" />
-              <circle cx={activeCoord.x} cy={activeCoord.yStarted} r="4" fill="#fbbf24" stroke="#ffffff" strokeWidth="1.5" />
-              <circle cx={activeCoord.x} cy={activeCoord.yDone} r="4" fill="#34d399" stroke="#ffffff" strokeWidth="1.5" />
+              {hasDynamicStages && columns ? (
+                columns.map((col, idx) => {
+                  const y = activeCoord.stageY[col.id];
+                  const color = getColumnColor(col, idx, columns.length);
+                  return (
+                    <circle
+                      key={col.id}
+                      cx={activeCoord.x}
+                      cy={y}
+                      r="4"
+                      fill={color}
+                      stroke="#ffffff"
+                      strokeWidth="1.5"
+                    />
+                  );
+                })
+              ) : (
+                <>
+                  <circle cx={activeCoord.x} cy={activeCoord.yTotal} r="4" fill="#818cf8" stroke="#ffffff" strokeWidth="1.5" />
+                  <circle cx={activeCoord.x} cy={activeCoord.yStarted} r="4" fill="#fbbf24" stroke="#ffffff" strokeWidth="1.5" />
+                  <circle cx={activeCoord.x} cy={activeCoord.yDone} r="4" fill="#34d399" stroke="#ffffff" strokeWidth="1.5" />
+                </>
+              )}
             </g>
           )}
 
@@ -242,24 +377,41 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
               pointerEvents: 'none',
               zIndex: 10,
               boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-              minWidth: '150px'
+              minWidth: '170px'
             }}
           >
             <div style={{ fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px', marginBottom: '6px' }}>
               📅 {activeCoord.data.date}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#818cf8', marginBottom: '2px' }}>
-              <span>A Fazer:</span>
-              <strong>{activeCoord.data.todo}</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#fbbf24', marginBottom: '2px' }}>
-              <span>Em Progresso:</span>
-              <strong>{activeCoord.data.inProgress}</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#34d399', marginBottom: '4px' }}>
-              <span>Concluído:</span>
-              <strong>{activeCoord.data.done}</strong>
-            </div>
+
+            {hasDynamicStages && columns ? (
+              columns.map((col, idx) => {
+                const color = getColumnColor(col, idx, columns.length);
+                const count = activeCoord.data.stageCounts?.[col.id] || 0;
+                return (
+                  <div key={col.id} style={{ display: 'flex', justifyContent: 'space-between', color, marginBottom: '2px' }}>
+                    <span>{col.title}:</span>
+                    <strong>{count}</strong>
+                  </div>
+                );
+              })
+            ) : (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#818cf8', marginBottom: '2px' }}>
+                  <span>A Fazer:</span>
+                  <strong>{activeCoord.data.todo}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#fbbf24', marginBottom: '2px' }}>
+                  <span>Em Progresso:</span>
+                  <strong>{activeCoord.data.inProgress}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#34d399', marginBottom: '4px' }}>
+                  <span>Concluído:</span>
+                  <strong>{activeCoord.data.done}</strong>
+                </div>
+              </>
+            )}
+
             <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed rgba(255,255,255,0.2)', paddingTop: '4px', fontWeight: 600 }}>
               <span>Total no Sistema:</span>
               <span>{activeCoord.data.total}</span>

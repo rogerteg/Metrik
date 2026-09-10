@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { AnalyticsDashboard } from '../../src/components/AnalyticsDashboard';
 import { TaskModel } from '../../src/types/kanban';
 
@@ -45,5 +45,25 @@ describe('AnalyticsDashboard Component (Feature 011 Integration)', () => {
 
     // Lead Time Scatter
     expect(screen.getByText(/Lead Time \(Dias\)/i)).toBeInTheDocument();
+  });
+
+  it('opens and closes expanded modal for charts', () => {
+    render(<AnalyticsDashboard tasks={sampleTasks} />);
+
+    // Click expand on CFD chart
+    const expandCfdBtn = screen.getByRole('button', { name: /Expandir gráfico CFD/i });
+    expect(expandCfdBtn).toBeInTheDocument();
+    fireEvent.click(expandCfdBtn);
+
+    // Modal opens
+    const modal = screen.getByRole('dialog', { name: /Visualização ampliada do gráfico/i });
+    expect(modal).toBeInTheDocument();
+
+    // Close button
+    const closeBtn = screen.getByRole('button', { name: /Restaurar gráfico CFD/i });
+    expect(closeBtn).toBeInTheDocument();
+    fireEvent.click(closeBtn);
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

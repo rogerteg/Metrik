@@ -2,6 +2,8 @@
  * Tipos e interfaces analíticas para o Metrik (Feature 011)
  */
 
+import { ColumnModel } from './kanban';
+
 export interface CfdDataPoint {
   /** Data no formato ISO 'YYYY-MM-DD' */
   date: string;
@@ -17,10 +19,15 @@ export interface CfdDataPoint {
   cumulativeStarted: number;
   /** Total acumulado de itens que saíram do fluxo (done) */
   cumulativeDone: number;
+  /** Quantidade de itens em cada etapa/coluna específica do quadro nesta data */
+  stageCounts?: Record<string, number>;
+  /** Quantidade acumulada a partir desta etapa até o final do fluxo */
+  cumulativeStages?: Record<string, number>;
 }
 
 export interface CfdData {
   points: CfdDataPoint[];
   maxTotal: number;
   isEmpty: boolean;
+  columns?: ColumnModel[];
 }

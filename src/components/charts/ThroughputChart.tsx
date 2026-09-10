@@ -1,15 +1,35 @@
 import React from 'react';
 import { ThroughputDataPoint } from '../../hooks/useAnalyticsData';
 
-interface ThroughputChartProps {
+export interface ThroughputChartProps {
   data: ThroughputDataPoint[];
   maxThroughput: number;
+  onToggleExpand?: () => void;
+  isExpanded?: boolean;
 }
 
-export const ThroughputChart: React.FC<ThroughputChartProps> = ({ data, maxThroughput }) => {
+export const ThroughputChart: React.FC<ThroughputChartProps> = ({
+  data,
+  maxThroughput,
+  onToggleExpand,
+  isExpanded = false,
+}) => {
   return (
-    <div className="chart-container">
-      <h3 className="chart-title">Throughput (Últimos 14 dias)</h3>
+    <div className={`chart-container ${isExpanded ? 'is-chart-expanded' : ''}`}>
+      <div className="chart-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h3 className="chart-title" style={{ margin: 0 }}>Throughput (Últimos 14 dias)</h3>
+        {onToggleExpand && (
+          <button
+            type="button"
+            className="btn-chart-expand"
+            onClick={onToggleExpand}
+            title={isExpanded ? 'Restaurar tamanho' : 'Expandir gráfico'}
+            aria-label={isExpanded ? 'Restaurar gráfico Throughput' : 'Expandir gráfico Throughput'}
+          >
+            {isExpanded ? '✕ Fechar' : '⛶ Expandir'}
+          </button>
+        )}
+      </div>
       <div className="chart-y-axis-label">Tarefas Concluídas</div>
       
       <div className="bar-chart-area">

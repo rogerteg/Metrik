@@ -274,7 +274,10 @@ export const App: React.FC = () => {
           />
         </>
       ) : (
-        <AnalyticsDashboard tasks={Object.values(board.tasks).flat()} />
+        <AnalyticsDashboard
+          board={board}
+          tasks={Object.values(board.tasks).flat()}
+        />
       )}
 
       {selectedTaskId && (
