@@ -14,6 +14,7 @@ export interface BoardProps {
   onUpdateColumn?: (id: string, updates: Partial<ColumnModel>) => void;
   onDeleteColumn?: (id: string) => void;
   onDropTask?: (options: ReorderOptions) => void;
+  onMoveColumn?: (sourceIndex: number, destinationIndex: number) => void;
   onOpenNewColumnModal?: () => void;
   renderTask?: (task: TaskModel, columnId: string) => React.ReactNode;
 }
@@ -29,6 +30,7 @@ export const Board: React.FC<BoardProps> = ({
   onUpdateColumn,
   onDeleteColumn,
   onDropTask,
+  onMoveColumn,
   onOpenNewColumnModal,
   renderTask,
 }) => {
@@ -48,7 +50,7 @@ export const Board: React.FC<BoardProps> = ({
       )}
 
       <main className="kanban-board-grid" aria-label="Quadro Kanban Metrik">
-        {columns.map((col) => {
+        {columns.map((col, idx) => {
           const visibleTasks = board.tasks[col.id] || [];
           const rawTasks = rawBoard ? rawBoard.tasks[col.id] || [] : visibleTasks;
           const isFilteredEmpty = hasActiveFilters && rawTasks.length > 0 && visibleTasks.length === 0;
@@ -58,6 +60,8 @@ export const Board: React.FC<BoardProps> = ({
               key={col.id}
               column={col}
               count={rawTasks.length}
+              columnIndex={idx}
+              totalColumns={columns.length}
               width={columnWidths?.[col.id]}
               onResizeWidth={onResizeColumnWidth}
               onResetWidth={onResetColumnWidth}
@@ -65,6 +69,7 @@ export const Board: React.FC<BoardProps> = ({
               onUpdateColumn={onUpdateColumn}
               onDeleteColumn={onDeleteColumn}
               onDropTask={onDropTask}
+              onMoveColumn={onMoveColumn}
             >
               {isFilteredEmpty ? (
                 <div

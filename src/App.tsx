@@ -40,6 +40,7 @@ export const App: React.FC = () => {
     deleteTask,
     updateColumn,
     deleteColumn,
+    reorderColumn,
     moveTask,
     reorderOrMoveTask,
     setTaskPriority,
@@ -234,6 +235,7 @@ export const App: React.FC = () => {
             onUpdateColumn={updateColumn}
             onDeleteColumn={deleteColumn}
             onDropTask={reorderOrMoveTask}
+            onMoveColumn={reorderColumn}
             onOpenNewColumnModal={() => setIsNewColumnModalOpen(true)}
             renderTask={(task, columnId) => {
               const currentIndex = board.columns.findIndex(c => c.id === columnId);

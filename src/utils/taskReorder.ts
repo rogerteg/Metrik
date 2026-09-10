@@ -1,5 +1,51 @@
-import { BoardState, TaskModel } from '../types/kanban';
+import { BoardState, ColumnModel, TaskModel } from '../types/kanban';
 import { ReorderOptions } from '../types/dnd';
+
+/**
+ * Valida se uma coluna pode ser movida entre sourceIndex e targetIndex.
+ * Regra estrita: A primeira coluna (índice 0, ex: To Do) e a última coluna (índice length - 1, ex: Completed)
+ * são fixas e JAMAIS podem ser movidas ou ter outra coluna colocada em seu lugar.
+ */
+export function canMoveColumn(
+  columnsCount: number,
+  sourceIndex: number,
+  targetIndex: number
+): boolean {
+  if (columnsCount <= 2) {
+    return false;
+  }
+  if (sourceIndex === targetIndex) {
+    return false;
+  }
+  // Primeira coluna é fixa (não pode ser a origem nem o destino)
+  if (sourceIndex <= 0 || targetIndex <= 0) {
+    return false;
+  }
+  // Última coluna é fixa (não pode ser a origem nem o destino)
+  const lastIndex = columnsCount - 1;
+  if (sourceIndex >= lastIndex || targetIndex >= lastIndex) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Reordena uma lista de colunas respeitando o bloqueio obrigatório da primeira e da última coluna.
+ * Se o movimento for inválido, retorna a lista original sem alterações.
+ */
+export function reorderColumnList(
+  columns: ColumnModel[],
+  sourceIndex: number,
+  targetIndex: number
+): ColumnModel[] {
+  if (!canMoveColumn(columns.length, sourceIndex, targetIndex)) {
+    return columns;
+  }
+  const next = [...columns];
+  const [moved] = next.splice(sourceIndex, 1);
+  next.splice(targetIndex, 0, moved);
+  return next;
+}
 
 /**
  * Verifica se um movimento entre duas colunas é retrógrado (da direita para a esquerda).

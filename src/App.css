@@ -237,6 +237,96 @@ body {
   box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
 }
 
+.kanban-column.is-column-dragging {
+  opacity: 0.45;
+  border-style: dashed;
+  border-color: #38bdf8;
+  transform: scale(0.98);
+}
+
+.kanban-column.column-drop-before {
+  border-left: 3px solid #38bdf8;
+  box-shadow: -4px 0 16px rgba(56, 189, 248, 0.4);
+}
+
+.kanban-column.column-drop-after {
+  border-right: 3px solid #38bdf8;
+  box-shadow: 4px 0 16px rgba(56, 189, 248, 0.4);
+}
+
+.kanban-column.is-fixed-column {
+  border-top: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Column Drag Handle */
+.column-drag-handle {
+  cursor: grab;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  user-select: none;
+  padding: 2px 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background 0.15s ease;
+  line-height: 1;
+}
+
+.column-drag-handle:hover {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.column-drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Column Fixed Badge (Lock) */
+.column-fixed-badge {
+  font-size: 0.72rem;
+  opacity: 0.7;
+  cursor: help;
+  user-select: none;
+}
+
+/* Column Move Button Group */
+.column-move-btn-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.btn-move-column {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-move-column:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+}
+
+.btn-move-column:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
 /* Column Resize Handle */
 .column-resize-handle {
   position: absolute;

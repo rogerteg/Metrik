@@ -10,7 +10,7 @@ import {
   FLOW_REGRESSION_WARNING_MESSAGE,
 } from '../types/kanban';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
-import { reorderBoard, isBackwardColumnMove } from '../utils/taskReorder';
+import { reorderBoard, isBackwardColumnMove, reorderColumnList } from '../utils/taskReorder';
 import { ReorderOptions } from '../types/dnd';
 
 export interface UseTaskCollectionReturn {
@@ -153,9 +153,10 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
 
   const reorderColumn = useCallback((sourceIndex: number, destinationIndex: number) => {
     setBoard((prev) => {
-      const newColumns = Array.from(prev.columns);
-      const [movedCol] = newColumns.splice(sourceIndex, 1);
-      newColumns.splice(destinationIndex, 0, movedCol);
+      const newColumns = reorderColumnList(prev.columns, sourceIndex, destinationIndex);
+      if (newColumns === prev.columns) {
+        return prev;
+      }
       return {
         ...prev,
         columns: newColumns
