@@ -33,6 +33,16 @@
 
 ---
 
+## Clarifications
+
+### Session 2026-09-11
+- **Q1: Como você prefere a apresentação dos painéis laterais de configuração do Aging WIP Chart ('Dataset configuration' à esquerda e 'Controls for this Chart' à direita)?**
+  - **A1**: **Painéis laterais retráteis** (drawer colapsável à esquerda para *Dataset configuration* e drawer retrátil à direita para *Controls for this Chart*), preservando a área máxima útil do canvas em telas médias e compactas sem espremer o gráfico.
+- **Q2: Como devem ser calculadas as faixas coloridas de percentil (Verde, Amarelo, Laranja, Vermelho) em cada coluna?**
+  - **A2**: **Percentis por Etapa (Pace Percentiles)**: Calculados especificamente para a permanência histórica em cada coluna individualmente, com fallback automático gracioso para o percentil global de ciclo caso uma coluna específica possua poucas amostras históricas (< 3 tarefas).
+
+---
+
 ## 1. Visão Geral & Contexto Lean
 
 Enquanto o *Cycle Time Scatter Plot* analisa tarefas que **já foram concluídas** (olhar retrospectivo), o **Aging WIP Chart (Gráfico de Envelhecimento do Trabalho em Progresso)** é o instrumento preditivo e proativo mais poderoso do Kanban moderno (Daniel Vacanti / Frank Vega / Troy Magennis).
