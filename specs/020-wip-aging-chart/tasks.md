@@ -36,27 +36,27 @@
 ## Tasks
 
 ### Phase 1: Math & Aging Metrics Logic (Core Logic)
-- [ ] T001 Implement `calculateItemAgeDays(task, referenceDate)` with decimal precision in `src/utils/wipAgingMetrics.ts`
-- [ ] T002 Implement `calculateStagePacePercentiles(tasks, columns)` with NIST linear interpolation and global fallback in `src/utils/wipAgingMetrics.ts`
-- [ ] T003 Implement `groupActiveTasksByColumn(tasks, columns, referenceDate)` with WIP counts and blocked detection in `src/utils/wipAgingMetrics.ts`
-- [ ] T004 Write comprehensive unit tests for WIP aging calculations and stage percentiles in `tests/unit/wipAgingMetrics.test.ts`
+- [x] T001 Implement `calculateItemAgeDays(task, referenceDate)` with decimal precision in `src/utils/wipAgingMetrics.ts`
+- [x] T002 Implement `calculateStagePacePercentiles(tasks, columns)` with NIST linear interpolation and global fallback in `src/utils/wipAgingMetrics.ts`
+- [x] T003 Implement `groupActiveTasksByColumn(tasks, columns, referenceDate)` with WIP counts and blocked detection in `src/utils/wipAgingMetrics.ts`
+- [x] T004 Write comprehensive unit tests for WIP aging calculations and stage percentiles in `tests/unit/wipAgingMetrics.test.ts`
 
 ### Phase 2: Visual Chart Component (SVG Aging WIP Chart)
-- [ ] T005 [US1] Implement responsive native SVG chart `src/components/charts/WipAgingChart.tsx` with columns on X-axis, Age on Y-axis, and top `WIP: N` badges
-- [ ] T006 [US1] Render colored pace percentile background bands (Green, Yellow, Orange, Red) per column with percentile threshold lines (50%, 70%, 85%, 95%)
-- [ ] T007 [US1] Plot active task dots (`Aging Work Items`) with deterministic horizontal jitter to prevent point overlap
-- [ ] T008 [US2] Implement rich interactive hover tooltip displaying task ID, title, age in days, time in current stage, and blocked badge in `WipAgingChart.tsx`
+- [x] T005 [US1] Implement responsive native SVG chart `src/components/charts/WipAgingChart.tsx` with columns on X-axis, Age on Y-axis, and top `WIP: N` badges
+- [x] T006 [US1] Render colored pace percentile background bands (Green, Yellow, Orange, Red) per column with percentile threshold lines (50%, 70%, 85%, 95%)
+- [x] T007 [US1] Plot active task dots (`Aging Work Items`) with deterministic horizontal jitter to prevent point overlap
+- [x] T008 [US2] Implement rich interactive hover tooltip displaying task ID, title, age in days, time in current stage, and blocked badge in `WipAgingChart.tsx`
 
 ### Phase 3: Dual Collapsible Drawers (Dataset Configuration & Chart Controls)
-- [ ] T009 [US3] Create left collapsible drawer `src/components/charts/WipAgingFilterDrawer.tsx` with workflow selector, start date filter, and `LOAD` button
-- [ ] T010 [US3] Create right collapsible drawer `src/components/charts/WipAgingControlDrawer.tsx` with percentile visibility checkboxes (50%, 70%, 85%, 95%) and stalled alert toggle
-- [ ] T011 [US4] Implement `As of [Date]` indicator and empty guidance state in `src/components/WipAgingView.tsx`
+- [x] T009 [US3] Create left collapsible drawer `src/components/charts/WipAgingFilterDrawer.tsx` with workflow selector, start date filter, and `LOAD` button
+- [x] T010 [US3] Create right collapsible drawer `src/components/charts/WipAgingControlDrawer.tsx` with percentile visibility checkboxes (50%, 70%, 85%, 95%) and stalled alert toggle
+- [x] T011 [US4] Implement `As of [Date]` indicator and empty guidance state in `src/components/WipAgingView.tsx`
 
 ### Phase 4: Navigation, Integration & Dashboard
-- [ ] T012 Update `src/components/AnalyticsNavHeader.tsx` to include `wip` tab (`⏳ WIP Aging`) positioned logically between Throughput and CFD
-- [ ] T013 Connect `WipAgingView` to `src/components/AnalyticsDashboard.tsx` for the `wip` active tab
-- [ ] T014 Add styling for aging bands, dots, blocked alerts, collapsible drawers, and tooltips in `src/components/Analytics.css`
+- [x] T012 Update `src/components/AnalyticsNavHeader.tsx` to include `wip` tab (`⏳ WIP Aging`) positioned logically between Throughput and CFD
+- [x] T013 Connect `WipAgingView` to `src/components/AnalyticsDashboard.tsx` for the `wip` active tab
+- [x] T014 Add styling for aging bands, dots, blocked alerts, collapsible drawers, and tooltips in `src/components/Analytics.css`
 
 ### Phase 5: Verification & Quality Gate
-- [ ] T015 Write UI integration tests for `WipAgingView` and dual drawers in `tests/unit/WipAgingView.test.tsx`
-- [ ] T016 Run full test suite (`npm test`) and type check to ensure 100% pass rate and zero regressions
+- [x] T015 Write UI integration tests for `WipAgingView` and dual drawers in `tests/unit/WipAgingView.test.tsx`
+- [x] T016 Run full test suite (`npm test`) and type check to ensure 100% pass rate and zero regressions

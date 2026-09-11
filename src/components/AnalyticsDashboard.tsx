@@ -9,6 +9,7 @@ import { LeadTimeScatter } from './charts/LeadTimeScatter';
 import { CumulativeFlowChart } from './charts/CumulativeFlowChart';
 import { CycleTimeScatterPlot } from './charts/CycleTimeScatterPlot';
 import { MonteCarloSimulationView } from './MonteCarloSimulationView';
+import { WipAgingView } from './WipAgingView';
 import { AnalyticsNavHeader, AnalyticsTab, CycleTimeViewMode } from './AnalyticsNavHeader';
 import './Analytics.css';
 
@@ -80,7 +81,14 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
         </div>
       )}
 
-      {/* Visão 3: CFD focado */}
+      {/* Visão 3: Envelhecimento do WIP (Aging WIP) */}
+      {activeTab === 'wip' && (
+        <div className="dashboard-focused-view" data-testid="focused-wip-view">
+          <WipAgingView tasks={tasks} columns={board?.columns} />
+        </div>
+      )}
+
+      {/* Visão 4: CFD focado */}
       {activeTab === 'cfd' && (
         <div className="dashboard-focused-view" data-testid="focused-cfd-view">
           <CumulativeFlowChart

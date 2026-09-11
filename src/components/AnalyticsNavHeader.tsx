@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-export type AnalyticsTab = 'dashboard' | 'cycle-time' | 'throughput' | 'cfd' | 'blockers' | 'forecasting';
+export type AnalyticsTab = 'dashboard' | 'cycle-time' | 'throughput' | 'wip' | 'cfd' | 'blockers' | 'forecasting';
 export type CycleTimeViewMode = 'scatter' | 'histogram';
 
 export interface AnalyticsNavHeaderProps {
@@ -127,7 +127,18 @@ export const AnalyticsNavHeader: React.FC<AnalyticsNavHeaderProps> = ({
           <span>Throughput</span>
         </button>
 
-        {/* Tab 4: CFD / Fluxo */}
+        {/* Tab 4: WIP / Envelhecimento do WIP */}
+        <button
+          type="button"
+          className={`analytics-nav-tab ${activeTab === 'wip' ? 'is-active' : ''}`}
+          onClick={() => onSelectTab('wip')}
+          data-testid="tab-wip"
+        >
+          <span className="analytics-tab-icon">⏳</span>
+          <span>WIP Aging</span>
+        </button>
+
+        {/* Tab 5: CFD / Fluxo */}
         <button
           type="button"
           className={`analytics-nav-tab ${activeTab === 'cfd' ? 'is-active' : ''}`}
