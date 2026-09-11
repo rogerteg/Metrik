@@ -7,9 +7,11 @@ import { MetricsBar } from './MetricsBar';
 import { ThroughputChart } from './charts/ThroughputChart';
 import { LeadTimeScatter } from './charts/LeadTimeScatter';
 import { CumulativeFlowChart } from './charts/CumulativeFlowChart';
+import { CycleTimeScatterPlot } from './charts/CycleTimeScatterPlot';
+import { AnalyticsNavHeader, AnalyticsTab, CycleTimeViewMode } from './AnalyticsNavHeader';
 import './Analytics.css';
 
-export type ChartType = 'cfd' | 'throughput' | 'leadTime';
+export type ChartType = 'cfd' | 'throughput' | 'leadTime' | 'cycleTime';
 
 export interface AnalyticsDashboardProps {
   tasks: TaskModel[];
@@ -17,6 +19,8 @@ export interface AnalyticsDashboardProps {
 }
 
 export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, board }) => {
+  const [activeTab, setActiveTab] = useState<AnalyticsTab>('dashboard');
+  const [cycleTimeMode, setCycleTimeMode] = useState<CycleTimeViewMode>('scatter');
   const [expandedChart, setExpandedChart] = useState<ChartType | null>(null);
 
   // Determinar tarefas concluídas com base na categoria 'done' das colunas do board (ou fallback column === 'done')
@@ -43,36 +47,94 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
 
   return (
     <div className="analytics-dashboard">
-      <div className="dashboard-metrics-row">
-        {/* Reuse the existing MetricsBar for a high-level summary */}
-        <MetricsBar metrics={metrics} />
-      </div>
+      {/* Barra de Navegação Analítica no Topo (ActionableAgile style) */}
+      <AnalyticsNavHeader
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        cycleTimeMode={cycleTimeMode}
+        onSelectCycleTimeMode={setCycleTimeMode}
+      />
 
-      <div className="dashboard-cfd-row">
-        <CumulativeFlowChart
-          data={cfd.points}
-          maxTotal={cfd.maxTotal}
-          isEmpty={cfd.isEmpty}
-          columns={board?.columns}
-          onToggleExpand={() => toggleExpand('cfd')}
-          isExpanded={false}
-        />
-      </div>
+      {/* Visão 1: Cycle Time focado */}
+      {activeTab === 'cycle-time' && (
+        <div className="dashboard-focused-view" data-testid="focused-cycle-time-view">
+          <CycleTimeScatterPlot
+            tasks={completedTasks}
+            isExpanded={false}
+          />
+        </div>
+      )}
 
-      <div className="dashboard-charts-row">
-        <ThroughputChart
-          data={throughput}
-          maxThroughput={maxThroughput}
-          onToggleExpand={() => toggleExpand('throughput')}
-          isExpanded={false}
-        />
-        <LeadTimeScatter
-          data={scatter}
-          maxLeadTime={maxLeadTime}
-          onToggleExpand={() => toggleExpand('leadTime')}
-          isExpanded={false}
-        />
-      </div>
+      {/* Visão 2: Throughput focado */}
+      {activeTab === 'throughput' && (
+        <div className="dashboard-focused-view" data-testid="focused-throughput-view">
+          <ThroughputChart
+            data={throughput}
+            maxThroughput={maxThroughput}
+            isExpanded={false}
+          />
+        </div>
+      )}
+
+      {/* Visão 3: CFD focado */}
+      {activeTab === 'cfd' && (
+        <div className="dashboard-focused-view" data-testid="focused-cfd-view">
+          <CumulativeFlowChart
+            data={cfd.points}
+            maxTotal={cfd.maxTotal}
+            isEmpty={cfd.isEmpty}
+            columns={board?.columns}
+            isExpanded={false}
+          />
+        </div>
+      )}
+
+      {/* Visão 4: Bloqueios */}
+      {activeTab === 'blockers' && (
+        <div className="dashboard-focused-view" data-testid="focused-blockers-view">
+          <CycleTimeScatterPlot
+            tasks={completedTasks}
+            initialTimeWindowDays={0}
+          />
+        </div>
+      )}
+
+      {/* Visão 0: Dashboard Geral Consolidado */}
+      {activeTab === 'dashboard' && (
+        <>
+          <div className="dashboard-metrics-row">
+            {/* Resumo executivo de métricas de fluxo */}
+            <MetricsBar metrics={metrics} />
+          </div>
+
+          <div className="dashboard-cfd-row">
+            <CumulativeFlowChart
+              data={cfd.points}
+              maxTotal={cfd.maxTotal}
+              isEmpty={cfd.isEmpty}
+              columns={board?.columns}
+              onToggleExpand={() => toggleExpand('cfd')}
+              isExpanded={false}
+            />
+          </div>
+
+          <div className="dashboard-charts-row">
+            <ThroughputChart
+              data={throughput}
+              maxThroughput={maxThroughput}
+              onToggleExpand={() => toggleExpand('throughput')}
+              isExpanded={false}
+            />
+            <CycleTimeScatterPlot
+              tasks={completedTasks}
+              title="Cycle Time (Percentis)"
+              subtitle="Tempo de ciclo com linhas de percentil 50%, 85% e 95%"
+              onToggleExpand={() => toggleExpand('cycleTime')}
+              isExpanded={false}
+            />
+          </div>
+        </>
+      )}
 
       {/* Modal / Overlay de Gráfico Expandido */}
       {expandedChart && (
@@ -115,10 +177,19 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
                 isExpanded={true}
               />
             )}
+
+            {expandedChart === 'cycleTime' && (
+              <CycleTimeScatterPlot
+                tasks={completedTasks}
+                onToggleExpand={() => setExpandedChart(null)}
+                isExpanded={true}
+              />
+            )}
           </div>
         </div>
       )}
     </div>
   );
 };
+
 

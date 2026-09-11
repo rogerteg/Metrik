@@ -43,8 +43,8 @@ describe('AnalyticsDashboard Component (Feature 011 Integration)', () => {
     // Throughput Chart
     expect(screen.getByText('Throughput (Últimos 14 dias)')).toBeInTheDocument();
 
-    // Lead Time Scatter
-    expect(screen.getByText(/Lead Time \(Dias\)/i)).toBeInTheDocument();
+    // Cycle Time Scatter Plot with Percentiles
+    expect(screen.getByText(/Cycle Time \(Percentis\)/i)).toBeInTheDocument();
   });
 
   it('opens and closes expanded modal for charts', () => {
