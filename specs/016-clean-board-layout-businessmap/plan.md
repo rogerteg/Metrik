@@ -1,6 +1,6 @@
 # Implementation Plan: Layout Clean e Moderno do Board (Inspirado no Businessmap / Kanbanize)
 
-**Branch**: `016-clean-board-layout-businessmap` | **Date**: 2026-09-11 | **Spec**: [specs/016-clean-board-layout-businessmap/spec.md](spec.md)
+**Branch**: `016-clean-board-layout-businessmap` | **Date**: 2026-09-11 | **Status**: Implemented & Converged | **Spec**: [specs/016-clean-board-layout-businessmap/spec.md](spec.md)
 
 **Input**: Feature specification e Clarificações de design consolidadas em `specs/016-clean-board-layout-businessmap/spec.md`.
 

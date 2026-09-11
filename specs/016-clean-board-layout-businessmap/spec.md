@@ -2,7 +2,7 @@
 
 **Feature Branch**: `016-clean-board-layout-businessmap`  
 **Created**: 2026-09-11  
-**Status**: Draft  
+**Status**: Implemented & Converged (Verified)  
 **Input**: Solicitação do usuário: "melhorar layout do board, mais clean, pegue o exemplo/modelo do BusinessMap"
 
 ---
