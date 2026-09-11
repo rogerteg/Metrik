@@ -1,5 +1,11 @@
 # Implementation Plan: Gráfico de Vazão Avançado com Histograma e Linha do Tempo (Throughput Analytics)
 
+**Branch**: `021-throughput-histogram-timeline` | **Date**: 2026-09-11 | **Spec**: [specs/021-throughput-histogram-timeline/spec.md](spec.md)
+
+---
+
+## 1. Resumo & Arquitetura da Solução
+
 Evolução do gráfico de vazão (*Throughput*) do Metrik a partir da imagem de referência fornecida pelo usuário, combinando um **Throughput Histogram** (com linhas de percentis 50%, 70%, 85%, 95%) e um **Daily Throughput Run Chart** (série temporal cronológica conectando os pontos diários ao longo dos meses), implementados estritamente em SVG nativo responsivo sem dependências externas.
 
 ## User Review Required
