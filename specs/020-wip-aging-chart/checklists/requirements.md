@@ -2,7 +2,7 @@
 
 **Feature Branch**: `020-wip-aging-chart`  
 **Date**: 2026-09-11  
-**Status**: Ready for Clarification / Technical Planning  
+**Status**: Clarified & Ready for Implementation Plan  
 
 ---
 
@@ -15,6 +15,9 @@
   - [x] Bandas de risco por coluna com cores escalonadas (Verde, Amarelo, Laranja e Vermelho) baseadas nos percentis históricos (50%, 70%, 85%, 95%).
   - [x] Pontos individuais (`Aging Work Items`) com coordenadas precisas de idade e coluna.
   - [x] Painel esquerdo de filtros (`Dataset configuration`) e painel direito de controles (`Controls for this Chart`).
+- [x] **Decisões de Clarificação Consolidadas**:
+  - [x] **Drawers Retráteis Duais**: Drawer colapsável à esquerda para *Dataset configuration* e drawer retrátil à direita para *Controls for this Chart*, garantindo 100% da área útil para o canvas SVG.
+  - [x] **Pace Percentiles por Etapa**: Percentis calculados especificamente para a permanência histórica de cada coluna individualmente, com fallback automático gracioso para o percentil global de ciclo caso uma coluna específica possua poucas amostras históricas (< 3 tarefas).
 - [x] **User Stories com Racional e Casos de Teste Independentes**:
   - [x] **US1 (P1)**: Visualização de Itens Ativos em Colunas com Bandas de Percentil.
   - [x] **US2 (P1)**: Inspeção Detalhada de Aging Work Items com Tooltip e Destaque de Bloqueios.
