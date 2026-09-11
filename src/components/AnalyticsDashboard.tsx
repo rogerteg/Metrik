@@ -8,6 +8,7 @@ import { ThroughputChart } from './charts/ThroughputChart';
 import { LeadTimeScatter } from './charts/LeadTimeScatter';
 import { CumulativeFlowChart } from './charts/CumulativeFlowChart';
 import { CycleTimeScatterPlot } from './charts/CycleTimeScatterPlot';
+import { MonteCarloSimulationView } from './MonteCarloSimulationView';
 import { AnalyticsNavHeader, AnalyticsTab, CycleTimeViewMode } from './AnalyticsNavHeader';
 import './Analytics.css';
 
@@ -101,6 +102,13 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
             tasks={completedTasks}
             initialTimeWindowDays={0}
           />
+        </div>
+      )}
+
+      {/* Visão 5: Previsões com Simulação Monte Carlo */}
+      {activeTab === 'forecasting' && (
+        <div className="dashboard-focused-view" data-testid="focused-forecasting-view">
+          <MonteCarloSimulationView tasks={tasks} />
         </div>
       )}
 

@@ -38,27 +38,27 @@
 ## Tasks
 
 ### Phase 1: Math & Stochastic Engine (Core Logic)
-- [ ] T001 Implement `extractDailyThroughput(tasks, daysWindow)` with mandatory 0-filling for empty days in `src/utils/monteCarlo.ts`
-- [ ] T002 Implement `runMonteCarloHowMany(throughputHistory, targetDays, trials, rng)` in `src/utils/monteCarlo.ts`
-- [ ] T003 Implement `runMonteCarloWhen(throughputHistory, backlogItems, startDate, trials, rng)` with calendar date projection in `src/utils/monteCarlo.ts`
-- [ ] T004 Implement histogram binning and cumulative probability (CDF) helper in `src/utils/monteCarlo.ts`
-- [ ] T005 Write comprehensive unit tests for Monte Carlo simulation engine with deterministic RNG in `tests/unit/monteCarlo.test.ts`
+- [x] T001 Implement `extractDailyThroughput(tasks, daysWindow)` with mandatory 0-filling for empty days in `src/utils/monteCarlo.ts`
+- [x] T002 Implement `runMonteCarloHowMany(throughputHistory, targetDays, trials, rng)` in `src/utils/monteCarlo.ts`
+- [x] T003 Implement `runMonteCarloWhen(throughputHistory, backlogItems, startDate, trials, rng)` with calendar date projection in `src/utils/monteCarlo.ts`
+- [x] T004 Implement histogram binning and cumulative probability (CDF) helper in `src/utils/monteCarlo.ts`
+- [x] T005 Write comprehensive unit tests for Monte Carlo simulation engine with deterministic RNG in `tests/unit/monteCarlo.test.ts`
 
 ### Phase 2: Visual Chart Component (SVG Histogram & CDF)
-- [ ] T006 Implement responsive native SVG histogram component `src/components/charts/MonteCarloHistogramChart.tsx` with bins, frequency bars, and P50/P85/P95 vertical markers
-- [ ] T007 Implement interactive hover tooltip displaying bin value, trial frequency, and cumulative probability in `MonteCarloHistogramChart.tsx`
+- [x] T006 Implement responsive native SVG histogram component `src/components/charts/MonteCarloHistogramChart.tsx` with bins, frequency bars, and P50/P85/P95 vertical markers
+- [x] T007 Implement interactive hover tooltip displaying bin value, trial frequency, and cumulative probability in `MonteCarloHistogramChart.tsx`
 
 ### Phase 3: Interactive Simulation View (How Many & When Forms)
-- [ ] T008 [US1] Implement "How Many" simulation controls (target date / days input) and P50/P85/P95 outcome cards in `src/components/MonteCarloSimulationView.tsx`
-- [ ] T009 [US2] Implement "When" simulation controls (backlog item count, "Use open board items" quick button) and calendar projected dates in `src/components/MonteCarloSimulationView.tsx`
-- [ ] T010 Implement sample window selector (last 30, 60, 90 days or all) and trial count selector in `src/components/MonteCarloSimulationView.tsx`
-- [ ] T011 Implement educational guidance/empty state for boards with insufficient completed task history in `src/components/MonteCarloSimulationView.tsx`
+- [x] T008 [US1] Implement "How Many" simulation controls (target date / days input) and P50/P85/P95 outcome cards in `src/components/MonteCarloSimulationView.tsx`
+- [x] T009 [US2] Implement "When" simulation controls (backlog item count, "Use open board items" quick button) and calendar projected dates in `src/components/MonteCarloSimulationView.tsx`
+- [x] T010 Implement sample window selector (last 30, 60, 90 days or all) and trial count selector in `src/components/MonteCarloSimulationView.tsx`
+- [x] T011 Implement educational guidance/empty state for boards with insufficient completed task history in `src/components/MonteCarloSimulationView.tsx`
 
 ### Phase 4: Navigation & Dashboard Integration
-- [ ] T012 Update `src/components/AnalyticsNavHeader.tsx` to include `forecasting` tab (`🎲 Monte Carlo`)
-- [ ] T013 Connect `MonteCarloSimulationView` to `src/components/AnalyticsDashboard.tsx` for the `forecasting` tab
-- [ ] T014 Add styling for simulation controls, percentile summary cards, histogram bars, and tooltips in `src/components/Analytics.css`
+- [x] T012 Update `src/components/AnalyticsNavHeader.tsx` to include `forecasting` tab (`🎲 Monte Carlo`)
+- [x] T013 Connect `MonteCarloSimulationView` to `src/components/AnalyticsDashboard.tsx` for the `forecasting` tab
+- [x] T014 Add styling for simulation controls, percentile summary cards, histogram bars, and tooltips in `src/components/Analytics.css`
 
 ### Phase 5: Verification & Quality Gate
-- [ ] T015 Write UI integration tests for `MonteCarloSimulationView` and navigation in `tests/unit/MonteCarloSimulationView.test.tsx`
-- [ ] T016 Run full test suite (`npm test`) and type check to ensure 100% pass rate and zero regressions
+- [x] T015 Write UI integration tests for `MonteCarloSimulationView` and navigation in `tests/unit/MonteCarloSimulationView.test.tsx`
+- [x] T016 Run full test suite (`npm test`) and type check to ensure 100% pass rate and zero regressions
