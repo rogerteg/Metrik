@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { CfdDataPoint } from '../../types/analytics';
 import { ColumnModel, getDefaultColumnColor } from '../../types/kanban';
-import { calculateHorizontalLeadTime, detectQueueExpansion } from '../../utils/cfdMetrics';
+import { calculateHorizontalLeadTime, detectQueueExpansion, getPointValue } from '../../utils/cfdMetrics';
 import { CfdFilterDrawer } from './CfdFilterDrawer';
 import { CfdTimelineScrubber } from './CfdTimelineScrubber';
 
@@ -185,7 +185,7 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
 
   const activeCoord = hoverIndex !== null && coords[hoverIndex] ? coords[hoverIndex] : null;
 
-  // Inspeção Dual (Businessmap Style): Medições de WIP vertical e Lead Time horizontal
+  // Inspeção Dual de Fluxo: Medições de WIP vertical e Lead Time horizontal
   const inspection = useMemo(() => {
     if (!activeCoord || hoverIndex === null || pointCount <= 1) return null;
 
@@ -220,13 +220,15 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
     );
 
     // X onde a curva de chegada esteve no patamar de saída
-    const departureVal = activeCoord.data.cumulativeDone || 0;
+    const departureVal = getPointValue(activeCoord.data, departureKey);
     let arrivalIndex = -1;
-    for (let i = 0; i <= hoverIndex; i++) {
-      const val = displayedData[i]?.cumulativeStarted || 0;
-      if (val >= departureVal) {
-        arrivalIndex = i;
-        break;
+    if (departureVal > 0) {
+      for (let i = 0; i <= hoverIndex; i++) {
+        const val = getPointValue(displayedData[i], arrivalKey);
+        if (val >= departureVal) {
+          arrivalIndex = i;
+          break;
+        }
       }
     }
 
@@ -281,7 +283,7 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
               Diagrama de Fluxo Cumulativo (CFD)
             </h3>
             <span className="scatter-subtitle">
-              Inspeção dual de WIP e Lead Time com identificação de gargalos (Businessmap)
+              Inspeção dual de WIP e Lead Time com identificação de gargalos
             </span>
           </div>
         </div>
@@ -404,7 +406,7 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
             </>
           )}
 
-          {/* Inspeção Dual Interativa (Businessmap) */}
+          {/* Inspeção Dual Interativa */}
           {inspection && activeCoord && !isEmpty && (
             <g className="cfd-inspection-group" data-testid="cfd-inspection-overlay">
               {/* Linha vertical de corte */}

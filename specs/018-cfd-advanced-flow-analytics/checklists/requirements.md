@@ -1,4 +1,4 @@
-# Specification Quality Checklist: Feature 018 - CFD Avançado no Padrão Businessmap / ActionableAgile
+# Specification Quality Checklist: Feature 018 - CFD Avançado com Análise de Fluxo e Gargalos
 
 **Feature**: `018-cfd-advanced-flow-analytics`  
 **Date**: 2026-09-11  
@@ -7,7 +7,7 @@
 ---
 
 ## 1. Content Completeness & Benchmark Fidelity
-- [x] **Problem Definition & Motivation**: O diagrama de fluxo cumulativo do Metrik precisa evoluir para o padrão internacional (ActionableAgile / Businessmap) para permitir inspeção analítica de gargalos e medição contínua de WIP e Lead Time.
+- [x] **Problem Definition & Motivation**: O diagrama de fluxo cumulativo do Metrik precisa evoluir para ferramentas analíticas de alto nível para permitir inspeção analítica de gargalos e medição contínua de WIP e Lead Time.
 - [x] **Benchmark Model & Reference**:
   - Medição vertical de WIP com badge de quantidade de itens.
   - Medição horizontal de Lead Time com seta bidirecional e badge de dias.

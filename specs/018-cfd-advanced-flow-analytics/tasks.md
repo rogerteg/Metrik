@@ -1,4 +1,4 @@
-# Tasks: Feature 018 - CFD Avançado no Padrão Businessmap / ActionableAgile
+# Tasks: Feature 018 - CFD Avançado com Análise de Fluxo e Gargalos
 
 ## 🧠 Modelos de Raciocínio Analítico Pré-Tarefas (Constituição VI - Mandatório)
 
@@ -11,11 +11,11 @@
 
 ### 2. Análise Pré-Mortem & Pensamento Invertido (Inversion & Premortem Analysis)
 - **Modo de Falha 1 (Curvas Verticais sem Interpolação):** Ao buscar a distância horizontal para Lead Time, o mesmo valor de Y pode não ter ponto exato na curva de entrada.
-  - *Mitigação:* Usar busca binária ou interpolação linear contínua entre os dias adjacentes para encontrar a coordenada X onde a curva atingiu o mesmo patamar.
+  - *Mitigação:* Usar busca binária ou interpolação linear contínua entre os dias adjacentes para encontrar a coordenada X onde a curva atingiu o mesmo patamar (`getPointValue` dinâmico).
 - **Modo de Falha 2 (Filtro Temporal com Intervalo Invertido):** Usuário seleciona `Requested after` posterior a `Finished before`.
   - *Mitigação:* Validador no painel de filtros que bloqueia a submissão e exibe aviso amigável, forçando $\text{Data Inicial} \le \text{Data Final}$.
 - **Modo de Falha 3 (Colapso com Mini-Timeline em datasets pequenos):** Menos de 3 dias de dados no board.
-  - *Mitigação:* Timeline scrubber desabilita o zoom de forma elegante quando a janela for menor que 5 dias, mantendo o gráfico proporcional.
+  - *Mitigação:* Timeline scrubber desabilita o zoom de forma elegante quando a janela for menor que 4 dias, mantendo o gráfico proporcional.
 
 ### 3. Validação MECE (Mutually Exclusive, Collectively Exhaustive)
 - **Exclusividade Mútua (Zero Sobreposição):**
@@ -24,7 +24,7 @@
   - `Phase 3 (User Story 1 - Dual Inspection & Bottleneck Tags)`: Medições de WIP/Lead Time em `CumulativeFlowChart.tsx`.
   - `Phase 4 (User Story 2 - Filter Drawer)`: Painel retrátil `CfdFilterDrawer.tsx` e filtros.
   - `Phase 5 (User Story 3 - Timeline Scrubber)`: Mini-timeline `CfdTimelineScrubber.tsx`.
-  - `Phase 6 (Testing & Production Build)`: Testes unitários e build.
+  - `Phase 6 (Integration, Quality Gate & Brand Sanitization)`: Testes unitários, build e sanitização de termos.
 - **Exaustividade Coletiva (100% dos Requisitos):** Cobre FR-001 a FR-006 na íntegra.
 
 ### 4. Árvore de Decisão & Poda de Alternativas (Tree of Thoughts)
@@ -35,11 +35,11 @@
 ### 5. Critério de Falsificabilidade & Testabilidade (TDD)
 - **Critério 1 (Medição de WIP):** Para data com 10 itens na etapa A e 4 itens na etapa B, a diferença vertical retornada deve ser estritamente 6 itens.
 - **Critério 2 (Lead Time Horizontal):** Se a curva de saída atingiu 10 itens no dia 15 e a de entrada atingiu 10 itens no dia 4, a medição horizontal deve ser de exatamente 11 dias.
-- **Critério 3 (Tag de Gargalo):** Uma etapa que aumentou seu WIP em mais de 50% em relação ao início da janela temporal deve ativar a tag `A queue column expanding`.
+- **Critério 3 (Tag de Gargalo):** Uma etapa que aumentou seu WIP em mais de 40% em relação ao início da janela temporal deve ativar a tag `A queue column expanding`.
 
 ### 6. Conformidade Constitucional
 - **Constituição II & V:** Funções puras desacopladas em `cfdMetrics.ts`.
-- **Constituição III:** 213 testes preservados + novos testes de fluxo.
+- **Constituição III:** 219 testes preservados e passando sem regressões.
 
 ---
 
@@ -68,7 +68,8 @@
 - [x] T012 [US3] Create `src/components/charts/CfdTimelineScrubber.tsx` with mini SVG overview and draggable window selection handles
 - [x] T013 [US3] Connect `CfdTimelineScrubber` to `CumulativeFlowChart` to dynamically zoom the main chart date range
 
-### Phase 6: Integration, Polish & Quality Gate
-- [x] T014 Update unit tests in `tests/unit/CumulativeFlowChart.test.tsx` to validate dual inspection rendering, badges, and filter drawer
-- [x] T015 Run full automated test suite (`npm test`) ensuring all 213+ tests pass without regression
-- [x] T016 Run production build (`npm run build`) to verify TypeScript compilation and bundle integrity
+### Phase 6: Brand Sanitization, Quality Gate & Verification
+- [x] T014 Sanitize inspiration brand references in `CumulativeFlowChart.tsx`, `CycleTimeScatterPlot.tsx`, `Analytics.css`, `App.css`, and specs
+- [x] T015 Ensure dynamic `arrivalKey` and `departureKey` alignment in `CumulativeFlowChart.tsx` using `getPointValue`
+- [x] T016 Run full automated test suite (`npm test`) ensuring all 219 tests pass without regression
+- [x] T017 Run production build (`npm run build`) to verify TypeScript compilation and bundle integrity

@@ -1,9 +1,9 @@
-# Feature Specification: CFD Avançado no Padrão Businessmap / ActionableAgile
+# Feature Specification: CFD Avançado com Análise de Fluxo e Gargalos
 
 **Feature Branch**: `018-cfd-advanced-flow-analytics`  
 **Created**: 2026-09-11  
 **Status**: Completed  
-**Input**: Imagem fornecida pelo usuário do **Cumulative Flow Diagram (CFD) do Businessmap / ActionableAgile**:
+**Input**: Imagem fornecida pelo usuário do **Cumulative Flow Diagram (CFD) com Análise Avançada de Fluxo**:
 - Barra superior de navegação (`DASHBOARD`, `CYCLE TIME`, `THROUGHPUT`, `WIP`, `FLOW`, `FORECASTING`).
 - Filtros laterais à esquerda:
   - Intervalo de datas: `Requested after` (Data inicial) e `Finished before` (Data final).
@@ -33,7 +33,7 @@
 
 ## 1. Visão Geral & Contexto
 
-O **Metrik** já possui um componente de CFD básico em `CumulativeFlowChart.tsx` (com cálculo cumulativo em `useCfdData.ts`), mas a visualização ainda carece dos recursos analíticos profissionais padrão Businessmap / ActionableAgile:
+O **Metrik** já possui um componente de CFD básico em `CumulativeFlowChart.tsx` (com cálculo cumulativo em `useCfdData.ts`), mas a visualização ainda carece dos recursos analíticos profissionais avançados:
 1. **Inspeção Dual de Fluxo (Lei de Little / Análise de Bandas)**:
    - Em qualquer ponto do gráfico de CFD, a distância **vertical** representa a quantidade de itens no sistema (**WIP**).
    - A distância **horizontal** entre a curva de entrada e a curva de saída de uma etapa representa a duração média do ciclo naquele instante (**Lead Time / Cycle Time aproximado**).
@@ -52,7 +52,7 @@ O **Metrik** já possui um componente de CFD básico em `CumulativeFlowChart.tsx
 
 Como gestor de fluxo Kanban, quero clicar ou pousar o mouse sobre as faixas do gráfico de CFD para visualizar a medição horizontal de dias (tempo decorrido) e a medição vertical de cartões (WIP), para que eu possa diagnosticar visualmente se uma etapa está se tornando um gargalo no processo.
 
-**Why this priority**: É o diferencial analítico fundamental do CFD no Businessmap e ActionableAgile, transformando um gráfico cumulativo estático em um instrumento de diagnóstico de gargalos.
+**Why this priority**: É o diferencial analítico fundamental de diagramas de fluxo cumulativo avançados, transformando um gráfico cumulativo estático em um instrumento de diagnóstico de gargalos.
 
 **Independent Test**:
 - Acessar a aba `CFD / Fluxo` no módulo de Analytics.

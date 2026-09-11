@@ -7,7 +7,7 @@
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Color Palette - Businessmap-Inspired Clean Enterprise Dark Mode */
+  /* Color Palette - Enterprise Dark Mode */
   --bg-primary: #0b0f19;
   --bg-secondary: #0f172a;
   --bg-board: #0b0f19;
@@ -237,7 +237,7 @@ body {
   background: rgba(56, 189, 248, 0.4);
 }
 
-/* Column Container - Clean Businessmap Structure */
+/* Column Container - Clean Layout Structure */
 .kanban-column {
   background: var(--bg-column);
   border: 1px solid var(--border-subtle);
@@ -394,7 +394,7 @@ body {
   box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
 }
 
-/* Column Header - Compact Businessmap Row */
+/* Column Header - Compact Header Row */
 .column-header {
   display: flex;
   align-items: center;
@@ -522,7 +522,7 @@ body {
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* Task Card - Sleek Businessmap Structure */
+/* Task Card - Sleek Card Structure */
 .task-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -957,7 +957,7 @@ body {
   font-size: 0.8rem;
 }
 
-/* WIP Limits & Overload Styling - Clean Businessmap Pill */
+/* WIP Limits & Overload Styling - Clean Status Pill */
 .kanban-column-wip-exceeded {
   border-color: rgba(245, 158, 11, 0.5) !important;
   box-shadow: 0 0 10px rgba(245, 158, 11, 0.12) !important;

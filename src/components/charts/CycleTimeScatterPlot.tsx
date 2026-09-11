@@ -32,7 +32,7 @@ export const CycleTimeScatterPlot: React.FC<CycleTimeScatterPlotProps> = ({
   isExpanded = false,
   initialTimeWindowDays = 30,
   title = 'Cycle Time Scatter Plot',
-  subtitle = 'Tempo decorrido de conclusão com percentis probabilísticos (ActionableAgile)',
+  subtitle = 'Tempo decorrido de conclusão com percentis probabilísticos',
 }) => {
   // Estado dos controles do painel
   const [isControlsOpen, setIsControlsOpen] = useState(false);

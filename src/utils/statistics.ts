@@ -1,5 +1,5 @@
 /**
- * Utilitários estatísticos para métricas de fluxo (ActionableAgile / Daniel Vacanti)
+ * Utilitários estatísticos para métricas de fluxo (Daniel Vacanti / Padrão NIST)
  */
 
 /**

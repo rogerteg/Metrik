@@ -1,4 +1,4 @@
-# Implementation Plan: CFD Avançado no Padrão Businessmap / ActionableAgile
+# Implementation Plan: CFD Avançado com Análise de Fluxo e Gargalos
 
 **Branch**: `018-cfd-advanced-flow-analytics` | **Date**: 2026-09-11 | **Spec**: [specs/018-cfd-advanced-flow-analytics/spec.md](spec.md)
 
@@ -6,7 +6,7 @@
 
 ## 1. Resumo & Arquitetura Visual
 
-Implementar no Metrik o **Cumulative Flow Diagram (CFD) Avançado** no padrão de referência do **Businessmap / ActionableAgile**:
+Implementar no Metrik o **Cumulative Flow Diagram (CFD) Avançado** com recursos completos de análise de fluxo:
 1. **Inspeção Dual Interativa de Fluxo (WIP vs Lead Time)**:
    - Medição vertical de WIP: linha de corte na data selecionada com badge de quantidade de itens (`X items`).
    - Medição horizontal de Lead Time: seta horizontal bidirecional ligando a curva de entrada à curva de saída com badge de duração em dias (`Y days`).

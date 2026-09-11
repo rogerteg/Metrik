@@ -50,7 +50,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
 
   return (
     <div className="analytics-dashboard">
-      {/* Barra de Navegação Analítica no Topo (ActionableAgile style) */}
+      {/* Barra de Navegação Analítica no Topo */}
       <AnalyticsNavHeader
         activeTab={activeTab}
         onSelectTab={setActiveTab}

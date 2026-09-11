@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report:
-- Version change: 1.0.0 → 1.1.0
+- Version change: 1.1.0 → 1.2.0
 - List of modified principles:
-  - Added: VI. Analytical Reasoning Pre-Task Creation (NON-NEGOTIABLE)
+  - Added: VII. Brand Independence & Clean Identity (NON-NEGOTIABLE)
 - Added sections: None
 - Removed sections: None
 - Follow-up TODOs: None
@@ -36,6 +36,11 @@ Prior to creating, decomposing, or formalizing ANY set of implementation tasks (
 5. **Falsifiability & TDD (Red-Bar First)**: Defining objective, automated verification criteria that fail before implementation and pass upon completion.
 Tasks generated without this preceding analytical reasoning are null, void, and violate project governance.
 
+### VII. Brand Independence & Clean Identity (NON-NEGOTIABLE)
+Metrik is an autonomous, standalone enterprise Kanban and Flow Analytics product. The codebase, user interface, tooltips, chart legends, labels, CSS tokens, and internal source code comments MUST maintain strict brand independence:
+1. **Zero Third-Party Brand Leaks**: External inspiration products, benchmark tools, or vendor brand names (such as Businessmap, ActionableAgile, etc.) are purely conversational references and MUST NEVER be leaked into visible UI text, chart subtitles, DOM attributes, or source code comments.
+2. **Proprietary & Canonical Terminology**: All flow concepts must be expressed using standardized lean/agile and scientific terminology (e.g., *Cumulative Flow Diagram*, *Cycle Time Scatter Plot*, *Little's Law*, *Dual WIP/Lead Time Inspection*, *NIST Percentiles*, *Metrik Design System*).
+
 ## Security & Technical Standards
 
 Secrets, API keys, and sensitive environment variables MUST NEVER be committed to source control. Code and automation scripts MUST maintain cross-platform compatibility, with explicit support for Windows environments and PowerShell execution.
@@ -48,5 +53,4 @@ Every implementation task MUST be verified against defined acceptance criteria b
 
 This Constitution serves as the primary governance document for Metrik and supersedes informal practices. Amendments MUST be documented, assigned appropriate semantic version updates, and ratified by project owners before taking effect.
 
-**Version**: 1.1.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-08
-
+**Version**: 1.2.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-11
