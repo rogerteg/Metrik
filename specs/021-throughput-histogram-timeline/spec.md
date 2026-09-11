@@ -28,6 +28,14 @@
 
 ---
 
+## 0. Esclarecimentos & Decisões Confirmadas (/speckit-clarify)
+
+1. **Tratamento de Dias Sem Entrega**: Considerar todos os dias de calendário preenchendo finais de semana e feriados sem entregas com `count: 0` (como na imagem de referência e preconizado na literatura de fluxo de Daniel Vacanti).
+2. **Percentis de Referência**: Exibir exatamente as linhas verticais pontilhadas de **50% (Mediana)**, **70%**, **85% (SLE de Vazão / Capacidade Recomendada)** e **95% (Alta Certeza)** no topo do Histograma.
+3. **Disposição Visual**: Visão conjunta vertical empilhada: **Throughput Histogram** no topo e **Daily Throughput Run Chart** logo abaixo, mantendo fidelidade estrita à referência visual.
+
+---
+
 ## 1. Visão Geral & Contexto Lean
 
 A **Vazão (Throughput)** é o número de itens de trabalho entregues por unidade de tempo (geralmente por dia ou por semana). No gerenciamento moderno de projetos e fluxo ágil:
