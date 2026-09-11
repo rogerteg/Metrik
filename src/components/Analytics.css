@@ -2297,6 +2297,57 @@
   border-radius: 10px;
 }
 
+/* ==========================================================================
+   Throughput Analytics View (Feature 021 - Histogram & Timeline)
+   ========================================================================== */
+
+.throughput-analytics-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.throughput-controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.btn-time-window:hover {
+  border-color: #0284c7 !important;
+  color: #0284c7 !important;
+}
+
+.btn-time-window.active:hover {
+  color: #ffffff !important;
+}
+
+.summary-metric-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.summary-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.histogram-bar {
+  transition: fill 0.15s ease, opacity 0.15s ease;
+}
+
+.histogram-bar:hover {
+  fill: #0284c7;
+  opacity: 1;
+}
+
+.throughput-charts-canvas circle:hover {
+  r: 5px;
+  fill: #38bdf8;
+}
+
+
 
 
 

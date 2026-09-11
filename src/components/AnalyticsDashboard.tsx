@@ -5,6 +5,7 @@ import { useFlowMetrics } from '../hooks/useFlowMetrics';
 import { useCfdData } from '../hooks/useCfdData';
 import { MetricsBar } from './MetricsBar';
 import { ThroughputChart } from './charts/ThroughputChart';
+import { ThroughputAnalyticsView } from './ThroughputAnalyticsView';
 import { LeadTimeScatter } from './charts/LeadTimeScatter';
 import { CumulativeFlowChart } from './charts/CumulativeFlowChart';
 import { CycleTimeScatterPlot } from './charts/CycleTimeScatterPlot';
@@ -73,11 +74,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
       {/* Visão 2: Throughput focado */}
       {activeTab === 'throughput' && (
         <div className="dashboard-focused-view" data-testid="focused-throughput-view">
-          <ThroughputChart
-            data={throughput}
-            maxThroughput={maxThroughput}
-            isExpanded={false}
-          />
+          <ThroughputAnalyticsView tasks={tasks} />
         </div>
       )}
 

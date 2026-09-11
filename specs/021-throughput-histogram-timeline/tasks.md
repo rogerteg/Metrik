@@ -44,26 +44,26 @@
 ## Tasks
 
 ### Phase 1: Math & Throughput Metrics Logic
-- [ ] T001 Implement `extractThroughputSeries(tasks, daysWindow, referenceDate)` with strict zero-filling for empty days in `src/utils/throughputMetrics.ts`
-- [ ] T002 Implement `calculateThroughputHistogram(dailyPoints)` returning frequency bins, percentages, and max daily throughput in `src/utils/throughputMetrics.ts`
-- [ ] T003 Implement `calculateThroughputPercentiles(dailyCounts)` calculating NIST P50, P70, P85, P95 and statistical summary (mean, mode, total) in `src/utils/throughputMetrics.ts`
-- [ ] T004 Write unit tests for zero-filling, bin distribution, percentiles, and statistical summary in `tests/unit/throughputMetrics.test.ts`
+- [x] T001 Implement `extractThroughputSeries(tasks, daysWindow, referenceDate)` with strict zero-filling for empty days in `src/utils/throughputMetrics.ts`
+- [x] T002 Implement `calculateThroughputHistogram(dailyPoints)` returning frequency bins, percentages, and max daily throughput in `src/utils/throughputMetrics.ts`
+- [x] T003 Implement `calculateThroughputPercentiles(dailyCounts)` calculating NIST P50, P70, P85, P95 and statistical summary (mean, mode, total) in `src/utils/throughputMetrics.ts`
+- [x] T004 Write unit tests for zero-filling, bin distribution, percentiles, and statistical summary in `tests/unit/throughputMetrics.test.ts`
 
 ### Phase 2: Native SVG Chart Components
-- [ ] T005 [US1] Implement native SVG `src/components/charts/ThroughputHistogramChart.tsx` with discrete X-axis (`# of Work Items`), Y-axis (`Frequency # of Days`), and blue bars
-- [ ] T006 [US1] Render vertical dashed percentile lines (50%, 70%, 85%, 95%) with top badges and interactive hover tooltips in `ThroughputHistogramChart.tsx`
-- [ ] T007 [US2] Implement native SVG `src/components/charts/ThroughputRunChart.tsx` with continuous timeline on X-axis, daily throughput on Y-axis, and connected line with circular dot markers
-- [ ] T008 [US2] Implement interactive hover tooltips for daily dots showing date and exact count of completed items in `ThroughputRunChart.tsx`
+- [x] T005 [US1] Implement native SVG `src/components/charts/ThroughputHistogramChart.tsx` with discrete X-axis (`# of Work Items`), Y-axis (`Frequency # of Days`), and blue bars
+- [x] T006 [US1] Render vertical dashed percentile lines (50%, 70%, 85%, 95%) with top badges and interactive hover tooltips in `ThroughputHistogramChart.tsx`
+- [x] T007 [US2] Implement native SVG `src/components/charts/ThroughputRunChart.tsx` with continuous timeline on X-axis, daily throughput on Y-axis, and connected line with circular dot markers
+- [x] T008 [US2] Implement interactive hover tooltips for daily dots showing date and exact count of completed items in `ThroughputRunChart.tsx`
 
 ### Phase 3: Integrated View, Controls & Statistics Summary
-- [ ] T009 [US3] Implement executive statistical summary cards (Total Completed, Daily Average, P50, P70, P85 SLE, P95, Mode) in `src/components/ThroughputAnalyticsView.tsx`
-- [ ] T010 [US3] Implement time window selector (14 days, 30 days, 60 days, 90 days, All Time) in `ThroughputAnalyticsView.tsx`
-- [ ] T011 [US1, US2] Assemble stacked vertical layout (Throughput Histogram on top, Daily Run Chart below) with synchronized tooltips and empty guidance state in `ThroughputAnalyticsView.tsx`
+- [x] T009 [US3] Implement executive statistical summary cards (Total Completed, Daily Average, P50, P70, P85 SLE, P95, Mode) in `src/components/ThroughputAnalyticsView.tsx`
+- [x] T010 [US3] Implement time window selector (14 days, 30 days, 60 days, 90 days, All Time) in `ThroughputAnalyticsView.tsx`
+- [x] T011 [US1, US2] Assemble stacked vertical layout (Throughput Histogram on top, Daily Run Chart below) with synchronized tooltips and empty guidance state in `ThroughputAnalyticsView.tsx`
 
 ### Phase 4: Navigation, Dashboard Integration & Styling
-- [ ] T012 Connect `ThroughputAnalyticsView` into `src/components/AnalyticsDashboard.tsx` for the active `throughput` tab, preserving compact `ThroughputChart.tsx` for general dashboard
-- [ ] T013 Add styles for histogram bars, percentile lines, run chart line/dots, summary cards, and controls in `src/styles/Analytics.css`
+- [x] T012 Connect `ThroughputAnalyticsView` into `src/components/AnalyticsDashboard.tsx` for the active `throughput` tab, preserving compact `ThroughputChart.tsx` for general dashboard
+- [x] T013 Add styles for histogram bars, percentile lines, run chart line/dots, summary cards, and controls in `src/components/Analytics.css`
 
 ### Phase 5: Verification & Quality Gate
-- [ ] T014 Write UI integration tests for `ThroughputAnalyticsView` covering chart rendering, window selection, and empty state in `tests/unit/ThroughputAnalyticsView.test.tsx`
-- [ ] T015 Run full test suite (`npm test`) and type check ensuring 100% pass rate and zero regressions
+- [x] T014 Write UI integration tests for `ThroughputAnalyticsView` covering chart rendering, window selection, and empty state in `tests/unit/ThroughputAnalyticsView.test.tsx`
+- [x] T015 Run full test suite (`npm test`) and type check ensuring 100% pass rate and zero regressions
