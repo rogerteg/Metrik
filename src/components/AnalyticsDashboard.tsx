@@ -38,8 +38,11 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
   // Dados para os gráficos de Throughput e Lead Time
   const { throughput, scatter, maxThroughput, maxLeadTime } = useAnalyticsData(completedTasks);
 
-  // CFD calculando o fluxo completo com base em todas as colunas do board
-  const cfd = useCfdData(tasks, 14, board?.columns);
+  // Estado de intervalo customizado do CFD (Requested after / Finished before)
+  const [cfdCustomDates, setCfdCustomDates] = useState<{ startDate?: string; endDate?: string } | undefined>(undefined);
+
+  // CFD calculando o fluxo completo com base em todas as colunas do board e filtro customizado
+  const cfd = useCfdData(tasks, 14, board?.columns, cfdCustomDates);
 
   const toggleExpand = (chart: ChartType) => {
     setExpandedChart((prev) => (prev === chart ? null : chart));
@@ -84,6 +87,8 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
             maxTotal={cfd.maxTotal}
             isEmpty={cfd.isEmpty}
             columns={board?.columns}
+            onFilterDateRange={(startDate, endDate) => setCfdCustomDates({ startDate, endDate })}
+            onResetDateFilter={() => setCfdCustomDates(undefined)}
             isExpanded={false}
           />
         </div>
@@ -113,6 +118,8 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
               maxTotal={cfd.maxTotal}
               isEmpty={cfd.isEmpty}
               columns={board?.columns}
+              onFilterDateRange={(startDate, endDate) => setCfdCustomDates({ startDate, endDate })}
+              onResetDateFilter={() => setCfdCustomDates(undefined)}
               onToggleExpand={() => toggleExpand('cfd')}
               isExpanded={false}
             />

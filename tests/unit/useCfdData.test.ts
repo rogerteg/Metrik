@@ -153,4 +153,19 @@ describe('useCfdData & calculateCfd (Feature 011)', () => {
     expect(todayPoint?.cumulativeStages?.['c-dev']).toBe(3);
     expect(todayPoint?.cumulativeStages?.['c-todo']).toBe(4);
   });
+
+  it('calculates CFD points with custom date range (startDate & endDate)', () => {
+    const tasks: TaskModel[] = [
+      { id: 't1', title: 'Task 1', column: 'done', createdAt: '2026-09-01T08:00:00Z', completedAt: '2026-09-03T10:00:00Z' },
+    ];
+
+    const data = calculateCfd(tasks, 14, undefined, {
+      startDate: '2026-09-01',
+      endDate: '2026-09-05',
+    });
+
+    expect(data.points.length).toBe(5);
+    expect(data.points[0].date).toBe('2026-09-01');
+    expect(data.points[4].date).toBe('2026-09-05');
+  });
 });

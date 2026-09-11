@@ -5,6 +5,9 @@ import { CfdData, CfdDataPoint } from '../types/analytics';
 /**
  * Retorna os últimos N dias no formato 'YYYY-MM-DD'
  */
+/**
+ * Retorna os últimos N dias no formato 'YYYY-MM-DD'
+ */
 export const getLastNDays = (daysCount = 14): string[] => {
   const days: string[] = [];
   const today = new Date();
@@ -19,15 +22,48 @@ export const getLastNDays = (daysCount = 14): string[] => {
 };
 
 /**
+ * Retorna array ordenado de datas (YYYY-MM-DD) entre startDate e endDate inclusive.
+ */
+export const getDateRange = (startDateStr: string, endDateStr: string): string[] => {
+  const [startY, startM, startD] = startDateStr.split('-').map(Number);
+  const [endY, endM, endD] = endDateStr.split('-').map(Number);
+
+  if (!startY || !startM || !startD || !endY || !endM || !endD) {
+    return getLastNDays(14);
+  }
+
+  const startUtc = new Date(Date.UTC(startY, startM - 1, startD));
+  const endUtc = new Date(Date.UTC(endY, endM - 1, endD));
+
+  if (isNaN(startUtc.getTime()) || isNaN(endUtc.getTime()) || startUtc > endUtc) {
+    return getLastNDays(14);
+  }
+
+  const dates: string[] = [];
+  const current = new Date(startUtc);
+  while (current <= endUtc) {
+    dates.push(current.toISOString().split('T')[0]);
+    current.setUTCDate(current.getUTCDate() + 1);
+  }
+  return dates;
+};
+
+/**
  * Calcula a evolução do Diagrama de Fluxo Cumulativo (CFD) para a lista de tarefas e colunas fornecidas.
- * Suporta o fluxo completo de todas as etapas (colunas) configuradas no quadro.
+ * Suporta o fluxo completo de todas as etapas (colunas) configuradas no quadro e intervalo customizado.
  */
 export const calculateCfd = (
   tasks: TaskModel[],
   daysCount = 14,
-  columns?: ColumnModel[]
+  columns?: ColumnModel[],
+  customDateRange?: { startDate?: string; endDate?: string }
 ): CfdData => {
-  const days = getLastNDays(daysCount);
+  let days: string[];
+  if (customDateRange?.startDate && customDateRange?.endDate) {
+    days = getDateRange(customDateRange.startDate, customDateRange.endDate);
+  } else {
+    days = getLastNDays(daysCount);
+  }
 
   if (tasks.length === 0) {
     const points: CfdDataPoint[] = days.map((date) => {
@@ -164,7 +200,11 @@ export const calculateCfd = (
 export const useCfdData = (
   tasks: TaskModel[],
   daysCount = 14,
-  columns?: ColumnModel[]
+  columns?: ColumnModel[],
+  customDateRange?: { startDate?: string; endDate?: string }
 ): CfdData => {
-  return useMemo(() => calculateCfd(tasks, daysCount, columns), [tasks, daysCount, columns]);
+  return useMemo(
+    () => calculateCfd(tasks, daysCount, columns, customDateRange),
+    [tasks, daysCount, columns, customDateRange?.startDate, customDateRange?.endDate]
+  );
 };

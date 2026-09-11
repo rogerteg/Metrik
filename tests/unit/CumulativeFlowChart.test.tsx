@@ -113,8 +113,8 @@ describe('CumulativeFlowChart Component (Feature 011)', () => {
 
     render(<CumulativeFlowChart data={dataWithStages} maxTotal={6} columns={customColumns} />);
 
-    expect(screen.getByText('Dev Code')).toBeInTheDocument();
-    expect(screen.getByText('Review')).toBeInTheDocument();
+    expect(screen.getAllByText('Dev Code').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Review').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByTestId('cfd-polygon-dev')).toBeInTheDocument();
     expect(screen.getByTestId('cfd-polygon-review')).toBeInTheDocument();
   });
@@ -151,5 +151,17 @@ describe('CumulativeFlowChart Component (Feature 011)', () => {
 
     const donePoly = screen.getByTestId('cfd-polygon-done');
     expect(donePoly).toHaveAttribute('fill', '#10b981');
+  });
+
+  it('renders filter drawer toggle button and opens drawer on click', () => {
+    render(<CumulativeFlowChart data={mockData} maxTotal={7} />);
+
+    const toggleBtn = screen.getByTestId('cfd-filters-toggle');
+    expect(toggleBtn).toBeInTheDocument();
+
+    fireEvent.click(toggleBtn);
+    const drawer = screen.getByTestId('cfd-filters-drawer');
+    expect(drawer).toHaveClass('is-open');
+    expect(screen.getByTestId('btn-cfd-load')).toBeInTheDocument();
   });
 });
