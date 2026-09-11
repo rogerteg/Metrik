@@ -139,7 +139,9 @@ export const Task: React.FC<TaskProps> = ({
 
   const hasAcceptanceCriteria = !!(task.acceptanceCriteria && task.acceptanceCriteria.trim().length > 0);
   const hasTestScenarios = !!(task.testScenarios && task.testScenarios.trim().length > 0);
+  const hasQualityContent = hasAcceptanceCriteria || hasTestScenarios;
 
+  const [isQaExpanded, setIsQaExpanded] = React.useState(false);
   const [isEditingAC, setIsEditingAC] = React.useState(false);
   const [isEditingTS, setIsEditingTS] = React.useState(false);
 
@@ -152,7 +154,6 @@ export const Task: React.FC<TaskProps> = ({
         effectiveCardColor && !task.blocked
           ? {
               borderLeft: `4px solid ${effectiveCardColor}`,
-              borderTopColor: `${effectiveCardColor}40`,
             }
           : undefined
       }
@@ -163,10 +164,20 @@ export const Task: React.FC<TaskProps> = ({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       onClick={(e) => {
-        // Only trigger modal click if we're not dragging, not editing, and click didn't originate from a button/input
-        const target = e.target as HTMLElement;
-        const isInteractive = target.closest('button, input, textarea');
-        if (!isDragging && !isEditing && !isEditingAC && !isEditingTS && !isInteractive && onClick) {
+        if (
+          isEditing ||
+          isEditingAC ||
+          isEditingTS ||
+          (e.target as HTMLElement).closest('.btn-nav-step') ||
+          (e.target as HTMLElement).closest('.btn-delete-task') ||
+          (e.target as HTMLElement).closest('.priority-badge-container') ||
+          (e.target as HTMLElement).closest('.tag-item-remove') ||
+          (e.target as HTMLElement).closest('.task-qa-toggle-bar') ||
+          (e.target as HTMLElement).closest('.task-field-box')
+        ) {
+          return;
+        }
+        if (onClick) {
           onClick();
         }
       }}
@@ -174,13 +185,12 @@ export const Task: React.FC<TaskProps> = ({
       <div
         className="task-card-header"
         onPointerDown={(e) => e.stopPropagation()}
-        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
         <PriorityBadge
           priority={task.priority}
           onChange={(newPriority) => onUpdatePriority?.(task.id, newPriority)}
         />
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
           {isStagnant && !task.blocked && (
             <span
               className="task-stagnant-badge"
@@ -226,54 +236,91 @@ export const Task: React.FC<TaskProps> = ({
           onRemoveTag={(tag) => onRemoveTag?.(task.id, tag)}
         />
 
-        {/* Campos de Engenharia & Qualidade: Critérios de Aceitação e Cenários de Testes */}
-        <div className="task-qa-fields" data-testid="task-qa-fields">
-          <div className="task-field-box">
-            <div className="task-field-header">
-              <span className="task-field-label">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        {/* Seção de Engenharia & Qualidade: Critérios de Aceitação e Cenários de Testes */}
+        <div className="task-qa-section" data-testid="task-qa-section">
+          <div
+            className="task-qa-toggle-bar"
+            onClick={() => setIsQaExpanded((prev) => !prev)}
+            title="Alternar critérios de aceitação e cenários de testes"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                setIsQaExpanded((prev) => !prev);
+              }
+            }}
+          >
+            <div className="task-qa-summary">
+              <span className={`task-qa-summary-item ${hasAcceptanceCriteria ? 'has-content' : ''}`}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="9 11 12 14 22 4"></polyline>
                   <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                 </svg>
-                Critérios de Aceitação
+                {hasAcceptanceCriteria ? 'Critérios' : 'Critérios'}
               </span>
-            </div>
-            <textarea
-              className="task-field-textarea"
-              value={task.acceptanceCriteria || ''}
-              placeholder="Critérios de aceitação..."
-              aria-label="Critérios de aceitação"
-              rows={hasAcceptanceCriteria ? 2 : 1}
-              onFocus={() => setIsEditingAC(true)}
-              onBlur={() => setIsEditingAC(false)}
-              onChange={(e) => onUpdateTask?.(task.id, { acceptanceCriteria: e.target.value })}
-            />
-          </div>
-
-          <div className="task-field-box">
-            <div className="task-field-header">
-              <span className="task-field-label">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <span className={`task-qa-summary-item ${hasTestScenarios ? 'has-content' : ''}`}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
                 </svg>
-                Cenários de Testes
+                {hasTestScenarios ? 'Testes' : 'Testes'}
               </span>
             </div>
-            <textarea
-              className="task-field-textarea"
-              value={task.testScenarios || ''}
-              placeholder="Cenários de testes..."
-              aria-label="Cenários de testes"
-              rows={hasTestScenarios ? 2 : 1}
-              onFocus={() => setIsEditingTS(true)}
-              onBlur={() => setIsEditingTS(false)}
-              onChange={(e) => onUpdateTask?.(task.id, { testScenarios: e.target.value })}
-            />
+            <span className={`task-qa-toggle-icon ${isQaExpanded ? 'expanded' : ''}`} aria-hidden="true">
+              ▼
+            </span>
           </div>
+
+          {(isQaExpanded || hasQualityContent) && (
+            <div className="task-qa-fields" data-testid="task-qa-fields">
+              <div className="task-field-box">
+                <div className="task-field-header">
+                  <span className="task-field-label">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 11 12 14 22 4"></polyline>
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                    Critérios de Aceitação
+                  </span>
+                </div>
+                <textarea
+                  className="task-field-textarea"
+                  value={task.acceptanceCriteria || ''}
+                  placeholder="Critérios de aceitação..."
+                  aria-label="Critérios de aceitação"
+                  rows={hasAcceptanceCriteria ? 2 : 1}
+                  onFocus={() => setIsEditingAC(true)}
+                  onBlur={() => setIsEditingAC(false)}
+                  onChange={(e) => onUpdateTask?.(task.id, { acceptanceCriteria: e.target.value })}
+                />
+              </div>
+
+              <div className="task-field-box">
+                <div className="task-field-header">
+                  <span className="task-field-label">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Cenários de Testes
+                  </span>
+                </div>
+                <textarea
+                  className="task-field-textarea"
+                  value={task.testScenarios || ''}
+                  placeholder="Cenários de testes..."
+                  aria-label="Cenários de testes"
+                  rows={hasTestScenarios ? 2 : 1}
+                  onFocus={() => setIsEditingTS(true)}
+                  onBlur={() => setIsEditingTS(false)}
+                  onChange={(e) => onUpdateTask?.(task.id, { testScenarios: e.target.value })}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {(hasDescription || hasSubtasks || hasDueDate || task.startDate || task.endDate) && (

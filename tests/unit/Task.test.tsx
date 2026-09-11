@@ -7,7 +7,7 @@ const mockTask: TaskModel = {
   id: 'task-test-01',
   title: 'Implementar Persistência Local',
   column: 'in-progress',
-  createdAt: '2026-09-08T12:00:00.000Z',
+  createdAt: new Date().toISOString(),
 };
 
 describe('Task Component (US2 & US4)', () => {
@@ -388,6 +388,38 @@ describe('Task Component (US2 & US4)', () => {
 
     fireEvent.change(tsTextarea, { target: { value: 'Novo cenário de teste' } });
     expect(handleUpdateTask).toHaveBeenCalledWith('task-test-01', { testScenarios: 'Novo cenário de teste' });
+  });
+
+  it('allows expanding and collapsing QA section via toggle bar', () => {
+    const emptyQATask: TaskModel = {
+      ...mockTask,
+      acceptanceCriteria: '',
+      testScenarios: '',
+    };
+
+    render(
+      <Task
+        task={emptyQATask}
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+      />
+    );
+
+    // Initial state: not expanded because fields are empty
+    expect(screen.queryByLabelText('Critérios de aceitação')).not.toBeInTheDocument();
+
+    // Click toggle bar to expand
+    const toggleBar = screen.getByTitle('Alternar critérios de aceitação e cenários de testes');
+    fireEvent.click(toggleBar);
+
+    // Fields should now be visible
+    expect(screen.getByLabelText('Critérios de aceitação')).toBeInTheDocument();
+    expect(screen.getByLabelText('Cenários de testes')).toBeInTheDocument();
+
+    // Click again to collapse
+    fireEvent.click(toggleBar);
+    expect(screen.queryByLabelText('Critérios de aceitação')).not.toBeInTheDocument();
   });
 });
 
