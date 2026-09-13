@@ -2912,6 +2912,418 @@ body {
   margin-top: 8px;
 }
 
+/* ==========================================================================
+   Feature 024: Task Types, Relational Links & Cross-Squad Attachments
+   ========================================================================== */
+
+.task-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 2px 7px;
+  border: 1px solid transparent;
+  line-height: 1.2;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.task-type-badge--compact {
+  padding: 2px 4px;
+}
+
+.task-type-selector {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.task-type-btn {
+  flex: 1;
+  min-width: 110px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="light"] .task-type-btn {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.task-type-btn:hover {
+  border-color: var(--border-color);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.task-type-btn--active {
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.task-links-summary-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px dashed var(--border-subtle);
+}
+
+.task-links-counter-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--accent-primary, #6366f1);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.task-cross-squad-chip {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.task-blocked-dependency-chip {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.task-initiative-progress {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.task-initiative-progress__bar {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+[data-theme="light"] .task-initiative-progress__bar {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.task-initiative-progress__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.task-initiative-progress__label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ==========================================================================
+   Feature 024: Task Links Section & Cross-Squad Modals
+   ========================================================================== */
+
+.task-links-section {
+  margin-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 14px;
+}
+
+.task-links-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.btn-add-link-trigger {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent-primary, #6366f1);
+  background: transparent;
+  border: 1px dashed var(--accent-primary, #6366f1);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-add-link-trigger:hover {
+  background: rgba(99, 102, 241, 0.1);
+  border-style: solid;
+}
+
+.task-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.task-links-empty {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 4px 0;
+}
+
+.task-link-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+[data-theme="light"] .task-link-item {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.task-link-item:hover {
+  border-color: var(--border-color);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.task-link-item__left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.task-link-item__right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.task-link-relation-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.2;
+}
+
+.task-link-relation-badge--parent {
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.task-link-relation-badge--child {
+  background: rgba(14, 165, 233, 0.15);
+  color: #7dd3fc;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+.task-link-relation-badge--blocks {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.task-link-relation-badge--is_blocked_by {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.task-link-relation-badge--relates_to {
+  background: rgba(107, 114, 128, 0.15);
+  color: #d1d5db;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+.task-link-target-title {
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+.task-link-squad-chip {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  white-space: nowrap;
+}
+
+.btn-link-navigate {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-link-navigate:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.btn-link-remove {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #ef4444;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-link-remove:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.task-add-link-form {
+  margin-top: 10px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+[data-theme="light"] .task-add-link-form {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.task-link-scope-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.link-scope-tab {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.link-scope-tab:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.link-scope-tab--active {
+  background: var(--accent-primary, #6366f1);
+  color: #ffffff;
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.task-link-fields-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-link-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.task-link-field__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.task-link-select {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface, #1e293b);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  outline: none;
+}
+
+.task-link-select:focus {
+  border-color: var(--accent-primary, #6366f1);
+}
+
+.task-add-link-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+
+
 
 
 

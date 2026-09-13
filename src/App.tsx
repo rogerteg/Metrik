@@ -16,11 +16,20 @@ import { NewColumnModal } from './components/NewColumnModal';
 import { useColumnWidths } from './hooks/useColumnWidths';
 import { useTheme } from './hooks/useTheme';
 import { ThemeSelector } from './components/ThemeSelector';
-import { getDefaultColumnColor } from './types/kanban';
+import { getDefaultColumnColor, TaskModel } from './types/kanban';
+import { ReorderOptions } from './types/dnd';
 import { useTeamAccess } from './hooks/useTeamAccess';
 import { UserProfileMenu } from './components/UserProfileMenu';
 import { TeamManagementModal } from './components/TeamManagementModal';
 import { RestrictedBoardFallback } from './components/RestrictedBoardFallback';
+import { TaskRelationType, CrossSquadTaskSummary } from './types/taskTypes';
+import {
+  addBidirectionalLink,
+  removeBidirectionalLink,
+  calculateInitiativeProgress,
+  getPendingBlockers,
+} from './utils/taskRelations';
+import { DependencySoftBlockModal } from './components/DependencySoftBlockModal';
 import metrikLogo from './assets/metrik-logo.png';
 import './App.css';
 
@@ -126,6 +135,185 @@ export const App: React.FC = () => {
       clearTasks();
     }
   };
+
+  const handleAddLink = React.useCallback(
+    (targetTaskId: string, relationType: TaskRelationType, targetBoardId: string, targetTeamId: string) => {
+      if (!selectedTaskId || !activeBoardId) return;
+
+      const sourceTask = allBoardTasks.find((t) => t.id === selectedTaskId);
+      if (!sourceTask) return;
+
+      if (targetBoardId === activeBoardId) {
+        // Intra-board linking
+        const targetTask = allBoardTasks.find((t) => t.id === targetTaskId);
+        if (!targetTask) return;
+
+        const { updatedSource, updatedTarget } = addBidirectionalLink({
+          sourceTask,
+          targetTask,
+          relationType,
+          sourceBoardId: activeBoardId,
+          targetBoardId,
+          sourceTeamId: effectiveTeamId,
+          targetTeamId,
+        });
+
+        updateTask(sourceTask.id, { links: updatedSource.links });
+        updateTask(targetTask.id, { links: updatedTarget.links });
+      } else {
+        // Cross-board / Cross-squad linking
+        try {
+          const storageKey = `metrik-tasks-${targetBoardId}`;
+          const raw = localStorage.getItem(storageKey);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            let targetTask: TaskModel | undefined;
+            for (const colId of Object.keys(parsed.tasks || {})) {
+              const found = (parsed.tasks[colId] as TaskModel[]).find((t) => t.id === targetTaskId);
+              if (found) {
+                targetTask = found;
+                break;
+              }
+            }
+
+            if (targetTask) {
+              const { updatedSource, updatedTarget } = addBidirectionalLink({
+                sourceTask,
+                targetTask,
+                relationType,
+                sourceBoardId: activeBoardId,
+                targetBoardId,
+                sourceTeamId: effectiveTeamId,
+                targetTeamId,
+              });
+
+              updateTask(sourceTask.id, { links: updatedSource.links });
+
+              for (const colId of Object.keys(parsed.tasks)) {
+                parsed.tasks[colId] = (parsed.tasks[colId] as TaskModel[]).map((t) =>
+                  t.id === targetTaskId ? updatedTarget : t
+                );
+              }
+              localStorage.setItem(storageKey, JSON.stringify(parsed));
+            }
+          }
+        } catch (err) {
+          console.error('[Metrik] Falha ao criar vínculo cross-squad:', err);
+        }
+      }
+    },
+    [selectedTaskId, activeBoardId, allBoardTasks, effectiveTeamId, updateTask]
+  );
+
+  const handleRemoveLink = React.useCallback(
+    (targetTaskId: string) => {
+      if (!selectedTaskId || !activeBoardId) return;
+
+      const sourceTask = allBoardTasks.find((t) => t.id === selectedTaskId);
+      if (!sourceTask) return;
+
+      const linkToRemove = (sourceTask.links ?? []).find((l) => l.targetTaskId === targetTaskId);
+      if (!linkToRemove) return;
+
+      if (linkToRemove.targetBoardId === activeBoardId) {
+        // Intra-board removal
+        const targetTask = allBoardTasks.find((t) => t.id === targetTaskId);
+        if (targetTask) {
+          const { updatedSource, updatedTarget } = removeBidirectionalLink(sourceTask, targetTask);
+          updateTask(sourceTask.id, { links: updatedSource.links });
+          updateTask(targetTask.id, { links: updatedTarget.links });
+        } else {
+          updateTask(sourceTask.id, {
+            links: (sourceTask.links ?? []).filter((l) => l.targetTaskId !== targetTaskId),
+          });
+        }
+      } else {
+        // Cross-board removal
+        updateTask(sourceTask.id, {
+          links: (sourceTask.links ?? []).filter((l) => l.targetTaskId !== targetTaskId),
+        });
+
+        try {
+          const storageKey = `metrik-tasks-${linkToRemove.targetBoardId}`;
+          const raw = localStorage.getItem(storageKey);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            for (const colId of Object.keys(parsed.tasks || {})) {
+              parsed.tasks[colId] = (parsed.tasks[colId] as TaskModel[]).map((t) => {
+                if (t.id === targetTaskId && t.links) {
+                  return {
+                    ...t,
+                    links: t.links.filter((l) => l.targetTaskId !== sourceTask.id),
+                  };
+                }
+                return t;
+              });
+            }
+            localStorage.setItem(storageKey, JSON.stringify(parsed));
+          }
+        } catch (err) {
+          console.error('[Metrik] Falha ao remover vínculo cross-squad:', err);
+        }
+      }
+    },
+    [selectedTaskId, activeBoardId, allBoardTasks, updateTask]
+  );
+
+  const [softBlockState, setSoftBlockState] = React.useState<{
+    task: TaskModel;
+    blockingTasks: CrossSquadTaskSummary[];
+    onConfirm: () => void;
+  } | null>(null);
+
+  const handleGuardedMoveTask = React.useCallback(
+    (taskId: string, targetColumnId: string) => {
+      const task = allBoardTasks.find((t) => t.id === taskId);
+      const targetCol = board.columns.find((c) => c.id === targetColumnId);
+
+      if (targetCol?.category === 'done' && task) {
+        const pending = getPendingBlockers(task, allBoardTasks, board.columns);
+        if (pending.length > 0) {
+          setSoftBlockState({
+            task,
+            blockingTasks: pending,
+            onConfirm: () => {
+              moveTask(taskId, targetColumnId);
+              setSoftBlockState(null);
+            },
+          });
+          return;
+        }
+      }
+
+      moveTask(taskId, targetColumnId);
+    },
+    [allBoardTasks, board.columns, moveTask]
+  );
+
+  const handleGuardedDropTask = React.useCallback(
+    (options: ReorderOptions) => {
+      const task = allBoardTasks.find((t) => t.id === options.activeTaskId);
+      const targetCol = board.columns.find((c) => c.id === options.targetColumn);
+
+      if (targetCol?.category === 'done' && task) {
+        const pending = getPendingBlockers(task, allBoardTasks, board.columns);
+        if (pending.length > 0) {
+          setSoftBlockState({
+            task,
+            blockingTasks: pending,
+            onConfirm: () => {
+              reorderOrMoveTask(options);
+              setSoftBlockState(null);
+            },
+          });
+          return;
+        }
+      }
+
+      reorderOrMoveTask(options);
+    },
+    [allBoardTasks, board.columns, reorderOrMoveTask]
+  );
 
   const handleAddTask = (columnId: string) => {
     addTask(columnId, '');
@@ -309,7 +497,7 @@ export const App: React.FC = () => {
             onAddTask={handleAddTask}
             onUpdateColumn={updateColumn}
             onDeleteColumn={deleteColumn}
-            onDropTask={reorderOrMoveTask}
+            onDropTask={handleGuardedDropTask}
             onMoveColumn={reorderColumn}
             onOpenNewColumnModal={() => setIsNewColumnModalOpen(true)}
             isReadOnly={isGuest}
@@ -319,6 +507,12 @@ export const App: React.FC = () => {
               const canMoveLeft = !isGuest && currentIndex > 0 && !task.blocked;
               const canMoveRight = !isGuest && currentIndex < board.columns.length - 1 && !task.blocked;
               const colColor = getDefaultColumnColor(currentColumn);
+              const initiativeProgress = task.type === 'initiative'
+                ? calculateInitiativeProgress(task, allBoardTasks, board.columns)
+                : undefined;
+              const pendingBlockers = task.links && task.links.length > 0
+                ? getPendingBlockers(task, allBoardTasks, board.columns)
+                : [];
 
               return (
                 <Task
@@ -332,19 +526,21 @@ export const App: React.FC = () => {
                   onUpdatePriority={isGuest ? () => {} : setTaskPriority}
                   onAddTag={isGuest ? () => {} : addTaskTag}
                   onRemoveTag={isGuest ? () => {} : removeTaskTag}
-                  onDropTask={isGuest ? () => {} : reorderOrMoveTask}
+                  onDropTask={isGuest ? () => {} : handleGuardedDropTask}
                   isCompleted={currentColumn?.category === 'done'}
                   canMoveLeft={canMoveLeft}
                   canMoveRight={canMoveRight}
                   onUpdateTask={isGuest ? () => {} : updateTask}
+                  initiativeProgress={initiativeProgress}
+                  pendingBlockersCount={pendingBlockers.length}
                   onMoveLeft={() => {
                     if (canMoveLeft) {
-                      moveTask(task.id, board.columns[currentIndex - 1].id);
+                      handleGuardedMoveTask(task.id, board.columns[currentIndex - 1].id);
                     }
                   }}
                   onMoveRight={() => {
                     if (canMoveRight) {
-                      moveTask(task.id, board.columns[currentIndex + 1].id);
+                      handleGuardedMoveTask(task.id, board.columns[currentIndex + 1].id);
                     }
                   }}
                 />
@@ -366,6 +562,29 @@ export const App: React.FC = () => {
           onClose={() => setSelectedTaskId(null)}
           onUpdateTask={updateTask}
           onToggleBlocked={toggleTaskBlocked}
+          boardTasks={allBoardTasks}
+          columns={board.columns}
+          currentBoardId={activeBoardId || ''}
+          currentTeamId={effectiveTeamId}
+          allBoards={boards}
+          teams={teams}
+          isReadOnly={isGuest}
+          onAddLink={handleAddLink}
+          onRemoveLink={handleRemoveLink}
+          onNavigateToBoard={(bId) => {
+            switchBoard(bId);
+            setSelectedTaskId(null);
+          }}
+        />
+      )}
+
+      {softBlockState && (
+        <DependencySoftBlockModal
+          isOpen={!!softBlockState}
+          taskTitle={softBlockState.task.title}
+          blockingTasks={softBlockState.blockingTasks}
+          onConfirm={softBlockState.onConfirm}
+          onCancel={() => setSoftBlockState(null)}
         />
       )}
 

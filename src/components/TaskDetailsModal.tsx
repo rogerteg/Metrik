@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { TaskModel, SubtaskModel } from '../types/kanban';
+import { TaskModel, SubtaskModel, BoardModel, ColumnModel } from '../types/kanban';
+import { TaskType, TASK_TYPE_CONFIGS, TaskRelationType } from '../types/taskTypes';
+import { Team } from '../types/team';
 import { calculateTaskBlockedTimeMs, formatBlockedTime } from '../utils/timeFormatters';
+import { calculateInitiativeProgress } from '../utils/taskRelations';
+import { TaskLinksSection } from './TaskLinksSection';
 import { Modal } from './Modal';
 import './TaskDetailsModal.css';
 
@@ -11,6 +15,21 @@ interface TaskDetailsModalProps {
   onClose: () => void;
   onUpdateTask: (id: string, updates: Partial<TaskModel>) => void;
   onToggleBlocked?: (id: string, reason?: string) => void;
+  boardTasks?: TaskModel[];
+  columns?: ColumnModel[];
+  currentBoardId?: string;
+  currentTeamId?: string;
+  allBoards?: BoardModel[];
+  teams?: Team[];
+  isReadOnly?: boolean;
+  onAddLink?: (
+    targetTaskId: string,
+    relationType: TaskRelationType,
+    targetBoardId: string,
+    targetTeamId: string
+  ) => void;
+  onRemoveLink?: (targetTaskId: string) => void;
+  onNavigateToBoard?: (boardId: string) => void;
 }
 
 export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
@@ -19,6 +38,16 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   onClose,
   onUpdateTask,
   onToggleBlocked,
+  boardTasks = [],
+  columns = [],
+  currentBoardId = '',
+  currentTeamId = '',
+  allBoards = [],
+  teams = [],
+  isReadOnly = false,
+  onAddLink,
+  onRemoveLink,
+  onNavigateToBoard,
 }) => {
   const [localTitle, setLocalTitle] = useState(task.title);
   const [localDescription, setLocalDescription] = useState(task.description || '');
@@ -151,6 +180,13 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const completedCount = subtasks.filter(st => st.completed).length;
   const progress = subtasks.length > 0 ? Math.round((completedCount / subtasks.length) * 100) : 0;
 
+  const initiativeProgress = React.useMemo(() => {
+    if (task.type !== 'initiative' || !columns || columns.length === 0) {
+      return { total: 0, completed: 0, percentage: 0 };
+    }
+    return calculateInitiativeProgress(task, boardTasks, columns);
+  }, [task, boardTasks, columns]);
+
   const blockedTimeMs = calculateTaskBlockedTimeMs(task);
   const formattedBlockedTime = formatBlockedTime(blockedTimeMs);
 
@@ -171,6 +207,58 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
           />
         </section>
+
+        {/* Task Type Section */}
+        <section className="td-section" data-testid="task-type-section">
+          <label className="td-label">Tipo de Tarefa</label>
+          <div className="task-type-selector" role="radiogroup" aria-label="Selecione o tipo da tarefa">
+            {(['initiative', 'card', 'subtask'] as TaskType[]).map((typeKey) => {
+              const cfg = TASK_TYPE_CONFIGS[typeKey];
+              const isSelected = (task.type ?? 'card') === typeKey;
+              return (
+                <button
+                  key={typeKey}
+                  type="button"
+                  className={`task-type-btn ${isSelected ? 'task-type-btn--active' : ''}`}
+                  onClick={() => onUpdateTask(task.id, { type: typeKey })}
+                  role="radio"
+                  aria-checked={isSelected}
+                  title={cfg.description}
+                  style={
+                    isSelected
+                      ? {
+                          borderColor: cfg.color,
+                          color: cfg.textVar,
+                          backgroundColor: cfg.bgVar,
+                        }
+                      : undefined
+                  }
+                >
+                  <span aria-hidden="true" style={{ marginRight: '6px' }}>{cfg.icon}</span>
+                  <span>{cfg.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Initiative Progress Section */}
+        {task.type === 'initiative' && (
+          <section className="td-section" data-testid="td-initiative-progress">
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', alignItems: 'center' }}>
+              <label className="td-label" style={{ marginBottom: 0 }}>Progresso da Iniciativa</label>
+              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                {initiativeProgress.completed} de {initiativeProgress.total} tarefas concluídas ({initiativeProgress.percentage}%)
+              </span>
+            </div>
+            <div className="task-initiative-progress__bar" style={{ height: '6px' }}>
+              <div
+                className="task-initiative-progress__fill"
+                style={{ width: `${initiativeProgress.percentage}%` }}
+              />
+            </div>
+          </section>
+        )}
 
         {/* Dates Section (Início, Fim, Entrega) */}
         <section className="td-section">
@@ -355,6 +443,22 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             </button>
           </form>
         </section>
+
+        {/* Task Links & Dependencies Section (Feature 024) */}
+        {onAddLink && onRemoveLink && (
+          <TaskLinksSection
+            currentTask={task}
+            currentBoardId={currentBoardId}
+            currentTeamId={currentTeamId}
+            boardTasks={boardTasks}
+            allBoards={allBoards}
+            teams={teams}
+            isReadOnly={isReadOnly}
+            onAddLink={onAddLink}
+            onRemoveLink={onRemoveLink}
+            onNavigateToBoard={onNavigateToBoard}
+          />
+        )}
 
         {/* Metadata Section */}
         <section className="td-metadata">

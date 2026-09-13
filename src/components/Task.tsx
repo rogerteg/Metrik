@@ -2,6 +2,7 @@ import React from 'react';
 import { PriorityLevel, TaskModel, isTaskStagnant, STAGNANT_BROWN_COLOR } from '../types/kanban';
 import { AutoResizeTextarea } from './AutoResizeTextarea';
 import { PriorityBadge } from './PriorityBadge';
+import { TaskTypeBadge } from './TaskTypeBadge';
 import { TagList } from './TagList';
 import { ReorderOptions } from '../types/dnd';
 import {
@@ -29,6 +30,8 @@ export interface TaskProps {
   isCompleted?: boolean;
   onClick?: () => void;
   onUpdateTask?: (id: string, updates: Partial<TaskModel>) => void;
+  initiativeProgress?: { total: number; completed: number; percentage: number };
+  pendingBlockersCount?: number;
 }
 
 export const Task: React.FC<TaskProps> = ({
@@ -48,6 +51,8 @@ export const Task: React.FC<TaskProps> = ({
   isCompleted = false,
   onClick,
   onUpdateTask,
+  initiativeProgress,
+  pendingBlockersCount,
 }) => {
   const [isDragging, setIsDragging] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
@@ -186,10 +191,13 @@ export const Task: React.FC<TaskProps> = ({
         className="task-card-header"
         onPointerDown={(e) => e.stopPropagation()}
       >
-        <PriorityBadge
-          priority={task.priority}
-          onChange={(newPriority) => onUpdatePriority?.(task.id, newPriority)}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+          <TaskTypeBadge type={task.type} />
+          <PriorityBadge
+            priority={task.priority}
+            onChange={(newPriority) => onUpdatePriority?.(task.id, newPriority)}
+          />
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
           {isStagnant && !task.blocked && (
             <span
@@ -382,6 +390,46 @@ export const Task: React.FC<TaskProps> = ({
                   <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                 </svg>
                 {completedSubtasks}/{subtasks.length}
+              </span>
+            )}
+          </div>
+        )}
+
+        {task.type === 'initiative' && initiativeProgress && initiativeProgress.total > 0 && (
+          <div className="task-initiative-progress" data-testid="task-initiative-progress">
+            <div className="task-initiative-progress__label">
+              <span>Progresso</span>
+              <span>{initiativeProgress.completed}/{initiativeProgress.total} ({initiativeProgress.percentage}%)</span>
+            </div>
+            <div className="task-initiative-progress__bar">
+              <div
+                className="task-initiative-progress__fill"
+                style={{ width: `${initiativeProgress.percentage}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {task.links && task.links.length > 0 && (
+          <div className="task-links-summary-row" data-testid="task-links-summary">
+            <span
+              className="task-links-counter-badge"
+              title={`${task.links.length} ${task.links.length === 1 ? 'vínculo associado' : 'vínculos associados'}`}
+            >
+              🔗 {task.links.length} {task.links.length === 1 ? 'vínculo' : 'vínculos'}
+            </span>
+            {task.links.some(l => l.targetTeamId && l.targetTeamId !== '') && (
+              <span className="task-cross-squad-chip" title="Possui dependência com outra squad/time">
+                🏢 Cross-Squad
+              </span>
+            )}
+            {pendingBlockersCount !== undefined && pendingBlockersCount > 0 && (
+              <span
+                className="task-blocked-dependency-chip"
+                title={`${pendingBlockersCount} ${pendingBlockersCount === 1 ? 'dependência pendente' : 'dependências pendentes'}`}
+                data-testid="task-pending-blocker-chip"
+              >
+                🔒 {pendingBlockersCount} {pendingBlockersCount === 1 ? 'bloqueador pendente' : 'bloqueadores pendentes'}
               </span>
             )}
           </div>

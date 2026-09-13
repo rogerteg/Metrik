@@ -6,6 +6,9 @@
  * - specs/005-column-management/spec.md
  */
 
+import { TaskType, TaskLinkModel } from './taskTypes';
+export * from './taskTypes';
+
 export type ColumnCategory = 'todo' | 'in_progress' | 'done';
 
 export interface ColumnModel {
@@ -113,6 +116,12 @@ export interface TaskModel {
   blockedReason?: string;
   blockedAt?: string; // Timestamp ISO de quando foi bloqueada
   totalBlockedMs?: number; // Duração acumulada de bloqueio em ms
+
+  /** Tipo de item de trabalho (Feature 024: 'card' | 'subtask' | 'initiative') */
+  type?: TaskType;
+
+  /** Vínculos relacionais com outras tarefas intra ou cross-squad (Feature 024) */
+  links?: TaskLinkModel[];
 }
 
 /** Dias sem movimentação para considerar o cartão estagnado (marrom) */

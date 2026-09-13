@@ -233,7 +233,14 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
       const nextTasks: Record<string, TaskModel[]> = {};
       
       for (const colId of Object.keys(prev.tasks)) {
-        nextTasks[colId] = prev.tasks[colId].filter((task) => task.id !== id);
+        nextTasks[colId] = prev.tasks[colId]
+          .filter((task) => task.id !== id)
+          .map((task) => {
+            if (!task.links || task.links.length === 0) return task;
+            const remainingLinks = task.links.filter((l) => l.targetTaskId !== id);
+            if (remainingLinks.length === task.links.length) return task;
+            return { ...task, links: remainingLinks };
+          });
       }
 
       return { ...prev, tasks: nextTasks };

@@ -1,7 +1,7 @@
 # Tasks: Feature 024 - Tipos de Tarefas (Cards, Subtarefas, Iniciativas), Vinculação Hierárquica e Vínculos Cross-Squad
 
 **Branch**: `024-task-types-and-linking`  
-**Status**: Planejado (25 tarefas)  
+**Status**: Concluído & Verificado (25/25 tarefas)  
 **Spec**: [spec.md](spec.md) | **Plan**: [plan.md](plan.md) | **Data Model**: [data-model.md](data-model.md)
 
 ---
@@ -86,8 +86,8 @@
 
 **Purpose**: Definição das estruturas de tipos TypeScript e extensão retrocompatível de `TaskModel`
 
-- [ ] T001 [P] Define TypeScript types `TaskType`, `TaskRelationType`, `TaskLinkModel`, `TaskTypeConfig`, `CrossSquadTaskSummary` and configuration constants `TASK_TYPE_CONFIGS`, `TASK_RELATION_CONFIGS` in `src/types/taskTypes.ts`
-- [ ] T002 [P] Extend `TaskModel` interface with optional properties `type?: TaskType` and `links?: TaskLinkModel[]` in `src/types/kanban.ts` and verify default seed tasks compatibility in `src/utils/defaultSeedData.ts`
+- [x] T001 [P] Define TypeScript types `TaskType`, `TaskRelationType`, `TaskLinkModel`, `TaskTypeConfig`, `CrossSquadTaskSummary` and configuration constants `TASK_TYPE_CONFIGS`, `TASK_RELATION_CONFIGS` in `src/types/taskTypes.ts`
+- [x] T002 [P] Extend `TaskModel` interface with optional properties `type?: TaskType` and `links?: TaskLinkModel[]` in `src/types/kanban.ts` and verify default seed tasks compatibility in `src/utils/defaultSeedData.ts`
 
 ---
 
@@ -95,9 +95,9 @@
 
 **Purpose**: Utilitários matemáticos puros para manipulação relacional de vínculos, reciprocidade e cálculo de progresso
 
-- [ ] T003 [P] Write unit tests for task relation utilities covering reciprocal links, link removal, orphaned link cleanup, pending blocker detection, and initiative progress in `tests/unit/taskTypesAndLinking.test.ts`
-- [ ] T004 Implement pure relational helper functions `getReciprocalRelation`, `addBidirectionalLink`, `removeBidirectionalLink`, `cleanupOrphanedLinks`, `calculateInitiativeProgress`, and `getPendingBlockers` in `src/utils/taskRelations.ts`
-- [ ] T005 Update `useBoards` hook in `src/hooks/useBoards.ts` to support atomic task link updates, cross-board link synchronization, and automatic orphaned link cleanup upon task deletion (`deleteTask`)
+- [x] T003 [P] Write unit tests for task relation utilities covering reciprocal links, link removal, orphaned link cleanup, pending blocker detection, and initiative progress in `tests/unit/taskTypesAndLinking.test.ts`
+- [x] T004 Implement pure relational helper functions `getReciprocalRelation`, `addBidirectionalLink`, `removeBidirectionalLink`, `cleanupOrphanedLinks`, `calculateInitiativeProgress`, and `getPendingBlockers` in `src/utils/taskRelations.ts`
+- [x] T005 Update `useBoards` hook in `src/hooks/useBoards.ts` to support atomic task link updates, cross-board link synchronization, and automatic orphaned link cleanup upon task deletion (`deleteTask`)
 
 **Checkpoint**: Camada foundational pronta — lógica relacional, reciprocidade e integridade testáveis de forma 100% desacoplada.
 
@@ -110,13 +110,13 @@
 **Independent Test**: Criar 3 tarefas (uma de cada tipo) e verificar que cada cartão exibe seu respectivo badge no cabeçalho (`🎯 Iniciativa`, `📋 Card`, `🔹 Subtarefa`) com harmonia nos 3 temas.
 
 ### Tests for User Story 1
-- [ ] T006 [P] [US1] Write unit tests for `TaskTypeBadge` component covering rendering of initiative, card, and subtask badges, theme contrast, and accessibility in `tests/unit/TaskTypeBadge.test.tsx`
+- [x] T006 [P] [US1] Write unit tests for `TaskTypeBadge` component covering rendering of initiative, card, and subtask badges, theme contrast, and accessibility in `tests/unit/TaskTypeBadge.test.tsx`
 
 ### Implementation for User Story 1
-- [ ] T007 [US1] Implement `TaskTypeBadge` component with semantic icons (`🎯`, `📋`, `🔹`), dynamic color tokens, and accessibility attributes in `src/components/TaskTypeBadge.tsx`
-- [ ] T008 [US1] Update `TaskCard` inside `src/components/Board.tsx` to render the `TaskTypeBadge` in the card header, link counter pill, and cross-squad badge
-- [ ] T009 [US1] Update `TaskDetailsModal.tsx` to include an accessible segmented/dropdown selector for `TaskType` (`Iniciativa`, `Card`, `Subtarefa`), updating `task.type` reactively
-- [ ] T010 [US1] Add CSS styles for `.task-type-badge`, segmented type selector, and theme-aware colors in `src/App.css`
+- [x] T007 [US1] Implement `TaskTypeBadge` component with semantic icons (`🎯`, `📋`, `🔹`), dynamic color tokens, and accessibility attributes in `src/components/TaskTypeBadge.tsx`
+- [x] T008 [US1] Update `TaskCard` inside `src/components/Board.tsx` to render the `TaskTypeBadge` in the card header, link counter pill, and cross-squad badge
+- [x] T009 [US1] Update `TaskDetailsModal.tsx` to include an accessible segmented/dropdown selector for `TaskType` (`Iniciativa`, `Card`, `Subtarefa`), updating `task.type` reactively
+- [x] T010 [US1] Add CSS styles for `.task-type-badge`, segmented type selector, and theme-aware colors in `src/App.css`
 
 **Checkpoint**: User Story 1 funcional — tipos de tarefas visíveis nos cartões e editáveis no modal.
 
@@ -129,12 +129,12 @@
 **Independent Test**: No modal da Tarefa A, vincular a Tarefa B como "Bloqueia". Abrir os detalhes da Tarefa B e verificar que exibe "É bloqueada por Tarefa A".
 
 ### Tests for User Story 2
-- [ ] T011 [P] [US2] Write unit tests for `TaskLinksSection` component covering link creation between tasks in the same board, bidirectional reciprocity, and link removal in `tests/unit/TaskLinksSection.test.tsx`
+- [x] T011 [P] [US2] Write unit tests for `TaskLinksSection` component covering link creation between tasks in the same board, bidirectional reciprocity, and link removal in `tests/unit/TaskLinksSection.test.tsx`
 
 ### Implementation for User Story 2
-- [ ] T012 [US2] Implement `TaskLinksSection` component with link list, reciprocal relationship badges (`⬆️ Pai`, `⬇️ Filho`, `⛔ Bloqueia`, `🔒 É bloqueado por`, `🔗 Relacionado`), and link deletion buttons in `src/components/TaskLinksSection.tsx`
-- [ ] T013 [US2] Integrate `TaskLinksSection` into `src/components/TaskDetailsModal.tsx`, passing board tasks, link mutation callbacks, and read-only mode for guests
-- [ ] T014 [US2] Add CSS styles for task links list, relation chips, link action buttons, and hover interactions in `src/App.css`
+- [x] T012 [US2] Implement `TaskLinksSection` component with link list, reciprocal relationship badges (`⬆️ Pai`, `⬇️ Filho`, `⛔ Bloqueia`, `🔒 É bloqueado por`, `🔗 Relacionado`), and link deletion buttons in `src/components/TaskLinksSection.tsx`
+- [x] T013 [US2] Integrate `TaskLinksSection` into `src/components/TaskDetailsModal.tsx`, passing board tasks, link mutation callbacks, and read-only mode for guests
+- [x] T014 [US2] Add CSS styles for task links list, relation chips, link action buttons, and hover interactions in `src/App.css`
 
 **Checkpoint**: User Story 2 funcional — vínculos intra-quadro operando bidirecionalmente com visual clean.
 
@@ -147,12 +147,12 @@
 **Independent Test**: Na Squad Frontend, abrir tarefa e vincular tarefa da Squad Backend. O cartão da Squad Frontend passa a exibir o chip `🏢 Squad Backend • #T-API`.
 
 ### Tests for User Story 3
-- [ ] T015 [P] [US3] Write unit tests for cross-squad task discovery, cascaded selectors (Squad $\to$ Board $\to$ Task), and external squad badge rendering in `tests/unit/crossSquadLinking.test.tsx`
+- [x] T015 [P] [US3] Write unit tests for cross-squad task discovery, cascaded selectors (Squad $\to$ Board $\to$ Task), and external squad badge rendering in `tests/unit/crossSquadLinking.test.tsx`
 
 ### Implementation for User Story 3
-- [ ] T016 [US3] Expand `TaskLinksSection.tsx` to add "Vincular de Outro Time / Squad" modal/accordion with cascading dropdowns: Squad Alvo (from `useTeamAccess`), Quadro Alvo (from `useBoards`), and Tarefa Alvo in `src/components/TaskLinksSection.tsx`
-- [ ] T017 [US3] Update `Board.tsx` card rendering to display an external squad chip (e.g. `🏢 Squad Backend`) when a task possesses cross-squad links, with safe metadata tooltip
-- [ ] T018 [US3] Add styles for cross-squad link chips, squad indicator pills, and external link navigation triggers in `src/App.css`
+- [x] T016 [US3] Expand `TaskLinksSection.tsx` to add "Vincular de Outro Time / Squad" modal/accordion with cascading dropdowns: Squad Alvo (from `useTeamAccess`), Quadro Alvo (from `useBoards`), and Tarefa Alvo in `src/components/TaskLinksSection.tsx`
+- [x] T017 [US3] Update `Board.tsx` card rendering to display an external squad chip (e.g. `🏢 Squad Backend`) when a task possesses cross-squad links, with safe metadata tooltip
+- [x] T018 [US3] Add styles for cross-squad link chips, squad indicator pills, and external link navigation triggers in `src/App.css`
 
 **Checkpoint**: User Story 3 funcional — vínculos cross-squad com busca em cascata e visualização segura ativas.
 
@@ -165,12 +165,12 @@
 **Independent Test**: Mover tarefas filhas de uma Iniciativa e ver a barra de progresso avançar. Tentar mover tarefa com dependência pendente para `done` e validar que o diálogo de confirmação é acionado.
 
 ### Tests for User Story 4
-- [ ] T019 [P] [US4] Write unit tests for `DependencySoftBlockModal` and drag-and-drop movement interception when blocked tasks attempt entering `done` in `tests/unit/boardMovementSoftBlock.test.tsx`
+- [x] T019 [P] [US4] Write unit tests for `DependencySoftBlockModal` and drag-and-drop movement interception when blocked tasks attempt entering `done` in `tests/unit/boardMovementSoftBlock.test.tsx`
 
 ### Implementation for User Story 4
-- [ ] T020 [US4] Implement `DependencySoftBlockModal` component with friendly warning dialog, listing unresolved blocking tasks and explicit "Cancelar" vs "Confirmar Conclusão" actions in `src/components/DependencySoftBlockModal.tsx`
-- [ ] T021 [US4] Render reactive progress bar on `initiative` cards in `src/components/Board.tsx` and in `TaskDetailsModal.tsx` showing percentage and count of completed child tasks
-- [ ] T022 [US4] Integrate soft block interception into column drag-and-drop and manual column selector in `src/components/Board.tsx`, prompting confirmation when moving cards with pending blockers to `done`
+- [x] T020 [US4] Implement `DependencySoftBlockModal` component with friendly warning dialog, listing unresolved blocking tasks and explicit "Cancelar" vs "Confirmar Conclusão" actions in `src/components/DependencySoftBlockModal.tsx`
+- [x] T021 [US4] Render reactive progress bar on `initiative` cards in `src/components/Board.tsx` and in `TaskDetailsModal.tsx` showing percentage and count of completed child tasks
+- [x] T022 [US4] Integrate soft block interception into column drag-and-drop and manual column selector in `src/components/Board.tsx`, prompting confirmation when moving cards with pending blockers to `done`
 
 **Checkpoint**: User Story 4 funcional — progresso de iniciativas e validação de dependências pendentes em ação.
 
@@ -180,9 +180,9 @@
 
 **Purpose**: Verificação completa automatizada, garantia de zero regressões e conformidade de build
 
-- [ ] T023 [P] Execute dedicated task types, linking, and soft block test suites (`npx vitest run tests/unit/taskTypesAndLinking.test.ts tests/unit/TaskTypeBadge.test.tsx tests/unit/TaskLinksSection.test.tsx tests/unit/crossSquadLinking.test.tsx tests/unit/boardMovementSoftBlock.test.tsx`)
-- [ ] T024 Execute full regression test suite (`npm test`) ensuring 100% pass rate across all 287 existing tests plus all new tests
-- [ ] T025 Run strict type checking and production build (`npm run build`) ensuring zero TypeScript and bundle errors
+- [x] T023 [P] Execute dedicated task types, linking, and soft block test suites (`npx vitest run tests/unit/taskTypesAndLinking.test.ts tests/unit/TaskTypeBadge.test.tsx tests/unit/TaskLinksSection.test.tsx tests/unit/crossSquadLinking.test.tsx tests/unit/boardMovementSoftBlock.test.tsx`)
+- [x] T024 Execute full regression test suite (`npm test`) ensuring 100% pass rate across all 287 existing tests plus all new tests
+- [x] T025 Run strict type checking and production build (`npm run build`) ensuring zero TypeScript and bundle errors
 
 ---
 
