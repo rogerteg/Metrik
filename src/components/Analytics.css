@@ -71,8 +71,8 @@
 }
 
 .btn-chart-expand {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color);
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   border-radius: 6px;
   padding: 4px 10px;
@@ -86,16 +86,16 @@
 }
 
 .btn-chart-expand:hover {
-  background: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
-  border-color: rgba(56, 189, 248, 0.4);
+  background: var(--btn-secondary-hover-bg);
+  color: var(--color-progress);
+  border-color: var(--border-focus);
 }
 
 /* Modal / Overlay for Expanded Chart */
 .chart-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(10, 10, 15, 0.85);
+  background: rgba(10, 10, 15, 0.75);
   backdrop-filter: blur(8px);
   z-index: 999;
   display: flex;
@@ -109,10 +109,10 @@
   width: 100%;
   max-width: 1050px;
   max-height: 90vh;
-  background: var(--bg-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
   border-radius: 16px;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6), 0 0 24px rgba(56, 189, 248, 0.15);
+  box-shadow: var(--shadow-lg);
   overflow-y: auto;
   overflow-x: hidden;
   display: flex;
@@ -153,7 +153,7 @@
   left: -0.5rem;
   transform: translateY(-50%) rotate(-90deg);
   font-size: 0.75rem;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -173,7 +173,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  border-bottom: 1px dashed var(--border-subtle);
 }
 
 .grid-line-label {

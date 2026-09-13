@@ -19,9 +19,9 @@
 }
 
 .td-input, .td-textarea {
-  background-color: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm, 6px);
   color: var(--text-primary);
   font-family: inherit;
   font-size: 1rem;
@@ -33,9 +33,9 @@
 
 .td-input:focus, .td-textarea:focus {
   outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
-  background-color: rgba(0, 0, 0, 0.4);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+  background-color: var(--input-focus-bg);
 }
 
 .td-title-input {
@@ -63,7 +63,7 @@
 
 .td-progress-bar-bg {
   height: 6px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--btn-secondary-bg);
   border-radius: 3px;
   overflow: hidden;
   margin-bottom: 0.5rem;
@@ -88,15 +88,15 @@
   align-items: flex-start;
   justify-content: space-between;
   padding: 0.5rem;
-  border-radius: var(--radius-sm);
-  background-color: rgba(255, 255, 255, 0.02);
-  border: 1px solid transparent;
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--btn-secondary-bg);
+  border: 1px solid var(--border-subtle);
   transition: all 0.2s ease;
 }
 
 .td-subtask-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--btn-secondary-hover-bg);
+  border-color: var(--border-focus);
 }
 
 .td-subtask-label {
@@ -111,13 +111,12 @@
   appearance: none;
   width: 1.25rem;
   height: 1.25rem;
-  border: 2px solid var(--border-color);
+  border: 2px solid var(--border-subtle);
   border-radius: 4px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--input-bg);
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
-  flex-shrink: 0;
   margin-top: 0.1rem;
 }
 

@@ -14,6 +14,8 @@ import { BoardSwitcher } from './components/BoardSwitcher';
 import { BoardManagementModal } from './components/BoardManagementModal';
 import { NewColumnModal } from './components/NewColumnModal';
 import { useColumnWidths } from './hooks/useColumnWidths';
+import { useTheme } from './hooks/useTheme';
+import { ThemeSelector } from './components/ThemeSelector';
 import { getDefaultColumnColor } from './types/kanban';
 import metrikLogo from './assets/metrik-logo.png';
 import './App.css';
@@ -30,6 +32,8 @@ export const App: React.FC = () => {
 
   const [isBoardModalOpen, setIsBoardModalOpen] = React.useState(false);
   const [isNewColumnModalOpen, setIsNewColumnModalOpen] = React.useState(false);
+
+  const { theme, setTheme } = useTheme();
 
   const { columnWidths, setColumnWidth, resetColumnWidth } = useColumnWidths(activeBoardId);
 
@@ -123,7 +127,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="app-container">
+    <div className="app-container" data-theme={theme}>
       <header className="app-header">
         <div className="brand-section" style={{ display: 'flex', alignItems: 'center' }}>
           <div className="brand-logo-container" aria-label="Logotipo Metrik">
@@ -168,6 +172,8 @@ export const App: React.FC = () => {
               Analytics
             </button>
           </div>
+
+          <ThemeSelector currentTheme={theme} onSelectTheme={setTheme} />
 
           <button
             type="button"
