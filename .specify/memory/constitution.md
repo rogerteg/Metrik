@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report:
-- Version change: 1.1.0 → 1.2.0
+- Version change: 1.2.0 → 1.3.0
 - List of modified principles:
-  - Added: VII. Brand Independence & Clean Identity (NON-NEGOTIABLE)
+  - Added: VIII. Local-First Sovereignty & Squad Board Isolation (NON-NEGOTIABLE)
 - Added sections: None
 - Removed sections: None
 - Follow-up TODOs: None
@@ -41,6 +41,13 @@ Metrik is an autonomous, standalone enterprise Kanban and Flow Analytics product
 1. **Zero Third-Party Brand Leaks**: External inspiration products, benchmark tools, or vendor brand names (such as Businessmap, ActionableAgile, etc.) are purely conversational references and MUST NEVER be leaked into visible UI text, chart subtitles, DOM attributes, or source code comments.
 2. **Proprietary & Canonical Terminology**: All flow concepts must be expressed using standardized lean/agile and scientific terminology (e.g., *Cumulative Flow Diagram*, *Cycle Time Scatter Plot*, *Little's Law*, *Dual WIP/Lead Time Inspection*, *NIST Percentiles*, *Metrik Design System*).
 
+### VIII. Local-First Sovereignty & Squad Board Isolation (NON-NEGOTIABLE)
+Metrik operates under a strict Local-First privacy and data sovereignty model with Team-Based Access Control (TBAC):
+1. **Autonomous Local Persistence**: Core capabilities, state management, session switching, and board telemetry MUST function client-side in `localStorage` without mandating cloud dependencies or external authentication servers.
+2. **Strict Squad Confidentiality & Isolation**: Kanban boards, task histories, and flow metrics belong strictly to their designated squad. A user MUST NOT have visibility into or access to any board unless they possess an active membership (`admin`, `member`) or an accepted invitation (`guest`) for that specific squad.
+3. **Defense-in-Depth Enforcement**: Isolation MUST be verified at all operational tiers: state hooks (`useBoards`, `useTeamAccess`), global switchers (`BoardSwitcher`), and visual boundary guards (`RestrictedBoardFallback`).
+4. **Role-Based Confinement**: Users designated with the `guest` role MUST be strictly restricted to read-only inspection, with task mutations, column reordering, and destructive operations structurally suppressed.
+
 ## Security & Technical Standards
 
 Secrets, API keys, and sensitive environment variables MUST NEVER be committed to source control. Code and automation scripts MUST maintain cross-platform compatibility, with explicit support for Windows environments and PowerShell execution.
@@ -53,4 +60,4 @@ Every implementation task MUST be verified against defined acceptance criteria b
 
 This Constitution serves as the primary governance document for Metrik and supersedes informal practices. Amendments MUST be documented, assigned appropriate semantic version updates, and ratified by project owners before taking effect.
 
-**Version**: 1.2.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-11
+**Version**: 1.3.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-12

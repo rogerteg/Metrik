@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { BoardModel } from '../types/kanban';
+import { DEFAULT_TEAM_ID } from '../types/team';
 
 export const BOARDS_INDEX_KEY = 'metrik-boards-index';
 export const ACTIVE_BOARD_KEY = 'metrik-active-board';
@@ -20,13 +21,19 @@ export function useBoards() {
     let currentActiveId: string | null = null;
 
     if (rawBoards) {
-      currentBoards = JSON.parse(rawBoards);
+      const parsed: BoardModel[] = JSON.parse(rawBoards);
+      // Migrate legacy boards that do not have teamId assigned
+      currentBoards = parsed.map(b => ({
+        ...b,
+        teamId: b.teamId || DEFAULT_TEAM_ID,
+      }));
       currentActiveId = rawActive || (currentBoards.length > 0 ? currentBoards[0].id : null);
     } else {
       // Need migration or first run
       const defaultBoard: BoardModel = {
         id: crypto.randomUUID(),
         name: 'Quadro Principal',
+        teamId: DEFAULT_TEAM_ID,
         createdAt: new Date().toISOString(),
         lastAccessed: new Date().toISOString()
       };
@@ -49,10 +56,11 @@ export function useBoards() {
     setIsInitialized(true);
   }, []);
 
-  const createBoard = useCallback((name: string) => {
+  const createBoard = useCallback((name: string, teamId: string = DEFAULT_TEAM_ID) => {
     const newBoard: BoardModel = {
       id: crypto.randomUUID(),
       name,
+      teamId,
       createdAt: new Date().toISOString(),
       lastAccessed: new Date().toISOString()
     };
@@ -93,6 +101,16 @@ export function useBoards() {
     });
   }, []);
 
+  const updateBoardTeam = useCallback((id: string, teamId: string) => {
+    setBoards(prev => {
+      const updated = prev.map(b => 
+        b.id === id ? { ...b, teamId } : b
+      );
+      localStorage.setItem(BOARDS_INDEX_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
   const deleteBoard = useCallback((id: string) => {
     setBoards(prev => {
       if (prev.length <= 1) return prev; // Don't delete the last board
@@ -122,6 +140,7 @@ export function useBoards() {
     createBoard,
     switchBoard,
     renameBoard,
+    updateBoardTeam,
     deleteBoard
   };
 }

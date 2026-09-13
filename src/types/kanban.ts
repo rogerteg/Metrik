@@ -140,6 +140,7 @@ export function isTaskStagnant(task: TaskModel, isCompletedColumn: boolean = fal
 export interface BoardModel {
   id: string;
   name: string;
+  teamId?: string; // ID do time proprietário do quadro (Feature 023)
   createdAt: string;
   lastAccessed: string;
 }

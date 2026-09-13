@@ -17,6 +17,7 @@ export interface BoardProps {
   onMoveColumn?: (sourceIndex: number, destinationIndex: number) => void;
   onOpenNewColumnModal?: () => void;
   renderTask?: (task: TaskModel, columnId: string) => React.ReactNode;
+  isReadOnly?: boolean;
 }
 
 export const Board: React.FC<BoardProps> = ({
@@ -33,13 +34,24 @@ export const Board: React.FC<BoardProps> = ({
   onMoveColumn,
   onOpenNewColumnModal,
   renderTask,
+  isReadOnly = false,
 }) => {
   const columns = board.columns || [];
   const isAtColumnLimit = columns.length >= MAX_COLUMNS;
 
   return (
     <div className="board-container">
-      {isAtColumnLimit && (
+      {isReadOnly && (
+        <div className="guest-read-only-banner" role="status">
+          <span className="warning-banner-icon" aria-hidden="true">👁️</span>
+          <div className="warning-banner-content">
+            <strong>Modo Somente Leitura (Convidado)</strong>
+            <span>Você tem permissão de visualização para acompanhar o fluxo desta squad. Ações de edição estão desabilitadas.</span>
+          </div>
+        </div>
+      )}
+
+      {isAtColumnLimit && !isReadOnly && (
         <div className="column-limit-warning-banner" role="alert">
           <span className="warning-banner-icon" aria-hidden="true">⚠️</span>
           <div className="warning-banner-content">
@@ -63,13 +75,13 @@ export const Board: React.FC<BoardProps> = ({
               columnIndex={idx}
               totalColumns={columns.length}
               width={columnWidths?.[col.id]}
-              onResizeWidth={onResizeColumnWidth}
-              onResetWidth={onResetColumnWidth}
-              onAddTask={() => onAddTask(col.id)}
-              onUpdateColumn={onUpdateColumn}
-              onDeleteColumn={onDeleteColumn}
-              onDropTask={onDropTask}
-              onMoveColumn={onMoveColumn}
+              onResizeWidth={isReadOnly ? undefined : onResizeColumnWidth}
+              onResetWidth={isReadOnly ? undefined : onResetColumnWidth}
+              onAddTask={isReadOnly ? undefined : () => onAddTask(col.id)}
+              onUpdateColumn={isReadOnly ? undefined : onUpdateColumn}
+              onDeleteColumn={isReadOnly ? undefined : onDeleteColumn}
+              onDropTask={isReadOnly ? undefined : onDropTask}
+              onMoveColumn={isReadOnly ? undefined : onMoveColumn}
             >
               {isFilteredEmpty ? (
                 <div
@@ -85,7 +97,7 @@ export const Board: React.FC<BoardProps> = ({
           );
         })}
 
-        {onOpenNewColumnModal && (
+        {!isReadOnly && onOpenNewColumnModal && (
           <div className="add-column-card">
             <button
               type="button"
@@ -107,4 +119,3 @@ export const Board: React.FC<BoardProps> = ({
     </div>
   );
 };
-

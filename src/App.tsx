@@ -17,10 +17,33 @@ import { useColumnWidths } from './hooks/useColumnWidths';
 import { useTheme } from './hooks/useTheme';
 import { ThemeSelector } from './components/ThemeSelector';
 import { getDefaultColumnColor } from './types/kanban';
+import { useTeamAccess } from './hooks/useTeamAccess';
+import { UserProfileMenu } from './components/UserProfileMenu';
+import { TeamManagementModal } from './components/TeamManagementModal';
+import { RestrictedBoardFallback } from './components/RestrictedBoardFallback';
 import metrikLogo from './assets/metrik-logo.png';
 import './App.css';
 
 export const App: React.FC = () => {
+  const {
+    users,
+    activeUser,
+    activeUserId,
+    teams,
+    invitations,
+    selectUser,
+    createUser,
+    createTeam,
+    updateMemberRole,
+    removeMember,
+    createInvitation,
+    acceptInvitation,
+    isBoardAccessible,
+    teamMembers,
+    getUserRoleInTeam,
+  } = useTeamAccess();
+
+  const [isTeamModalOpen, setIsTeamModalOpen] = React.useState(false);
   const {
     boards,
     activeBoardId,
@@ -29,6 +52,23 @@ export const App: React.FC = () => {
     renameBoard,
     deleteBoard
   } = useBoards();
+
+  const activeBoard = boards.find((b) => b.id === activeBoardId);
+  const isAuthorized = activeBoard ? isBoardAccessible(activeBoard.teamId) : true;
+  const effectiveTeamId = activeBoard?.teamId || 'default-team-main';
+  const activeBoardTeam = teams.find((t) => t.id === effectiveTeamId);
+  const activeBoardUserRole = getUserRoleInTeam(effectiveTeamId, activeUserId);
+  const isGuest = activeBoardUserRole === 'guest';
+
+  // Auto-switch to first accessible board if active board is not accessible (e.g. on profile switch)
+  React.useEffect(() => {
+    if (activeBoard && !isBoardAccessible(activeBoard.teamId)) {
+      const firstAllowed = boards.find((b) => isBoardAccessible(b.teamId));
+      if (firstAllowed) {
+        switchBoard(firstAllowed.id);
+      }
+    }
+  }, [activeUserId, activeBoard, boards, isBoardAccessible, switchBoard]);
 
   const [isBoardModalOpen, setIsBoardModalOpen] = React.useState(false);
   const [isNewColumnModalOpen, setIsNewColumnModalOpen] = React.useState(false);
@@ -143,6 +183,8 @@ export const App: React.FC = () => {
             activeBoardId={activeBoardId}
             onSwitchBoard={switchBoard}
             onManageBoards={() => setIsBoardModalOpen(true)}
+            teams={teams}
+            activeUserId={activeUserId}
           />
         </div>
 
@@ -175,15 +217,25 @@ export const App: React.FC = () => {
 
           <ThemeSelector currentTheme={theme} onSelectTheme={setTheme} />
 
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={handleImportClick}
-            aria-label="Importar Quadro"
-            title="Importar dados do quadro a partir de um arquivo JSON"
-          >
-            Importar
-          </button>
+          <UserProfileMenu
+            users={users}
+            activeUser={activeUser}
+            onSelectUser={selectUser}
+            onCreateUser={createUser}
+            onOpenTeamsModal={() => setIsTeamModalOpen(true)}
+          />
+
+          {!isGuest && (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={handleImportClick}
+              aria-label="Importar Quadro"
+              title="Importar dados do quadro a partir de um arquivo JSON"
+            >
+              Importar
+            </button>
+          )}
           <button
             type="button"
             className="btn btn-secondary"
@@ -193,28 +245,43 @@ export const App: React.FC = () => {
           >
             Exportar
           </button>
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={resetToSeed}
-            aria-label="Restaurar Demo"
-            title="Restaurar tarefas de demonstração"
-          >
-            Restaurar Demo
-          </button>
-          <button
-            type="button"
-            className="btn btn-danger"
-            onClick={handleClearBoard}
-            aria-label="Limpar Quadro"
-            title="Limpar todas as tarefas do quadro"
-          >
-            Limpar Quadro
-          </button>
+          {!isGuest && (
+            <>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={resetToSeed}
+                aria-label="Restaurar Demo"
+                title="Restaurar tarefas de demonstração"
+              >
+                Restaurar Demo
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={handleClearBoard}
+                aria-label="Limpar Quadro"
+                title="Limpar todas as tarefas do quadro"
+              >
+                Limpar Quadro
+              </button>
+            </>
+          )}
         </div>
       </header>
 
-      {view === 'board' ? (
+      {!isAuthorized ? (
+        <RestrictedBoardFallback
+          teamName={activeBoardTeam?.name}
+          onRedirectDefault={() => {
+            const firstAllowed = boards.find((b) => isBoardAccessible(b.teamId));
+            if (firstAllowed) {
+              switchBoard(firstAllowed.id);
+            }
+          }}
+          onOpenJoinCode={() => setIsTeamModalOpen(true)}
+        />
+      ) : view === 'board' ? (
         <>
           <MetricsBar metrics={flowMetrics} />
 
@@ -245,11 +312,12 @@ export const App: React.FC = () => {
             onDropTask={reorderOrMoveTask}
             onMoveColumn={reorderColumn}
             onOpenNewColumnModal={() => setIsNewColumnModalOpen(true)}
+            isReadOnly={isGuest}
             renderTask={(task, columnId) => {
               const currentIndex = board.columns.findIndex(c => c.id === columnId);
               const currentColumn = board.columns[currentIndex];
-              const canMoveLeft = currentIndex > 0 && !task.blocked;
-              const canMoveRight = currentIndex < board.columns.length - 1 && !task.blocked;
+              const canMoveLeft = !isGuest && currentIndex > 0 && !task.blocked;
+              const canMoveRight = !isGuest && currentIndex < board.columns.length - 1 && !task.blocked;
               const colColor = getDefaultColumnColor(currentColumn);
 
               return (
@@ -258,17 +326,17 @@ export const App: React.FC = () => {
                   task={task}
                   columnColor={colColor}
                   onClick={() => setSelectedTaskId(task.id)}
-                  onUpdateTitle={(id, title) => updateTask(id, { title })}
-                  onDelete={deleteTask}
-                  onDiscardIfEmpty={discardIfEmpty}
-                  onUpdatePriority={setTaskPriority}
-                  onAddTag={addTaskTag}
-                  onRemoveTag={removeTaskTag}
-                  onDropTask={reorderOrMoveTask}
+                  onUpdateTitle={isGuest ? () => {} : (id, title) => updateTask(id, { title })}
+                  onDelete={isGuest ? () => {} : deleteTask}
+                  onDiscardIfEmpty={isGuest ? () => {} : discardIfEmpty}
+                  onUpdatePriority={isGuest ? () => {} : setTaskPriority}
+                  onAddTag={isGuest ? () => {} : addTaskTag}
+                  onRemoveTag={isGuest ? () => {} : removeTaskTag}
+                  onDropTask={isGuest ? () => {} : reorderOrMoveTask}
                   isCompleted={currentColumn?.category === 'done'}
                   canMoveLeft={canMoveLeft}
                   canMoveRight={canMoveRight}
-                  onUpdateTask={updateTask}
+                  onUpdateTask={isGuest ? () => {} : updateTask}
                   onMoveLeft={() => {
                     if (canMoveLeft) {
                       moveTask(task.id, board.columns[currentIndex - 1].id);
@@ -310,6 +378,23 @@ export const App: React.FC = () => {
         onRenameBoard={renameBoard}
         onDeleteBoard={deleteBoard}
         onSwitchBoard={switchBoard}
+        teams={teams}
+        activeUserId={activeUserId}
+      />
+
+      <TeamManagementModal
+        isOpen={isTeamModalOpen}
+        onClose={() => setIsTeamModalOpen(false)}
+        teams={teams}
+        users={users}
+        activeUserId={activeUserId}
+        invitations={invitations}
+        onCreateTeam={createTeam}
+        onUpdateMemberRole={updateMemberRole}
+        onRemoveMember={removeMember}
+        onCreateInvitation={createInvitation}
+        onAcceptInvitation={acceptInvitation}
+        teamMembers={teamMembers}
       />
 
       <NewColumnModal
