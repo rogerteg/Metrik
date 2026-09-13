@@ -20,6 +20,11 @@ No gerenciamento moderno de fluxo de valor, o trabalho opera em múltiplos níve
 
 Esta especificação define o modelo de dados, as regras de negócio, a interface nos cartões e modais, e as validações de integridade referencial necessárias para suportar tipos de tarefas e vínculos intra e cross-squad com excelência visual e soberania Local-First.
 
+### Decisões Clarificadas (/speckit-clarify)
+1. **Alcance de Descoberta Cross-Squad**: O usuário pode pesquisar e vincular tarefas de **qualquer squad cadastrada no sistema**. A vinculação exibe um resumo seguro da dependência (título, squad e status da coluna), garantindo transparência máxima de fluxo entre equipes sem quebrar a privacidade de edição dos quadros externos.
+2. **Reação a Dependências Pendentes (Soft Block)**: Caso uma tarefa possua vínculo `is_blocked_by` cuja tarefa bloqueadora ainda não esteja concluída, o cartão exibe badge de alerta de dependência pendente. Se o operador tentar arrastar ou mover o cartão para a coluna "Concluído" (`done`), o sistema aciona uma confirmação explícita (Soft Block) com aviso de bloqueio antes de efetivar a movimentação.
+3. **Representação Visual nos Cartões**: O cabeçalho de cada `TaskCard` exibe um **badge dedicado com ícone e texto** (🎯 Iniciativa, 📋 Card, 🔹 Subtarefa) alinhado ao Metrik Design System. Na área inferior/metadados do cartão, é exibido um chip compacto com contador de links e identificação de squad externa vinculada (ex: `🏢 Squad Engenharia`).
+
 ---
 
 ## 2. User Scenarios & Casos de Teste *(mandatory)*
@@ -126,7 +131,7 @@ Como gestor de fluxo ou product owner, quero que tarefas do tipo **Iniciativa** 
   - `'card'` (Card regular / História de fluxo)
   - `'subtask'` (Subtarefa / Item granular)
 - **FR-002**: O sistema DEVE atribuir o valor padrão `'card'` para qualquer tarefa pré-existente ou criada sem tipo explícito, garantindo 100% de retrocompatibilidade.
-- **FR-003**: O componente `TaskCard` no quadro Kanban DEVE renderizar um badge ou ícone visual exclusivo para cada tipo de tarefa.
+- **FR-003**: O componente `TaskCard` no quadro Kanban DEVE renderizar um badge dedicado no cabeçalho do cartão com ícone e texto (🎯 Iniciativa, 📋 Card, 🔹 Subtarefa) alinhado ao Metrik Design System, além de contador de links e chip com a squad externa na base do cartão.
 - **FR-004**: O modal `TaskDetailsModal` DEVE conter um seletor visual permitindo alterar o tipo da tarefa a qualquer momento.
 
 ### Modelo de Vínculos & Relacionamentos
@@ -141,7 +146,7 @@ Como gestor de fluxo ou product owner, quero que tarefas do tipo **Iniciativa** 
 - **FR-007**: O sistema DEVE permitir a remoção de vínculos diretamente na interface da tarefa.
 
 ### Vínculos Cross-Squad (Dependências entre Times)
-- **FR-008**: O sistema DEVE permitir ao usuário selecionar tarefas pertencentes a outras squads e outros quadros para estabelecer vínculos.
+- **FR-008**: O sistema DEVE permitir ao usuário buscar e vincular tarefas de **qualquer squad cadastrada no sistema**, exibindo resumo informativo da dependência (título, squad e status da coluna) para máxima transparência entre equipes.
 - **FR-009**: O seletor de vínculos DEVE disponibilizar dropdowns em cascata para Squad Alvo -> Quadro Alvo -> Tarefa Alvo.
 - **FR-010**: Cartões com vínculos cross-squad DEVEM exibir uma identificação clara da squad de origem/destino no Kanban e no modal.
 - **FR-011**: O sistema DEVE preservar as restrições de permissão da squad remota, não permitindo edições no cartão externo a partir de uma squad não autorizada.
@@ -149,6 +154,7 @@ Como gestor de fluxo ou product owner, quero que tarefas do tipo **Iniciativa** 
 ### Indicadores e Progresso
 - **FR-012**: O sistema DEVE calcular e exibir o progresso percentual `(concluídas / total * 100)` para tarefas do tipo `initiative` que possuam itens filhos vinculados.
 - **FR-013**: O sistema DEVE sinalizar visualmente no cartão quando uma tarefa possui vínculos do tipo `is_blocked_by` cujas tarefas bloqueadoras ainda não estejam em colunas da categoria `done`.
+- **FR-014**: O sistema DEVE implementar validação com confirmação (Soft Block): ao tentar mover para a coluna de categoria `done` um cartão com dependência pendente (`is_blocked_by` não concluída), o sistema DEVE exibir diálogo/confirmação alertando sobre a dependência antes de prosseguir com a movimentação.
 
 ---
 
