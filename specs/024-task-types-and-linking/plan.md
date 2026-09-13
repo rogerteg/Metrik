@@ -1,6 +1,6 @@
 # Implementation Plan: Tipos de Tarefas, Vinculação Hierárquica e Vínculos Cross-Squad
 
-**Branch**: `024-task-types-and-linking` | **Date**: 2026-09-13 | **Spec**: [specs/024-task-types-and-linking/spec.md](spec.md)
+**Branch**: `024-task-types-and-linking` | **Date**: 2026-09-13 | **Status**: Implemented & Converged | **Spec**: [specs/024-task-types-and-linking/spec.md](spec.md)
 
 ---
 

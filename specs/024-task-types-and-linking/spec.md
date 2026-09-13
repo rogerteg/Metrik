@@ -2,7 +2,7 @@
 
 **Feature Branch**: `024-task-types-and-linking`  
 **Created**: 2026-09-12  
-**Status**: Draft  
+**Status**: Implemented & Verified (Converged)  
 **Input**: Solicitação do usuário: *"Criar função tipos de tarefas, inserir nos cards. Tipos: Cards; subtarefas; iniciativas; vincular tarefas com outras tarefas, e permitir anexar tarefa de outro time, squad."*
 
 ---

@@ -1,6 +1,6 @@
 # Quickstart & Guia de Validação: Tipos de Tarefas, Vinculação Hierárquica e Vínculos Cross-Squad
 
-**Feature**: `024-task-types-and-linking` | **Date**: 2026-09-13 | **Branch**: `024-task-types-and-linking`
+**Feature**: `024-task-types-and-linking` | **Date**: 2026-09-13 | **Branch**: `024-task-types-and-linking` | **Status**: Implemented & Converged
 
 ---
 
