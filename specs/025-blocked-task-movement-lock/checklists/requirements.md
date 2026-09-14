@@ -27,3 +27,10 @@
 - [x] All functional requirements (FR-001 through FR-008) have clear acceptance criteria
 - [x] User scenarios cover the full lifecycle (bloqueio, tentativa de movimentação interceptada, retirada de etiqueta e liberação)
 - [x] Constitutional compliance verified (Principles I, II, III, V, VI, VII, VIII)
+
+## Notes
+
+- Decisões ratificadas via `/speckit-clarify`:
+  1. Reordenação vertical permitida exclusivamente dentro da mesma coluna.
+  2. Desbloqueio com 1 clique no badge do cartão, botão do modal e sincronização com tags.
+  3. Feedback visual via Toast contextual amigável e cursor `not-allowed`.

@@ -18,6 +18,11 @@ Atualmente no Metrik, embora existam verificações parciais no hook `useTaskCol
 Esta especificação define uma **regra estrita e universal de bloqueio de movimentação (Strict Movement Lock)**:
 > **Regra Fundamental**: Um cartão com a etiqueta de bloqueado ativa (`blocked === true` ou tag de impedimento) **NÃO PODE SER MOVIDO DE UMA COLUNA PARA OUTRA SOB NENHUMA HIPÓTESE**, até que o usuário explicitamente retire a etiqueta de bloqueado.
 
+### Decisões Clarificadas (/speckit-clarify)
+1. **Reordenação Vertical na Mesma Coluna**: Permitida exclusivamente dentro da **mesma coluna** (para que a equipe possa priorizar a ordem de resolução dos itens bloqueados), com veto absoluto a qualquer transição entre colunas diferentes.
+2. **Remoção da Etiqueta de Bloqueado (Desbloqueio)**: Desbloqueio rápido e intuitivo com **1 clique direto no badge `⛔ Bloqueado`** no próprio cartão (com confirmação rápida), pelo botão *"Desbloquear Tarefa"* no modal de detalhes, e sincronização automática caso a tag `"bloqueado"` / `"blocked"` seja excluída da lista de tags.
+3. **Feedback Visual ao Tentar Mover**: Exibição de **notificação contextual suave (Toast / Tooltip de advertência)** informando *"Cartão bloqueado: retire a etiqueta de bloqueio para mover entre colunas"*, combinada com cursor `not-allowed`, sem congelar a tela nem disparar popups intrusivos.
+
 ---
 
 ## 2. User Scenarios & Casos de Teste *(mandatory)*
