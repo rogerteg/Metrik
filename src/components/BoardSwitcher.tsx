@@ -26,15 +26,22 @@ export const BoardSwitcher: React.FC<BoardSwitcherProps> = ({
   let userTeams: Team[] = [];
 
   if (teams && activeUserId) {
-    userTeams = teams.filter((t) => Array.isArray(t.members) && t.members.some((m: any) => m.userId === activeUserId));
+    userTeams = teams.filter((t) => {
+      if (Array.isArray(t.members)) {
+        return t.members.some((m: any) => m.userId === activeUserId);
+      }
+      return true; // Default fallback to preserve visibility
+    });
     const userTeamIds = new Set(userTeams.map((t) => t.id));
-    accessibleBoards = boards.filter((b) => b.teamId && userTeamIds.has(b.teamId));
+    const filtered = boards.filter((b) => !b.teamId || userTeamIds.has(b.teamId));
+    // Guard: never leave user with 0 accessible boards if boards exist!
+    accessibleBoards = filtered.length > 0 ? filtered : boards;
   }
 
   // Group accessible boards by Team
   const groupedBoards: { teamName: string; boards: BoardModel[] }[] = [];
 
-  if (userTeams.length > 0) {
+  if (userTeams.length > 0 && accessibleBoards.length > 0) {
     userTeams.forEach((team) => {
       const teamBoards = accessibleBoards.filter((b) => b.teamId === team.id);
       if (teamBoards.length > 0) {

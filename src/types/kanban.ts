@@ -193,7 +193,10 @@ export const MAX_COLUMNS = 12;
 export const FLOW_REGRESSION_WARNING_MESSAGE =
   'Cuidado! Você irá perder todas as métricas do fluxo. Card em sentido único, somente da esquerda para a direita.';
 
-/** Mensagem de alerta para tentativa de movimentação de tarefa bloqueada */
+/** Palavras-chave reconhecidas como etiquetas de bloqueio (Feature 025) */
+export const BLOCKED_TAG_KEYWORDS = ['bloqueado', 'bloqueada', 'blocked', 'impedimento'] as const;
+
+/** Mensagem padronizada de aviso para tentativa de movimentação de tarefa bloqueada (Feature 025) */
 export const BLOCKED_TASK_MOVE_WARNING_MESSAGE =
-  'Esta tarefa está bloqueada e não pode ser movida de coluna. Desbloqueie a tarefa para movimentá-la.';
+  'Cartão bloqueado: retire a etiqueta de bloqueado para mover entre colunas.';
 

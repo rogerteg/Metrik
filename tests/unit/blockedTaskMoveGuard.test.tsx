@@ -226,5 +226,141 @@ describe('Blocked Task Movement Guard', () => {
       expect(screen.queryByLabelText('Mover para coluna anterior')).toBeNull();
       expect(screen.queryByLabelText('Mover para próxima coluna')).toBeNull();
     });
+
+    it('hides lateral move buttons even when canMoveLeft and canMoveRight are passed as true if task is blocked', () => {
+      render(
+        <Task
+          task={baseTask}
+          canMoveLeft={true}
+          canMoveRight={true}
+          onMoveLeft={vi.fn()}
+          onMoveRight={vi.fn()}
+          onUpdateTitle={vi.fn()}
+          onDelete={vi.fn()}
+          onDiscardIfEmpty={vi.fn()}
+        />
+      );
+
+      expect(screen.queryByLabelText('Mover para coluna anterior')).toBeNull();
+      expect(screen.queryByLabelText('Mover para próxima coluna')).toBeNull();
+    });
+
+    it('renders with aria-disabled="true" and task-card-blocked-locked class when blocked', () => {
+      render(
+        <Task
+          task={baseTask}
+          onUpdateTitle={vi.fn()}
+          onDelete={vi.fn()}
+          onDiscardIfEmpty={vi.fn()}
+        />
+      );
+
+      const card = screen.getByRole('article');
+      expect(card.getAttribute('aria-disabled')).toBe('true');
+      expect(card.classList.contains('task-card-blocked-locked')).toBe(true);
+    });
+
+    it('triggers 1-click quick unlock when clicking on ⛔ Bloqueado badge', () => {
+      const toggleBlockedMock = vi.fn();
+      render(
+        <Task
+          task={baseTask}
+          onToggleBlocked={toggleBlockedMock}
+          onUpdateTitle={vi.fn()}
+          onDelete={vi.fn()}
+          onDiscardIfEmpty={vi.fn()}
+        />
+      );
+
+      const badge = screen.getByTestId('task-blocked-badge');
+      fireEvent.click(badge);
+
+      expect(toggleBlockedMock).toHaveBeenCalledWith(baseTask.id);
+    });
+
+    it('cancels dragStart and sets draggable=false when task is blocked by tag keyword', () => {
+      const taskWithTag: TaskModel = {
+        id: 'task-tag-blocked',
+        title: 'Tag Blocked Task',
+        column: 'todo',
+        createdAt: '2026-09-14T10:00:00Z',
+        tags: ['bloqueado'],
+      };
+
+      render(
+        <Task
+          task={taskWithTag}
+          onUpdateTitle={vi.fn()}
+          onDelete={vi.fn()}
+          onDiscardIfEmpty={vi.fn()}
+        />
+      );
+
+      const card = screen.getByRole('article');
+      expect(card.getAttribute('draggable')).toBe('false');
+
+      const dragEvent = new Event('dragstart', { bubbles: true, cancelable: true });
+      fireEvent(card, dragEvent);
+
+      expect(dragEvent.defaultPrevented).toBe(true);
+    });
+  });
+
+  describe('Tag and Blocked state bidirectional synchronization', () => {
+    it('synchronizes task.blocked to true when tag "bloqueado" is added, and clears it when tag is removed', () => {
+      const { result } = renderHook(() => useTaskCollection('test-tag-sync-hook'));
+
+      let createdTask: TaskModel;
+      act(() => {
+        result.current.clearTasks();
+        createdTask = result.current.addTask('todo', 'Tag Sync Task');
+      });
+
+      // Add blocking tag
+      act(() => {
+        result.current.addTaskTag(createdTask.id, 'bloqueado');
+      });
+
+      let taskInState = result.current.board.tasks['todo'].find((t) => t.id === createdTask.id);
+      expect(taskInState?.blocked).toBe(true);
+      expect(taskInState?.tags).toContain('bloqueado');
+
+      // Remove blocking tag
+      act(() => {
+        result.current.removeTaskTag(createdTask.id, 'bloqueado');
+      });
+
+      taskInState = result.current.board.tasks['todo'].find((t) => t.id === createdTask.id);
+      expect(taskInState?.blocked).toBe(false);
+      expect(taskInState?.tags).not.toContain('bloqueado');
+    });
+
+    it('synchronizes tags when toggleTaskBlocked is called', () => {
+      const { result } = renderHook(() => useTaskCollection('test-toggle-tag-sync-hook'));
+
+      let createdTask: TaskModel;
+      act(() => {
+        result.current.clearTasks();
+        createdTask = result.current.addTask('todo', 'Toggle Tag Sync Task');
+      });
+
+      // Toggle to blocked
+      act(() => {
+        result.current.toggleTaskBlocked(createdTask.id, 'Dependência externa');
+      });
+
+      let taskInState = result.current.board.tasks['todo'].find((t) => t.id === createdTask.id);
+      expect(taskInState?.blocked).toBe(true);
+      expect(taskInState?.tags).toContain('bloqueado');
+
+      // Toggle to unblocked
+      act(() => {
+        result.current.toggleTaskBlocked(createdTask.id);
+      });
+
+      taskInState = result.current.board.tasks['todo'].find((t) => t.id === createdTask.id);
+      expect(taskInState?.blocked).toBe(false);
+      expect(taskInState?.tags).not.toContain('bloqueado');
+    });
   });
 });

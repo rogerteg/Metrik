@@ -20,4 +20,5 @@ export interface ReorderOptions {
   targetColumn: string;
   targetTaskId?: string;
   position?: DropPosition;
+  bypassBlockedLock?: boolean;
 }

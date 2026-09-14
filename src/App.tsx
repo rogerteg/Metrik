@@ -16,7 +16,9 @@ import { NewColumnModal } from './components/NewColumnModal';
 import { useColumnWidths } from './hooks/useColumnWidths';
 import { useTheme } from './hooks/useTheme';
 import { ThemeSelector } from './components/ThemeSelector';
-import { getDefaultColumnColor, TaskModel } from './types/kanban';
+import { ToastNotification } from './components/ToastNotification';
+import { getDefaultColumnColor, TaskModel, BLOCKED_TASK_MOVE_WARNING_MESSAGE } from './types/kanban';
+import { isTaskBlocked } from './utils/taskReorder';
 import { ReorderOptions } from './types/dnd';
 import { useTeamAccess } from './hooks/useTeamAccess';
 import { UserProfileMenu } from './components/UserProfileMenu';
@@ -259,6 +261,8 @@ export const App: React.FC = () => {
     [selectedTaskId, activeBoardId, allBoardTasks, updateTask]
   );
 
+  const [toastMessage, setToastMessage] = React.useState<string | null>(null);
+
   const [softBlockState, setSoftBlockState] = React.useState<{
     task: TaskModel;
     blockingTasks: CrossSquadTaskSummary[];
@@ -269,6 +273,12 @@ export const App: React.FC = () => {
     (taskId: string, targetColumnId: string) => {
       const task = allBoardTasks.find((t) => t.id === taskId);
       const targetCol = board.columns.find((c) => c.id === targetColumnId);
+
+      // Trava Estrita de Movimentação para Cartões Bloqueados (Feature 025):
+      if (task && isTaskBlocked(task) && task.column !== targetColumnId) {
+        setToastMessage(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
+        return;
+      }
 
       if (targetCol?.category === 'done' && task) {
         const pending = getPendingBlockers(task, allBoardTasks, board.columns);
@@ -294,6 +304,12 @@ export const App: React.FC = () => {
     (options: ReorderOptions) => {
       const task = allBoardTasks.find((t) => t.id === options.activeTaskId);
       const targetCol = board.columns.find((c) => c.id === options.targetColumn);
+
+      // Trava Estrita de Movimentação para Cartões Bloqueados (Feature 025):
+      if (task && isTaskBlocked(task) && task.column !== options.targetColumn) {
+        setToastMessage(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
+        return;
+      }
 
       if (targetCol?.category === 'done' && task) {
         const pending = getPendingBlockers(task, allBoardTasks, board.columns);
@@ -504,8 +520,9 @@ export const App: React.FC = () => {
             renderTask={(task, columnId) => {
               const currentIndex = board.columns.findIndex(c => c.id === columnId);
               const currentColumn = board.columns[currentIndex];
-              const canMoveLeft = !isGuest && currentIndex > 0 && !task.blocked;
-              const canMoveRight = !isGuest && currentIndex < board.columns.length - 1 && !task.blocked;
+              const isBlocked = isTaskBlocked(task);
+              const canMoveLeft = !isGuest && currentIndex > 0 && !isBlocked;
+              const canMoveRight = !isGuest && currentIndex < board.columns.length - 1 && !isBlocked;
               const colColor = getDefaultColumnColor(currentColumn);
               const initiativeProgress = task.type === 'initiative'
                 ? calculateInitiativeProgress(task, allBoardTasks, board.columns)
@@ -526,6 +543,7 @@ export const App: React.FC = () => {
                   onUpdatePriority={isGuest ? () => {} : setTaskPriority}
                   onAddTag={isGuest ? () => {} : addTaskTag}
                   onRemoveTag={isGuest ? () => {} : removeTaskTag}
+                  onToggleBlocked={isGuest ? undefined : toggleTaskBlocked}
                   onDropTask={isGuest ? () => {} : handleGuardedDropTask}
                   isCompleted={currentColumn?.category === 'done'}
                   canMoveLeft={canMoveLeft}
@@ -621,6 +639,11 @@ export const App: React.FC = () => {
         onClose={() => setIsNewColumnModalOpen(false)}
         onAddColumn={addColumn}
         currentColumnCount={board.columns.length}
+      />
+
+      <ToastNotification
+        message={toastMessage}
+        onClose={() => setToastMessage(null)}
       />
     </div>
   );

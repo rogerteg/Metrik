@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import {
   BoardState,
@@ -9,9 +9,10 @@ import {
   MAX_COLUMNS,
   FLOW_REGRESSION_WARNING_MESSAGE,
   BLOCKED_TASK_MOVE_WARNING_MESSAGE,
+  BLOCKED_TAG_KEYWORDS,
 } from '../types/kanban';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
-import { reorderBoard, isBackwardColumnMove, reorderColumnList } from '../utils/taskReorder';
+import { reorderBoard, isBackwardColumnMove, reorderColumnList, isTaskBlocked } from '../utils/taskReorder';
 import { ReorderOptions } from '../types/dnd';
 
 export interface UseTaskCollectionReturn {
@@ -66,7 +67,6 @@ const getBoardStateFromStorage = (boardId: string | null): BoardState => {
     }
 
     console.warn(`[Metrik Storage] Invalid board state for ${boardId}. Falling back to seed data.`);
-    window.localStorage.setItem(storageKey, JSON.stringify(INITIAL_SEED_TASKS));
     return INITIAL_SEED_TASKS;
   } catch (error) {
     console.error(`[Metrik Storage] Failed to load board ${boardId}:`, error);
@@ -76,15 +76,19 @@ const getBoardStateFromStorage = (boardId: string | null): BoardState => {
 
 export function useTaskCollection(activeBoardId: string | null): UseTaskCollectionReturn {
   const [board, setBoard] = useState<BoardState>(() => getBoardStateFromStorage(activeBoardId));
+  const currentBoardIdRef = useRef<string | null>(activeBoardId);
 
   // When active board changes, load its data
   useEffect(() => {
-    setBoard(getBoardStateFromStorage(activeBoardId));
+    currentBoardIdRef.current = activeBoardId;
+    if (activeBoardId) {
+      setBoard(getBoardStateFromStorage(activeBoardId));
+    }
   }, [activeBoardId]);
 
-  // Sync with localStorage
+  // Sync with localStorage ONLY when board belongs to current activeBoardId
   useEffect(() => {
-    if (!activeBoardId) return;
+    if (!activeBoardId || currentBoardIdRef.current !== activeBoardId) return;
     const storageKey = `metrik-tasks-${activeBoardId}`;
     try {
       window.localStorage.setItem(storageKey, JSON.stringify(board));
@@ -265,7 +269,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
       }
 
       if (targetTask && sourceColumnId) {
-        if (targetTask.blocked && sourceColumnId !== targetColumnId) {
+        if (isTaskBlocked(targetTask) && sourceColumnId !== targetColumnId) {
           if (typeof window !== 'undefined') {
             if (typeof window.alert === 'function') {
               try {
@@ -372,7 +376,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
         }
       }
 
-      if (activeTask && sourceColumnId && activeTask.blocked && sourceColumnId !== options.targetColumn) {
+      if (activeTask && sourceColumnId && isTaskBlocked(activeTask) && sourceColumnId !== options.targetColumn) {
         if (typeof window !== 'undefined') {
           if (typeof window.alert === 'function') {
             try {
@@ -452,9 +456,23 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
             );
             if (isDuplicate) return task;
 
+            const nextTags = [...currentTags, cleanTag];
+            const isBlockingKeyword = (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(cleanTag.toLowerCase());
+
+            if (isBlockingKeyword) {
+              return {
+                ...task,
+                tags: nextTags,
+                blocked: true,
+                blockedAt: task.blockedAt || now,
+                blockedReason: task.blockedReason || 'Bloqueado via etiqueta',
+                updatedAt: now,
+              };
+            }
+
             return {
               ...task,
-              tags: [...currentTags, cleanTag],
+              tags: nextTags,
               updatedAt: now,
             };
           }
@@ -479,6 +497,25 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
             const nextTags = currentTags.filter(
               (t) => t.trim().toLowerCase() !== targetTag
             );
+            const hasRemainingBlockingTag = nextTags.some((t) =>
+              (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
+            );
+
+            // Se retirou etiqueta de bloqueio e não resta nenhuma outra tag de bloqueio:
+            if (!hasRemainingBlockingTag && task.blocked) {
+              const startMs = task.blockedAt ? new Date(task.blockedAt).getTime() : Date.now();
+              const elapsed = Math.max(0, Date.now() - startMs);
+              const totalBlockedMs = (task.totalBlockedMs || 0) + elapsed;
+              return {
+                ...task,
+                tags: nextTags,
+                blocked: false,
+                blockedAt: undefined,
+                totalBlockedMs,
+                updatedAt: now,
+              };
+            }
+
             return {
               ...task,
               tags: nextTags,
@@ -528,21 +565,32 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
             found = true;
             const now = new Date().toISOString();
             if (!task.blocked) {
+              const currentTags = task.tags ?? [];
+              const hasTag = currentTags.some((t) =>
+                (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
+              );
+              const nextTags = hasTag ? currentTags : [...currentTags, 'bloqueado'];
               return {
                 ...task,
                 blocked: true,
                 blockedReason: reason !== undefined ? reason : (task.blockedReason || ''),
                 blockedAt: now,
+                tags: nextTags,
                 updatedAt: now,
               };
             } else {
               const startMs = task.blockedAt ? new Date(task.blockedAt).getTime() : Date.now();
               const elapsed = Math.max(0, Date.now() - startMs);
               const totalBlockedMs = (task.totalBlockedMs || 0) + elapsed;
+              const currentTags = task.tags ?? [];
+              const nextTags = currentTags.filter(
+                (t) => !(BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
+              );
               return {
                 ...task,
                 blocked: false,
                 blockedAt: undefined,
+                tags: nextTags,
                 totalBlockedMs,
                 updatedAt: now,
               };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { TaskModel, SubtaskModel, BoardModel, ColumnModel } from '../types/kanban';
+import { TaskModel, SubtaskModel, BoardModel, ColumnModel, BLOCKED_TAG_KEYWORDS } from '../types/kanban';
 import { TaskType, TASK_TYPE_CONFIGS, TaskRelationType } from '../types/taskTypes';
 import { Team } from '../types/team';
 import { calculateTaskBlockedTimeMs, formatBlockedTime } from '../utils/timeFormatters';
@@ -130,17 +130,28 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     } else {
       const now = new Date().toISOString();
       if (!task.blocked) {
+        const currentTags = task.tags ?? [];
+        const hasTag = currentTags.some((t) =>
+          (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
+        );
+        const nextTags = hasTag ? currentTags : [...currentTags, 'bloqueado'];
         onUpdateTask(task.id, {
           blocked: true,
           blockedReason: localBlockedReason,
           blockedAt: now,
+          tags: nextTags,
         });
       } else {
         const startMs = task.blockedAt ? new Date(task.blockedAt).getTime() : Date.now();
         const elapsed = Math.max(0, Date.now() - startMs);
+        const currentTags = task.tags ?? [];
+        const nextTags = currentTags.filter(
+          (t) => !(BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
+        );
         onUpdateTask(task.id, {
           blocked: false,
           blockedAt: undefined,
+          tags: nextTags,
           totalBlockedMs: (task.totalBlockedMs || 0) + elapsed,
         });
       }

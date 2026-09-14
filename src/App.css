@@ -785,19 +785,93 @@ body {
   transform: translateY(-1px);
 }
 
-/* Blocked Task Styles (Feature 012) */
-.task-card.task-card-blocked {
+/* Blocked Task Styles (Feature 012 & Feature 025: Strict Movement Lock) */
+.task-card.task-card-blocked,
+.task-card.task-card-blocked-locked {
   border-left: 4px solid #ef4444 !important;
   background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, var(--bg-card) 25%);
 }
 
-.task-card.task-card-blocked:hover {
+.task-card.task-card-blocked:hover,
+.task-card.task-card-blocked-locked:hover {
   background: linear-gradient(90deg, rgba(239, 68, 68, 0.12) 0%, var(--bg-card-hover) 25%);
   border-color: rgba(239, 68, 68, 0.4);
 }
 
+.task-card.task-card-blocked-locked,
 .task-card.task-card-blocked:not([draggable="true"]) {
-  cursor: default;
+  cursor: not-allowed !important;
+}
+
+.task-card-blocked-badge-clickable {
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.task-card-blocked-badge-clickable:hover {
+  background: rgba(239, 68, 68, 0.35);
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+/* Contextual Toast Notification (Feature 025) */
+.metrik-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  max-width: 440px;
+  animation: metrikToastSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes metrikToastSlideIn {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.metrik-toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #1e293b;
+  color: #f8fafc;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.metrik-toast-icon {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.metrik-toast-message {
+  flex: 1;
+  font-weight: 500;
+}
+
+.metrik-toast-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.metrik-toast-close:hover {
+  color: #f8fafc;
 }
 
 /* Stagnant Task Styles (Card Parado / Marrom) */

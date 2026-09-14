@@ -7,8 +7,35 @@ export const ACTIVE_BOARD_KEY = 'metrik-active-board';
 export const LEGACY_TASKS_KEY = 'metrik-tasks';
 
 export function useBoards() {
-  const [boards, setBoards] = useState<BoardModel[]>([]);
-  const [activeBoardId, setActiveBoardId] = useState<string | null>(null);
+  const [boards, setBoards] = useState<BoardModel[]>(() => {
+    if (typeof window === 'undefined' || !window.localStorage) return [];
+    try {
+      const rawBoards = localStorage.getItem(BOARDS_INDEX_KEY);
+      if (rawBoards) {
+        const parsed: BoardModel[] = JSON.parse(rawBoards);
+        return parsed.map((b) => ({
+          ...b,
+          teamId: b.teamId || DEFAULT_TEAM_ID,
+        }));
+      }
+    } catch {}
+    return [];
+  });
+
+  const [activeBoardId, setActiveBoardId] = useState<string | null>(() => {
+    if (typeof window === 'undefined' || !window.localStorage) return null;
+    try {
+      const rawActive = localStorage.getItem(ACTIVE_BOARD_KEY);
+      if (rawActive) return rawActive;
+      const rawBoards = localStorage.getItem(BOARDS_INDEX_KEY);
+      if (rawBoards) {
+        const parsed: BoardModel[] = JSON.parse(rawBoards);
+        if (parsed.length > 0) return parsed[0].id;
+      }
+    } catch {}
+    return null;
+  });
+
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Initialize and run migration if needed

@@ -1,5 +1,6 @@
 import React from 'react';
 import { PriorityLevel, TaskModel, isTaskStagnant, STAGNANT_BROWN_COLOR } from '../types/kanban';
+import { isTaskBlocked } from '../utils/taskReorder';
 import { AutoResizeTextarea } from './AutoResizeTextarea';
 import { PriorityBadge } from './PriorityBadge';
 import { TaskTypeBadge } from './TaskTypeBadge';
@@ -22,6 +23,7 @@ export interface TaskProps {
   onUpdatePriority?: (id: string, priority?: PriorityLevel) => void;
   onAddTag?: (id: string, tag: string) => void;
   onRemoveTag?: (id: string, tag: string) => void;
+  onToggleBlocked?: (id: string) => void;
   onMoveLeft?: (id: string) => void;
   onMoveRight?: (id: string) => void;
   canMoveLeft?: boolean;
@@ -43,6 +45,7 @@ export const Task: React.FC<TaskProps> = ({
   onUpdatePriority,
   onAddTag,
   onRemoveTag,
+  onToggleBlocked,
   onMoveLeft,
   onMoveRight,
   canMoveLeft = false,
@@ -58,6 +61,8 @@ export const Task: React.FC<TaskProps> = ({
   const [isEditing, setIsEditing] = React.useState(false);
   const [dropIndicator, setDropIndicator] = React.useState<'before' | 'after' | null>(null);
 
+  const isBlocked = isTaskBlocked(task);
+
   const handleBlur = () => {
     setIsEditing(false);
     if (!task.title || task.title.trim() === '') {
@@ -66,8 +71,9 @@ export const Task: React.FC<TaskProps> = ({
   };
 
   const handleDragStart = (e: React.DragEvent<HTMLElement>) => {
-    if (task.blocked) {
+    if (isBlocked) {
       e.preventDefault();
+      e.stopPropagation();
       return;
     }
     setIsDragging(true);
@@ -152,17 +158,18 @@ export const Task: React.FC<TaskProps> = ({
 
   return (
     <article
-      className={`task-card ${isDragging ? 'task-card-dragging' : ''} ${task.blocked ? 'task-card-blocked' : ''} ${isStagnant ? 'task-card-stagnant' : ''} ${dropClass}`}
+      className={`task-card ${isDragging ? 'task-card-dragging' : ''} ${isBlocked ? 'task-card-blocked task-card-blocked-locked' : ''} ${isStagnant ? 'task-card-stagnant' : ''} ${dropClass}`}
       id={`task-${task.id}`}
       aria-label={`Cartão de tarefa: ${task.title || 'Sem título'}`}
+      aria-disabled={isBlocked ? 'true' : undefined}
       style={
-        effectiveCardColor && !task.blocked
+        effectiveCardColor && !isBlocked
           ? {
               borderLeft: `4px solid ${effectiveCardColor}`,
             }
           : undefined
       }
-      draggable={!isEditing && !isEditingAC && !isEditingTS && !task.blocked}
+      draggable={!isEditing && !isEditingAC && !isEditingTS && !isBlocked}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
@@ -178,7 +185,8 @@ export const Task: React.FC<TaskProps> = ({
           (e.target as HTMLElement).closest('.priority-badge-container') ||
           (e.target as HTMLElement).closest('.tag-item-remove') ||
           (e.target as HTMLElement).closest('.task-qa-toggle-bar') ||
-          (e.target as HTMLElement).closest('.task-field-box')
+          (e.target as HTMLElement).closest('.task-field-box') ||
+          (e.target as HTMLElement).closest('.task-blocked-badge')
         ) {
           return;
         }
@@ -199,7 +207,7 @@ export const Task: React.FC<TaskProps> = ({
           />
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          {isStagnant && !task.blocked && (
+          {isStagnant && !isBlocked && (
             <span
               className="task-stagnant-badge"
               title="Cartão sem movimentação há mais de 3 dias no board"
@@ -208,11 +216,32 @@ export const Task: React.FC<TaskProps> = ({
               ⏳ Parado
             </span>
           )}
-          {task.blocked && (
+          {isBlocked && (
             <span
-              className="task-blocked-badge"
-              title={task.blockedReason ? `Bloqueado: ${task.blockedReason}` : 'Tarefa bloqueada'}
+              className="task-blocked-badge task-card-blocked-badge-clickable"
+              title={task.blockedReason ? `Bloqueado: ${task.blockedReason}` : 'Cartão bloqueado: clique para retirar a etiqueta de bloqueio'}
               data-testid="task-blocked-badge"
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onToggleBlocked) {
+                  onToggleBlocked(task.id);
+                } else if (onUpdateTask) {
+                  onUpdateTask(task.id, { blocked: false, blockedAt: undefined });
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  if (onToggleBlocked) {
+                    onToggleBlocked(task.id);
+                  } else if (onUpdateTask) {
+                    onUpdateTask(task.id, { blocked: false, blockedAt: undefined });
+                  }
+                }
+              }}
             >
               ⛔ Bloqueado
             </span>
@@ -458,7 +487,7 @@ export const Task: React.FC<TaskProps> = ({
         onPointerDown={(e) => e.stopPropagation()}
       >
         <div className="task-nav-buttons">
-          {canMoveLeft && onMoveLeft && (
+          {!isBlocked && canMoveLeft && onMoveLeft && (
             <button
               type="button"
               className="btn-nav-step"
@@ -469,7 +498,7 @@ export const Task: React.FC<TaskProps> = ({
               ←
             </button>
           )}
-          {canMoveRight && onMoveRight && (
+          {!isBlocked && canMoveRight && onMoveRight && (
             <button
               type="button"
               className="btn-nav-step"

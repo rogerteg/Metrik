@@ -101,6 +101,7 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
       const updated = reorderBoard(testBoard, {
         activeTaskId: 'task-1',
         targetColumn: 'todo',
+        bypassBlockedLock: true,
       });
 
       const movedTask = updated.tasks.todo.find((t) => t.id === 'task-1');

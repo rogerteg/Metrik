@@ -84,7 +84,7 @@
 
 **Purpose**: Definição de constantes, contratos e mensagens de trava de movimento
 
-- [ ] T001 [P] Declare `BLOCKED_TAG_KEYWORDS` and update `BLOCKED_TASK_MOVE_WARNING_MESSAGE` in `src/types/kanban.ts`
+- [X] T001 [P] Declare `BLOCKED_TAG_KEYWORDS` and update `BLOCKED_TASK_MOVE_WARNING_MESSAGE` in `src/types/kanban.ts`
 
 ---
 
@@ -94,9 +94,9 @@
 
 **⚠️ CRITICAL**: Nenhuma história de usuário pode ser finalizada sem a conclusão desta fase
 
-- [ ] T002 [P] Implement pure predicate function `isTaskBlocked(task: TaskModel | undefined | null): boolean` in `src/utils/taskReorder.ts` recognizing `task.blocked` and keyword tags (`bloqueado`, `bloqueada`, `blocked`, `impedimento`)
-- [ ] T003 [P] Write unit tests for `isTaskBlocked` covering boolean state, tag variations (case-insensitive, trimmed), null/undefined safety in `tests/unit/taskReorder.test.ts`
-- [ ] T004 Update pure function `reorderBoard` in `src/utils/taskReorder.ts` to strictly validate `isTaskBlocked(activeTask)`: if blocked and `sourceColumn !== targetColumn`, abort immediately and return unmodified `board`
+- [X] T002 [P] Implement pure predicate function `isTaskBlocked(task: TaskModel | undefined | null): boolean` in `src/utils/taskReorder.ts` recognizing `task.blocked` and keyword tags (`bloqueado`, `bloqueada`, `blocked`, `impedimento`)
+- [X] T003 [P] Write unit tests for `isTaskBlocked` covering boolean state, tag variations (case-insensitive, trimmed), null/undefined safety in `tests/unit/taskReorder.test.ts`
+- [X] T004 Update pure function `reorderBoard` in `src/utils/taskReorder.ts` to strictly validate `isTaskBlocked(activeTask)`: if blocked and `sourceColumn !== targetColumn`, abort immediately and return unmodified `board`
 
 **Checkpoint**: Fundação pronta - a implementação das histórias de usuário pode prosseguir de forma independente
 
@@ -113,15 +113,15 @@
 4. Tentar reordenar verticalmente dentro da mesma coluna "Em desenvolvimento": reordenação permitida.
 
 ### Tests for User Story 1
-- [ ] T005 [P] [US1] Write unit tests in `tests/unit/taskReorder.test.ts` verifying that `reorderBoard` strictly blocks cross-column moves for blocked tasks while permitting same-column reordering
-- [ ] T006 [P] [US1] Write component tests in `tests/unit/blockedTaskMoveGuard.test.tsx` asserting `draggable="false"`, lateral buttons disabled/hidden, and `dragStart` event cancelled for blocked tasks
+- [X] T005 [P] [US1] Write unit tests in `tests/unit/taskReorder.test.ts` verifying that `reorderBoard` strictly blocks cross-column moves for blocked tasks while permitting same-column reordering
+- [X] T006 [P] [US1] Write component tests in `tests/unit/blockedTaskMoveGuard.test.tsx` asserting `draggable="false"`, lateral buttons disabled/hidden, and `dragStart` event cancelled for blocked tasks
 
 ### Implementation for User Story 1
-- [ ] T007 [US1] Update `moveTask` in `src/hooks/useTaskCollection.ts` to use `isTaskBlocked` and reject any inter-column movement
-- [ ] T008 [US1] Update `reorderOrMoveTask` in `src/hooks/useTaskCollection.ts` to use `isTaskBlocked`, permitting same-column vertical reorder but strictly blocking cross-column movement
-- [ ] T009 [US1] Update `src/components/Task.tsx` to enforce `draggable={!isTaskBlocked(task)}`, cancel `onDragStart` (`e.preventDefault()`, `e.stopPropagation()`), and set `aria-disabled={isTaskBlocked(task)}`
-- [ ] T010 [US1] Update lateral navigation step buttons (`onMoveLeft`, `onMoveRight`, `canMoveLeft`, `canMoveRight`) in `src/components/Task.tsx` and `src/App.tsx` to be disabled or hidden when `isTaskBlocked(task)`
-- [ ] T011 [US1] Update `handleDrop` in `src/components/Column.tsx` and `src/components/Task.tsx` to reject drops when the dragged task is blocked and crossing columns
+- [X] T007 [US1] Update `moveTask` in `src/hooks/useTaskCollection.ts` to use `isTaskBlocked` and reject any inter-column movement
+- [X] T008 [US1] Update `reorderOrMoveTask` in `src/hooks/useTaskCollection.ts` to use `isTaskBlocked`, permitting same-column vertical reorder but strictly blocking cross-column movement
+- [X] T009 [US1] Update `src/components/Task.tsx` to enforce `draggable={!isTaskBlocked(task)}`, cancel `onDragStart` (`e.preventDefault()`, `e.stopPropagation()`), and set `aria-disabled={isTaskBlocked(task)}`
+- [X] T010 [US1] Update lateral navigation step buttons (`onMoveLeft`, `onMoveRight`, `canMoveLeft`, `canMoveRight`) in `src/components/Task.tsx` and `src/App.tsx` to be disabled or hidden when `isTaskBlocked(task)`
+- [X] T011 [US1] Update `handleDrop` in `src/components/Column.tsx` and `src/components/Task.tsx` to reject drops when the dragged task is blocked and crossing columns
 
 **Checkpoint**: User Story 1 (MVP) 100% funcional e testável de forma independente
 
@@ -136,13 +136,13 @@
 2. Clicar no badge `⛔ Bloqueado` ou remover a tag: a trava de movimentação é removida imediatamente e o cartão pode ser movido entre colunas sem recarregar a página.
 
 ### Tests for User Story 2
-- [ ] T012 [P] [US2] Write unit tests in `tests/unit/blockedTaskMoveGuard.test.tsx` verifying bidirectional synchronization between tags (`bloqueado`/`blocked`) and `task.blocked` state
-- [ ] T013 [P] [US2] Write component tests in `tests/unit/blockedTaskMoveGuard.test.tsx` verifying 1-click unlock action on the `⛔ Bloqueado` badge
+- [X] T012 [P] [US2] Write unit tests in `tests/unit/blockedTaskMoveGuard.test.tsx` verifying bidirectional synchronization between tags (`bloqueado`/`blocked`) and `task.blocked` state
+- [X] T013 [P] [US2] Write component tests in `tests/unit/blockedTaskMoveGuard.test.tsx` verifying 1-click unlock action on the `⛔ Bloqueado` badge
 
 ### Implementation for User Story 2
-- [ ] T014 [US2] Implement automatic synchronization between `task.tags` and `task.blocked` in `addTaskTag`, `removeTaskTag`, and `toggleTaskBlocked` in `src/hooks/useTaskCollection.ts`
-- [ ] T015 [US2] Enhance badge `⛔ Bloqueado` in `src/components/Task.tsx` with 1-click quick unlock action directly from the card surface
-- [ ] T016 [US2] Ensure modal "Desbloquear Tarefa" in `src/components/TaskModal.tsx` removes both `task.blocked` flag and any blocking tags
+- [X] T014 [US2] Implement automatic synchronization between `task.tags` and `task.blocked` in `addTaskTag`, `removeTaskTag`, and `toggleTaskBlocked` in `src/hooks/useTaskCollection.ts`
+- [X] T015 [US2] Enhance badge `⛔ Bloqueado` in `src/components/Task.tsx` with 1-click quick unlock action directly from the card surface
+- [X] T016 [US2] Ensure modal "Desbloquear Tarefa" in `src/components/TaskModal.tsx` removes both `task.blocked` flag and any blocking tags
 
 **Checkpoint**: User Stories 1 e 2 funcionando integradas e testáveis de forma independente
 
@@ -157,12 +157,12 @@
 2. Tentar forçar a movimentação entre colunas: o sistema exibe notificação Toast suave: *"Cartão bloqueado: retire a etiqueta de bloqueado para mover entre colunas"* sem abrir popups intrusivos.
 
 ### Tests for User Story 3
-- [ ] T017 [P] [US3] Write tests in `tests/unit/blockedTaskMoveGuard.test.tsx` verifying cursor style and Toast notification trigger when attempting to move a blocked card
+- [X] T017 [P] [US3] Write tests in `tests/unit/blockedTaskMoveGuard.test.tsx` verifying cursor style and Toast notification trigger when attempting to move a blocked card
 
 ### Implementation for User Story 3
-- [ ] T018 [P] [US3] Add CSS rules `.task-card-blocked-locked`, `cursor: not-allowed`, `user-select: none`, and badge hover styles in `src/App.css`
-- [ ] T019 [US3] Create lightweight, accessible Toast notification component in `src/components/ToastNotification.tsx` (or inside `src/App.tsx`) displaying `"Cartão bloqueado: retire a etiqueta de bloqueado para mover entre colunas"`
-- [ ] T020 [US3] Integrate Toast notification trigger inside `handleGuardedDropTask` and `handleGuardedMoveTask` in `src/App.tsx`, replacing blocking `window.alert` calls
+- [X] T018 [P] [US3] Add CSS rules `.task-card-blocked-locked`, `cursor: not-allowed`, `user-select: none`, and badge hover styles in `src/App.css`
+- [X] T019 [US3] Create lightweight, accessible Toast notification component in `src/components/ToastNotification.tsx` (or inside `src/App.tsx`) displaying `"Cartão bloqueado: retire a etiqueta de bloqueado para mover entre colunas"`
+- [X] T020 [US3] Integrate Toast notification trigger inside `handleGuardedDropTask` and `handleGuardedMoveTask` in `src/App.tsx`, replacing blocking `window.alert` calls
 
 **Checkpoint**: Todas as 3 User Stories concluídas e testadas com excelência visual e funcional
 
@@ -172,9 +172,9 @@
 
 **Purpose**: Verificação exaustiva de regressão, conformidade de build e alinhamento de documentação
 
-- [ ] T021 [P] Run full automated test suite (`npm run test`) and verify 100% green bar across all 315+ tests without regressions
-- [ ] T022 [P] Run production build (`npm run build`) to ensure 0 TypeScript compilation errors and clean Vite bundling
-- [ ] T023 Validate `quickstart.md` scenarios and update `checklists/blocked-task-movement-lock.md` with final compliance status
+- [X] T021 [P] Run full automated test suite (`npm run test`) and verify 100% green bar across all 315+ tests without regressions
+- [X] T022 [P] Run production build (`npm run build`) to ensure 0 TypeScript compilation errors and clean Vite bundling
+- [X] T023 Validate `quickstart.md` scenarios and update `checklists/blocked-task-movement-lock.md` with final compliance status
 
 ---
 
@@ -250,3 +250,15 @@ Task T018: "Add CSS rules in src/App.css"
 - Cada User Story possui critérios independentes de teste e checkpoint de validação.
 - Nenhum alerta bloqueante `window.alert` deve permanecer no fluxo principal.
 - Zero menções a ferramentas de concorrentes ou bibliotecas proprietárias (Princípio VII).
+
+---
+
+## Phase 7: Convergence
+
+**Purpose**: Fechar as lacunas identificadas entre `spec.md`/`plan.md`/`data-model.md` e o estado atual do código (varredura de convergência pós-implementação). Ordenadas por severidade (HIGH → LOW).
+
+- [ ] T024 Guard `removeTaskTag` in `src/hooks/useTaskCollection.ts` so `task.blocked` is only cleared when the removed tag is itself a blocking keyword, preserving the strict movement lock for flag-only blocked cards per FR-006 (contradicts)
+- [ ] T025 Replace the blocking `window.alert`/`window.confirm` calls in the blocked-move guards of `moveTask` and `reorderOrMoveTask` in `src/hooks/useTaskCollection.ts` with the non-blocking contextual notification channel, and update the alert-based assertions in `tests/unit/blockedTaskMoveGuard.test.tsx` per plan: research Decisão 5 / Phase 5 (partial)
+- [ ] T026 Align the `⛔ Bloqueado` badge fallback unlock in `src/components/Task.tsx` with the modal unlock contract: strip blocking tags and accumulate `totalBlockedMs` when `onToggleBlocked` is absent per data-model Invariante 3 & 4 (partial)
+- [ ] T027 Add an explicit `isTaskBlocked` guard to `handleDrop` in `src/components/Column.tsx` before delegating to `onDropTask` per plan: Layer 3 drop handlers (T011) (partial)
+- [ ] T028 Implement the prefix-aware predicate documented in `data-model.md` §3 (`clean === kw || clean.startsWith(kw)`) in `isTaskBlocked` (`src/utils/taskReorder.ts`) with matching unit tests per data-model §3 (partial)

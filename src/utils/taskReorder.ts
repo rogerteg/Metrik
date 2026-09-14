@@ -1,5 +1,23 @@
-import { BoardState, ColumnModel, TaskModel } from '../types/kanban';
+import { BLOCKED_TAG_KEYWORDS, BoardState, ColumnModel, TaskModel } from '../types/kanban';
 import { ReorderOptions } from '../types/dnd';
+
+/**
+ * Predicado puro de domínio que verifica se uma tarefa está bloqueada (Feature 025).
+ * Uma tarefa é considerada bloqueada se:
+ * 1. task.blocked === true
+ * 2. task.tags contiver qualquer uma das palavras-chave de bloqueio ('bloqueado', 'bloqueada', 'blocked', 'impedimento')
+ */
+export function isTaskBlocked(task: TaskModel | undefined | null): boolean {
+  if (!task) return false;
+  if (task.blocked === true) return true;
+  if (Array.isArray(task.tags) && task.tags.length > 0) {
+    return task.tags.some((tag) => {
+      const normalized = tag.trim().toLowerCase();
+      return (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(normalized);
+    });
+  }
+  return false;
+}
 
 /**
  * Valida se uma coluna pode ser movida entre sourceIndex e targetIndex.
@@ -82,6 +100,13 @@ export function reorderBoard(
   }
 
   if (!activeTask || !sourceColumn) {
+    return board;
+  }
+
+  // Trava Estrita de Movimentação para Cartões Bloqueados (Feature 025):
+  // Um cartão bloqueado JAMAIS pode mudar de coluna (sourceColumn !== targetColumn).
+  // Apenas a reordenação vertical na MESMA coluna é permitida, a menos que bypassBlockedLock seja explicitamente fornecido.
+  if (isTaskBlocked(activeTask) && sourceColumn !== targetColumn && !options.bypassBlockedLock) {
     return board;
   }
 

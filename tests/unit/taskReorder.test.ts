@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { reorderBoard } from '../../src/utils/taskReorder';
-import { BoardState, ColumnModel } from '../../src/types/kanban';
+import { reorderBoard, isTaskBlocked } from '../../src/utils/taskReorder';
+import { BoardState, ColumnModel, TaskModel } from '../../src/types/kanban';
 
 describe('reorderBoard (Pure Reordering & Transition Function)', () => {
   const columns: ColumnModel[] = [
@@ -147,5 +147,147 @@ describe('reorderBoard (Pure Reordering & Transition Function)', () => {
     });
 
     expect(result).toBe(sampleBoard);
+  });
+});
+
+describe('isTaskBlocked (Pure Predicate - Feature 025)', () => {
+  it('returns false for undefined or null tasks', () => {
+    expect(isTaskBlocked(undefined)).toBe(false);
+    expect(isTaskBlocked(null)).toBe(false);
+  });
+
+  it('returns false for tasks that are not blocked and have no tags', () => {
+    const task: TaskModel = {
+      id: 't1',
+      title: 'Normal task',
+      column: 'todo',
+      createdAt: '2026-09-14T10:00:00Z',
+    };
+    expect(isTaskBlocked(task)).toBe(false);
+  });
+
+  it('returns true when task.blocked is strictly true', () => {
+    const task: TaskModel = {
+      id: 't1',
+      title: 'Blocked task',
+      column: 'todo',
+      createdAt: '2026-09-14T10:00:00Z',
+      blocked: true,
+      blockedReason: 'Waiting for vendor',
+    };
+    expect(isTaskBlocked(task)).toBe(true);
+  });
+
+  it('returns true when task.tags contains "bloqueado" (case-insensitive and trimmed)', () => {
+    const task: TaskModel = {
+      id: 't1',
+      title: 'Task with tag',
+      column: 'todo',
+      createdAt: '2026-09-14T10:00:00Z',
+      tags: ['feature', '  Bloqueado  '],
+    };
+    expect(isTaskBlocked(task)).toBe(true);
+  });
+
+  it('returns true when task.tags contains "bloqueada", "blocked" or "impedimento"', () => {
+    expect(isTaskBlocked({ id: '1', title: 'A', column: 'c', createdAt: '2026-09-14', tags: ['bloqueada'] })).toBe(true);
+    expect(isTaskBlocked({ id: '2', title: 'B', column: 'c', createdAt: '2026-09-14', tags: ['BLOCKED'] })).toBe(true);
+    expect(isTaskBlocked({ id: '3', title: 'C', column: 'c', createdAt: '2026-09-14', tags: ['Impedimento'] })).toBe(true);
+  });
+
+  it('returns false when task.tags has unrelated tags', () => {
+    const task: TaskModel = {
+      id: 't1',
+      title: 'Normal tags',
+      column: 'todo',
+      createdAt: '2026-09-14T10:00:00Z',
+      tags: ['frontend', 'bug', 'urgente'],
+    };
+    expect(isTaskBlocked(task)).toBe(false);
+  });
+});
+
+describe('reorderBoard - Blocked Task Movement Lock (Feature 025)', () => {
+  const columns: ColumnModel[] = [
+    { id: 'todo', title: 'Todo', category: 'todo', wipLimit: null, colorScheme: 'todo' },
+    { id: 'in-progress', title: 'In Progress', category: 'in_progress', wipLimit: null, colorScheme: 'progress' },
+    { id: 'completed', title: 'Completed', category: 'done', wipLimit: null, colorScheme: 'completed' },
+  ];
+
+  const boardWithBlocked: BoardState = {
+    columns,
+    tasks: {
+      'todo': [
+        {
+          id: 'blocked-task-1',
+          title: 'Blocked Card 1',
+          column: 'todo',
+          createdAt: '2026-09-14T10:00:00Z',
+          blocked: true,
+          blockedReason: 'API dependency',
+        },
+        {
+          id: 'blocked-task-2',
+          title: 'Blocked Card by Tag',
+          column: 'todo',
+          createdAt: '2026-09-14T10:00:00Z',
+          tags: ['bloqueado'],
+        },
+        {
+          id: 'normal-task-3',
+          title: 'Normal Card 3',
+          column: 'todo',
+          createdAt: '2026-09-14T10:00:00Z',
+        },
+      ],
+      'in-progress': [],
+      'completed': [],
+    },
+  };
+
+  it('strictly rejects moving a blocked task (blocked=true) to another column, returning unmodified board', () => {
+    const result = reorderBoard(boardWithBlocked, {
+      activeTaskId: 'blocked-task-1',
+      targetColumn: 'in-progress',
+    });
+
+    expect(result).toBe(boardWithBlocked);
+    expect(result.tasks['todo'].find((t) => t.id === 'blocked-task-1')).toBeDefined();
+    expect(result.tasks['in-progress'].length).toBe(0);
+  });
+
+  it('strictly rejects moving a blocked task (by tag) to another column, returning unmodified board', () => {
+    const result = reorderBoard(boardWithBlocked, {
+      activeTaskId: 'blocked-task-2',
+      targetColumn: 'in-progress',
+    });
+
+    expect(result).toBe(boardWithBlocked);
+    expect(result.tasks['todo'].find((t) => t.id === 'blocked-task-2')).toBeDefined();
+    expect(result.tasks['in-progress'].length).toBe(0);
+  });
+
+  it('permits vertical reordering of a blocked task within the SAME column before another task', () => {
+    const result = reorderBoard(boardWithBlocked, {
+      activeTaskId: 'normal-task-3',
+      targetColumn: 'todo',
+      targetTaskId: 'blocked-task-1',
+      position: 'before',
+    });
+
+    const order = result.tasks['todo'].map((t) => t.id);
+    expect(order).toEqual(['normal-task-3', 'blocked-task-1', 'blocked-task-2']);
+  });
+
+  it('permits vertical reordering of a blocked task within the SAME column after another task', () => {
+    const result = reorderBoard(boardWithBlocked, {
+      activeTaskId: 'blocked-task-1',
+      targetColumn: 'todo',
+      targetTaskId: 'normal-task-3',
+      position: 'after',
+    });
+
+    const order = result.tasks['todo'].map((t) => t.id);
+    expect(order).toEqual(['blocked-task-2', 'normal-task-3', 'blocked-task-1']);
   });
 });
