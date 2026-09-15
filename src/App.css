@@ -259,6 +259,8 @@ body {
 
 /* Top Header */
 .app-header {
+  position: relative;
+  z-index: 50;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -339,6 +341,26 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.header-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-cluster-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-subtle);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.btn-compact {
+  padding: 6px 12px;
+  font-size: 0.8125rem;
 }
 
 .btn {
@@ -1440,6 +1462,8 @@ body {
 
 /* Flow Metrics Summary Bar - Compact */
 .metrics-bar {
+  position: relative;
+  z-index: 10;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -2305,16 +2329,16 @@ body {
 
 .user-profile-dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 10px);
   right: 0;
-  min-width: 280px;
-  max-width: 340px;
+  min-width: 300px;
+  max-width: 360px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 8px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(16px);
+  border-radius: 14px;
+  padding: 10px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 4px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(24px);
   z-index: 1000;
   animation: dropdownFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }

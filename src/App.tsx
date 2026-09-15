@@ -401,76 +401,89 @@ export const App: React.FC = () => {
             style={{ display: 'none' }}
             aria-hidden="true"
           />
-          
-          <div className="view-toggle">
-            <button
-              type="button"
-              className={`btn ${view === 'board' ? 'btn-primary' : 'btn-secondary'}`}
-              onClick={() => setView('board')}
-            >
-              Quadro
-            </button>
-            <button
-              type="button"
-              className={`btn ${view === 'analytics' ? 'btn-primary' : 'btn-secondary'}`}
-              onClick={() => setView('analytics')}
-            >
-              Analytics
-            </button>
+
+          {/* Cluster 1: Navegação & Tema */}
+          <div className="header-cluster header-nav-cluster">
+            <div className="view-toggle">
+              <button
+                type="button"
+                className={`btn ${view === 'board' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setView('board')}
+              >
+                Quadro
+              </button>
+              <button
+                type="button"
+                className={`btn ${view === 'analytics' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setView('analytics')}
+              >
+                Analytics
+              </button>
+            </div>
+
+            <ThemeSelector currentTheme={theme} onSelectTheme={setTheme} />
           </div>
 
-          <ThemeSelector currentTheme={theme} onSelectTheme={setTheme} />
+          <div className="header-cluster-divider" aria-hidden="true" />
 
-          <UserProfileMenu
-            users={users}
-            activeUser={activeUser}
-            onSelectUser={selectUser}
-            onCreateUser={createUser}
-            onOpenTeamsModal={() => setIsTeamModalOpen(true)}
-          />
+          {/* Cluster 2: Perfil & Sessão */}
+          <div className="header-cluster header-session-cluster">
+            <UserProfileMenu
+              users={users}
+              activeUser={activeUser}
+              onSelectUser={selectUser}
+              onCreateUser={createUser}
+              onOpenTeamsModal={() => setIsTeamModalOpen(true)}
+            />
+          </div>
 
-          {!isGuest && (
+          <div className="header-cluster-divider" aria-hidden="true" />
+
+          {/* Cluster 3: Ações do Quadro */}
+          <div className="header-cluster header-board-ops-cluster">
+            {!isGuest && (
+              <button
+                type="button"
+                className="btn btn-secondary btn-compact"
+                onClick={handleImportClick}
+                aria-label="Importar Quadro"
+                title="Importar dados do quadro a partir de um arquivo JSON"
+              >
+                Importar
+              </button>
+            )}
             <button
               type="button"
-              className="btn btn-secondary"
-              onClick={handleImportClick}
-              aria-label="Importar Quadro"
-              title="Importar dados do quadro a partir de um arquivo JSON"
+              className="btn btn-secondary btn-compact"
+              onClick={handleExport}
+              aria-label="Exportar Quadro"
+              title="Exportar dados do quadro para um arquivo JSON"
             >
-              Importar
+              Exportar
             </button>
-          )}
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={handleExport}
-            aria-label="Exportar Quadro"
-            title="Exportar dados do quadro para um arquivo JSON"
-          >
-            Exportar
-          </button>
-          {!isGuest && (
-            <>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={resetToSeed}
-                aria-label="Restaurar Demo"
-                title="Restaurar tarefas de demonstração"
-              >
-                Restaurar Demo
-              </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={handleClearBoard}
-                aria-label="Limpar Quadro"
-                title="Limpar todas as tarefas do quadro"
-              >
-                Limpar Quadro
-              </button>
-            </>
-          )}
+            {!isGuest && (
+              <>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-compact"
+                  onClick={resetToSeed}
+                  aria-label="Restaurar Demo"
+                  title="Restaurar tarefas de demonstração"
+                >
+                  Restaurar Demo
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger btn-compact"
+                  onClick={handleClearBoard}
+                  aria-label="Limpar Quadro"
+                  title="Limpar todas as tarefas do quadro"
+                >
+                  Limpar Quadro
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </header>
 
