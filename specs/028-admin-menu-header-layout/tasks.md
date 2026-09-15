@@ -105,3 +105,35 @@ description: "Task list for feature 028 - Admin Menu & Header Layout Reorganizat
 - [X] T006 [P] [US3] Run full test suite (`npm test`) and build check (`npm run build`) ensuring zero regressions.
 - [X] T007 [US3] Verify visual appearance via browser subagent in `http://localhost:5173/`, taking screenshots of the open Administrador dropdown over the metrics bar.
 - [X] T008 Review and close `specs/028-admin-menu-header-layout/checklists/requirements.md`.
+
+---
+
+## Dependencies & Execution Order
+
+### Phase Dependencies
+- **Setup & Stacking Fix (Phase 1)**: Base bloqueante para evitar que componentes inferiores gerem camadas concorrentes.
+- **US1 (Phase 2)**: Desobstrução do menu de perfil e atalho `Escape` (MVP).
+- **US2 (Phase 3)**: Reorganização semântica do cabeçalho em clusters.
+- **US3 (Phase 4)**: Verificação de empilhamento entre temas, build e regressão.
+
+### Parallel Opportunities
+- T002 (testes unitários) e T006 (suíte completa) executados independentemente.
+- Reorganização de layout em `App.tsx` e `App.css` sincronizados.
+
+---
+
+## Implementation Strategy & Status
+
+### Status da Execução
+- **100% concluído (8/8 tarefas)** — T001 a T008 finalizadas.
+- **Evidência**:
+  - `npm test`: 394 testes passando em 58 arquivos (100% verde).
+  - `npm run build`: Compilação limpa sem erros em 2.52s.
+  - Verificação visual via browser subagent: Menu "Perfis de Usuário" flutuando desobstruído sobre a barra de métricas.
+
+---
+
+## Notes
+- [P] = Tarefa paralelizável.
+- [US1], [US2], [US3] = Rastreabilidade direta com as histórias de usuário da `spec.md`.
+- Zero dependências externas adicionadas.
