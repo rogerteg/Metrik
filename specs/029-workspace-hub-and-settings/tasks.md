@@ -88,7 +88,7 @@ description: "Task list for feature 029 - Workspace & Board Hub with Separate Se
 
 **Purpose**: Estruturar as tipagens e interfaces TypeScript para suportar Espaços de Trabalho, Favoritos e Configurações Globais.
 
-- [ ] T001 Define workspace, favorite boards and app settings interfaces in `src/types/workspace.ts` per `data-model.md`.
+- [X] T001 Define workspace, favorite boards and app settings interfaces in `src/types/workspace.ts` per `data-model.md`. ([#69](https://github.com/rogerteg/Metrik/issues/69))
 
 ---
 
@@ -96,9 +96,9 @@ description: "Task list for feature 029 - Workspace & Board Hub with Separate Se
 
 **Purpose**: Criar os hooks de gerenciamento de estado e persistência com testes unitários antes da implementação.
 
-- [ ] T002 [P] Create unit tests for `useWorkspaces` in `tests/unit/useWorkspaces.test.ts` covering initial migration, active workspace switching, and favorite toggling (Red-Bar).
-- [ ] T003 Implement `useWorkspaces` hook in `src/hooks/useWorkspaces.ts` with transparent brownfield migration, CRUD operations and `localStorage` persistence (Green-Bar).
-- [ ] T004 [P] Implement `useAppSettings` hook in `src/hooks/useAppSettings.ts` for managing application preferences and themes.
+- [X] T002 [P] Create unit tests for `useWorkspaces` in `tests/unit/useWorkspaces.test.ts` covering initial migration, active workspace switching, and favorite toggling (Red-Bar). ([#70](https://github.com/rogerteg/Metrik/issues/70))
+- [X] T003 Implement `useWorkspaces` hook in `src/hooks/useWorkspaces.ts` with transparent brownfield migration, CRUD operations and `localStorage` persistence (Green-Bar). ([#71](https://github.com/rogerteg/Metrik/issues/71))
+- [X] T004 [P] Implement `useAppSettings` hook in `src/hooks/useAppSettings.ts` for managing application preferences and themes. ([#72](https://github.com/rogerteg/Metrik/issues/72))
 
 **Checkpoint**: Base de dados e lógica de estado pronta e testada — implementação de componentes visuais pode iniciar.
 
@@ -111,15 +111,15 @@ description: "Task list for feature 029 - Workspace & Board Hub with Separate Se
 **Independent Test**: Acessar a visão "Espaços", alternar entre os espaços da barra lateral, visualizar os quadros correspondentes e clicar no coração de qualquer quadro para favoritá-lo/desfavoritá-lo com atualização imediata da vitrine superior.
 
 ### Testes de Interface para US1
-- [ ] T005 [P] [US1] Create component tests for `WorkspaceHub` in `tests/unit/WorkspaceHub.test.tsx` verifying sidebar rendering, active space switching, and favorite board interactions (Red-Bar).
+- [X] T005 [P] [US1] Create component tests for `WorkspaceHub` in `tests/unit/WorkspaceHub.test.tsx` verifying sidebar rendering, active space switching, and favorite board interactions (Red-Bar). ([#73](https://github.com/rogerteg/Metrik/issues/73))
 
 ### Implementação de Componentes para US1
-- [ ] T006 [P] [US1] Implement `WorkspaceSidebar.tsx` in `src/components/WorkspaceHub/WorkspaceSidebar.tsx` with color markers, "Todos os espaços" button, active space highlighting, and bottom "+ Novo painel" trigger.
-- [ ] T007 [P] [US1] Implement `FavoriteBoardsSection.tsx` in `src/components/WorkspaceHub/FavoriteBoardsSection.tsx` with elevated cards, heart icon toggles, task deadline indicators, and click-to-open handlers.
-- [ ] T008 [P] [US1] Implement `WorkspaceActionBar.tsx` in `src/components/WorkspaceHub/WorkspaceActionBar.tsx` with section title, circular action buttons (FABs), and pill-shaped search input.
-- [ ] T009 [US1] Implement `WorkspaceBoardsGrid.tsx` in `src/components/WorkspaceHub/WorkspaceBoardsGrid.tsx` with responsive cards, 3-dots action menus, and empty state guidance.
-- [ ] T010 [US1] Assemble `WorkspaceHub.tsx` in `src/components/WorkspaceHub/WorkspaceHub.tsx` integrating sidebar, favorites section, action bar, and boards grid.
-- [ ] T011 [US1] Integrate `'workspaces'` view into `src/App.tsx`, updating top header view toggle ("Espaços" | "Quadro" | "Analytics") and board selection navigation (Green-Bar).
+- [X] T006 [P] [US1] Implement `WorkspaceSidebar.tsx` in `src/components/WorkspaceHub/WorkspaceSidebar.tsx` with color markers, "Todos os espaços" button, active space highlighting, and bottom "+ Novo painel" trigger. ([#74](https://github.com/rogerteg/Metrik/issues/74))
+- [X] T007 [P] [US1] Implement `FavoriteBoardsSection.tsx` in `src/components/WorkspaceHub/FavoriteBoardsSection.tsx` with elevated cards, heart icon toggles, task deadline indicators, and click-to-open handlers. ([#75](https://github.com/rogerteg/Metrik/issues/75))
+- [X] T008 [P] [US1] Implement `WorkspaceActionBar.tsx` in `src/components/WorkspaceHub/WorkspaceActionBar.tsx` with section title, circular action buttons (FABs), and pill-shaped search input. ([#76](https://github.com/rogerteg/Metrik/issues/76))
+- [X] T009 [US1] Implement `WorkspaceBoardsGrid.tsx` in `src/components/WorkspaceHub/WorkspaceBoardsGrid.tsx` with responsive cards, 3-dots action menus, and empty state guidance. ([#77](https://github.com/rogerteg/Metrik/issues/77))
+- [X] T010 [US1] Assemble `WorkspaceHub.tsx` in `src/components/WorkspaceHub/WorkspaceHub.tsx` integrating sidebar, favorites section, action bar, and boards grid. ([#78](https://github.com/rogerteg/Metrik/issues/78))
+- [X] T011 [US1] Integrate `'workspaces'` view into `src/App.tsx`, updating top header view toggle ("Espaços" | "Quadro" | "Analytics") and board selection navigation (Green-Bar). ([#79](https://github.com/rogerteg/Metrik/issues/79))
 
 **Checkpoint**: User Story 1 funcional e testável de forma autônoma (MVP do protótipo entregue).
 
@@ -132,15 +132,15 @@ description: "Task list for feature 029 - Workspace & Board Hub with Separate Se
 **Independent Test**: Clicar em "Configurações" no cabeçalho ou sidebar, verificar a abertura da tela em tela cheia com duas colunas, navegar pelas 4 abas (*Geral*, *Espaços*, *Políticas*, *Dados*) e retornar com 1 clique através do botão "← Voltar ao Quadro".
 
 ### Testes de Interface para US2
-- [ ] T012 [P] [US2] Create component tests for `SettingsView` in `tests/unit/SettingsView.test.tsx` verifying tab navigation, theme adjustments, and return navigation (Red-Bar).
+- [X] T012 [P] [US2] Create component tests for `SettingsView` in `tests/unit/SettingsView.test.tsx` verifying tab navigation, theme adjustments, and return navigation (Red-Bar). ([#80](https://github.com/rogerteg/Metrik/issues/80))
 
 ### Implementação de Componentes para US2
-- [ ] T013 [P] [US2] Implement `GeneralSettingsTab.tsx` in `src/components/Settings/GeneralSettingsTab.tsx` for themes (Dark, Light, Slate), density scaling, and visual preferences.
-- [ ] T014 [P] [US2] Implement `WorkspacesSettingsTab.tsx` in `src/components/Settings/WorkspacesSettingsTab.tsx` for workspace management, name editing, HSL color palette pickers, and member role assignments.
-- [ ] T015 [P] [US2] Implement `BoardPoliciesTab.tsx` in `src/components/Settings/BoardPoliciesTab.tsx` for suggested WIP limits, column configurations, and flow policies.
-- [ ] T016 [P] [US2] Implement `DataPortabilityTab.tsx` in `src/components/Settings/DataPortabilityTab.tsx` housing JSON export, backup import, demo restore, and safe board clear dialog.
-- [ ] T017 [US2] Assemble `SettingsView.tsx` in `src/components/Settings/SettingsView.tsx` with 2-column layout, left category navigation, right content cards, and "← Voltar ao Quadro" header button.
-- [ ] T018 [US2] Connect Settings launcher in `src/App.tsx` and wire navigation between `'settings'` and other views (Green-Bar).
+- [X] T013 [P] [US2] Implement `GeneralSettingsTab.tsx` in `src/components/Settings/GeneralSettingsTab.tsx` for themes (Dark, Light, Slate), density scaling, and visual preferences. ([#81](https://github.com/rogerteg/Metrik/issues/81))
+- [X] T014 [P] [US2] Implement `WorkspacesSettingsTab.tsx` in `src/components/Settings/WorkspacesSettingsTab.tsx` for workspace management, name editing, HSL color palette pickers, and member role assignments. ([#82](https://github.com/rogerteg/Metrik/issues/82))
+- [X] T015 [P] [US2] Implement `BoardPoliciesTab.tsx` in `src/components/Settings/BoardPoliciesTab.tsx` for suggested WIP limits, column configurations, and flow policies. ([#83](https://github.com/rogerteg/Metrik/issues/83))
+- [X] T016 [P] [US2] Implement `DataPortabilityTab.tsx` in `src/components/Settings/DataPortabilityTab.tsx` housing JSON export, backup import, demo restore, and safe board clear dialog. ([#84](https://github.com/rogerteg/Metrik/issues/84))
+- [X] T017 [US2] Assemble `SettingsView.tsx` in `src/components/Settings/SettingsView.tsx` with 2-column layout, left category navigation, right content cards, and "← Voltar ao Quadro" header button. ([#85](https://github.com/rogerteg/Metrik/issues/85))
+- [X] T018 [US2] Connect Settings launcher in `src/App.tsx` and wire navigation between `'settings'` and other views (Green-Bar). ([#86](https://github.com/rogerteg/Metrik/issues/86))
 
 **Checkpoint**: User Story 2 completamente funcional e integrada de forma independente.
 
@@ -152,8 +152,8 @@ description: "Task list for feature 029 - Workspace & Board Hub with Separate Se
 
 **Independent Test**: Digitar um termo na barra de filtro em pílula e verificar o isolamento instantâneo de cartões; clicar em "+ Novo painel" e registrar um novo espaço com nome e cor definida.
 
-- [ ] T019 [US3] Implement `CreateWorkspaceModal.tsx` in `src/components/WorkspaceHub/CreateWorkspaceModal.tsx` with name input, HSL color palette selector, description, and save handler.
-- [ ] T020 [US3] Implement real-time filtering in `WorkspaceHub.tsx` filtering both favorites and grid boards by title or tags based on the pill filter input.
+- [X] T019 [US3] Implement `CreateWorkspaceModal.tsx` in `src/components/WorkspaceHub/CreateWorkspaceModal.tsx` with name input, HSL color palette selector, description, and save handler. ([#87](https://github.com/rogerteg/Metrik/issues/87))
+- [X] T020 [US3] Implement real-time filtering in `WorkspaceHub.tsx` filtering both favorites and grid boards by title or tags based on the pill filter input. ([#88](https://github.com/rogerteg/Metrik/issues/88))
 
 ---
 
@@ -161,10 +161,10 @@ description: "Task list for feature 029 - Workspace & Board Hub with Separate Se
 
 **Purpose**: Refinamentos estéticos enterprise, acessibilidade WCAG 2.1 AA e garantia de regressão zero.
 
-- [ ] T021 [P] Implement complete CSS styling in `src/App.css` for WorkspaceHub, pill filter, favorite cards with subtle elevation, and 2-column SettingsView layout across Dark, Light, and Slate themes.
-- [ ] T022 [P] Audit and enforce accessibility in `src/components/WorkspaceHub/` and `src/components/Settings/` (`outline: 2px solid #38bdf8` focus rings, aria-labels, and Escape key listeners).
-- [ ] T023 Run full automated verification suite (`npm test` and `npm run build`) ensuring zero regressions across all 394+ tests.
-- [ ] T024 Verify visual appearance and layout parity via browser subagent in `http://localhost:5173/`, capturing screenshots of both WorkspaceHub and SettingsView.
+- [X] T021 [P] Implement complete CSS styling in `src/App.css` for WorkspaceHub, pill filter, favorite cards with subtle elevation, and 2-column SettingsView layout across Dark, Light, and Slate themes. ([#89](https://github.com/rogerteg/Metrik/issues/89))
+- [X] T022 [P] Audit and enforce accessibility in `src/components/WorkspaceHub/` and `src/components/Settings/` (`outline: 2px solid #38bdf8` focus rings, aria-labels, and Escape key listeners). ([#90](https://github.com/rogerteg/Metrik/issues/90))
+- [X] T023 Run full automated verification suite (`npm test` and `npm run build`) ensuring zero regressions across all 394+ tests. ([#91](https://github.com/rogerteg/Metrik/issues/91))
+- [X] T024 Verify visual appearance and layout parity via browser subagent in `http://localhost:5173/`, capturing screenshots of both WorkspaceHub and SettingsView. ([#92](https://github.com/rogerteg/Metrik/issues/92))
 
 ---
 

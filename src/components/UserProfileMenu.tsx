@@ -7,6 +7,7 @@ interface UserProfileMenuProps {
   onSelectUser: (userId: string) => void;
   onCreateUser: (name: string, email: string) => void;
   onOpenTeamsModal?: () => void;
+  onOpenSettings?: () => void;
 }
 
 function getInitials(name: string): string {
@@ -22,6 +23,7 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
   onSelectUser,
   onCreateUser,
   onOpenTeamsModal,
+  onOpenSettings,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
@@ -161,6 +163,19 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
                   }}
                 >
                   <span>👥</span> Gerenciar Squads / Times
+                </button>
+              )}
+
+              {onOpenSettings && (
+                <button
+                  type="button"
+                  className="btn-dropdown-action"
+                  onClick={() => {
+                    setIsOpen(false);
+                    onOpenSettings();
+                  }}
+                >
+                  <span>⚙️</span> Configurações do Sistema
                 </button>
               )}
             </div>

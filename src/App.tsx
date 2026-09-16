@@ -32,6 +32,11 @@ import {
   getPendingBlockers,
 } from './utils/taskRelations';
 import { DependencySoftBlockModal } from './components/DependencySoftBlockModal';
+import { useWorkspaces } from './hooks/useWorkspaces';
+import { useAppSettings } from './hooks/useAppSettings';
+import { WorkspaceHub } from './components/WorkspaceHub/WorkspaceHub';
+import { CreateWorkspaceModal } from './components/WorkspaceHub/CreateWorkspaceModal';
+import { SettingsView } from './components/Settings/SettingsView';
 import metrikLogo from './assets/metrik-logo.png';
 import './App.css';
 
@@ -113,7 +118,28 @@ export const App: React.FC = () => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
-  const [view, setView] = React.useState<'board' | 'analytics'>('board');
+
+  const {
+    workspaces,
+    activeWorkspaceId,
+    setActiveWorkspaceId,
+    favoriteBoardIds,
+    toggleFavoriteBoard,
+    createWorkspace,
+    updateWorkspace,
+  } = useWorkspaces();
+
+  const { settings, updateSettings } = useAppSettings();
+  const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = React.useState(false);
+  const [view, setView] = React.useState<'workspaces' | 'board' | 'analytics' | 'settings'>('board');
+
+  const handleUpdateSettings = (patch: Partial<typeof settings>) => {
+    updateSettings(patch);
+    if (patch.theme && patch.theme !== theme) {
+      const mappedTheme = patch.theme === 'slate' ? 'neutral' : patch.theme;
+      setTheme(mappedTheme);
+    }
+  };
 
   const filterData = useBoardFilters(board);
 
@@ -407,6 +433,13 @@ export const App: React.FC = () => {
             <div className="view-toggle">
               <button
                 type="button"
+                className={`btn ${view === 'workspaces' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setView('workspaces')}
+              >
+                Espaços
+              </button>
+              <button
+                type="button"
                 className={`btn ${view === 'board' ? 'btn-primary' : 'btn-secondary'}`}
                 onClick={() => setView('board')}
               >
@@ -421,6 +454,20 @@ export const App: React.FC = () => {
               </button>
             </div>
 
+            <button
+              type="button"
+              className={`btn ${view === 'settings' ? 'btn-primary' : 'btn-secondary'} btn-compact btn-settings-trigger`}
+              onClick={() => setView('settings')}
+              aria-label="Configurações do Sistema"
+              title="Abrir Configurações do Sistema"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              <span>Configurações</span>
+            </button>
+
             <ThemeSelector currentTheme={theme} onSelectTheme={setTheme} />
           </div>
 
@@ -434,6 +481,7 @@ export const App: React.FC = () => {
               onSelectUser={selectUser}
               onCreateUser={createUser}
               onOpenTeamsModal={() => setIsTeamModalOpen(true)}
+              onOpenSettings={() => setView('settings')}
             />
           </div>
 
@@ -487,7 +535,36 @@ export const App: React.FC = () => {
         </div>
       </header>
 
-      {!isAuthorized ? (
+      {view === 'workspaces' ? (
+        <WorkspaceHub
+          workspaces={workspaces}
+          activeWorkspaceId={activeWorkspaceId}
+          onSelectWorkspace={setActiveWorkspaceId}
+          boards={boards}
+          favoriteBoardIds={favoriteBoardIds}
+          onToggleFavorite={toggleFavoriteBoard}
+          onSelectBoard={(boardId) => {
+            switchBoard(boardId);
+            setView('board');
+          }}
+          onNewPanel={() => setIsCreateWorkspaceModalOpen(true)}
+          onNewBoard={() => setIsBoardModalOpen(true)}
+        />
+      ) : view === 'settings' ? (
+        <SettingsView
+          settings={settings}
+          onUpdateSettings={handleUpdateSettings}
+          workspaces={workspaces}
+          onUpdateWorkspace={updateWorkspace}
+          onCreateWorkspace={() => setIsCreateWorkspaceModalOpen(true)}
+          teams={teams}
+          users={users}
+          onBackToBoard={() => setView('board')}
+          onExportData={handleExport}
+          onImportData={handleImportClick}
+          onClearTasks={handleClearBoard}
+        />
+      ) : !isAuthorized ? (
         <RestrictedBoardFallback
           teamName={activeBoardTeam?.name}
           onRedirectDefault={() => {
@@ -652,6 +729,14 @@ export const App: React.FC = () => {
         onClose={() => setIsNewColumnModalOpen(false)}
         onAddColumn={addColumn}
         currentColumnCount={board.columns.length}
+      />
+
+      <CreateWorkspaceModal
+        isOpen={isCreateWorkspaceModalOpen}
+        onClose={() => setIsCreateWorkspaceModalOpen(false)}
+        onCreateWorkspace={(name, color, description) => {
+          createWorkspace(name, color, description);
+        }}
       />
 
       <ToastNotification

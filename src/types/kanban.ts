@@ -154,6 +154,8 @@ export interface BoardModel {
   lastAccessed: string;
 }
 
+export type Board = BoardModel & Partial<BoardState>;
+
 export interface BoardState {
   columns: ColumnModel[];
   tasks: Record<string, TaskModel[]>; // key is column.id
