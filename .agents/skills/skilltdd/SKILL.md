@@ -1,6 +1,6 @@
 ---
 name: skilltdd
-description: Test-Driven Development (TDD) aplicado ao codar — as duas regras (só escrever código novo com teste automatizado falhando; eliminar duplicação), o ciclo red/green/refactor, o Money Example e o xUnit Example como worked examples, e os padrões de TDD (red bar, testing, green bar, xUnit, design patterns, refactoring) de Kent Beck (Test-Driven Development: By Example). Use quando precisar praticar ou ensinar TDD, escrever código guiado por testes, escolher o tamanho do próximo passo, ou aplicar padrões de teste/refatoração.
+description: "Test-Driven Development (TDD) aplicado ao codar — as duas regras (só escrever código novo com teste automatizado falhando; eliminar duplicação), o ciclo red/green/refactor, o Money Example e o xUnit Example como worked examples, e os padrões de TDD (red bar, testing, green bar, xUnit, design patterns, refactoring) de Kent Beck (Test-Driven Development: By Example). Use quando precisar praticar ou ensinar TDD, escrever código guiado por testes, escolher o tamanho do próximo passo, ou aplicar padrões de teste/refatoração."
 ---
 
 # Test-Driven Development: By Example (skilltdd)

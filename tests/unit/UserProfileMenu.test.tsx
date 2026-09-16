@@ -87,4 +87,23 @@ describe('UserProfileMenu Component (US1)', () => {
 
     expect(onCreate).toHaveBeenCalledWith('Carlos Lima', 'carlos@metrik.local');
   });
+
+  it('closes dropdown when pressing the Escape key (Feature 028)', () => {
+    render(
+      <UserProfileMenu
+        users={mockUsers}
+        activeUser={mockUsers[0]}
+        onSelectUser={vi.fn()}
+        onCreateUser={vi.fn()}
+      />
+    );
+
+    const trigger = screen.getByRole('button', { name: /perfil de alice silva/i });
+    fireEvent.click(trigger);
+    expect(screen.getByRole('menu')).toBeDefined();
+
+    // Press Escape
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('menu')).toBeNull();
+  });
 });

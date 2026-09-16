@@ -32,6 +32,11 @@ import {
   getPendingBlockers,
 } from './utils/taskRelations';
 import { DependencySoftBlockModal } from './components/DependencySoftBlockModal';
+import { useWorkspaces } from './hooks/useWorkspaces';
+import { useAppSettings } from './hooks/useAppSettings';
+import { WorkspaceHub } from './components/WorkspaceHub/WorkspaceHub';
+import { CreateWorkspaceModal } from './components/WorkspaceHub/CreateWorkspaceModal';
+import { SettingsView } from './components/Settings/SettingsView';
 import metrikLogo from './assets/metrik-logo.png';
 import './App.css';
 
@@ -113,7 +118,28 @@ export const App: React.FC = () => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
-  const [view, setView] = React.useState<'board' | 'analytics'>('board');
+
+  const {
+    workspaces,
+    activeWorkspaceId,
+    setActiveWorkspaceId,
+    favoriteBoardIds,
+    toggleFavoriteBoard,
+    createWorkspace,
+    updateWorkspace,
+  } = useWorkspaces();
+
+  const { settings, updateSettings } = useAppSettings();
+  const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = React.useState(false);
+  const [view, setView] = React.useState<'workspaces' | 'board' | 'analytics' | 'settings'>('board');
+
+  const handleUpdateSettings = (patch: Partial<typeof settings>) => {
+    updateSettings(patch);
+    if (patch.theme && patch.theme !== theme) {
+      const mappedTheme = patch.theme === 'slate' ? 'neutral' : patch.theme;
+      setTheme(mappedTheme);
+    }
+  };
 
   const filterData = useBoardFilters(board);
 
@@ -401,80 +427,144 @@ export const App: React.FC = () => {
             style={{ display: 'none' }}
             aria-hidden="true"
           />
-          
-          <div className="view-toggle">
+
+          {/* Cluster 1: Navegação & Tema */}
+          <div className="header-cluster header-nav-cluster">
+            <div className="view-toggle">
+              <button
+                type="button"
+                className={`btn ${view === 'workspaces' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setView('workspaces')}
+              >
+                Espaços
+              </button>
+              <button
+                type="button"
+                className={`btn ${view === 'board' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setView('board')}
+              >
+                Quadro
+              </button>
+              <button
+                type="button"
+                className={`btn ${view === 'analytics' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setView('analytics')}
+              >
+                Analytics
+              </button>
+            </div>
+
             <button
               type="button"
-              className={`btn ${view === 'board' ? 'btn-primary' : 'btn-secondary'}`}
-              onClick={() => setView('board')}
+              className={`btn ${view === 'settings' ? 'btn-primary' : 'btn-secondary'} btn-compact btn-settings-trigger`}
+              onClick={() => setView('settings')}
+              aria-label="Configurações do Sistema"
+              title="Abrir Configurações do Sistema"
             >
-              Quadro
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              <span>Configurações</span>
             </button>
-            <button
-              type="button"
-              className={`btn ${view === 'analytics' ? 'btn-primary' : 'btn-secondary'}`}
-              onClick={() => setView('analytics')}
-            >
-              Analytics
-            </button>
+
+            <ThemeSelector currentTheme={theme} onSelectTheme={setTheme} />
           </div>
 
-          <ThemeSelector currentTheme={theme} onSelectTheme={setTheme} />
+          <div className="header-cluster-divider" aria-hidden="true" />
 
-          <UserProfileMenu
-            users={users}
-            activeUser={activeUser}
-            onSelectUser={selectUser}
-            onCreateUser={createUser}
-            onOpenTeamsModal={() => setIsTeamModalOpen(true)}
-          />
+          {/* Cluster 2: Perfil & Sessão */}
+          <div className="header-cluster header-session-cluster">
+            <UserProfileMenu
+              users={users}
+              activeUser={activeUser}
+              onSelectUser={selectUser}
+              onCreateUser={createUser}
+              onOpenTeamsModal={() => setIsTeamModalOpen(true)}
+              onOpenSettings={() => setView('settings')}
+            />
+          </div>
 
-          {!isGuest && (
+          <div className="header-cluster-divider" aria-hidden="true" />
+
+          {/* Cluster 3: Ações do Quadro */}
+          <div className="header-cluster header-board-ops-cluster">
+            {!isGuest && (
+              <button
+                type="button"
+                className="btn btn-secondary btn-compact"
+                onClick={handleImportClick}
+                aria-label="Importar Quadro"
+                title="Importar dados do quadro a partir de um arquivo JSON"
+              >
+                Importar
+              </button>
+            )}
             <button
               type="button"
-              className="btn btn-secondary"
-              onClick={handleImportClick}
-              aria-label="Importar Quadro"
-              title="Importar dados do quadro a partir de um arquivo JSON"
+              className="btn btn-secondary btn-compact"
+              onClick={handleExport}
+              aria-label="Exportar Quadro"
+              title="Exportar dados do quadro para um arquivo JSON"
             >
-              Importar
+              Exportar
             </button>
-          )}
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={handleExport}
-            aria-label="Exportar Quadro"
-            title="Exportar dados do quadro para um arquivo JSON"
-          >
-            Exportar
-          </button>
-          {!isGuest && (
-            <>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={resetToSeed}
-                aria-label="Restaurar Demo"
-                title="Restaurar tarefas de demonstração"
-              >
-                Restaurar Demo
-              </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={handleClearBoard}
-                aria-label="Limpar Quadro"
-                title="Limpar todas as tarefas do quadro"
-              >
-                Limpar Quadro
-              </button>
-            </>
-          )}
+            {!isGuest && (
+              <>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-compact"
+                  onClick={resetToSeed}
+                  aria-label="Restaurar Demo"
+                  title="Restaurar tarefas de demonstração"
+                >
+                  Restaurar Demo
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger btn-compact"
+                  onClick={handleClearBoard}
+                  aria-label="Limpar Quadro"
+                  title="Limpar todas as tarefas do quadro"
+                >
+                  Limpar Quadro
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </header>
 
-      {!isAuthorized ? (
+      {view === 'workspaces' ? (
+        <WorkspaceHub
+          workspaces={workspaces}
+          activeWorkspaceId={activeWorkspaceId}
+          onSelectWorkspace={setActiveWorkspaceId}
+          boards={boards}
+          favoriteBoardIds={favoriteBoardIds}
+          onToggleFavorite={toggleFavoriteBoard}
+          onSelectBoard={(boardId) => {
+            switchBoard(boardId);
+            setView('board');
+          }}
+          onNewPanel={() => setIsCreateWorkspaceModalOpen(true)}
+          onNewBoard={() => setIsBoardModalOpen(true)}
+        />
+      ) : view === 'settings' ? (
+        <SettingsView
+          settings={settings}
+          onUpdateSettings={handleUpdateSettings}
+          workspaces={workspaces}
+          onUpdateWorkspace={updateWorkspace}
+          onCreateWorkspace={() => setIsCreateWorkspaceModalOpen(true)}
+          teams={teams}
+          users={users}
+          onBackToBoard={() => setView('board')}
+          onExportData={handleExport}
+          onImportData={handleImportClick}
+          onClearTasks={handleClearBoard}
+        />
+      ) : !isAuthorized ? (
         <RestrictedBoardFallback
           teamName={activeBoardTeam?.name}
           onRedirectDefault={() => {
@@ -639,6 +729,14 @@ export const App: React.FC = () => {
         onClose={() => setIsNewColumnModalOpen(false)}
         onAddColumn={addColumn}
         currentColumnCount={board.columns.length}
+      />
+
+      <CreateWorkspaceModal
+        isOpen={isCreateWorkspaceModalOpen}
+        onClose={() => setIsCreateWorkspaceModalOpen(false)}
+        onCreateWorkspace={(name, color, description) => {
+          createWorkspace(name, color, description);
+        }}
       />
 
       <ToastNotification

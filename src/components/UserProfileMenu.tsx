@@ -7,6 +7,7 @@ interface UserProfileMenuProps {
   onSelectUser: (userId: string) => void;
   onCreateUser: (name: string, email: string) => void;
   onOpenTeamsModal?: () => void;
+  onOpenSettings?: () => void;
 }
 
 function getInitials(name: string): string {
@@ -22,6 +23,7 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
   onSelectUser,
   onCreateUser,
   onOpenTeamsModal,
+  onOpenSettings,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
@@ -30,7 +32,7 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
   const [errorMessage, setErrorMessage] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
+  // Close on outside click or Escape key
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -40,10 +42,22 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
       }
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+        setIsCreatingUser(false);
+        setErrorMessage('');
+      }
+    };
+
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isOpen]);
 
   const handleCreateSubmit = (e: React.FormEvent) => {
@@ -149,6 +163,19 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
                   }}
                 >
                   <span>👥</span> Gerenciar Squads / Times
+                </button>
+              )}
+
+              {onOpenSettings && (
+                <button
+                  type="button"
+                  className="btn-dropdown-action"
+                  onClick={() => {
+                    setIsOpen(false);
+                    onOpenSettings();
+                  }}
+                >
+                  <span>⚙️</span> Configurações do Sistema
                 </button>
               )}
             </div>

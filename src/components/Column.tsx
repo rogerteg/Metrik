@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ColumnModel, PRESET_COLUMN_COLORS, getDefaultColumnColor } from '../types/kanban';
+import { clampColumnWidth, resolveColumnWidth } from '../utils/columnGeometry';
 import { WipLimitBadge } from './WipLimitBadge';
 import { ReorderOptions } from '../types/dnd';
 
@@ -59,6 +60,9 @@ export const Column: React.FC<ColumnProps> = ({
   const isOverloaded = column.wipLimit !== null && count > column.wipLimit;
   const columnColor = getDefaultColumnColor(column);
 
+  // Geometria resolvida: sempre explícita, nunca dependente de estado oculto (Feature 026).
+  const resolvedWidth = resolveColumnWidth(width);
+
   // Regra fundamental: Apenas a primeira coluna (índice 0, ex: To Do) é fixa
   const isFixed = columnIndex === 0;
 
@@ -96,11 +100,12 @@ export const Column: React.FC<ColumnProps> = ({
     e.stopPropagation();
     setIsResizing(true);
     startXRef.current = e.clientX;
-    startWidthRef.current = width || 280;
+    // Base do arraste = largura renderizada, o que elimina o salto no primeiro movimento (GC-06).
+    startWidthRef.current = resolvedWidth;
 
     const onMouseMove = (moveEvent: MouseEvent) => {
       const delta = moveEvent.clientX - startXRef.current;
-      const newWidth = Math.max(200, Math.min(650, startWidthRef.current + delta));
+      const newWidth = clampColumnWidth(startWidthRef.current + delta);
       onResizeWidth?.(column.id, newWidth);
     };
 
@@ -231,7 +236,9 @@ export const Column: React.FC<ColumnProps> = ({
     <section
       className={`kanban-column ${modifierClass} ${isOverloaded ? 'kanban-column-wip-exceeded' : ''} ${isDropTarget ? 'kanban-column-drop-target' : ''} ${isResizing ? 'is-resizing' : ''} ${isColumnDragging ? 'is-column-dragging' : ''} ${columnDropIndicator === 'before' ? 'column-drop-before' : ''} ${columnDropIndicator === 'after' ? 'column-drop-after' : ''} ${isFixed ? 'is-fixed-column' : ''}`}
       style={{
-        ...(width ? { width: `${width}px`, minWidth: `${width}px`, maxWidth: `${width}px` } : {}),
+        width: `${resolvedWidth}px`,
+        minWidth: `${resolvedWidth}px`,
+        maxWidth: `${resolvedWidth}px`,
         borderTopColor: columnColor,
         borderTopWidth: '3px',
       }}
@@ -409,7 +416,7 @@ export const Column: React.FC<ColumnProps> = ({
         <div
           className="column-resize-handle"
           onMouseDown={handleResizeMouseDown}
-          onDoubleClick={() => onResetWidth ? onResetWidth(column.id) : onResizeWidth(column.id, 280)}
+          onDoubleClick={() => onResetWidth?.(column.id)}
           title="Arraste para redimensionar a largura da coluna (duplo clique para redefinir)"
           aria-label={`Ajustar largura da coluna ${column.title}`}
           role="separator"

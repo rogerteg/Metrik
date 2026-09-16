@@ -1,6 +1,7 @@
 import React from 'react';
 import { BoardState, ColumnModel, TaskModel, MAX_COLUMNS } from '../types/kanban';
 import { ReorderOptions } from '../types/dnd';
+import { resolveColumnWidth } from '../utils/columnGeometry';
 import { Column } from './Column';
 
 export interface BoardProps {
@@ -74,7 +75,7 @@ export const Board: React.FC<BoardProps> = ({
               count={rawTasks.length}
               columnIndex={idx}
               totalColumns={columns.length}
-              width={columnWidths?.[col.id]}
+              width={resolveColumnWidth(columnWidths?.[col.id])}
               onResizeWidth={isReadOnly ? undefined : onResizeColumnWidth}
               onResetWidth={isReadOnly ? undefined : onResetColumnWidth}
               onAddTask={isReadOnly ? undefined : () => onAddTask(col.id)}
