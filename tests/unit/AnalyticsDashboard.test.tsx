@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { AnalyticsDashboard } from '../../src/components/AnalyticsDashboard';
 import { TaskModel } from '../../src/types/kanban';
 
-describe('AnalyticsDashboard Component (Feature 011 Integration)', () => {
+describe('AnalyticsDashboard Component (Feature 011 & 030 Integration)', () => {
   const sampleTasks: TaskModel[] = [
     {
       id: 't1',
@@ -28,7 +28,7 @@ describe('AnalyticsDashboard Component (Feature 011 Integration)', () => {
     }
   ];
 
-  it('renders summary metrics bar and all three analytics charts', () => {
+  it('renders summary metrics bar and all three analytics charts on default dashboard', () => {
     render(<AnalyticsDashboard tasks={sampleTasks} />);
 
     // Metrics Bar & Charts
@@ -45,6 +45,30 @@ describe('AnalyticsDashboard Component (Feature 011 Integration)', () => {
 
     // Cycle Time Scatter Plot with Percentiles
     expect(screen.getByText(/Cycle Time \(Percentis\)/i)).toBeInTheDocument();
+  });
+
+  it('navigates seamlessly across categorized flow views', () => {
+    render(<AnalyticsDashboard tasks={sampleTasks} />);
+
+    // Navigate to Flow / CFD tab
+    const flowTab = screen.getByTestId('tab-flow');
+    fireEvent.click(flowTab);
+    expect(screen.getByTestId('focused-cfd-view')).toBeInTheDocument();
+
+    // Navigate to WIP Aging tab
+    const wipTab = screen.getByTestId('tab-wip');
+    fireEvent.click(wipTab);
+    expect(screen.getByTestId('focused-wip-view')).toBeInTheDocument();
+
+    // Navigate to Throughput tab
+    const throughputTab = screen.getByTestId('tab-throughput');
+    fireEvent.click(throughputTab);
+    expect(screen.getByTestId('focused-throughput-view')).toBeInTheDocument();
+
+    // Navigate back to Dashboard
+    const dashboardTab = screen.getByTestId('tab-dashboard');
+    fireEvent.click(dashboardTab);
+    expect(screen.getByText('Diagrama de Fluxo Cumulativo (CFD)')).toBeInTheDocument();
   });
 
   it('opens and closes expanded modal for charts', () => {
