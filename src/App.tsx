@@ -557,12 +557,14 @@ export const App: React.FC = () => {
           workspaces={workspaces}
           onUpdateWorkspace={updateWorkspace}
           onCreateWorkspace={() => setIsCreateWorkspaceModalOpen(true)}
+          boards={boards}
           teams={teams}
           users={users}
           onBackToBoard={() => setView('board')}
           onExportData={handleExport}
           onImportData={handleImportClick}
           onClearTasks={handleClearBoard}
+          onShowToast={(msg) => setToastMessage(msg)}
         />
       ) : !isAuthorized ? (
         <RestrictedBoardFallback

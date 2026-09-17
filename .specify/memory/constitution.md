@@ -1,19 +1,12 @@
 <!--
 Sync Impact Report:
-- Version change: 1.3.0 → 1.4.0
-- Bump rationale: MINOR (Governance materially expanded) with PATCH-level clarifications to two
-  principles folded into the same amendment.
+- Version change: 1.4.0 → 1.5.0
+- Bump rationale: MINOR (Expanded Principle VIII to formalize Hybrid Cloud Synchronization with Supabase, establishing fault-tolerant, opt-in rules while preserving strict Local-First sovereignty and offline autonomy).
 - List of modified principles:
-  - III. Automated Verification & Testing (clarified): verification re-anchored to the project's
-    executable suites (`npm run test`, `npm run build`); the lint obligation is now conditional on
-    the gate being configured, removing an unverifiable requirement
-  - IV. Observability & Structured Logging (clarified): vague "informatively fail-fast behavior"
-    replaced with testable error-surfacing, diagnostic-prefix, and no-silent-swallow rules
-  - I, II, V, VI, VII, VIII: unchanged
+  - VIII. Local-First Sovereignty & Squad Board Isolation → VIII. Local-First Sovereignty, Hybrid Cloud Sync & Squad Board Isolation (materially expanded with clauses 5 and 6 on non-blocking opt-in cloud synchronization and conflict minimization)
 - Added sections: None
 - Removed sections: None
-- Expanded sections: Governance (amendment procedure, semantic versioning policy, compliance
-  review expectations, runtime guidance authority)
+- Expanded sections: None
 - Follow-up TODOs: None
 -->
 
@@ -50,12 +43,14 @@ Metrik is an autonomous, standalone enterprise Kanban and Flow Analytics product
 1. **Zero Third-Party Brand Leaks**: External inspiration products, benchmark tools, or vendor brand names (such as Businessmap, ActionableAgile, etc.) are purely conversational references and MUST NEVER be leaked into visible UI text, chart subtitles, DOM attributes, or source code comments.
 2. **Proprietary & Canonical Terminology**: All flow concepts must be expressed using standardized lean/agile and scientific terminology (e.g., *Cumulative Flow Diagram*, *Cycle Time Scatter Plot*, *Little's Law*, *Dual WIP/Lead Time Inspection*, *NIST Percentiles*, *Metrik Design System*).
 
-### VIII. Local-First Sovereignty & Squad Board Isolation (NON-NEGOTIABLE)
+### VIII. Local-First Sovereignty, Hybrid Cloud Sync & Squad Board Isolation (NON-NEGOTIABLE)
 Metrik operates under a strict Local-First privacy and data sovereignty model with Team-Based Access Control (TBAC):
 1. **Autonomous Local Persistence**: Core capabilities, state management, session switching, and board telemetry MUST function client-side in `localStorage` without mandating cloud dependencies or external authentication servers.
 2. **Strict Squad Confidentiality & Isolation**: Kanban boards, task histories, and flow metrics belong strictly to their designated squad. A user MUST NOT have visibility into or access to any board unless they possess an active membership (`admin`, `member`) or an accepted invitation (`guest`) for that specific squad.
 3. **Defense-in-Depth Enforcement**: Isolation MUST be verified at all operational tiers: state hooks (`useBoards`, `useTeamAccess`), global switchers (`BoardSwitcher`), and visual boundary guards (`RestrictedBoardFallback`).
 4. **Role-Based Confinement**: Users designated with the `guest` role MUST be strictly restricted to read-only inspection, with task mutations, column reordering, and destructive operations structurally suppressed.
+5. **Hybrid Cloud Synchronization (Opt-In & Fault-Tolerant)**: Metrik supports optional bidirectional synchronization with cloud databases (such as Supabase PostgreSQL). Cloud sync MUST be strictly opt-in, non-blocking, and fault-tolerant: if cloud credentials are absent, invalid, or network connectivity is severed, the system MUST operate autonomously in offline Local-First mode without crashing, throwing unhandled exceptions, or degrading user experience.
+6. **Data Integrity & Conflict Minimization**: Synchronization between client `localStorage` and cloud storage MUST preserve squad isolation, workspace hierarchies, and deterministic timestamps (`createdAt`, `startedAt`, `completedAt`), ensuring local state remains authoritative during transient disconnections.
 
 ## Security & Technical Standards
 
@@ -103,4 +98,4 @@ practices, ad-hoc conventions, and per-feature preferences.
 operative workflows, roles, and tooling for day-to-day development. They are subordinate to this
 Constitution; where they conflict, this Constitution prevails.
 
-**Version**: 1.4.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-14
+**Version**: 1.5.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-17

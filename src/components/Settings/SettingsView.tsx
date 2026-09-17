@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { AppSettings, Workspace } from '../../types/workspace';
 import { Team, User } from '../../types/team';
+import { BoardModel, BoardState } from '../../types/kanban';
 import { GeneralSettingsTab } from './GeneralSettingsTab';
 import { WorkspacesSettingsTab } from './WorkspacesSettingsTab';
 import { BoardPoliciesTab } from './BoardPoliciesTab';
 import { DataPortabilityTab } from './DataPortabilityTab';
+import { CloudSyncTab } from './CloudSyncTab';
 
-export type SettingsTabId = 'general' | 'workspaces' | 'policies' | 'data';
+export type SettingsTabId = 'general' | 'workspaces' | 'policies' | 'data' | 'cloud';
 
 export interface SettingsViewProps {
   settings: AppSettings;
@@ -14,12 +16,19 @@ export interface SettingsViewProps {
   workspaces: Workspace[];
   onUpdateWorkspace: (id: string, patch: Partial<Workspace>) => void;
   onCreateWorkspace?: () => void;
+  boards?: BoardModel[];
   teams: Team[];
   users: User[];
   onBackToBoard: () => void;
   onExportData: () => void;
   onImportData: () => void;
   onClearTasks: () => void;
+  onShowToast?: (message: string, type: 'success' | 'warning' | 'error') => void;
+  onApplyRemoteData?: (payload: {
+    workspaces: Workspace[];
+    boards: BoardModel[];
+    tasksByBoardId: Record<string, BoardState>;
+  }) => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
@@ -28,12 +37,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   workspaces,
   onUpdateWorkspace,
   onCreateWorkspace,
+  boards = [],
   teams,
   users,
   onBackToBoard,
   onExportData,
   onImportData,
   onClearTasks,
+  onShowToast,
+  onApplyRemoteData,
 }) => {
   const [activeTab, setActiveTab] = useState<SettingsTabId>('general');
 
@@ -119,6 +131,19 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <span className="tab-icon" aria-hidden="true">💾</span>
               <span className="tab-text">Portabilidade & Dados</span>
             </button>
+
+            <button
+              type="button"
+              role="tab"
+              id="tab-cloud"
+              aria-controls="panel-cloud"
+              aria-selected={activeTab === 'cloud'}
+              className={`settings-tab-btn ${activeTab === 'cloud' ? 'active' : ''}`}
+              onClick={() => setActiveTab('cloud')}
+            >
+              <span className="tab-icon" aria-hidden="true">☁️</span>
+              <span className="tab-text">Nuvem & Supabase</span>
+            </button>
           </nav>
         </aside>
 
@@ -155,6 +180,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               onExportData={onExportData}
               onImportData={onImportData}
               onClearTasks={onClearTasks}
+            />
+          )}
+
+          {activeTab === 'cloud' && (
+            <CloudSyncTab
+              workspaces={workspaces}
+              boards={boards}
+              onShowToast={onShowToast}
+              onApplyRemoteData={onApplyRemoteData}
             />
           )}
         </main>

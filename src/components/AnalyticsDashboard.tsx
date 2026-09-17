@@ -1,5 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { BoardState, TaskModel } from '../types/kanban';
+import {
+  AnalyticsCategory,
+  CycleTimeViewMode,
+  BlockerViewMode,
+  DatasetFilterConfig,
+} from '../types/analytics';
+import { filterTasksByDatasetConfig } from '../utils/datasetFilter';
+import { calculateSleMetrics } from '../utils/sleCalculator';
+import { calculateBlockerClusters } from '../utils/blockerAnalytics';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
 import { useFlowMetrics } from '../hooks/useFlowMetrics';
 import { useCfdData } from '../hooks/useCfdData';
@@ -11,7 +20,11 @@ import { CumulativeFlowChart } from './charts/CumulativeFlowChart';
 import { CycleTimeScatterPlot } from './charts/CycleTimeScatterPlot';
 import { MonteCarloSimulationView } from './MonteCarloSimulationView';
 import { WipAgingView } from './WipAgingView';
-import { AnalyticsNavHeader, AnalyticsTab, CycleTimeViewMode } from './AnalyticsNavHeader';
+import { AnalyticsNavHeader } from './AnalyticsNavHeader';
+import { DashboardSummaryCards } from './DashboardSummaryCards';
+import { SleAnalyticsView } from './SleAnalyticsView';
+import { BlockerAnalyticsView } from './BlockerAnalyticsView';
+import { DatasetConfigurationDrawer } from './DatasetConfigurationDrawer';
 import './Analytics.css';
 
 export type ChartType = 'cfd' | 'throughput' | 'leadTime' | 'cycleTime';
@@ -22,21 +35,50 @@ export interface AnalyticsDashboardProps {
 }
 
 export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, board }) => {
-  const [activeTab, setActiveTab] = useState<AnalyticsTab>('dashboard');
+  const [activeCategory, setActiveCategory] = useState<AnalyticsCategory>('dashboard');
   const [cycleTimeMode, setCycleTimeMode] = useState<CycleTimeViewMode>('scatter');
+  const [blockerMode, setBlockerMode] = useState<BlockerViewMode>('clustering');
+  const [datasetDrawerOpen, setDatasetDrawerOpen] = useState(false);
   const [expandedChart, setExpandedChart] = useState<ChartType | null>(null);
 
+  // Configuração ativa de filtragem do conjunto de dados (Feature 030)
+  const [datasetConfig, setDatasetConfig] = useState<DatasetFilterConfig>({
+    timeWindow: 'all',
+  });
+
+  // Filtragem de tarefas por escopo de amostragem
+  const filteredTasks = useMemo(() => {
+    return filterTasksByDatasetConfig(tasks, datasetConfig);
+  }, [tasks, datasetConfig]);
+
+  const hasActiveDatasetFilters = useMemo(() => {
+    return (
+      datasetConfig.timeWindow !== 'all' ||
+      (datasetConfig.selectedTypes && datasetConfig.selectedTypes.length > 0)
+    );
+  }, [datasetConfig]);
+
   // Determinar tarefas concluídas com base na categoria 'done' das colunas do board (ou fallback column === 'done')
-  const completedTasks = React.useMemo(() => {
+  const completedTasks = useMemo(() => {
     if (board && board.columns.length > 0) {
       const doneColIds = new Set(board.columns.filter((c) => c.category === 'done').map((c) => c.id));
-      return tasks.filter((t) => doneColIds.has(t.column) || Boolean(t.completedAt));
+      return filteredTasks.filter((t) => doneColIds.has(t.column) || Boolean(t.completedAt));
     }
-    return tasks.filter((t) => t.column === 'done' || Boolean(t.completedAt));
-  }, [tasks, board]);
+    return filteredTasks.filter((t) => t.column === 'done' || Boolean(t.completedAt));
+  }, [filteredTasks, board]);
 
-  // Métricas do resumo (calculadas sobre todas as tarefas do board)
-  const metrics = useFlowMetrics(completedTasks, tasks);
+  // Métricas do resumo (calculadas sobre as tarefas filtradas)
+  const metrics = useFlowMetrics(completedTasks, filteredTasks);
+
+  // Expectativa de Nível de Serviço (SLE) no percentil 85%
+  const sleMetrics = useMemo(() => {
+    return calculateSleMetrics(completedTasks, 85);
+  }, [completedTasks]);
+
+  // Agrupamento de bloqueios e dinâmica temporal
+  const blockerSummary = useMemo(() => {
+    return calculateBlockerClusters(filteredTasks);
+  }, [filteredTasks]);
 
   // Dados para os gráficos de Throughput e Lead Time
   const { throughput, scatter, maxThroughput, maxLeadTime } = useAnalyticsData(completedTasks);
@@ -45,7 +87,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
   const [cfdCustomDates, setCfdCustomDates] = useState<{ startDate?: string; endDate?: string } | undefined>(undefined);
 
   // CFD calculando o fluxo completo com base em todas as colunas do board e filtro customizado
-  const cfd = useCfdData(tasks, 14, board?.columns, cfdCustomDates);
+  const cfd = useCfdData(filteredTasks, 14, board?.columns, cfdCustomDates);
 
   const toggleExpand = (chart: ChartType) => {
     setExpandedChart((prev) => (prev === chart ? null : chart));
@@ -53,16 +95,20 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
 
   return (
     <div className="analytics-dashboard">
-      {/* Barra de Navegação Analítica no Topo */}
+      {/* Barra de Navegação Analítica no Topo com as 8 Categorias e Disparo de Dados */}
       <AnalyticsNavHeader
-        activeTab={activeTab}
-        onSelectTab={setActiveTab}
+        activeCategory={activeCategory}
+        onSelectCategory={setActiveCategory}
         cycleTimeMode={cycleTimeMode}
         onSelectCycleTimeMode={setCycleTimeMode}
+        blockerMode={blockerMode}
+        onSelectBlockerMode={setBlockerMode}
+        onToggleDatasetDrawer={() => setDatasetDrawerOpen((prev) => !prev)}
+        hasActiveDatasetFilters={hasActiveDatasetFilters}
       />
 
       {/* Visão 1: Cycle Time focado */}
-      {activeTab === 'cycle-time' && (
+      {activeCategory === 'cycle-time' && (
         <div className="dashboard-focused-view" data-testid="focused-cycle-time-view">
           <CycleTimeScatterPlot
             tasks={completedTasks}
@@ -72,21 +118,21 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
       )}
 
       {/* Visão 2: Throughput focado */}
-      {activeTab === 'throughput' && (
+      {activeCategory === 'throughput' && (
         <div className="dashboard-focused-view" data-testid="focused-throughput-view">
-          <ThroughputAnalyticsView tasks={tasks} />
+          <ThroughputAnalyticsView tasks={filteredTasks} />
         </div>
       )}
 
       {/* Visão 3: Envelhecimento do WIP (Aging WIP) */}
-      {activeTab === 'wip' && (
+      {activeCategory === 'wip' && (
         <div className="dashboard-focused-view" data-testid="focused-wip-view">
-          <WipAgingView tasks={tasks} columns={board?.columns} />
+          <WipAgingView tasks={filteredTasks} columns={board?.columns} />
         </div>
       )}
 
-      {/* Visão 4: CFD focado */}
-      {activeTab === 'cfd' && (
+      {/* Visão 4: CFD / Fluxo focado */}
+      {(activeCategory === 'flow' || activeCategory === 'cfd') && (
         <div className="dashboard-focused-view" data-testid="focused-cfd-view">
           <CumulativeFlowChart
             data={cfd.points}
@@ -100,26 +146,59 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
         </div>
       )}
 
-      {/* Visão 4: Bloqueios */}
-      {activeTab === 'blockers' && (
-        <div className="dashboard-focused-view" data-testid="focused-blockers-view">
-          <CycleTimeScatterPlot
-            tasks={completedTasks}
-            initialTimeWindowDays={0}
+      {/* Visão 5: Impedimentos / Bloqueios */}
+      {activeCategory === 'blockers' && (
+        <div className="dashboard-focused-view">
+          <BlockerAnalyticsView
+            tasks={filteredTasks}
+            summary={blockerSummary}
+            mode={blockerMode}
+            onSelectMode={setBlockerMode}
           />
         </div>
       )}
 
-      {/* Visão 5: Previsões com Simulação Monte Carlo */}
-      {activeTab === 'forecasting' && (
+      {/* Visão 6: SLEs (Expectativas de Nível de Serviço) */}
+      {activeCategory === 'sles' && (
+        <div className="dashboard-focused-view">
+          <SleAnalyticsView tasks={filteredTasks} sle={sleMetrics} />
+        </div>
+      )}
+
+      {/* Visão 7: Previsões com Simulação Monte Carlo */}
+      {activeCategory === 'forecasting' && (
         <div className="dashboard-focused-view" data-testid="focused-forecasting-view">
-          <MonteCarloSimulationView tasks={tasks} />
+          <MonteCarloSimulationView tasks={filteredTasks} />
         </div>
       )}
 
       {/* Visão 0: Dashboard Geral Consolidado */}
-      {activeTab === 'dashboard' && (
+      {activeCategory === 'dashboard' && (
         <>
+          <div className="dashboard-metrics-row">
+            {/* Cartões de síntese executiva */}
+            <DashboardSummaryCards
+              sle={sleMetrics}
+              totalWip={
+                filteredTasks.filter(
+                  (t) =>
+                    t.column === 'in_progress' ||
+                    board?.columns.find((c) => c.id === t.column)?.category === 'in_progress'
+                ).length
+              }
+              recentThroughput={metrics.throughput}
+              blockedRatePercentage={
+                filteredTasks.length > 0
+                  ? Math.round((blockerSummary.totalBlockedTasks / filteredTasks.length) * 100)
+                  : 0
+              }
+              onNavigateToSle={() => setActiveCategory('sles')}
+              onNavigateToWip={() => setActiveCategory('wip')}
+              onNavigateToThroughput={() => setActiveCategory('throughput')}
+              onNavigateToBlockers={() => setActiveCategory('blockers')}
+            />
+          </div>
+
           <div className="dashboard-metrics-row">
             {/* Resumo executivo de métricas de fluxo */}
             <MetricsBar metrics={metrics} />
@@ -208,8 +287,15 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
           </div>
         </div>
       )}
+
+      {/* Gaveta Retrátil de Configuração do Conjunto de Dados */}
+      <DatasetConfigurationDrawer
+        isOpen={datasetDrawerOpen}
+        onClose={() => setDatasetDrawerOpen(false)}
+        config={datasetConfig}
+        onUpdateConfig={(patch) => setDatasetConfig((prev) => ({ ...prev, ...patch }))}
+        onResetToDefaults={() => setDatasetConfig({ timeWindow: 'all' })}
+      />
     </div>
   );
 };
-
-
