@@ -9,6 +9,7 @@
 import { TaskType, TaskLinkModel } from './taskTypes';
 export * from './taskTypes';
 export * from './analytics';
+export * from './boardManagement';
 
 export type ColumnCategory = 'todo' | 'in_progress' | 'done';
 

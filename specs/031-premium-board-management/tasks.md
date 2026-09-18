@@ -83,8 +83,8 @@ description: "Task list for feature 031: Gerenciamento Premium de Quadros e Espa
 
 **Purpose**: Tipagem TypeScript, modelagem de dados e contratos compartilhados pela nova visualização.
 
-- [ ] T001 [P] Criar definições de tipos para telemetria de quadros, filtros e estados de modal em `src/types/boardManagement.ts` ([#123](https://github.com/rogerteg/Metrik/issues/123))
-- [ ] T002 [P] Atualizar reexportações de tipos em `src/types/kanban.ts` para incluir os novos modelos de gerenciamento ([#124](https://github.com/rogerteg/Metrik/issues/124))
+- [x] T001 [P] Criar definições de tipos para telemetria de quadros, filtros e estados de modal em `src/types/boardManagement.ts` ([#123](https://github.com/rogerteg/Metrik/issues/123))
+- [x] T002 [P] Atualizar reexportações de tipos em `src/types/kanban.ts` para incluir os novos modelos de gerenciamento ([#124](https://github.com/rogerteg/Metrik/issues/124))
 
 ---
 
@@ -92,8 +92,8 @@ description: "Task list for feature 031: Gerenciamento Premium de Quadros e Espa
 
 **Purpose**: Utilitário puro para cálculo determinístico de métricas de fluxo dos quadros (pré-requisito bloqueante para todas as visualizações).
 
-- [ ] T003 [P] Criar teste unitário TDD para função de telemetria e métricas de quadros em `tests/unit/boardMetrics.test.ts` ([#125](https://github.com/rogerteg/Metrik/issues/125))
-- [ ] T004 Implementar função utilitária pura `computeBoardSummaryMetrics` para cálculo de contagem de tarefas, colunas, WIP e marcação de quadro ativo em `src/utils/boardMetrics.ts` ([#126](https://github.com/rogerteg/Metrik/issues/126))
+- [x] T003 [P] Criar teste unitário TDD para função de telemetria e métricas de quadros em `tests/unit/boardMetrics.test.ts` ([#125](https://github.com/rogerteg/Metrik/issues/125))
+- [x] T004 Implementar função utilitária pura `computeBoardSummaryMetrics` para cálculo de contagem de tarefas, colunas, WIP e marcação de quadro ativo em `src/utils/boardMetrics.ts` ([#126](https://github.com/rogerteg/Metrik/issues/126))
 
 **Checkpoint**: Núcleo estatístico de telemetria testado e aprovado com 100% de testes verdes. Implementação das User Stories pode iniciar.
 
@@ -107,15 +107,15 @@ description: "Task list for feature 031: Gerenciamento Premium de Quadros e Espa
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T005 [P] [US1] Criar teste unitário para o componente `BoardCardGrid` cobrindo renderização de cartões, badges de squad, estatísticas e glow do quadro ativo em `tests/unit/BoardCardGrid.test.tsx` ([#127](https://github.com/rogerteg/Metrik/issues/127))
-- [ ] T006 [P] [US1] Criar teste unitário para o componente `ManageBoardsView` cobrindo orquestração da grade e transição para o Kanban em `tests/unit/ManageBoardsView.test.tsx` ([#128](https://github.com/rogerteg/Metrik/issues/128))
+- [x] T005 [P] [US1] Criar teste unitário para o componente `BoardCardGrid` cobrindo renderização de cartões, badges de squad, estatísticas e glow do quadro ativo em `tests/unit/BoardCardGrid.test.tsx` ([#127](https://github.com/rogerteg/Metrik/issues/127))
+- [x] T006 [P] [US1] Criar teste unitário para o componente `ManageBoardsView` cobrindo orquestração da grade e transição para o Kanban em `tests/unit/ManageBoardsView.test.tsx` ([#128](https://github.com/rogerteg/Metrik/issues/128))
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Implementar componente visual `BoardCardGrid` com cartões temáticos, chips de telemetria, squad tags e botões de ação rápida em `src/components/ManageBoards/BoardCardGrid.tsx` ([#129](https://github.com/rogerteg/Metrik/issues/129))
-- [ ] T008 [US1] Implementar componente principal `ManageBoardsView` orquestrando a exibição da grade, hero com contadores globais e ação de alternar para o quadro selecionado em `src/components/ManageBoards/ManageBoardsView.tsx` ([#130](https://github.com/rogerteg/Metrik/issues/130))
-- [ ] T009 [US1] Adicionar estilos CSS do Metrik Design System para a tela de gerenciamento, cartões com efeito glow e grid responsivo em `src/components/ManageBoards/ManageBoards.css` ([#131](https://github.com/rogerteg/Metrik/issues/131))
-- [ ] T010 [US1] Integrar 'manage' no estado view de `src/App.tsx`, adicionar botão 'Gerenciar' no `.view-toggle` do cabeçalho e sincronizar botão do seletor em `src/components/BoardSwitcher.tsx` ([#132](https://github.com/rogerteg/Metrik/issues/132))
+- [x] T007 [US1] Implementar componente visual `BoardCardGrid` com cartões temáticos, chips de telemetria, squad tags e botões de ação rápida em `src/components/ManageBoards/BoardCardGrid.tsx` ([#129](https://github.com/rogerteg/Metrik/issues/129))
+- [x] T008 [US1] Implementar componente principal `ManageBoardsView` orquestrando a exibição da grade, hero com contadores globais e ação de alternar para o quadro selecionado em `src/components/ManageBoards/ManageBoardsView.tsx` ([#130](https://github.com/rogerteg/Metrik/issues/130))
+- [x] T009 [US1] Adicionar estilos CSS do Metrik Design System para a tela de gerenciamento, cartões com efeito glow e grid responsivo em `src/components/ManageBoards/ManageBoards.css` ([#131](https://github.com/rogerteg/Metrik/issues/131))
+- [x] T010 [US1] Integrar 'manage' no estado view de `src/App.tsx`, adicionar botão 'Gerenciar' no `.view-toggle` do cabeçalho e sincronizar botão do seletor em `src/components/BoardSwitcher.tsx` ([#132](https://github.com/rogerteg/Metrik/issues/132))
 
 **Checkpoint**: MVP concluído! A aba "Gerenciar" está plenamente operacional, renderizando a grade de cartões responsiva com métricas de fluxo e transição fluida para o Kanban.
 
@@ -129,14 +129,14 @@ description: "Task list for feature 031: Gerenciamento Premium de Quadros e Espa
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T011 [P] [US2] Criar teste unitário para o componente `DeleteBoardModal` cobrindo alerta de tarefas impactadas e bloqueio do último quadro em `tests/unit/DeleteBoardModal.test.tsx` ([#133](https://github.com/rogerteg/Metrik/issues/133))
+- [x] T011 [P] [US2] Criar teste unitário para o componente `DeleteBoardModal` cobrindo alerta de tarefas impactadas e bloqueio do último quadro em `tests/unit/DeleteBoardModal.test.tsx` ([#133](https://github.com/rogerteg/Metrik/issues/133))
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Implementar componente `DeleteBoardModal` substituindo window.confirm por diálogo modal seguro integrado ao Metrik Design System em `src/components/ManageBoards/DeleteBoardModal.tsx` ([#134](https://github.com/rogerteg/Metrik/issues/134))
-- [ ] T013 [US2] Implementar painel de criação rápida de novos quadros com vinculação a squad e validação de nome em `src/components/ManageBoards/ManageBoardsView.tsx` ([#135](https://github.com/rogerteg/Metrik/issues/135))
-- [ ] T014 [US2] Implementar edição inline de nome de quadro com confirmação por tecla Enter, cancelamento por Escape e validação de nome não vazio em `src/components/ManageBoards/BoardCardGrid.tsx` ([#136](https://github.com/rogerteg/Metrik/issues/136))
-- [ ] T015 [US2] Conectar ações de criação, renomeação e exclusão segura aos callbacks do useTaskCollection / App.tsx preservando integridade local-first em `src/App.tsx` ([#137](https://github.com/rogerteg/Metrik/issues/137))
+- [x] T012 [US2] Implementar componente `DeleteBoardModal` substituindo window.confirm por diálogo modal seguro integrado ao Metrik Design System em `src/components/ManageBoards/DeleteBoardModal.tsx` ([#134](https://github.com/rogerteg/Metrik/issues/134))
+- [x] T013 [US2] Implementar painel de criação rápida de novos quadros com vinculação a squad e validação de nome em `src/components/ManageBoards/ManageBoardsView.tsx` ([#135](https://github.com/rogerteg/Metrik/issues/135))
+- [x] T014 [US2] Implementar edição inline de nome de quadro com confirmação por tecla Enter, cancelamento por Escape e validação de nome não vazio em `src/components/ManageBoards/BoardCardGrid.tsx` ([#136](https://github.com/rogerteg/Metrik/issues/136))
+- [x] T015 [US2] Conectar ações de criação, renomeação e exclusão segura aos callbacks do useTaskCollection / App.tsx preservando integridade local-first em `src/App.tsx` ([#137](https://github.com/rogerteg/Metrik/issues/137))
 
 **Checkpoint**: Ciclo de vida completo dos quadros (criar, renomear inline e exclusão segura) implementado e testado.
 
@@ -150,14 +150,14 @@ description: "Task list for feature 031: Gerenciamento Premium de Quadros e Espa
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T016 [P] [US3] Criar teste unitário para o componente `BoardTableView` cobrindo colunas ordenáveis e renderização compacta de dados em `tests/unit/BoardTableView.test.tsx` ([#138](https://github.com/rogerteg/Metrik/issues/138))
+- [x] T016 [P] [US3] Criar teste unitário para o componente `BoardTableView` cobrindo colunas ordenáveis e renderização compacta de dados em `tests/unit/BoardTableView.test.tsx` ([#138](https://github.com/rogerteg/Metrik/issues/138))
 
 ### Implementation for User Story 3
 
-- [ ] T017 [US3] Implementar componente `BoardTableView` para apresentação corporativa em tabela compacta de alta densidade em `src/components/ManageBoards/BoardTableView.tsx` ([#139](https://github.com/rogerteg/Metrik/issues/139))
-- [ ] T018 [US3] Implementar barra de busca em tempo real com filtragem instantânea (< 50ms) e seletor dropdown de Squad em `src/components/ManageBoards/ManageBoardsView.tsx` ([#140](https://github.com/rogerteg/Metrik/issues/140))
-- [ ] T019 [US3] Implementar alternador dual de visualização (Grade de Cartões vs Tabela Compacta) com persistência local de preferência em `src/components/ManageBoards/ManageBoardsView.tsx` ([#141](https://github.com/rogerteg/Metrik/issues/141))
-- [ ] T020 [US3] Adicionar estilos responsivos e temas claro/escuro para a tabela de alta densidade e alternador de modo em `src/components/ManageBoards/ManageBoards.css` ([#142](https://github.com/rogerteg/Metrik/issues/142))
+- [x] T017 [US3] Implementar componente `BoardTableView` para apresentação corporativa em tabela compacta de alta densidade em `src/components/ManageBoards/BoardTableView.tsx` ([#139](https://github.com/rogerteg/Metrik/issues/139))
+- [x] T018 [US3] Implementar barra de busca em tempo real com filtragem instantânea (< 50ms) e seletor dropdown de Squad em `src/components/ManageBoards/ManageBoardsView.tsx` ([#140](https://github.com/rogerteg/Metrik/issues/140))
+- [x] T019 [US3] Implementar alternador dual de visualização (Grade de Cartões vs Tabela Compacta) com persistência local de preferência em `src/components/ManageBoards/ManageBoardsView.tsx` ([#141](https://github.com/rogerteg/Metrik/issues/141))
+- [x] T020 [US3] Adicionar estilos responsivos e temas claro/escuro para a tabela de alta densidade e alternador de modo em `src/components/ManageBoards/ManageBoards.css` ([#142](https://github.com/rogerteg/Metrik/issues/142))
 
 **Checkpoint**: Todas as 3 histórias de usuário implementadas, integradas e verificadas.
 
@@ -167,9 +167,9 @@ description: "Task list for feature 031: Gerenciamento Premium de Quadros e Espa
 
 **Purpose**: Auditoria de marca, acessibilidade estrita, testes de regressão de toda a aplicação e compilação de produção.
 
-- [ ] T021 [P] Realizar auditoria rigorosa de conformidade com o Princípio VII da Constituição (Brand Independence): certificar zero vazamento de nomes de marcas de terceiros em código, comentários, atributos DOM e UI ([#143](https://github.com/rogerteg/Metrik/issues/143))
-- [ ] T022 [P] Validar acessibilidade e navegação por teclado (ARIA landmarks, aria-expanded, ordem de foco Tab, contraste WCAG 2.1 AA) em `src/components/ManageBoards/ManageBoardsView.tsx` e `src/components/ManageBoards/DeleteBoardModal.tsx` ([#144](https://github.com/rogerteg/Metrik/issues/144))
-- [ ] T023 Executar suíte completa de testes automatizados (`npm run test`) e compilação estrita do bundle de produção (`npm run build`) assegurando 100% de aprovação e zero erros ([#145](https://github.com/rogerteg/Metrik/issues/145))
+- [x] T021 [P] Realizar auditoria rigorosa de conformidade com o Princípio VII da Constituição (Brand Independence): certificar zero vazamento de nomes de marcas de terceiros em código, comentários, atributos DOM e UI ([#143](https://github.com/rogerteg/Metrik/issues/143))
+- [x] T022 [P] Validar acessibilidade e navegação por teclado (ARIA landmarks, aria-expanded, ordem de foco Tab, contraste WCAG 2.1 AA) em `src/components/ManageBoards/ManageBoardsView.tsx` e `src/components/ManageBoards/DeleteBoardModal.tsx` ([#144](https://github.com/rogerteg/Metrik/issues/144))
+- [x] T023 Executar suíte completa de testes automatizados (`npm run test`) e compilação estrita do bundle de produção (`npm run build`) assegurando 100% de aprovação e zero erros ([#145](https://github.com/rogerteg/Metrik/issues/145))
 
 ---
 

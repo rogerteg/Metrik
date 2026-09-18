@@ -12,6 +12,7 @@ export interface Team {
   id: string;
   name: string;
   description?: string;
+  color?: string;
   createdById: string;
   createdAt: string;
   members?: TeamMember[];

@@ -37,6 +37,7 @@ import { useAppSettings } from './hooks/useAppSettings';
 import { WorkspaceHub } from './components/WorkspaceHub/WorkspaceHub';
 import { CreateWorkspaceModal } from './components/WorkspaceHub/CreateWorkspaceModal';
 import { SettingsView } from './components/Settings/SettingsView';
+import { ManageBoardsView } from './components/ManageBoards/ManageBoardsView';
 import metrikLogo from './assets/metrik-logo.png';
 import './App.css';
 
@@ -131,7 +132,7 @@ export const App: React.FC = () => {
 
   const { settings, updateSettings } = useAppSettings();
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = React.useState(false);
-  const [view, setView] = React.useState<'workspaces' | 'board' | 'analytics' | 'settings'>('board');
+  const [view, setView] = React.useState<'workspaces' | 'board' | 'analytics' | 'manage' | 'settings'>('board');
 
   const handleUpdateSettings = (patch: Partial<typeof settings>) => {
     updateSettings(patch);
@@ -412,7 +413,7 @@ export const App: React.FC = () => {
             boards={boards}
             activeBoardId={activeBoardId}
             onSwitchBoard={switchBoard}
-            onManageBoards={() => setIsBoardModalOpen(true)}
+            onManageBoards={() => setView('manage')}
             teams={teams}
             activeUserId={activeUserId}
           />
@@ -451,6 +452,13 @@ export const App: React.FC = () => {
                 onClick={() => setView('analytics')}
               >
                 Analytics
+              </button>
+              <button
+                type="button"
+                className={`btn ${view === 'manage' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setView('manage')}
+              >
+                Gerenciar
               </button>
             </div>
 
@@ -565,6 +573,30 @@ export const App: React.FC = () => {
           onImportData={handleImportClick}
           onClearTasks={handleClearBoard}
           onShowToast={(msg) => setToastMessage(msg)}
+        />
+      ) : view === 'manage' ? (
+        <ManageBoardsView
+          boards={boards}
+          activeBoardId={activeBoardId}
+          teams={teams}
+          activeUser={users.find((u) => u.id === activeUserId)}
+          onSelectBoard={(boardId) => {
+            switchBoard(boardId);
+            setView('board');
+          }}
+          onCreateBoard={(name, teamId) => {
+            createBoard(name, teamId);
+          }}
+          onRenameBoard={(boardId, newName) => {
+            renameBoard(boardId, newName);
+          }}
+          onDeleteBoard={(boardId) => {
+            deleteBoard(boardId);
+          }}
+          onOpenAnalytics={(boardId) => {
+            switchBoard(boardId);
+            setView('analytics');
+          }}
         />
       ) : !isAuthorized ? (
         <RestrictedBoardFallback
