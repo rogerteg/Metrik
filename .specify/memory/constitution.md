@@ -1,10 +1,10 @@
 <!--
 Sync Impact Report:
-- Version change: 1.4.0 → 1.5.0
-- Bump rationale: MINOR (Expanded Principle VIII to formalize Hybrid Cloud Synchronization with Supabase, establishing fault-tolerant, opt-in rules while preserving strict Local-First sovereignty and offline autonomy).
-- List of modified principles:
-  - VIII. Local-First Sovereignty & Squad Board Isolation → VIII. Local-First Sovereignty, Hybrid Cloud Sync & Squad Board Isolation (materially expanded with clauses 5 and 6 on non-blocking opt-in cloud synchronization and conflict minimization)
-- Added sections: None
+- Version change: 1.5.0 → 1.6.0
+- Bump rationale: MINOR (Added Principle IX: User Data Integrity, Intentional Persistence & Draft Protection, formalizing non-negotiable guarantees against accidental loss of text drafts, contextual persistence controls, intelligent debounce, and user intent sovereignty derived from Feature 032).
+- List of modified principles: None
+- Added sections:
+  - Core Principles: IX. User Data Integrity, Intentional Persistence & Draft Protection (NON-NEGOTIABLE)
 - Removed sections: None
 - Expanded sections: None
 - Follow-up TODOs: None
@@ -52,6 +52,13 @@ Metrik operates under a strict Local-First privacy and data sovereignty model wi
 5. **Hybrid Cloud Synchronization (Opt-In & Fault-Tolerant)**: Metrik supports optional bidirectional synchronization with cloud databases (such as Supabase PostgreSQL). Cloud sync MUST be strictly opt-in, non-blocking, and fault-tolerant: if cloud credentials are absent, invalid, or network connectivity is severed, the system MUST operate autonomously in offline Local-First mode without crashing, throwing unhandled exceptions, or degrading user experience.
 6. **Data Integrity & Conflict Minimization**: Synchronization between client `localStorage` and cloud storage MUST preserve squad isolation, workspace hierarchies, and deterministic timestamps (`createdAt`, `startedAt`, `completedAt`), ensuring local state remains authoritative during transient disconnections.
 
+### IX. User Data Integrity, Intentional Persistence & Draft Protection (NON-NEGOTIABLE)
+User textual inputs, notes, acceptance criteria, and task modifications represent critical business knowledge and MUST be safeguarded against unintentional loss:
+1. **Zero Silent Data Loss (Dirty State Guard)**: Unsaved edits MUST NEVER be discarded silently. When in manual persistence mode (`autoSaveComments = false`), attempting to dismiss a modal, navigate away, or close an editing view containing unconfirmed changes MUST trigger a protective confirmation guard allowing the user to save, discard, or continue editing. Systems MUST also register window-level `beforeunload` protections to prevent loss from accidental tab or browser closure.
+2. **Contextual Persistence & Ergonomic Shortcuts**: Editable fields MUST provide clear, accessible, and contextual action controls (dedicated Save/Discard buttons and universal keyboard shortcuts `Ctrl+S` / `Cmd+S` and `Escape`). Saving MUST persist cleanly into the underlying local storage without altering board positions, mutating column WIP constraints, or corrupting flow metrics.
+3. **User Intent Sovereignty & Intelligent Debounce**: Global persistence settings (`autoSaveComments: boolean`) MUST be strictly respected across all board and modal components. In automatic mode, writes MUST be throttled through an intelligent debounce (default 800ms) and flushed on blur. In manual mode, automatic saves on timer or blur are strictly prohibited.
+4. **Unambiguous Visual & Screen-Reader Feedback**: Editing surfaces MUST provide real-time, non-intrusive visual state indications (`dirty`, `saving`, `saved`) accompanied by accessible screen-reader announcements (`aria-live="polite"`) and smooth visual transitions with automatic dismiss after confirmation.
+
 ## Security & Technical Standards
 
 Secrets, API keys, and sensitive environment variables MUST NEVER be committed to source control. Code and automation scripts MUST maintain cross-platform compatibility, with explicit support for Windows environments and PowerShell execution.
@@ -98,4 +105,4 @@ practices, ad-hoc conventions, and per-feature preferences.
 operative workflows, roles, and tooling for day-to-day development. They are subordinate to this
 Constitution; where they conflict, this Constitution prevails.
 
-**Version**: 1.5.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-17
+**Version**: 1.6.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-18
