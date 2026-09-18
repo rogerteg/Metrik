@@ -13,6 +13,8 @@ import {
   getDueDateStatus,
   formatDateShort
 } from '../utils/timeFormatters';
+import { useFieldEdit } from '../hooks/useFieldEdit';
+import { TaskFieldActionToolbar } from './TaskFieldActionToolbar';
 
 export interface TaskProps {
   task: TaskModel;
@@ -34,6 +36,10 @@ export interface TaskProps {
   onUpdateTask?: (id: string, updates: Partial<TaskModel>) => void;
   initiativeProgress?: { total: number; completed: number; percentage: number };
   pendingBlockersCount?: number;
+  /** Modo de persistência de comentários e campos textuais (padrão: true) */
+  autoSaveComments?: boolean;
+  /** Intervalo de debounce em ms (padrão: 800ms) */
+  autoSaveDebounceMs?: number;
 }
 
 export const Task: React.FC<TaskProps> = ({
@@ -56,6 +62,8 @@ export const Task: React.FC<TaskProps> = ({
   onUpdateTask,
   initiativeProgress,
   pendingBlockersCount,
+  autoSaveComments = true,
+  autoSaveDebounceMs = 800,
 }) => {
   const [isDragging, setIsDragging] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
@@ -148,9 +156,25 @@ export const Task: React.FC<TaskProps> = ({
   const isStagnant = isTaskStagnant(task, isCompleted);
   const effectiveCardColor = isStagnant ? STAGNANT_BROWN_COLOR : columnColor;
 
-  const hasAcceptanceCriteria = !!(task.acceptanceCriteria && task.acceptanceCriteria.trim().length > 0);
-  const hasTestScenarios = !!(task.testScenarios && task.testScenarios.trim().length > 0);
-  const hasQualityContent = hasAcceptanceCriteria || hasTestScenarios;
+  const acEdit = useFieldEdit({
+    initialValue: task.acceptanceCriteria || '',
+    onSave: (val) => onUpdateTask?.(task.id, { acceptanceCriteria: val }),
+    autoSave: autoSaveComments,
+    debounceMs: autoSaveDebounceMs,
+    isReadOnly: !onUpdateTask || isBlocked,
+  });
+
+  const tsEdit = useFieldEdit({
+    initialValue: task.testScenarios || '',
+    onSave: (val) => onUpdateTask?.(task.id, { testScenarios: val }),
+    autoSave: autoSaveComments,
+    debounceMs: autoSaveDebounceMs,
+    isReadOnly: !onUpdateTask || isBlocked,
+  });
+
+  const hasAcceptanceCriteria = !!(acEdit.value && acEdit.value.trim().length > 0);
+  const hasTestScenarios = !!(tsEdit.value && tsEdit.value.trim().length > 0);
+  const hasQualityContent = hasAcceptanceCriteria || hasTestScenarios || acEdit.isDirty || tsEdit.isDirty;
 
   const [isQaExpanded, setIsQaExpanded] = React.useState(false);
   const [isEditingAC, setIsEditingAC] = React.useState(false);
@@ -322,13 +346,26 @@ export const Task: React.FC<TaskProps> = ({
                 </div>
                 <textarea
                   className="task-field-textarea"
-                  value={task.acceptanceCriteria || ''}
+                  value={acEdit.value}
                   placeholder="Critérios de aceitação..."
                   aria-label="Critérios de aceitação"
-                  rows={hasAcceptanceCriteria ? 2 : 1}
+                  rows={hasAcceptanceCriteria || acEdit.isDirty ? 2 : 1}
                   onFocus={() => setIsEditingAC(true)}
-                  onBlur={() => setIsEditingAC(false)}
-                  onChange={(e) => onUpdateTask?.(task.id, { acceptanceCriteria: e.target.value })}
+                  onBlur={() => {
+                    setIsEditingAC(false);
+                    acEdit.handleBlur();
+                  }}
+                  onChange={(e) => acEdit.setValue(e.target.value)}
+                  onKeyDown={acEdit.handleKeyDown}
+                />
+                <TaskFieldActionToolbar
+                  status={acEdit.status}
+                  isDirty={acEdit.isDirty}
+                  onSave={acEdit.saveNow}
+                  onDiscard={acEdit.discard}
+                  ariaLabelPrefix="dos critérios de aceitação"
+                  compact={true}
+                  isReadOnly={!onUpdateTask || isBlocked}
                 />
               </div>
 
@@ -347,13 +384,26 @@ export const Task: React.FC<TaskProps> = ({
                 </div>
                 <textarea
                   className="task-field-textarea"
-                  value={task.testScenarios || ''}
+                  value={tsEdit.value}
                   placeholder="Cenários de testes..."
                   aria-label="Cenários de testes"
-                  rows={hasTestScenarios ? 2 : 1}
+                  rows={hasTestScenarios || tsEdit.isDirty ? 2 : 1}
                   onFocus={() => setIsEditingTS(true)}
-                  onBlur={() => setIsEditingTS(false)}
-                  onChange={(e) => onUpdateTask?.(task.id, { testScenarios: e.target.value })}
+                  onBlur={() => {
+                    setIsEditingTS(false);
+                    tsEdit.handleBlur();
+                  }}
+                  onChange={(e) => tsEdit.setValue(e.target.value)}
+                  onKeyDown={tsEdit.handleKeyDown}
+                />
+                <TaskFieldActionToolbar
+                  status={tsEdit.status}
+                  isDirty={tsEdit.isDirty}
+                  onSave={tsEdit.saveNow}
+                  onDiscard={tsEdit.discard}
+                  ariaLabelPrefix="dos cenários de testes"
+                  compact={true}
+                  isReadOnly={!onUpdateTask || isBlocked}
                 />
               </div>
             </div>

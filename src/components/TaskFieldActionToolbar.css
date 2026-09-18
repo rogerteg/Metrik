@@ -1,0 +1,224 @@
+/* TaskFieldActionToolbar.css - Metrik Design System */
+
+.task-field-action-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-top: 6px;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fieldToolbarFadeIn 0.2s ease-out;
+}
+
+@keyframes fieldToolbarFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Área de Status Visual */
+.task-field-status-area {
+  display: flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 500;
+  min-height: 20px;
+}
+
+.task-field-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+}
+
+.task-field-status.status-dirty {
+  color: #f59e0b; /* Amber */
+}
+
+.status-dot.dot-dirty {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+  animation: dotPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 1;
+  }
+}
+
+.task-field-status.status-saving {
+  color: #38bdf8; /* Sky blue */
+  animation: savingPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes savingPulse {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.status-spinner {
+  width: 10px;
+  height: 10px;
+  border: 2px solid rgba(56, 189, 248, 0.25);
+  border-top-color: #38bdf8;
+  border-radius: 50%;
+  animation: statusSpin 0.75s linear infinite;
+}
+
+@keyframes statusSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.task-field-status.status-saved {
+  color: #10b981; /* Emerald green */
+  font-weight: 600;
+  animation: savedFadeSequence 2s ease-in-out forwards;
+}
+
+@keyframes savedFadeSequence {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  15% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.2;
+    transform: translateY(-2px);
+  }
+}
+
+/* Área de Botões de Ação */
+.task-field-buttons-area {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.btn-field-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  background: transparent;
+  line-height: 1.2;
+}
+
+.btn-field-action:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 1px;
+}
+
+.btn-field-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-action-discard {
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.btn-action-discard:hover:not(:disabled) {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btn-action-save {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.btn-action-save:hover:not(:disabled) {
+  color: #ffffff;
+  background: #0284c7;
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+.action-kbd-hint {
+  display: inline-block;
+  padding: 1px 4px;
+  font-size: 0.65rem;
+  font-family: inherit;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Modo Compacto (para uso nos cartões do Kanban) */
+.task-field-action-toolbar.toolbar-compact {
+  padding: 3px 6px;
+  margin-top: 4px;
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.task-field-action-toolbar.toolbar-compact .task-field-status-area {
+  font-size: 0.72rem;
+}
+
+.task-field-action-toolbar.toolbar-compact .btn-field-action {
+  padding: 2px 6px;
+  font-size: 0.7rem;
+}
+
+.task-field-action-toolbar.toolbar-compact .action-kbd-hint {
+  display: none; /* Em modo compacto nos cartões oculta os atalhos para não estourar a largura */
+}
+
+/* Responsividade Mobile */
+@media (max-width: 640px) {
+  .task-field-action-toolbar {
+    flex-wrap: wrap;
+  }
+  .task-field-buttons-area {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 4px;
+  }
+}

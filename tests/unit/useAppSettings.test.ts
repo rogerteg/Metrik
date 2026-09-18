@@ -49,4 +49,22 @@ describe('useAppSettings Hook (Feature 029)', () => {
     expect(result.current.settings.density).toBe('comfortable');
     expect(result.current.settings.enableAnimations).toBe(true);
   });
+
+  it('supports updating autoSaveComments and autoSaveDebounceMs', () => {
+    const { result } = renderHook(() => useAppSettings());
+
+    expect(result.current.settings.autoSaveComments).toBe(true);
+    expect(result.current.settings.autoSaveDebounceMs).toBe(800);
+
+    act(() => {
+      result.current.updateSettings({ autoSaveComments: false, autoSaveDebounceMs: 1200 });
+    });
+
+    expect(result.current.settings.autoSaveComments).toBe(false);
+    expect(result.current.settings.autoSaveDebounceMs).toBe(1200);
+
+    const saved = JSON.parse(localStorage.getItem(APP_SETTINGS_STORAGE_KEY) || '{}');
+    expect(saved.autoSaveComments).toBe(false);
+    expect(saved.autoSaveDebounceMs).toBe(1200);
+  });
 });

@@ -384,9 +384,11 @@ describe('Task Component (US2 & US4)', () => {
     expect(tsTextarea).toHaveValue('Cenário 1: Email inválido retorna erro 400');
 
     fireEvent.change(acTextarea, { target: { value: 'Novo critério de aceitação' } });
+    fireEvent.blur(acTextarea);
     expect(handleUpdateTask).toHaveBeenCalledWith('task-test-01', { acceptanceCriteria: 'Novo critério de aceitação' });
 
     fireEvent.change(tsTextarea, { target: { value: 'Novo cenário de teste' } });
+    fireEvent.blur(tsTextarea);
     expect(handleUpdateTask).toHaveBeenCalledWith('task-test-01', { testScenarios: 'Novo cenário de teste' });
   });
 

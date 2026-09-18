@@ -8,6 +8,8 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   density: 'comfortable',
   defaultWipLimit: 5,
   enableAnimations: true,
+  autoSaveComments: true,
+  autoSaveDebounceMs: 800,
   updatedAt: new Date().toISOString(),
 };
 

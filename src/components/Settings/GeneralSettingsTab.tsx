@@ -162,6 +162,18 @@ export const GeneralSettingsTab: React.FC<GeneralSettingsTabProps> = ({
               <small>Mostra tempo decorrido diretamente no rodapé dos cartões</small>
             </span>
           </label>
+
+          <label className="settings-switch-label">
+            <input
+              type="checkbox"
+              checked={settings.autoSaveComments ?? true}
+              onChange={(e) => onUpdateSettings({ autoSaveComments: e.target.checked })}
+            />
+            <span className="switch-text">
+              <strong>Salvar automaticamente comentários e campos de texto</strong>
+              <small>Grava edições após breve pausa de digitação ou ao sair do campo (desative para exigir clique no botão Salvar ou atalho Ctrl+S)</small>
+            </span>
+          </label>
         </div>
       </section>
     </div>

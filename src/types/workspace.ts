@@ -50,6 +50,17 @@ export interface AppSettings {
   showCycleTimeBadges?: boolean;
   /** ID do quadro padrão ao iniciar a aplicação (opcional) */
   defaultBoardId?: string;
+  /**
+   * Determina se comentários e campos textuais da tarefa salvam automaticamente (true)
+   * ou se exigem confirmação manual pelo botão/atalho Ctrl+S (false).
+   * Padrão: true.
+   */
+  autoSaveComments?: boolean;
+  /**
+   * Intervalo de debounce em milissegundos para gravação automática após digitação.
+   * Padrão: 800ms.
+   */
+  autoSaveDebounceMs?: number;
   /** Data da última sincronização de configurações */
   updatedAt: string;
 }

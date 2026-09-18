@@ -7,6 +7,8 @@ import { calculateTaskBlockedTimeMs, formatBlockedTime } from '../utils/timeForm
 import { calculateInitiativeProgress } from '../utils/taskRelations';
 import { TaskLinksSection } from './TaskLinksSection';
 import { Modal } from './Modal';
+import { useFieldEdit } from '../hooks/useFieldEdit';
+import { TaskFieldActionToolbar } from './TaskFieldActionToolbar';
 import './TaskDetailsModal.css';
 
 interface TaskDetailsModalProps {
@@ -22,6 +24,8 @@ interface TaskDetailsModalProps {
   allBoards?: BoardModel[];
   teams?: Team[];
   isReadOnly?: boolean;
+  autoSaveComments?: boolean;
+  autoSaveDebounceMs?: number;
   onAddLink?: (
     targetTaskId: string,
     relationType: TaskRelationType,
@@ -45,46 +49,137 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   allBoards = [],
   teams = [],
   isReadOnly = false,
+  autoSaveComments = true,
+  autoSaveDebounceMs = 800,
   onAddLink,
   onRemoveLink,
   onNavigateToBoard,
 }) => {
-  const [localTitle, setLocalTitle] = useState(task.title);
-  const [localDescription, setLocalDescription] = useState(task.description || '');
   const [localDueDate, setLocalDueDate] = useState(task.dueDate || '');
   const [localStartDate, setLocalStartDate] = useState(task.startDate || '');
   const [localEndDate, setLocalEndDate] = useState(task.endDate || '');
-  const [localAcceptanceCriteria, setLocalAcceptanceCriteria] = useState(task.acceptanceCriteria || '');
-  const [localTestScenarios, setLocalTestScenarios] = useState(task.testScenarios || '');
-  const [localBlockedReason, setLocalBlockedReason] = useState(task.blockedReason || '');
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
+  const [showCloseGuard, setShowCloseGuard] = useState(false);
 
-  // Sync state when a different task is opened
+  // Field Edit Hooks
+  const titleEdit = useFieldEdit<string>({
+    initialValue: task.title,
+    onSave: (val) => {
+      const trimmed = val.trim();
+      if (trimmed && trimmed !== task.title) {
+        onUpdateTask(task.id, { title: trimmed });
+      } else {
+        titleEdit.setValue(task.title);
+      }
+    },
+    autoSave: autoSaveComments,
+    debounceMs: autoSaveDebounceMs,
+    isReadOnly,
+  });
+
+  const descEdit = useFieldEdit<string>({
+    initialValue: task.description || '',
+    onSave: (val) => onUpdateTask(task.id, { description: val }),
+    autoSave: autoSaveComments,
+    debounceMs: autoSaveDebounceMs,
+    isReadOnly,
+  });
+
+  const acEdit = useFieldEdit<string>({
+    initialValue: task.acceptanceCriteria || '',
+    onSave: (val) => onUpdateTask(task.id, { acceptanceCriteria: val }),
+    autoSave: autoSaveComments,
+    debounceMs: autoSaveDebounceMs,
+    isReadOnly,
+  });
+
+  const tsEdit = useFieldEdit<string>({
+    initialValue: task.testScenarios || '',
+    onSave: (val) => onUpdateTask(task.id, { testScenarios: val }),
+    autoSave: autoSaveComments,
+    debounceMs: autoSaveDebounceMs,
+    isReadOnly,
+  });
+
+  const brEdit = useFieldEdit<string>({
+    initialValue: task.blockedReason || '',
+    onSave: (val) => onUpdateTask(task.id, { blockedReason: val }),
+    autoSave: autoSaveComments,
+    debounceMs: autoSaveDebounceMs,
+    isReadOnly,
+  });
+
+  // Sync date and subtask fields when a different task is opened
   useEffect(() => {
     if (isOpen) {
-      setLocalTitle(task.title);
-      setLocalDescription(task.description || '');
       setLocalDueDate(task.dueDate || '');
       setLocalStartDate(task.startDate || '');
       setLocalEndDate(task.endDate || '');
-      setLocalAcceptanceCriteria(task.acceptanceCriteria || '');
-      setLocalTestScenarios(task.testScenarios || '');
-      setLocalBlockedReason(task.blockedReason || '');
       setNewSubtaskTitle('');
+      setShowCloseGuard(false);
     }
   }, [task, isOpen]);
 
-  const handleTitleBlur = () => {
-    if (localTitle.trim() !== task.title && localTitle.trim() !== '') {
-      onUpdateTask(task.id, { title: localTitle.trim() });
+  const isAnyDirty =
+    titleEdit.isDirty ||
+    descEdit.isDirty ||
+    acEdit.isDirty ||
+    tsEdit.isDirty ||
+    brEdit.isDirty;
+
+  // Guarda contra fechamento involuntário de janela/aba no modo manual
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!autoSaveComments && isAnyDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [autoSaveComments, isAnyDirty]);
+
+  const handleRequestClose = () => {
+    if (!autoSaveComments && isAnyDirty) {
+      setShowCloseGuard(true);
     } else {
-      setLocalTitle(task.title); // reset if empty
+      onClose();
     }
   };
 
-  const handleDescriptionBlur = () => {
-    if (localDescription !== (task.description || '')) {
-      onUpdateTask(task.id, { description: localDescription });
+  const handleSaveAndClose = () => {
+    if (titleEdit.isDirty) titleEdit.saveNow();
+    if (descEdit.isDirty) descEdit.saveNow();
+    if (acEdit.isDirty) acEdit.saveNow();
+    if (tsEdit.isDirty) tsEdit.saveNow();
+    if (brEdit.isDirty) brEdit.saveNow();
+    setShowCloseGuard(false);
+    onClose();
+  };
+
+  const handleDiscardAndClose = () => {
+    if (titleEdit.isDirty) titleEdit.discard();
+    if (descEdit.isDirty) descEdit.discard();
+    if (acEdit.isDirty) acEdit.discard();
+    if (tsEdit.isDirty) tsEdit.discard();
+    if (brEdit.isDirty) brEdit.discard();
+    setShowCloseGuard(false);
+    onClose();
+  };
+
+  const handleContinueEditing = () => {
+    setShowCloseGuard(false);
+  };
+
+  // Intercepta atalho Ctrl+S no nível do container do modal para salvar todos os campos sujos
+  const handleModalKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+      e.preventDefault();
+      if (titleEdit.isDirty) titleEdit.saveNow();
+      if (descEdit.isDirty) descEdit.saveNow();
+      if (acEdit.isDirty) acEdit.saveNow();
+      if (tsEdit.isDirty) tsEdit.saveNow();
+      if (brEdit.isDirty) brEdit.saveNow();
     }
   };
 
@@ -106,27 +201,9 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     }
   };
 
-  const handleAcceptanceCriteriaBlur = () => {
-    if (localAcceptanceCriteria !== (task.acceptanceCriteria || '')) {
-      onUpdateTask(task.id, { acceptanceCriteria: localAcceptanceCriteria });
-    }
-  };
-
-  const handleTestScenariosBlur = () => {
-    if (localTestScenarios !== (task.testScenarios || '')) {
-      onUpdateTask(task.id, { testScenarios: localTestScenarios });
-    }
-  };
-
-  const handleBlockedReasonBlur = () => {
-    if (localBlockedReason !== (task.blockedReason || '')) {
-      onUpdateTask(task.id, { blockedReason: localBlockedReason });
-    }
-  };
-
   const handleToggleBlocked = () => {
     if (onToggleBlocked) {
-      onToggleBlocked(task.id, localBlockedReason);
+      onToggleBlocked(task.id, brEdit.value);
     } else {
       const now = new Date().toISOString();
       if (!task.blocked) {
@@ -137,7 +214,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
         const nextTags = hasTag ? currentTags : [...currentTags, 'bloqueado'];
         onUpdateTask(task.id, {
           blocked: true,
-          blockedReason: localBlockedReason,
+          blockedReason: brEdit.value,
           blockedAt: now,
           tags: nextTags,
         });
@@ -202,20 +279,34 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const formattedBlockedTime = formatBlockedTime(blockedTimeMs);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Detalhes da Tarefa">
-      <div className="task-details">
+    <Modal isOpen={isOpen} onClose={handleRequestClose} title="Detalhes da Tarefa">
+      <div className="task-details" onKeyDown={handleModalKeyDown}>
         
         {/* Title Section */}
         <section className="td-section">
-          <label htmlFor="td-title" className="td-label">Título</label>
+          <div className="td-field-header">
+            <label htmlFor="td-title" className="td-label">Título</label>
+            <TaskFieldActionToolbar
+              status={titleEdit.status}
+              isDirty={titleEdit.isDirty}
+              onSave={titleEdit.saveNow}
+              onDiscard={titleEdit.discard}
+              isReadOnly={isReadOnly}
+              ariaLabelPrefix="do título"
+              compact
+            />
+          </div>
           <input
             id="td-title"
             type="text"
             className="td-input td-title-input"
-            value={localTitle}
-            onChange={(e) => setLocalTitle(e.target.value)}
-            onBlur={handleTitleBlur}
-            onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+            value={titleEdit.value}
+            onChange={(e) => titleEdit.setValue(e.target.value)}
+            onBlur={titleEdit.handleBlur}
+            onKeyDown={(e) => {
+              titleEdit.handleKeyDown(e);
+              if (e.key === 'Enter') e.currentTarget.blur();
+            }}
           />
         </section>
 
@@ -343,57 +434,104 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           </div>
 
           {task.blocked && (
-            <input
-              id="td-blocked-reason"
-              type="text"
-              className="td-input"
-              placeholder="Descreva o motivo do bloqueio..."
-              value={localBlockedReason}
-              onChange={(e) => setLocalBlockedReason(e.target.value)}
-              onBlur={handleBlockedReasonBlur}
-              style={{ marginTop: '8px' }}
-            />
+            <div style={{ marginTop: '8px' }}>
+              <div className="td-field-header" style={{ marginBottom: '4px' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Motivo do bloqueio</span>
+                <TaskFieldActionToolbar
+                  status={brEdit.status}
+                  isDirty={brEdit.isDirty}
+                  onSave={brEdit.saveNow}
+                  onDiscard={brEdit.discard}
+                  isReadOnly={isReadOnly}
+                  ariaLabelPrefix="do motivo do bloqueio"
+                  compact
+                />
+              </div>
+              <input
+                id="td-blocked-reason"
+                type="text"
+                className="td-input"
+                placeholder="Descreva o motivo do bloqueio..."
+                value={brEdit.value}
+                onChange={(e) => brEdit.setValue(e.target.value)}
+                onBlur={brEdit.handleBlur}
+                onKeyDown={brEdit.handleKeyDown}
+              />
+            </div>
           )}
         </section>
 
         {/* Description Section */}
         <section className="td-section">
-          <label htmlFor="td-description" className="td-label">Descrição</label>
+          <div className="td-field-header">
+            <label htmlFor="td-description" className="td-label">Descrição</label>
+            <TaskFieldActionToolbar
+              status={descEdit.status}
+              isDirty={descEdit.isDirty}
+              onSave={descEdit.saveNow}
+              onDiscard={descEdit.discard}
+              isReadOnly={isReadOnly}
+              ariaLabelPrefix="da descrição"
+            />
+          </div>
           <textarea
             id="td-description"
             className="td-textarea"
-            placeholder="Adicione detalhes sobre a tarefa..."
-            value={localDescription}
-            onChange={(e) => setLocalDescription(e.target.value)}
-            onBlur={handleDescriptionBlur}
+            placeholder="Adicione uma descrição detalhada sobre a tarefa..."
+            value={descEdit.value}
+            onChange={(e) => descEdit.setValue(e.target.value)}
+            onBlur={descEdit.handleBlur}
+            onKeyDown={descEdit.handleKeyDown}
             rows={4}
           />
         </section>
 
         {/* Acceptance Criteria Section */}
         <section className="td-section">
-          <label htmlFor="td-acceptance-criteria" className="td-label">Critérios de Aceitação</label>
+          <div className="td-field-header">
+            <label htmlFor="td-acceptance-criteria" className="td-label">Critérios de Aceitação</label>
+            <TaskFieldActionToolbar
+              status={acEdit.status}
+              isDirty={acEdit.isDirty}
+              onSave={acEdit.saveNow}
+              onDiscard={acEdit.discard}
+              isReadOnly={isReadOnly}
+              ariaLabelPrefix="dos critérios de aceitação"
+            />
+          </div>
           <textarea
             id="td-acceptance-criteria"
             className="td-textarea"
             placeholder="Defina os critérios de aceitação para considerar a tarefa pronta..."
-            value={localAcceptanceCriteria}
-            onChange={(e) => setLocalAcceptanceCriteria(e.target.value)}
-            onBlur={handleAcceptanceCriteriaBlur}
+            value={acEdit.value}
+            onChange={(e) => acEdit.setValue(e.target.value)}
+            onBlur={acEdit.handleBlur}
+            onKeyDown={acEdit.handleKeyDown}
             rows={3}
           />
         </section>
 
         {/* Test Scenarios Section */}
         <section className="td-section">
-          <label htmlFor="td-test-scenarios" className="td-label">Cenários de Testes</label>
+          <div className="td-field-header">
+            <label htmlFor="td-test-scenarios" className="td-label">Cenários de Testes</label>
+            <TaskFieldActionToolbar
+              status={tsEdit.status}
+              isDirty={tsEdit.isDirty}
+              onSave={tsEdit.saveNow}
+              onDiscard={tsEdit.discard}
+              isReadOnly={isReadOnly}
+              ariaLabelPrefix="dos cenários de testes"
+            />
+          </div>
           <textarea
             id="td-test-scenarios"
             className="td-textarea"
             placeholder="Descreva os cenários de testes e validações (ex: BDD Dado/Quando/Então)..."
-            value={localTestScenarios}
-            onChange={(e) => setLocalTestScenarios(e.target.value)}
-            onBlur={handleTestScenariosBlur}
+            value={tsEdit.value}
+            onChange={(e) => tsEdit.setValue(e.target.value)}
+            onBlur={tsEdit.handleBlur}
+            onKeyDown={tsEdit.handleKeyDown}
             rows={3}
           />
         </section>
@@ -492,6 +630,44 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
         </section>
 
       </div>
+
+      {/* Close Guard Dialog */}
+      {showCloseGuard && (
+        <div className="td-close-guard-overlay" role="alertdialog" aria-modal="true" aria-labelledby="guard-title" aria-describedby="guard-desc">
+          <div className="td-close-guard-dialog">
+            <div className="td-close-guard-header">
+              <span className="td-close-guard-icon" aria-hidden="true">⚠️</span>
+              <h3 id="guard-title" className="td-close-guard-title">Existem alterações não salvas</h3>
+            </div>
+            <p id="guard-desc" className="td-close-guard-desc">
+              Você tem modificações pendentes nesta tarefa. O que deseja fazer antes de fechar?
+            </p>
+            <div className="td-close-guard-actions">
+              <button
+                type="button"
+                className="btn btn-primary td-guard-btn-save"
+                onClick={handleSaveAndClose}
+              >
+                Salvar e Fechar
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger td-guard-btn-discard"
+                onClick={handleDiscardAndClose}
+              >
+                Descartar Alterações
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary td-guard-btn-continue"
+                onClick={handleContinueEditing}
+              >
+                Continuar Editando
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Modal>
   );
 };

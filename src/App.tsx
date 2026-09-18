@@ -675,6 +675,8 @@ export const App: React.FC = () => {
                   onUpdateTask={isGuest ? () => {} : updateTask}
                   initiativeProgress={initiativeProgress}
                   pendingBlockersCount={pendingBlockers.length}
+                  autoSaveComments={settings.autoSaveComments ?? true}
+                  autoSaveDebounceMs={settings.autoSaveDebounceMs ?? 800}
                   onMoveLeft={() => {
                     if (canMoveLeft) {
                       handleGuardedMoveTask(task.id, board.columns[currentIndex - 1].id);
@@ -711,6 +713,8 @@ export const App: React.FC = () => {
           allBoards={boards}
           teams={teams}
           isReadOnly={isGuest}
+          autoSaveComments={settings.autoSaveComments ?? true}
+          autoSaveDebounceMs={settings.autoSaveDebounceMs ?? 800}
           onAddLink={handleAddLink}
           onRemoveLink={handleRemoveLink}
           onNavigateToBoard={(bId) => {
