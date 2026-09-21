@@ -7,7 +7,9 @@
  */
 
 import { TaskType, TaskLinkModel } from './taskTypes';
+import { TaskComment, TaskActivityLog } from './taskActivity';
 export * from './taskTypes';
+export * from './taskActivity';
 export * from './analytics';
 export * from './boardManagement';
 
@@ -124,6 +126,12 @@ export interface TaskModel {
 
   /** Vínculos relacionais com outras tarefas intra ou cross-squad (Feature 024) */
   links?: TaskLinkModel[];
+
+  /** Comentários textuais registrados na tarefa (Feature 033) */
+  comments?: TaskComment[];
+
+  /** Trilha de auditoria imutável de ações efetuadas na tarefa (Feature 033) */
+  activityLog?: TaskActivityLog[];
 }
 
 /** Dias sem movimentação para considerar o cartão estagnado (marrom) */

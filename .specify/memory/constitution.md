@@ -2,7 +2,8 @@
 Sync Impact Report:
 - Version change: 1.5.0 → 1.6.0
 - Bump rationale: MINOR (Added Principle IX: User Data Integrity, Intentional Persistence & Draft Protection, formalizing non-negotiable guarantees against accidental loss of text drafts, contextual persistence controls, intelligent debounce, and user intent sovereignty derived from Feature 032).
-- List of modified principles: None
+- List of modified principles:
+  - VIII. Local-First Sovereignty, Hybrid Cloud Sync & Squad Board Isolation: expanded with hybrid cloud sync and data integrity rules.
 - Added sections:
   - Core Principles: IX. User Data Integrity, Intentional Persistence & Draft Protection (NON-NEGOTIABLE)
 - Removed sections: None
@@ -36,6 +37,7 @@ Prior to creating, decomposing, or formalizing ANY set of implementation tasks (
 3. **MECE Validation**: Ensuring tasks are Mutually Exclusive (zero overlap/duplication) and Collectively Exhaustive (100% acceptance criteria coverage).
 4. **Tree of Thoughts & Trade-off Pruning**: Evaluating alternative implementation branches with explicit criteria for pruned paths.
 5. **Falsifiability & TDD (Red-Bar First)**: Defining objective, automated verification criteria that fail before implementation and pass upon completion.
+6. **Triangulation Adversarial & Verification**: Auditing tasks against simplicity, modularity, and security rules.
 Tasks generated without this preceding analytical reasoning are null, void, and violate project governance.
 
 ### VII. Brand Independence & Clean Identity (NON-NEGOTIABLE)

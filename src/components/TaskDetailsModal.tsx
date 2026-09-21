@@ -6,6 +6,9 @@ import { Team } from '../types/team';
 import { calculateTaskBlockedTimeMs, formatBlockedTime } from '../utils/timeFormatters';
 import { calculateInitiativeProgress } from '../utils/taskRelations';
 import { TaskLinksSection } from './TaskLinksSection';
+import { TaskTimeline } from './TaskTimeline';
+import { TaskComment, TaskActivityLog } from '../types/taskActivity';
+import { createTaskActivityEvent, AuditDescriptions } from '../utils/taskActivityLogger';
 import { Modal } from './Modal';
 import { useFieldEdit } from '../hooks/useFieldEdit';
 import { TaskFieldActionToolbar } from './TaskFieldActionToolbar';
@@ -17,6 +20,8 @@ interface TaskDetailsModalProps {
   onClose: () => void;
   onUpdateTask: (id: string, updates: Partial<TaskModel>) => void;
   onToggleBlocked?: (id: string, reason?: string) => void;
+  onAddComment?: (taskId: string, text: string) => void;
+  onDeleteComment?: (taskId: string, commentId: string) => void;
   boardTasks?: TaskModel[];
   columns?: ColumnModel[];
   currentBoardId?: string;
@@ -42,6 +47,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   onClose,
   onUpdateTask,
   onToggleBlocked,
+  onAddComment,
+  onDeleteComment,
   boardTasks = [],
   columns = [],
   currentBoardId = '',
@@ -60,6 +67,50 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const [localEndDate, setLocalEndDate] = useState(task.endDate || '');
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [showCloseGuard, setShowCloseGuard] = useState(false);
+
+  const handleAddComment = (text: string) => {
+    if (onAddComment) {
+      onAddComment(task.id, text);
+    } else {
+      const now = new Date().toISOString();
+      const newComment: TaskComment = {
+        id: crypto.randomUUID ? crypto.randomUUID() : `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        taskId: task.id,
+        userId: 'usr_default',
+        userName: 'Rogerio Teixeira',
+        text,
+        createdAt: now,
+      };
+      const auditEvent: TaskActivityLog = createTaskActivityEvent({
+        taskId: task.id,
+        eventType: 'comment_added',
+        description: AuditDescriptions.commentAdded('Rogerio Teixeira'),
+        user: { id: 'usr_default', name: 'Rogerio Teixeira' },
+      });
+      onUpdateTask(task.id, {
+        comments: [...(task.comments || []), newComment],
+        activityLog: [...(task.activityLog || []), auditEvent],
+      });
+    }
+  };
+
+  const handleDeleteComment = (commentId: string) => {
+    if (onDeleteComment) {
+      onDeleteComment(task.id, commentId);
+    } else {
+      const updatedComments = (task.comments || []).filter((c) => c.id !== commentId);
+      const auditEvent: TaskActivityLog = createTaskActivityEvent({
+        taskId: task.id,
+        eventType: 'comment_deleted',
+        description: AuditDescriptions.commentDeleted('Rogerio Teixeira'),
+        user: { id: 'usr_default', name: 'Rogerio Teixeira' },
+      });
+      onUpdateTask(task.id, {
+        comments: updatedComments,
+        activityLog: [...(task.activityLog || []), auditEvent],
+      });
+    }
+  };
 
   // Field Edit Hooks
   const titleEdit = useFieldEdit<string>({
@@ -627,6 +678,18 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               <span className="td-meta-value">{new Date(task.completedAt).toLocaleString('pt-BR')}</span>
             </div>
           )}
+        </section>
+
+        {/* Timeline, Comments & Audit Trail Section (Feature 033) */}
+        <section className="td-timeline-section mt-4">
+          <TaskTimeline
+            taskId={task.id}
+            comments={task.comments}
+            activityLog={task.activityLog}
+            onAddComment={handleAddComment}
+            onDeleteComment={handleDeleteComment}
+            isGuest={isReadOnly}
+          />
         </section>
 
       </div>

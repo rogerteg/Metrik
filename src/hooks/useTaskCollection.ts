@@ -6,11 +6,13 @@ import {
   ColumnModel,
   PriorityLevel,
   TaskModel,
+  TaskComment,
   MAX_COLUMNS,
   FLOW_REGRESSION_WARNING_MESSAGE,
   BLOCKED_TASK_MOVE_WARNING_MESSAGE,
   BLOCKED_TAG_KEYWORDS,
 } from '../types/kanban';
+import { createTaskActivityEvent, AuditDescriptions } from '../utils/taskActivityLogger';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
 import { reorderBoard, isBackwardColumnMove, reorderColumnList, isTaskBlocked } from '../utils/taskReorder';
 import { ReorderOptions } from '../types/dnd';
@@ -35,6 +37,8 @@ export interface UseTaskCollectionReturn {
   setTaskPriority: (taskId: string, priority?: PriorityLevel) => void;
   addTaskTag: (taskId: string, tag: string) => void;
   removeTaskTag: (taskId: string, tag: string) => void;
+  addTaskComment: (taskId: string, text: string, user?: { id: string; name: string }) => void;
+  deleteTaskComment: (taskId: string, commentId: string, user?: { id: string; name: string }) => void;
   discardIfEmpty: (id: string) => void;
   clearTasks: () => void;
   resetToSeed: () => void;
@@ -343,6 +347,19 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
           }
         }
 
+        const sourceCol = prev.columns.find(c => c.id === sourceColumnId);
+        const fromColName = sourceCol?.title || sourceColumnId;
+        const toColName = targetCol?.title || targetColumnId;
+
+        const auditEvent = createTaskActivityEvent({
+          taskId: id,
+          eventType: 'moved',
+          description: AuditDescriptions.moved(fromColName, toColName, 'Rogerio Teixeira'),
+          fromValue: fromColName,
+          toValue: toColName,
+          user: { id: 'usr_default', name: 'Rogerio Teixeira' },
+        });
+
         const updatedTask: TaskModel = {
           ...targetTask,
           column: targetColumnId,
@@ -353,6 +370,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
           blockedAt,
           blockedReason,
           updatedAt: now,
+          activityLog: [...(targetTask.activityLog || []), auditEvent],
         };
 
         if (!nextTasks[targetColumnId]) nextTasks[targetColumnId] = [];
@@ -426,10 +444,19 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
       for (const colId of Object.keys(prev.tasks)) {
         nextTasks[colId] = prev.tasks[colId].map((task) => {
           if (task.id === taskId) {
+            const auditEvent = createTaskActivityEvent({
+              taskId,
+              eventType: 'priority_changed',
+              description: AuditDescriptions.priorityChanged(task.priority || 'média', priority || 'nenhuma', 'Rogerio Teixeira'),
+              fromValue: task.priority,
+              toValue: priority,
+              user: { id: 'usr_default', name: 'Rogerio Teixeira' },
+            });
             return {
               ...task,
               priority,
               updatedAt: now,
+              activityLog: [...(task.activityLog || []), auditEvent],
             };
           }
           return task;
@@ -459,6 +486,14 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
             const nextTags = [...currentTags, cleanTag];
             const isBlockingKeyword = (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(cleanTag.toLowerCase());
 
+            const auditEvent = createTaskActivityEvent({
+              taskId,
+              eventType: 'tags_changed',
+              description: AuditDescriptions.tagsChanged('adicionada', cleanTag, 'Rogerio Teixeira'),
+              toValue: cleanTag,
+              user: { id: 'usr_default', name: 'Rogerio Teixeira' },
+            });
+
             if (isBlockingKeyword) {
               return {
                 ...task,
@@ -467,6 +502,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
                 blockedAt: task.blockedAt || now,
                 blockedReason: task.blockedReason || 'Bloqueado via etiqueta',
                 updatedAt: now,
+                activityLog: [...(task.activityLog || []), auditEvent],
               };
             }
 
@@ -474,6 +510,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
               ...task,
               tags: nextTags,
               updatedAt: now,
+              activityLog: [...(task.activityLog || []), auditEvent],
             };
           }
           return task;
@@ -501,6 +538,14 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
               (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
             );
 
+            const auditEvent = createTaskActivityEvent({
+              taskId,
+              eventType: 'tags_changed',
+              description: AuditDescriptions.tagsChanged('removida', tag, 'Rogerio Teixeira'),
+              fromValue: tag,
+              user: { id: 'usr_default', name: 'Rogerio Teixeira' },
+            });
+
             // Se retirou etiqueta de bloqueio e não resta nenhuma outra tag de bloqueio:
             if (!hasRemainingBlockingTag && task.blocked) {
               const startMs = task.blockedAt ? new Date(task.blockedAt).getTime() : Date.now();
@@ -513,6 +558,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
                 blockedAt: undefined,
                 totalBlockedMs,
                 updatedAt: now,
+                activityLog: [...(task.activityLog || []), auditEvent],
               };
             }
 
@@ -520,6 +566,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
               ...task,
               tags: nextTags,
               updatedAt: now,
+              activityLog: [...(task.activityLog || []), auditEvent],
             };
           }
           return task;
@@ -564,7 +611,17 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
           if (task.id === taskId) {
             found = true;
             const now = new Date().toISOString();
-            if (!task.blocked) {
+            const willBlock = !task.blocked;
+            const auditEvent = createTaskActivityEvent({
+              taskId,
+              eventType: willBlock ? 'blocked' : 'unblocked',
+              description: willBlock
+                ? AuditDescriptions.blocked(reason || '', 'Rogerio Teixeira')
+                : AuditDescriptions.unblocked('Rogerio Teixeira'),
+              user: { id: 'usr_default', name: 'Rogerio Teixeira' },
+            });
+
+            if (willBlock) {
               const currentTags = task.tags ?? [];
               const hasTag = currentTags.some((t) =>
                 (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
@@ -577,6 +634,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
                 blockedAt: now,
                 tags: nextTags,
                 updatedAt: now,
+                activityLog: [...(task.activityLog || []), auditEvent],
               };
             } else {
               const startMs = task.blockedAt ? new Date(task.blockedAt).getTime() : Date.now();
@@ -593,6 +651,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
                 tags: nextTags,
                 totalBlockedMs,
                 updatedAt: now,
+                activityLog: [...(task.activityLog || []), auditEvent],
               };
             }
           }
@@ -601,6 +660,84 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
       }
 
       if (!found) return prev;
+      return { ...prev, tasks: nextTasks };
+    });
+  }, []);
+
+  const addTaskComment = useCallback((taskId: string, text: string, user?: { id: string; name: string }) => {
+    const cleanText = text.trim();
+    if (!cleanText) return;
+
+    setBoard((prev) => {
+      const nextTasks: Record<string, TaskModel[]> = {};
+      const now = new Date().toISOString();
+      const authorName = user?.name || 'Rogerio Teixeira';
+      const authorId = user?.id || 'usr_default';
+
+      const newComment: TaskComment = {
+        id: crypto.randomUUID ? crypto.randomUUID() : `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        taskId,
+        userId: authorId,
+        userName: authorName,
+        text: cleanText,
+        createdAt: now,
+      };
+
+      const auditEvent = createTaskActivityEvent({
+        taskId,
+        eventType: 'comment_added',
+        description: AuditDescriptions.commentAdded(authorName),
+        user: { id: authorId, name: authorName },
+      });
+
+      for (const colId of Object.keys(prev.tasks)) {
+        nextTasks[colId] = prev.tasks[colId].map((task) => {
+          if (task.id === taskId) {
+            const comments = [...(task.comments || []), newComment];
+            const activityLog = [...(task.activityLog || []), auditEvent];
+            return {
+              ...task,
+              comments,
+              activityLog,
+              updatedAt: now,
+            };
+          }
+          return task;
+        });
+      }
+      return { ...prev, tasks: nextTasks };
+    });
+  }, []);
+
+  const deleteTaskComment = useCallback((taskId: string, commentId: string, user?: { id: string; name: string }) => {
+    setBoard((prev) => {
+      const nextTasks: Record<string, TaskModel[]> = {};
+      const now = new Date().toISOString();
+      const actorName = user?.name || 'Rogerio Teixeira';
+      const actorId = user?.id || 'usr_default';
+
+      const auditEvent = createTaskActivityEvent({
+        taskId,
+        eventType: 'comment_deleted',
+        description: AuditDescriptions.commentDeleted(actorName),
+        user: { id: actorId, name: actorName },
+      });
+
+      for (const colId of Object.keys(prev.tasks)) {
+        nextTasks[colId] = prev.tasks[colId].map((task) => {
+          if (task.id === taskId) {
+            const comments = (task.comments || []).filter((c) => c.id !== commentId);
+            const activityLog = [...(task.activityLog || []), auditEvent];
+            return {
+              ...task,
+              comments,
+              activityLog,
+              updatedAt: now,
+            };
+          }
+          return task;
+        });
+      }
       return { ...prev, tasks: nextTasks };
     });
   }, []);
@@ -666,6 +803,8 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
     setTaskPriority,
     addTaskTag,
     removeTaskTag,
+    addTaskComment,
+    deleteTaskComment,
     discardIfEmpty,
     clearTasks,
     resetToSeed,

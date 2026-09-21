@@ -109,6 +109,8 @@ export const App: React.FC = () => {
     setTaskPriority,
     addTaskTag,
     removeTaskTag,
+    addTaskComment,
+    deleteTaskComment,
     discardIfEmpty,
     clearTasks,
     resetToSeed,
@@ -706,6 +708,8 @@ export const App: React.FC = () => {
           onClose={() => setSelectedTaskId(null)}
           onUpdateTask={updateTask}
           onToggleBlocked={toggleTaskBlocked}
+          onAddComment={addTaskComment}
+          onDeleteComment={deleteTaskComment}
           boardTasks={allBoardTasks}
           columns={board.columns}
           currentBoardId={activeBoardId || ''}
