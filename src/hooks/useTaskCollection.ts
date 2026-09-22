@@ -37,7 +37,7 @@ export interface UseTaskCollectionReturn {
   setTaskPriority: (taskId: string, priority?: PriorityLevel) => void;
   addTaskTag: (taskId: string, tag: string) => void;
   removeTaskTag: (taskId: string, tag: string) => void;
-  addTaskComment: (taskId: string, text: string, user?: { id: string; name: string }) => void;
+  addTaskComment: (taskId: string, text: string, userOrDecision?: { id: string; name: string } | boolean, isDecision?: boolean) => void;
   deleteTaskComment: (taskId: string, commentId: string, user?: { id: string; name: string }) => void;
   discardIfEmpty: (id: string) => void;
   clearTasks: () => void;
@@ -664,24 +664,29 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
     });
   }, []);
 
-  const addTaskComment = useCallback((taskId: string, text: string, user?: { id: string; name: string }) => {
-    const cleanText = text.trim();
-    if (!cleanText) return;
+  const addTaskComment = useCallback(
+    (taskId: string, text: string, userOrDecision?: { id: string; name: string } | boolean, isDecisionParam: boolean = false) => {
+      const cleanText = text.trim();
+      if (!cleanText) return;
 
-    setBoard((prev) => {
-      const nextTasks: Record<string, TaskModel[]> = {};
-      const now = new Date().toISOString();
-      const authorName = user?.name || 'Rogerio Teixeira';
-      const authorId = user?.id || 'usr_default';
+      const user = typeof userOrDecision === 'object' && userOrDecision !== null ? userOrDecision : undefined;
+      const isDecision = typeof userOrDecision === 'boolean' ? userOrDecision : Boolean(isDecisionParam);
 
-      const newComment: TaskComment = {
-        id: crypto.randomUUID ? crypto.randomUUID() : `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-        taskId,
-        userId: authorId,
-        userName: authorName,
-        text: cleanText,
-        createdAt: now,
-      };
+      setBoard((prev) => {
+        const nextTasks: Record<string, TaskModel[]> = {};
+        const now = new Date().toISOString();
+        const authorName = user?.name || 'Rogerio Teixeira';
+        const authorId = user?.id || 'usr_default';
+
+        const newComment: TaskComment = {
+          id: crypto.randomUUID ? crypto.randomUUID() : `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          taskId,
+          userId: authorId,
+          userName: authorName,
+          text: cleanText,
+          isDecision: Boolean(isDecision),
+          createdAt: now,
+        };
 
       const auditEvent = createTaskActivityEvent({
         taskId,

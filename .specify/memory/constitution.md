@@ -1,11 +1,9 @@
 <!--
 Sync Impact Report:
-- Version change: 1.5.0 → 1.6.0
-- Bump rationale: MINOR (Added Principle IX: User Data Integrity, Intentional Persistence & Draft Protection, formalizing non-negotiable guarantees against accidental loss of text drafts, contextual persistence controls, intelligent debounce, and user intent sovereignty derived from Feature 032).
-- List of modified principles:
-  - VIII. Local-First Sovereignty, Hybrid Cloud Sync & Squad Board Isolation: expanded with hybrid cloud sync and data integrity rules.
-- Added sections:
-  - Core Principles: IX. User Data Integrity, Intentional Persistence & Draft Protection (NON-NEGOTIABLE)
+- Version change: 1.6.0 → 1.6.1
+- Bump rationale: PATCH (Governance validation and non-semantic alignment following Feature 035 ClickUp-Inspired Task Activity & Comments Redesign).
+- List of modified principles: None (All 9 core principles validated).
+- Added sections: None
 - Removed sections: None
 - Expanded sections: None
 - Follow-up TODOs: None
@@ -107,4 +105,4 @@ practices, ad-hoc conventions, and per-feature preferences.
 operative workflows, roles, and tooling for day-to-day development. They are subordinate to this
 Constitution; where they conflict, this Constitution prevails.
 
-**Version**: 1.6.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-18
+**Version**: 1.6.1 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-21

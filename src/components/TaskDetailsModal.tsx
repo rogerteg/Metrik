@@ -20,7 +20,7 @@ interface TaskDetailsModalProps {
   onClose: () => void;
   onUpdateTask: (id: string, updates: Partial<TaskModel>) => void;
   onToggleBlocked?: (id: string, reason?: string) => void;
-  onAddComment?: (taskId: string, text: string) => void;
+  onAddComment?: (taskId: string, text: string, isDecision?: boolean) => void;
   onDeleteComment?: (taskId: string, commentId: string) => void;
   boardTasks?: TaskModel[];
   columns?: ColumnModel[];
@@ -68,9 +68,9 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [showCloseGuard, setShowCloseGuard] = useState(false);
 
-  const handleAddComment = (text: string) => {
+  const handleAddComment = (text: string, isDecision?: boolean) => {
     if (onAddComment) {
-      onAddComment(task.id, text);
+      onAddComment(task.id, text, isDecision);
     } else {
       const now = new Date().toISOString();
       const newComment: TaskComment = {
@@ -79,6 +79,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
         userId: 'usr_default',
         userName: 'Rogerio Teixeira',
         text,
+        isDecision: Boolean(isDecision),
         createdAt: now,
       };
       const auditEvent: TaskActivityLog = createTaskActivityEvent({

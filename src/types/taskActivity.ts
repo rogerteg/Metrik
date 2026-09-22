@@ -26,6 +26,12 @@ export interface TaskComment {
   /** Plain text content of the comment with line breaks preserved */
   text: string;
 
+  /** Flag indicating if the comment represents a Project Decision */
+  isDecision?: boolean;
+
+  /** Flag indicating if the decision comment is pinned to top */
+  pinned?: boolean;
+
   /** Creation timestamp in ISO 8601 format */
   createdAt: string;
 }
@@ -62,3 +68,15 @@ export interface TaskActivityLog {
 export type TimelineItem =
   | ({ type: 'comment' } & TaskComment & { timestamp: string })
   | ({ type: 'activity' } & TaskActivityLog);
+
+export type GroupKey = 'today' | 'yesterday' | 'this_week' | 'older';
+
+export interface TimelineGroup {
+  groupKey: GroupKey;
+  label: string;
+  items: TimelineItem[];
+}
+
+export type TimelineFilter = 'all' | 'decisions' | 'comments' | 'activity';
+export type DensityMode = 'detailed' | 'compact';
+
