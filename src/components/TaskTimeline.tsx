@@ -1,11 +1,12 @@
-import React, { useState, useMemo } from 'react';
-import { TaskComment, TaskActivityLog, TimelineItem, TimelineFilter, DensityMode } from '../types/taskActivity';
+import React, { useMemo } from 'react';
+import { TaskComment, TaskActivityLog, TimelineItem } from '../types/taskActivity';
 import { CommentInputForm } from './CommentInputForm';
 import { CommentItem } from './CommentItem';
 import { ActivityLogItem } from './ActivityLogItem';
 import { TimelineFilterBar } from './TimelineFilterBar';
 import { TimelineStatsHeader } from './TimelineStatsHeader';
 import { groupTimelineItems } from '../utils/taskActivityLogger';
+import { useTimelinePreferences } from '../hooks/useTimelinePreferences';
 
 export interface TaskTimelineProps {
   taskId: string;
@@ -33,9 +34,14 @@ export const TaskTimeline: React.FC<TaskTimelineProps> = ({
   isGuest = false,
   totalBlockedMs = 0,
 }) => {
-  const [filter, setFilter] = useState<TimelineFilter>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [densityMode, setDensityMode] = useState<DensityMode>('detailed');
+  const {
+    densityMode,
+    activeFilter: filter,
+    searchQuery,
+    setDensityMode,
+    setActiveFilter: setFilter,
+    setSearchQuery,
+  } = useTimelinePreferences();
 
   // Counts statistics
   const counts = useMemo(() => {
@@ -108,7 +114,7 @@ export const TaskTimeline: React.FC<TaskTimelineProps> = ({
   }, [timelineItems]);
 
   const toggleDensity = () => {
-    setDensityMode((prev) => (prev === 'compact' ? 'detailed' : 'compact'));
+    setDensityMode(densityMode === 'compact' ? 'detailed' : 'compact');
   };
 
   // Latest decision for Spotlight Banner (filtered by search query if any)

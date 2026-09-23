@@ -44,7 +44,7 @@ export function renderFormattedText(text: string): React.ReactNode {
       flushList(`line-${lineIndex}`);
       const quoteContent = trimmed.substring(2);
       renderedElements.push(
-        <blockquote key={`quote-${lineIndex}`} className="border-l-2 border-amber-500/80 pl-3 py-1 my-1.5 text-slate-300 italic bg-amber-500/5 rounded-r">
+        <blockquote key={`quote-${lineIndex}`} className="border-l-2 border-amber-500 bg-amber-500/5 pl-3 py-1.5 my-1.5 text-slate-300 italic text-sm rounded-r">
           {parseInlineFormatting(quoteContent, `quote-${lineIndex}`)}
         </blockquote>
       );
@@ -55,7 +55,7 @@ export function renderFormattedText(text: string): React.ReactNode {
         renderedElements.push(<br key={`br-${lineIndex}`} />);
       } else {
         renderedElements.push(
-          <p key={`p-${lineIndex}`} className="leading-relaxed">
+          <p key={`p-${lineIndex}`} className="leading-relaxed text-slate-300 text-sm">
             {parseInlineFormatting(line, `p-${lineIndex}`)}
           </p>
         );
@@ -89,7 +89,7 @@ function parseInlineFormatting(text: string, keyPrefix: string): React.ReactNode
     if (part.startsWith('`') && part.endsWith('`')) {
       const inner = part.slice(1, -1);
       return (
-        <code key={key} className="rounded bg-slate-800/90 px-1.5 py-0.5 text-xs font-mono text-cyan-300 border border-slate-700/60">
+        <code key={key} className="rounded bg-slate-950 px-1.5 py-0.5 text-xs font-mono text-cyan-300 border border-slate-800">
           {inner}
         </code>
       );

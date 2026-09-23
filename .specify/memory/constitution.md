@@ -1,7 +1,7 @@
 <!--
 Sync Impact Report:
-- Version change: 1.6.0 → 1.6.1
-- Bump rationale: PATCH (Governance validation and non-semantic alignment following Feature 035 ClickUp-Inspired Task Activity & Comments Redesign).
+- Version change: 1.6.2 → 1.6.3
+- Bump rationale: PATCH (Governance validation and non-semantic alignment following Feature 037 Task Details Activity & Objective Fields Redesign).
 - List of modified principles: None (All 9 core principles validated).
 - Added sections: None
 - Removed sections: None
@@ -40,7 +40,7 @@ Tasks generated without this preceding analytical reasoning are null, void, and 
 
 ### VII. Brand Independence & Clean Identity (NON-NEGOTIABLE)
 Metrik is an autonomous, standalone enterprise Kanban and Flow Analytics product. The codebase, user interface, tooltips, chart legends, labels, CSS tokens, and internal source code comments MUST maintain strict brand independence:
-1. **Zero Third-Party Brand Leaks**: External inspiration products, benchmark tools, or vendor brand names (such as Businessmap, ActionableAgile, etc.) are purely conversational references and MUST NEVER be leaked into visible UI text, chart subtitles, DOM attributes, or source code comments.
+1. **Zero Third-Party Brand Leaks**: External inspiration products, benchmark tools, or vendor brand names (such as Businessmap, ActionableAgile, ClickUp, etc.) are purely conversational references and MUST NEVER be leaked into visible UI text, chart subtitles, DOM attributes, or source code comments.
 2. **Proprietary & Canonical Terminology**: All flow concepts must be expressed using standardized lean/agile and scientific terminology (e.g., *Cumulative Flow Diagram*, *Cycle Time Scatter Plot*, *Little's Law*, *Dual WIP/Lead Time Inspection*, *NIST Percentiles*, *Metrik Design System*).
 
 ### VIII. Local-First Sovereignty, Hybrid Cloud Sync & Squad Board Isolation (NON-NEGOTIABLE)
@@ -105,4 +105,4 @@ practices, ad-hoc conventions, and per-feature preferences.
 operative workflows, roles, and tooling for day-to-day development. They are subordinate to this
 Constitution; where they conflict, this Constitution prevails.
 
-**Version**: 1.6.1 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-21
+**Version**: 1.6.3 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-23

@@ -80,3 +80,51 @@ export interface TimelineGroup {
 export type TimelineFilter = 'all' | 'decisions' | 'comments' | 'activity';
 export type DensityMode = 'detailed' | 'compact';
 
+export interface UserTimelinePreferences {
+  version: number;
+  densityMode: DensityMode;
+  activeFilter: TimelineFilter;
+  searchQuery: string;
+}
+
+export interface TaskDetailsModalState {
+  taskId: string | null;
+  draftCommentText: string;
+  draftIsDecision: boolean;
+  isDraftDirty: boolean;
+  showDirtyConfirmDialog: boolean;
+  isSidebarCollapsedMobile: boolean;
+}
+
+export type ActivityCategoryFilter = 'all' | 'comments' | 'mutations' | 'assignments' | 'creations';
+
+export interface ActivityFilterOptions {
+  searchQuery: string;
+  category: ActivityCategoryFilter;
+  unreadOnly: boolean;
+}
+
+export interface ActivityLogEntry {
+  id: string;
+  taskId: string;
+  actorName: string;
+  actorAvatar?: string;
+  type: TaskActivityEventType | 'creation' | 'assignment' | 'unassignment' | 'status_change' | 'priority_change' | 'due_date_change' | 'tag_change' | 'subtask_change' | 'comment';
+  actionText: string;
+  fieldName?: string;
+  previousValue?: string;
+  newValue?: string;
+  timestamp: string;
+  isUnread?: boolean;
+}
+
+export interface TaskActivityViewState {
+  entries: ActivityLogEntry[];
+  isExpanded: boolean;
+  filter: ActivityFilterOptions;
+  isSearchOpen: boolean;
+  unreadCount: number;
+}
+
+
+

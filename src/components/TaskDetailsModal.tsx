@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { TaskModel, SubtaskModel, BoardModel, ColumnModel, BLOCKED_TAG_KEYWORDS } from '../types/kanban';
-import { TaskType, TASK_TYPE_CONFIGS, TaskRelationType } from '../types/taskTypes';
+import { TaskModel, SubtaskModel, BoardModel, ColumnModel } from '../types/kanban';
+import { TaskRelationType } from '../types/taskTypes';
 import { Team } from '../types/team';
-import { calculateTaskBlockedTimeMs, formatBlockedTime } from '../utils/timeFormatters';
 import { calculateInitiativeProgress } from '../utils/taskRelations';
 import { TaskLinksSection } from './TaskLinksSection';
 import { TaskTimeline } from './TaskTimeline';
@@ -12,6 +11,8 @@ import { createTaskActivityEvent, AuditDescriptions } from '../utils/taskActivit
 import { Modal } from './Modal';
 import { useFieldEdit } from '../hooks/useFieldEdit';
 import { TaskFieldActionToolbar } from './TaskFieldActionToolbar';
+import { TaskMetadataSidebar } from './TaskMetadataSidebar';
+import { TaskActivityPanel } from './TaskActivityPanel';
 import './TaskDetailsModal.css';
 
 interface TaskDetailsModalProps {
@@ -161,7 +162,6 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     isReadOnly,
   });
 
-  // Sync date and subtask fields when a different task is opened
   useEffect(() => {
     if (isOpen) {
       setLocalDueDate(task.dueDate || '');
@@ -179,7 +179,6 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     tsEdit.isDirty ||
     brEdit.isDirty;
 
-  // Guarda contra fechamento involuntário de janela/aba no modo manual
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (!autoSaveComments && isAnyDirty) {
@@ -223,7 +222,6 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     setShowCloseGuard(false);
   };
 
-  // Intercepta atalho Ctrl+S no nível do container do modal para salvar todos os campos sujos
   const handleModalKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
       e.preventDefault();
@@ -253,40 +251,6 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     }
   };
 
-  const handleToggleBlocked = () => {
-    if (onToggleBlocked) {
-      onToggleBlocked(task.id, brEdit.value);
-    } else {
-      const now = new Date().toISOString();
-      if (!task.blocked) {
-        const currentTags = task.tags ?? [];
-        const hasTag = currentTags.some((t) =>
-          (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
-        );
-        const nextTags = hasTag ? currentTags : [...currentTags, 'bloqueado'];
-        onUpdateTask(task.id, {
-          blocked: true,
-          blockedReason: brEdit.value,
-          blockedAt: now,
-          tags: nextTags,
-        });
-      } else {
-        const startMs = task.blockedAt ? new Date(task.blockedAt).getTime() : Date.now();
-        const elapsed = Math.max(0, Date.now() - startMs);
-        const currentTags = task.tags ?? [];
-        const nextTags = currentTags.filter(
-          (t) => !(BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
-        );
-        onUpdateTask(task.id, {
-          blocked: false,
-          blockedAt: undefined,
-          tags: nextTags,
-          totalBlockedMs: (task.totalBlockedMs || 0) + elapsed,
-        });
-      }
-    }
-  };
-
   const handleAddSubtask = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSubtaskTitle.trim()) return;
@@ -304,7 +268,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
   const handleToggleSubtask = (subtaskId: string) => {
     const currentSubtasks = task.subtasks || [];
-    const nextSubtasks = currentSubtasks.map(st => 
+    const nextSubtasks = currentSubtasks.map((st) =>
       st.id === subtaskId ? { ...st, completed: !st.completed } : st
     );
     onUpdateTask(task.id, { subtasks: nextSubtasks });
@@ -312,12 +276,12 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
   const handleDeleteSubtask = (subtaskId: string) => {
     const currentSubtasks = task.subtasks || [];
-    const nextSubtasks = currentSubtasks.filter(st => st.id !== subtaskId);
+    const nextSubtasks = currentSubtasks.filter((st) => st.id !== subtaskId);
     onUpdateTask(task.id, { subtasks: nextSubtasks });
   };
 
   const subtasks = task.subtasks || [];
-  const completedCount = subtasks.filter(st => st.completed).length;
+  const completedCount = subtasks.filter((st) => st.completed).length;
   const progress = subtasks.length > 0 ? Math.round((completedCount / subtasks.length) * 100) : 0;
 
   const initiativeProgress = React.useMemo(() => {
@@ -327,403 +291,331 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     return calculateInitiativeProgress(task, boardTasks, columns);
   }, [task, boardTasks, columns]);
 
-  const blockedTimeMs = calculateTaskBlockedTimeMs(task);
-  const formattedBlockedTime = formatBlockedTime(blockedTimeMs);
+  const formattedActivityEntries = React.useMemo(() => {
+    const entries: any[] = [];
+
+    (task.activityLog || []).forEach((act) => {
+      entries.push({
+        id: act.id,
+        taskId: act.taskId || task.id,
+        actorName: act.userName || 'Usuário',
+        type: act.eventType || 'edited',
+        actionText: act.description,
+        previousValue: act.fromValue,
+        newValue: act.toValue,
+        timestamp: act.timestamp,
+      });
+    });
+
+    (task.comments || []).forEach((cmt) => {
+      entries.push({
+        id: cmt.id,
+        taskId: cmt.taskId || task.id,
+        actorName: cmt.userName || 'Usuário',
+        type: 'comment',
+        actionText: `${cmt.userName} comentou: ${cmt.text}`,
+        newValue: cmt.text,
+        timestamp: cmt.createdAt,
+      });
+    });
+
+    return entries.sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+  }, [task.activityLog, task.comments, task.id]);
 
   return (
     <Modal isOpen={isOpen} onClose={handleRequestClose} title="Detalhes da Tarefa">
-      <div className="task-details" onKeyDown={handleModalKeyDown}>
-        
-        {/* Title Section */}
-        <section className="td-section">
-          <div className="td-field-header">
-            <label htmlFor="td-title" className="td-label">Título</label>
-            <TaskFieldActionToolbar
-              status={titleEdit.status}
-              isDirty={titleEdit.isDirty}
-              onSave={titleEdit.saveNow}
-              onDiscard={titleEdit.discard}
-              isReadOnly={isReadOnly}
-              ariaLabelPrefix="do título"
-              compact
+      <div
+        className="task-details-redesigned flex flex-col lg:flex-row gap-6 p-4 text-slate-200 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800"
+        onKeyDown={handleModalKeyDown}
+      >
+        {/* Main Column (Left: ~65%) */}
+        <div className="w-full lg:w-[65%] space-y-6">
+          
+          {/* Title Section */}
+          <section className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label htmlFor="td-title" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Título
+              </label>
+              <TaskFieldActionToolbar
+                status={titleEdit.status}
+                isDirty={titleEdit.isDirty}
+                onSave={titleEdit.saveNow}
+                onDiscard={titleEdit.discard}
+                isReadOnly={isReadOnly}
+                ariaLabelPrefix="do título"
+                compact
+              />
+            </div>
+            <input
+              id="td-title"
+              type="text"
+              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3.5 py-2.5 text-base font-semibold text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors"
+              value={titleEdit.value}
+              onChange={(e) => titleEdit.setValue(e.target.value)}
+              onBlur={titleEdit.handleBlur}
+              onKeyDown={(e) => {
+                titleEdit.handleKeyDown(e);
+                if (e.key === 'Enter') e.currentTarget.blur();
+              }}
             />
-          </div>
-          <input
-            id="td-title"
-            type="text"
-            className="td-input td-title-input"
-            value={titleEdit.value}
-            onChange={(e) => titleEdit.setValue(e.target.value)}
-            onBlur={titleEdit.handleBlur}
-            onKeyDown={(e) => {
-              titleEdit.handleKeyDown(e);
-              if (e.key === 'Enter') e.currentTarget.blur();
-            }}
-          />
-        </section>
-
-        {/* Task Type Section */}
-        <section className="td-section" data-testid="task-type-section">
-          <label className="td-label">Tipo de Tarefa</label>
-          <div className="task-type-selector" role="radiogroup" aria-label="Selecione o tipo da tarefa">
-            {(['initiative', 'card', 'subtask'] as TaskType[]).map((typeKey) => {
-              const cfg = TASK_TYPE_CONFIGS[typeKey];
-              const isSelected = (task.type ?? 'card') === typeKey;
-              return (
-                <button
-                  key={typeKey}
-                  type="button"
-                  className={`task-type-btn ${isSelected ? 'task-type-btn--active' : ''}`}
-                  onClick={() => onUpdateTask(task.id, { type: typeKey })}
-                  role="radio"
-                  aria-checked={isSelected}
-                  title={cfg.description}
-                  style={
-                    isSelected
-                      ? {
-                          borderColor: cfg.color,
-                          color: cfg.textVar,
-                          backgroundColor: cfg.bgVar,
-                        }
-                      : undefined
-                  }
-                >
-                  <span aria-hidden="true" style={{ marginRight: '6px' }}>{cfg.icon}</span>
-                  <span>{cfg.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Initiative Progress Section */}
-        {task.type === 'initiative' && (
-          <section className="td-section" data-testid="td-initiative-progress">
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', alignItems: 'center' }}>
-              <label className="td-label" style={{ marginBottom: 0 }}>Progresso da Iniciativa</label>
-              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                {initiativeProgress.completed} de {initiativeProgress.total} tarefas concluídas ({initiativeProgress.percentage}%)
-              </span>
-            </div>
-            <div className="task-initiative-progress__bar" style={{ height: '6px' }}>
-              <div
-                className="task-initiative-progress__fill"
-                style={{ width: `${initiativeProgress.percentage}%` }}
-              />
-            </div>
           </section>
-        )}
 
-        {/* Dates Section (Início, Fim, Entrega) */}
-        <section className="td-section">
-          <div className="td-dates-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
-            <div>
-              <label htmlFor="td-startDate" className="td-label">Início da Tarefa</label>
-              <input
-                id="td-startDate"
-                type="date"
-                className="td-input td-date-input"
-                value={localStartDate}
-                onChange={(e) => setLocalStartDate(e.target.value)}
-                onBlur={handleStartDateBlur}
-                aria-label="Início da Tarefa"
-              />
-            </div>
-            <div>
-              <label htmlFor="td-endDate" className="td-label">Fim da Tarefa</label>
-              <input
-                id="td-endDate"
-                type="date"
-                className="td-input td-date-input"
-                value={localEndDate}
-                onChange={(e) => setLocalEndDate(e.target.value)}
-                onBlur={handleEndDateBlur}
-                aria-label="Fim da Tarefa"
-              />
-            </div>
-            <div>
-              <label htmlFor="td-dueDate" className="td-label">Data de Entrega</label>
-              <input
-                id="td-dueDate"
-                type="date"
-                className="td-input td-date-input"
-                value={localDueDate}
-                onChange={(e) => setLocalDueDate(e.target.value)}
-                onBlur={handleDueDateBlur}
-                aria-label="Data de Entrega"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Impediment / Blocked Section */}
-        <section className={`td-section td-blocked-section ${task.blocked ? 'is-blocked' : ''}`} data-testid="td-blocked-section">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <label htmlFor="td-blocked-reason" className="td-label" style={{ margin: 0 }}>
-              Impedimento / Bloqueio
-            </label>
-            {blockedTimeMs > 0 && (
-              <span className="td-blocked-time" style={{ fontSize: '0.8rem', color: task.blocked ? '#ef4444' : 'var(--text-secondary)' }}>
-                Tempo bloqueado: <strong>{formattedBlockedTime}</strong>
-              </span>
-            )}
-          </div>
-
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: task.blocked ? '8px' : '0' }}>
-            <button
-              type="button"
-              className={`btn ${task.blocked ? 'btn-danger' : 'btn-secondary'}`}
-              onClick={handleToggleBlocked}
-              style={{ fontSize: '0.85rem', padding: '6px 12px' }}
-            >
-              {task.blocked ? '⛔ Desbloquear Tarefa' : '🚫 Marcar como Bloqueada'}
-            </button>
-            {task.blocked && (
-              <span style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 600 }}>
-                Tarefa atualmente impedida
-              </span>
-            )}
-          </div>
-
-          {task.blocked && (
-            <div style={{ marginTop: '8px' }}>
-              <div className="td-field-header" style={{ marginBottom: '4px' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Motivo do bloqueio</span>
-                <TaskFieldActionToolbar
-                  status={brEdit.status}
-                  isDirty={brEdit.isDirty}
-                  onSave={brEdit.saveNow}
-                  onDiscard={brEdit.discard}
-                  isReadOnly={isReadOnly}
-                  ariaLabelPrefix="do motivo do bloqueio"
-                  compact
+          {/* Initiative Progress Section */}
+          {task.type === 'initiative' && (
+            <section className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80 space-y-2">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-slate-300">Progresso da Iniciativa</span>
+                <span className="font-mono text-cyan-300">
+                  {initiativeProgress.completed}/{initiativeProgress.total} ({initiativeProgress.percentage}%)
+                </span>
+              </div>
+              <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                <div
+                  className="bg-cyan-500 h-full transition-all duration-300"
+                  style={{ width: `${initiativeProgress.percentage}%` }}
                 />
               </div>
-              <input
-                id="td-blocked-reason"
-                type="text"
-                className="td-input"
-                placeholder="Descreva o motivo do bloqueio..."
-                value={brEdit.value}
-                onChange={(e) => brEdit.setValue(e.target.value)}
-                onBlur={brEdit.handleBlur}
-                onKeyDown={brEdit.handleKeyDown}
+            </section>
+          )}
+
+          {/* Description Section */}
+          <section className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label htmlFor="td-description" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Descrição
+              </label>
+              <TaskFieldActionToolbar
+                status={descEdit.status}
+                isDirty={descEdit.isDirty}
+                onSave={descEdit.saveNow}
+                onDiscard={descEdit.discard}
+                isReadOnly={isReadOnly}
+                ariaLabelPrefix="da descrição"
               />
             </div>
-          )}
-        </section>
-
-        {/* Description Section */}
-        <section className="td-section">
-          <div className="td-field-header">
-            <label htmlFor="td-description" className="td-label">Descrição</label>
-            <TaskFieldActionToolbar
-              status={descEdit.status}
-              isDirty={descEdit.isDirty}
-              onSave={descEdit.saveNow}
-              onDiscard={descEdit.discard}
-              isReadOnly={isReadOnly}
-              ariaLabelPrefix="da descrição"
+            <textarea
+              id="td-description"
+              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-300 leading-relaxed focus:outline-none focus:border-cyan-500 transition-colors"
+              placeholder="Adicione uma descrição detalhada..."
+              value={descEdit.value}
+              onChange={(e) => descEdit.setValue(e.target.value)}
+              onBlur={descEdit.handleBlur}
+              onKeyDown={descEdit.handleKeyDown}
+              rows={4}
             />
-          </div>
-          <textarea
-            id="td-description"
-            className="td-textarea"
-            placeholder="Adicione uma descrição detalhada sobre a tarefa..."
-            value={descEdit.value}
-            onChange={(e) => descEdit.setValue(e.target.value)}
-            onBlur={descEdit.handleBlur}
-            onKeyDown={descEdit.handleKeyDown}
-            rows={4}
-          />
-        </section>
+          </section>
 
-        {/* Acceptance Criteria Section */}
-        <section className="td-section">
-          <div className="td-field-header">
-            <label htmlFor="td-acceptance-criteria" className="td-label">Critérios de Aceitação</label>
-            <TaskFieldActionToolbar
-              status={acEdit.status}
-              isDirty={acEdit.isDirty}
-              onSave={acEdit.saveNow}
-              onDiscard={acEdit.discard}
-              isReadOnly={isReadOnly}
-              ariaLabelPrefix="dos critérios de aceitação"
+          {/* Acceptance Criteria */}
+          <section className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label htmlFor="td-acceptance-criteria" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Critérios de Aceitação
+              </label>
+              <TaskFieldActionToolbar
+                status={acEdit.status}
+                isDirty={acEdit.isDirty}
+                onSave={acEdit.saveNow}
+                onDiscard={acEdit.discard}
+                isReadOnly={isReadOnly}
+                ariaLabelPrefix="dos critérios de aceitação"
+              />
+            </div>
+            <textarea
+              id="td-acceptance-criteria"
+              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-300 leading-relaxed focus:outline-none focus:border-cyan-500 transition-colors"
+              placeholder="Defina os critérios para aceitação..."
+              value={acEdit.value}
+              onChange={(e) => acEdit.setValue(e.target.value)}
+              onBlur={acEdit.handleBlur}
+              onKeyDown={acEdit.handleKeyDown}
+              rows={3}
             />
-          </div>
-          <textarea
-            id="td-acceptance-criteria"
-            className="td-textarea"
-            placeholder="Defina os critérios de aceitação para considerar a tarefa pronta..."
-            value={acEdit.value}
-            onChange={(e) => acEdit.setValue(e.target.value)}
-            onBlur={acEdit.handleBlur}
-            onKeyDown={acEdit.handleKeyDown}
-            rows={3}
-          />
-        </section>
+          </section>
 
-        {/* Test Scenarios Section */}
-        <section className="td-section">
-          <div className="td-field-header">
-            <label htmlFor="td-test-scenarios" className="td-label">Cenários de Testes</label>
-            <TaskFieldActionToolbar
-              status={tsEdit.status}
-              isDirty={tsEdit.isDirty}
-              onSave={tsEdit.saveNow}
-              onDiscard={tsEdit.discard}
-              isReadOnly={isReadOnly}
-              ariaLabelPrefix="dos cenários de testes"
+          {/* Test Scenarios */}
+          <section className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label htmlFor="td-test-scenarios" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Cenários de Testes
+              </label>
+              <TaskFieldActionToolbar
+                status={tsEdit.status}
+                isDirty={tsEdit.isDirty}
+                onSave={tsEdit.saveNow}
+                onDiscard={tsEdit.discard}
+                isReadOnly={isReadOnly}
+                ariaLabelPrefix="dos cenários de testes"
+              />
+            </div>
+            <textarea
+              id="td-test-scenarios"
+              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-300 leading-relaxed focus:outline-none focus:border-cyan-500 transition-colors"
+              placeholder="Descreva os cenários de testes..."
+              value={tsEdit.value}
+              onChange={(e) => tsEdit.setValue(e.target.value)}
+              onBlur={tsEdit.handleBlur}
+              onKeyDown={tsEdit.handleKeyDown}
+              rows={3}
             />
-          </div>
-          <textarea
-            id="td-test-scenarios"
-            className="td-textarea"
-            placeholder="Descreva os cenários de testes e validações (ex: BDD Dado/Quando/Então)..."
-            value={tsEdit.value}
-            onChange={(e) => tsEdit.setValue(e.target.value)}
-            onBlur={tsEdit.handleBlur}
-            onKeyDown={tsEdit.handleKeyDown}
-            rows={3}
-          />
-        </section>
+          </section>
 
-        {/* Subtasks Section */}
-        <section className="td-section">
-          <div className="td-subtasks-header">
-            <label className="td-label">Checklist</label>
+          {/* Subtasks / Checklist */}
+          <section className="space-y-3 bg-slate-950/40 p-4 rounded-xl border border-slate-800/80">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                Checklist ({completedCount}/{subtasks.length})
+              </label>
+              {subtasks.length > 0 && (
+                <span className="text-xs font-mono text-slate-300">{progress}%</span>
+              )}
+            </div>
+
             {subtasks.length > 0 && (
-              <span className="td-progress-text">{progress}% ({completedCount}/{subtasks.length})</span>
+              <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                <div
+                  className="bg-emerald-500 h-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             )}
-          </div>
-          
-          {subtasks.length > 0 && (
-            <div className="td-progress-bar-bg">
-              <div 
-                className="td-progress-bar-fill" 
-                style={{ width: `${progress}%`, backgroundColor: progress === 100 ? 'var(--success-color)' : 'var(--primary-color)' }}
-              />
-            </div>
-          )}
 
-          <ul className="td-subtasks-list">
-            {subtasks.map((st) => (
-              <li key={st.id} className={`td-subtask-item ${st.completed ? 'completed' : ''}`}>
-                <label className="td-subtask-label">
-                  <input
-                    type="checkbox"
-                    checked={st.completed}
-                    onChange={() => handleToggleSubtask(st.id)}
-                    className="td-checkbox"
-                  />
-                  <span className="td-subtask-title">{st.title}</span>
-                </label>
-                <button
-                  type="button"
-                  className="td-subtask-delete"
-                  onClick={() => handleDeleteSubtask(st.id)}
-                  aria-label="Excluir subtarefa"
-                  title="Excluir subtarefa"
+            <ul className="space-y-2">
+              {subtasks.map((st) => (
+                <li
+                  key={st.id}
+                  className={`flex items-center justify-between p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 ${
+                    st.completed ? 'opacity-60 line-through' : ''
+                  }`}
                 >
-                  ×
-                </button>
-              </li>
-            ))}
-          </ul>
+                  <label className="flex items-center gap-2.5 cursor-pointer text-xs text-slate-200">
+                    <input
+                      type="checkbox"
+                      checked={st.completed}
+                      onChange={() => handleToggleSubtask(st.id)}
+                      className="rounded border-slate-700 text-cyan-500 focus:ring-cyan-500 bg-slate-950"
+                    />
+                    <span>{st.title}</span>
+                  </label>
+                  <button
+                    type="button"
+                    className="text-slate-500 hover:text-rose-400 text-xs px-1.5 py-0.5"
+                    onClick={() => handleDeleteSubtask(st.id)}
+                    aria-label="Excluir subtarefa"
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ul>
 
-          <form onSubmit={handleAddSubtask} className="td-add-subtask-form">
-            <input
-              type="text"
-              className="td-input td-add-subtask-input"
-              placeholder="Adicionar um item..."
-              value={newSubtaskTitle}
-              onChange={(e) => setNewSubtaskTitle(e.target.value)}
+            <form onSubmit={handleAddSubtask} className="flex gap-2">
+              <input
+                type="text"
+                className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+                placeholder="Adicionar um item..."
+                value={newSubtaskTitle}
+                onChange={(e) => setNewSubtaskTitle(e.target.value)}
+              />
+              <button
+                type="submit"
+                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold disabled:opacity-50"
+                disabled={!newSubtaskTitle.trim()}
+              >
+                Adicionar
+              </button>
+            </form>
+          </section>
+
+          {/* Task Links & Dependencies */}
+          {onAddLink && onRemoveLink && (
+            <TaskLinksSection
+              currentTask={task}
+              currentBoardId={currentBoardId}
+              currentTeamId={currentTeamId}
+              boardTasks={boardTasks}
+              allBoards={allBoards}
+              teams={teams}
+              isReadOnly={isReadOnly}
+              onAddLink={onAddLink}
+              onRemoveLink={onRemoveLink}
+              onNavigateToBoard={onNavigateToBoard}
             />
-            <button type="submit" className="btn btn-secondary td-add-subtask-btn" disabled={!newSubtaskTitle.trim()}>
-              Adicionar
-            </button>
-          </form>
-        </section>
+          )}
 
-        {/* Task Links & Dependencies Section (Feature 024) */}
-        {onAddLink && onRemoveLink && (
-          <TaskLinksSection
-            currentTask={task}
-            currentBoardId={currentBoardId}
-            currentTeamId={currentTeamId}
-            boardTasks={boardTasks}
-            allBoards={allBoards}
-            teams={teams}
+          {/* Timeline Section */}
+          <section className="pt-4 border-t border-slate-800/80">
+            <TaskTimeline
+              taskId={task.id}
+              comments={task.comments}
+              activityLog={task.activityLog}
+              onAddComment={handleAddComment}
+              onDeleteComment={handleDeleteComment}
+              isGuest={isReadOnly}
+            />
+          </section>
+        </div>
+
+        {/* Sidebar Column (Right: ~35%) */}
+        <div className="w-full lg:w-[35%] flex flex-col gap-4">
+          <TaskMetadataSidebar
+            task={task}
+            columns={columns}
             isReadOnly={isReadOnly}
-            onAddLink={onAddLink}
-            onRemoveLink={onRemoveLink}
-            onNavigateToBoard={onNavigateToBoard}
+            onUpdateTask={onUpdateTask}
+            onToggleBlocked={onToggleBlocked}
+            localStartDate={localStartDate}
+            setLocalStartDate={setLocalStartDate}
+            handleStartDateBlur={handleStartDateBlur}
+            localEndDate={localEndDate}
+            setLocalEndDate={setLocalEndDate}
+            handleEndDateBlur={handleEndDateBlur}
+            localDueDate={localDueDate}
+            setLocalDueDate={setLocalDueDate}
+            handleDueDateBlur={handleDueDateBlur}
           />
-        )}
 
-        {/* Metadata Section */}
-        <section className="td-metadata">
-          <div className="td-meta-item">
-            <span className="td-meta-label">Criado em:</span>
-            <span className="td-meta-value">{new Date(task.createdAt).toLocaleString('pt-BR')}</span>
-          </div>
-          {task.startedAt && (
-            <div className="td-meta-item">
-              <span className="td-meta-label">Iniciado em:</span>
-              <span className="td-meta-value">{new Date(task.startedAt).toLocaleString('pt-BR')}</span>
-            </div>
-          )}
-          {task.completedAt && (
-            <div className="td-meta-item">
-              <span className="td-meta-label">Concluído em:</span>
-              <span className="td-meta-value">{new Date(task.completedAt).toLocaleString('pt-BR')}</span>
-            </div>
-          )}
-        </section>
-
-        {/* Timeline, Comments & Audit Trail Section (Feature 033) */}
-        <section className="td-timeline-section mt-4">
-          <TaskTimeline
+          <TaskActivityPanel
             taskId={task.id}
-            comments={task.comments}
-            activityLog={task.activityLog}
-            onAddComment={handleAddComment}
-            onDeleteComment={handleDeleteComment}
-            isGuest={isReadOnly}
+            initialEntries={formattedActivityEntries}
+            onSubmitComment={handleAddComment}
           />
-        </section>
-
+        </div>
       </div>
 
       {/* Close Guard Dialog */}
       {showCloseGuard && (
-        <div className="td-close-guard-overlay" role="alertdialog" aria-modal="true" aria-labelledby="guard-title" aria-describedby="guard-desc">
-          <div className="td-close-guard-dialog">
-            <div className="td-close-guard-header">
-              <span className="td-close-guard-icon" aria-hidden="true">⚠️</span>
-              <h3 id="guard-title" className="td-close-guard-title">Existem alterações não salvas</h3>
+        <div className="td-close-guard-overlay" role="alertdialog" aria-modal="true" aria-labelledby="guard-title">
+          <div className="td-close-guard-dialog bg-slate-900 border border-amber-500/60 p-6 rounded-2xl shadow-2xl max-w-md w-full space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="text-amber-400 text-2xl">⚠️</span>
+              <h3 id="guard-title" className="text-base font-bold text-slate-100">
+                Existem alterações não salvas
+              </h3>
             </div>
-            <p id="guard-desc" className="td-close-guard-desc">
-              Você tem modificações pendentes nesta tarefa. O que deseja fazer antes de fechar?
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Você possui modificações pendentes nesta tarefa. Deseja salvar antes de fechar?
             </p>
-            <div className="td-close-guard-actions">
+            <div className="flex flex-col sm:flex-row gap-2 pt-2">
               <button
                 type="button"
-                className="btn btn-primary td-guard-btn-save"
+                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold"
                 onClick={handleSaveAndClose}
               >
                 Salvar e Fechar
               </button>
               <button
                 type="button"
-                className="btn btn-danger td-guard-btn-discard"
+                className="px-4 py-2 bg-rose-950/80 hover:bg-rose-900/80 text-rose-200 border border-rose-800 rounded-lg text-xs font-semibold"
                 onClick={handleDiscardAndClose}
               >
-                Descartar Alterações
+                Descartar
               </button>
               <button
                 type="button"
-                className="btn btn-secondary td-guard-btn-continue"
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold"
                 onClick={handleContinueEditing}
               >
                 Continuar Editando
