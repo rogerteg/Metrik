@@ -32,7 +32,7 @@ export const TaskActivityPanel: React.FC<TaskActivityPanelProps> = ({
   } = useTaskActivity({ initialEntries, collapseThreshold: 5 });
 
   return (
-    <aside className="flex flex-col h-full bg-slate-900/90 backdrop-blur-md border-l border-slate-800/80 rounded-r-2xl overflow-hidden shadow-xl">
+    <aside className="task-activity-panel">
       {/* Header */}
       <TaskActivityHeader
         unreadCount={unreadCount}
@@ -46,7 +46,7 @@ export const TaskActivityPanel: React.FC<TaskActivityPanelProps> = ({
       />
 
       {/* Activity Log List */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar">
+      <div className="task-activity-list-container custom-scrollbar">
         <TaskActivityLogList
           entries={displayedEntries}
           isExpanded={isExpanded}

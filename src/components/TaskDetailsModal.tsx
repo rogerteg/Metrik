@@ -326,17 +326,13 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={handleRequestClose} title="Detalhes da Tarefa">
-      <div
-        className="task-details-redesigned flex flex-col lg:flex-row gap-6 p-4 text-slate-200 bg-slate-900/90 backdrop-blur-md rounded-2xl border border-slate-800"
-        onKeyDown={handleModalKeyDown}
-      >
+      <div className="task-details-redesigned" onKeyDown={handleModalKeyDown}>
         {/* Main Column (Left: ~65%) */}
-        <div className="w-full lg:w-[65%] space-y-6">
-          
+        <div className="td-main-column">
           {/* Title Section */}
-          <section className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label htmlFor="td-title" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <section className="td-section">
+            <div className="td-section-header">
+              <label htmlFor="td-title" className="td-label">
                 Título
               </label>
               <TaskFieldActionToolbar
@@ -352,7 +348,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             <input
               id="td-title"
               type="text"
-              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-3.5 py-2.5 text-base font-semibold text-slate-100 focus:outline-none focus:border-cyan-500 transition-colors"
+              className="td-input td-title-input"
               value={titleEdit.value}
               onChange={(e) => titleEdit.setValue(e.target.value)}
               onBlur={titleEdit.handleBlur}
@@ -365,16 +361,16 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
           {/* Initiative Progress Section */}
           {task.type === 'initiative' && (
-            <section className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800/80 space-y-2">
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-semibold text-slate-300">Progresso da Iniciativa</span>
-                <span className="font-mono text-cyan-300">
+            <section className="td-initiative-card">
+              <div className="td-initiative-header">
+                <span>Progresso da Iniciativa</span>
+                <span className="td-initiative-progress-val">
                   {initiativeProgress.completed}/{initiativeProgress.total} ({initiativeProgress.percentage}%)
                 </span>
               </div>
-              <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+              <div className="td-progress-bar-track">
                 <div
-                  className="bg-cyan-500 h-full transition-all duration-300"
+                  className="td-progress-bar-fill"
                   style={{ width: `${initiativeProgress.percentage}%` }}
                 />
               </div>
@@ -382,9 +378,9 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           )}
 
           {/* Description Section */}
-          <section className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label htmlFor="td-description" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <section className="td-section">
+            <div className="td-section-header">
+              <label htmlFor="td-description" className="td-label">
                 Descrição
               </label>
               <TaskFieldActionToolbar
@@ -398,7 +394,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             </div>
             <textarea
               id="td-description"
-              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-300 leading-relaxed focus:outline-none focus:border-cyan-500 transition-colors"
+              className="td-textarea"
               placeholder="Adicione uma descrição detalhada..."
               value={descEdit.value}
               onChange={(e) => descEdit.setValue(e.target.value)}
@@ -409,9 +405,9 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           </section>
 
           {/* Acceptance Criteria */}
-          <section className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label htmlFor="td-acceptance-criteria" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <section className="td-section">
+            <div className="td-section-header">
+              <label htmlFor="td-acceptance-criteria" className="td-label">
                 Critérios de Aceitação
               </label>
               <TaskFieldActionToolbar
@@ -425,7 +421,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             </div>
             <textarea
               id="td-acceptance-criteria"
-              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-300 leading-relaxed focus:outline-none focus:border-cyan-500 transition-colors"
+              className="td-textarea"
               placeholder="Defina os critérios para aceitação..."
               value={acEdit.value}
               onChange={(e) => acEdit.setValue(e.target.value)}
@@ -436,9 +432,9 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           </section>
 
           {/* Test Scenarios */}
-          <section className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label htmlFor="td-test-scenarios" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <section className="td-section">
+            <div className="td-section-header">
+              <label htmlFor="td-test-scenarios" className="td-label">
                 Cenários de Testes
               </label>
               <TaskFieldActionToolbar
@@ -452,7 +448,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             </div>
             <textarea
               id="td-test-scenarios"
-              className="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-sm text-slate-300 leading-relaxed focus:outline-none focus:border-cyan-500 transition-colors"
+              className="td-textarea"
               placeholder="Descreva os cenários de testes..."
               value={tsEdit.value}
               onChange={(e) => tsEdit.setValue(e.target.value)}
@@ -463,45 +459,43 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           </section>
 
           {/* Subtasks / Checklist */}
-          <section className="space-y-3 bg-slate-950/40 p-4 rounded-xl border border-slate-800/80">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <section className="td-checklist-card">
+            <div className="td-checklist-header">
+              <label className="td-label">
                 Checklist ({completedCount}/{subtasks.length})
               </label>
               {subtasks.length > 0 && (
-                <span className="text-xs font-mono text-slate-300">{progress}%</span>
+                <span className="td-initiative-progress-val">{progress}%</span>
               )}
             </div>
 
             {subtasks.length > 0 && (
-              <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+              <div className="td-progress-bar-track">
                 <div
-                  className="bg-emerald-500 h-full transition-all duration-300"
+                  className="td-progress-bar-fill"
                   style={{ width: `${progress}%` }}
                 />
               </div>
             )}
 
-            <ul className="space-y-2">
+            <ul className="td-checklist-items">
               {subtasks.map((st) => (
                 <li
                   key={st.id}
-                  className={`flex items-center justify-between p-2 rounded-lg bg-slate-900/60 border border-slate-800/60 ${
-                    st.completed ? 'opacity-60 line-through' : ''
-                  }`}
+                  className={`td-checklist-item ${st.completed ? 'completed' : ''}`}
                 >
-                  <label className="flex items-center gap-2.5 cursor-pointer text-xs text-slate-200">
+                  <label className="td-checklist-label">
                     <input
                       type="checkbox"
                       checked={st.completed}
                       onChange={() => handleToggleSubtask(st.id)}
-                      className="rounded border-slate-700 text-cyan-500 focus:ring-cyan-500 bg-slate-950"
+                      className="td-checkbox"
                     />
-                    <span>{st.title}</span>
+                    <span className="td-checklist-text">{st.title}</span>
                   </label>
                   <button
                     type="button"
-                    className="text-slate-500 hover:text-rose-400 text-xs px-1.5 py-0.5"
+                    className="td-checklist-delete-btn"
                     onClick={() => handleDeleteSubtask(st.id)}
                     aria-label="Excluir subtarefa"
                   >
@@ -511,17 +505,17 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               ))}
             </ul>
 
-            <form onSubmit={handleAddSubtask} className="flex gap-2">
+            <form onSubmit={handleAddSubtask} className="td-checklist-form">
               <input
                 type="text"
-                className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="td-input"
                 placeholder="Adicionar um item..."
                 value={newSubtaskTitle}
                 onChange={(e) => setNewSubtaskTitle(e.target.value)}
               />
               <button
                 type="submit"
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold disabled:opacity-50"
+                className="td-btn-add-subtask"
                 disabled={!newSubtaskTitle.trim()}
               >
                 Adicionar
@@ -546,7 +540,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           )}
 
           {/* Timeline Section */}
-          <section className="pt-4 border-t border-slate-800/80">
+          <section style={{ paddingTop: 16, borderTop: '1px solid var(--border-subtle)' }}>
             <TaskTimeline
               taskId={task.id}
               comments={task.comments}
@@ -559,7 +553,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
         </div>
 
         {/* Sidebar Column (Right: ~35%) */}
-        <div className="w-full lg:w-[35%] flex flex-col gap-4">
+        <div className="td-sidebar-column">
           <TaskMetadataSidebar
             task={task}
             columns={columns}
@@ -588,34 +582,34 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
       {/* Close Guard Dialog */}
       {showCloseGuard && (
         <div className="td-close-guard-overlay" role="alertdialog" aria-modal="true" aria-labelledby="guard-title">
-          <div className="td-close-guard-dialog bg-slate-900 border border-amber-500/60 p-6 rounded-2xl shadow-2xl max-w-md w-full space-y-4">
-            <div className="flex items-center gap-3">
-              <span className="text-amber-400 text-2xl">⚠️</span>
-              <h3 id="guard-title" className="text-base font-bold text-slate-100">
+          <div className="td-close-guard-dialog">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: '1.5rem' }}>⚠️</span>
+              <h3 id="guard-title" style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                 Existem alterações não salvas
               </h3>
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               Você possui modificações pendentes nesta tarefa. Deseja salvar antes de fechar?
             </p>
-            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
               <button
                 type="button"
-                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold"
+                className="btn btn-primary"
                 onClick={handleSaveAndClose}
               >
                 Salvar e Fechar
               </button>
               <button
                 type="button"
-                className="px-4 py-2 bg-rose-950/80 hover:bg-rose-900/80 text-rose-200 border border-rose-800 rounded-lg text-xs font-semibold"
+                className="btn btn-danger"
                 onClick={handleDiscardAndClose}
               >
                 Descartar
               </button>
               <button
                 type="button"
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold"
+                className="btn btn-secondary"
                 onClick={handleContinueEditing}
               >
                 Continuar Editando
