@@ -377,6 +377,9 @@ describe('Task Component (US2 & US4)', () => {
       />
     );
 
+    // Clica na barra de alternância para expandir a área de formulário de QA
+    fireEvent.click(screen.getByTestId('task-qa-section').querySelector('.task-qa-toggle-bar')!);
+
     const acTextarea = screen.getByLabelText('Critérios de aceitação');
     const tsTextarea = screen.getByLabelText('Cenários de testes');
 

@@ -297,7 +297,7 @@ export const Task: React.FC<TaskProps> = ({
           onRemoveTag={(tag) => onRemoveTag?.(task.id, tag)}
         />
 
-        {/* Seção de Engenharia & Qualidade: Critérios de Aceitação e Cenários de Testes */}
+        {/* Seção de Engenharia & Qualidade: Critérios de Aceitação e Cenários de Testes (Resumo Compacto por Padrão) */}
         <div className="task-qa-section" data-testid="task-qa-section">
           <div
             className="task-qa-toggle-bar"
@@ -317,14 +317,14 @@ export const Task: React.FC<TaskProps> = ({
                   <polyline points="9 11 12 14 22 4"></polyline>
                   <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                 </svg>
-                {hasAcceptanceCriteria ? 'Critérios' : 'Critérios'}
+                Critérios
               </span>
               <span className={`task-qa-summary-item ${hasTestScenarios ? 'has-content' : ''}`}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                   <polyline points="14 2 14 8 20 8"></polyline>
                 </svg>
-                {hasTestScenarios ? 'Testes' : 'Testes'}
+                Testes
               </span>
             </div>
             <span className={`task-qa-toggle-icon ${isQaExpanded ? 'expanded' : ''}`} aria-hidden="true">
@@ -332,7 +332,7 @@ export const Task: React.FC<TaskProps> = ({
             </span>
           </div>
 
-          {(isQaExpanded || hasQualityContent) && (
+          {isQaExpanded && (
             <div className="task-qa-fields" data-testid="task-qa-fields">
               <div className="task-field-box">
                 <div className="task-field-header">
@@ -349,7 +349,7 @@ export const Task: React.FC<TaskProps> = ({
                   value={acEdit.value}
                   placeholder="Critérios de aceitação..."
                   aria-label="Critérios de aceitação"
-                  rows={hasAcceptanceCriteria || acEdit.isDirty ? 2 : 1}
+                  rows={2}
                   onFocus={() => setIsEditingAC(true)}
                   onBlur={() => {
                     setIsEditingAC(false);
@@ -387,7 +387,7 @@ export const Task: React.FC<TaskProps> = ({
                   value={tsEdit.value}
                   placeholder="Cenários de testes..."
                   aria-label="Cenários de testes"
-                  rows={hasTestScenarios || tsEdit.isDirty ? 2 : 1}
+                  rows={2}
                   onFocus={() => setIsEditingTS(true)}
                   onBlur={() => {
                     setIsEditingTS(false);
@@ -417,7 +417,7 @@ export const Task: React.FC<TaskProps> = ({
                 className="task-indicator-badge date-start-badge"
                 title={`Início da tarefa: ${formatDateShort(task.startDate)}`}
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '3px' }}>
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
@@ -429,7 +429,7 @@ export const Task: React.FC<TaskProps> = ({
                 className="task-indicator-badge date-end-badge"
                 title={`Fim da tarefa: ${formatDateShort(task.endDate)}`}
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '3px' }}>
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                   <line x1="16" y1="2" x2="16" y2="6"></line>
                   <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -443,7 +443,7 @@ export const Task: React.FC<TaskProps> = ({
                 className={`task-indicator-badge due-date-${dueDateStatus}`} 
                 title={`Data de entrega: ${formatDateShort(task.dueDate!)}`}
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '3px' }}>
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                   <line x1="16" y1="2" x2="16" y2="6"></line>
                   <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -454,7 +454,7 @@ export const Task: React.FC<TaskProps> = ({
             )}
             {hasDescription && (
               <span className="task-indicator-badge" title="Esta tarefa possui uma descrição">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="21" y1="10" x2="3" y2="10"></line>
                   <line x1="21" y1="6" x2="3" y2="6"></line>
                   <line x1="21" y1="14" x2="3" y2="14"></line>
@@ -464,7 +464,7 @@ export const Task: React.FC<TaskProps> = ({
             )}
             {hasSubtasks && (
               <span className="task-indicator-badge" title={`${completedSubtasks} de ${subtasks.length} subtarefas concluídas`}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '3px' }}>
                   <polyline points="9 11 12 14 22 4"></polyline>
                   <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                 </svg>

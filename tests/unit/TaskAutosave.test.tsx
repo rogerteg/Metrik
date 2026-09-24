@@ -37,7 +37,10 @@ describe('Task Autosave & Save/Discard Buttons (US1 - Feature 032)', () => {
       />
     );
 
-    // O campo de critérios de aceitação já possui conteúdo, portanto está visível
+    // Expande a seção de QA
+    fireEvent.click(screen.getByTestId('task-qa-section').querySelector('.task-qa-toggle-bar')!);
+
+    // O campo de critérios de aceitação já possui conteúdo e agora está expandido
     const acTextarea = screen.getByLabelText(/critérios de aceitação/i);
     expect(acTextarea).toHaveValue('Critérios originais');
 
@@ -86,6 +89,7 @@ describe('Task Autosave & Save/Discard Buttons (US1 - Feature 032)', () => {
       />
     );
 
+    fireEvent.click(screen.getByTestId('task-qa-section').querySelector('.task-qa-toggle-bar')!);
     const tsTextarea = screen.getByLabelText(/cenários de testes/i);
     fireEvent.change(tsTextarea, { target: { value: 'Novos cenários BDD' } });
 
@@ -114,6 +118,7 @@ describe('Task Autosave & Save/Discard Buttons (US1 - Feature 032)', () => {
       />
     );
 
+    fireEvent.click(screen.getByTestId('task-qa-section').querySelector('.task-qa-toggle-bar')!);
     const acTextarea = screen.getByLabelText(/critérios de aceitação/i);
     fireEvent.change(acTextarea, { target: { value: 'Texto digitado continuamente' } });
 
