@@ -3,10 +3,38 @@
    ========================================================================== */
 
 .settings-view-container {
-  max-width: 1200px;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 24px 32px;
+  padding: 16px 24px 48px 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
   animation: settingsFadeIn 0.25s ease-out;
+
+  /* Barra de Rolagem Customizada Elegante */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.4) rgba(15, 23, 42, 0.6);
+}
+
+.settings-view-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.settings-view-container::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 4px;
+}
+
+.settings-view-container::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.35);
+  border-radius: 4px;
+}
+
+.settings-view-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.6);
 }
 
 @keyframes settingsFadeIn {
