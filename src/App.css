@@ -3,6 +3,8 @@
    Aesthetics: Sleek Modern Dark Mode, Glassmorphism, Micro-interactions
    ========================================================================== */
 
+@import './components/Settings/Settings.css';
+
 :root,
 [data-theme="dark"] {
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

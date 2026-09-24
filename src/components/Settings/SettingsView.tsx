@@ -7,6 +7,7 @@ import { WorkspacesSettingsTab } from './WorkspacesSettingsTab';
 import { BoardPoliciesTab } from './BoardPoliciesTab';
 import { DataPortabilityTab } from './DataPortabilityTab';
 import { CloudSyncTab } from './CloudSyncTab';
+import './Settings.css';
 
 export type SettingsTabId = 'general' | 'workspaces' | 'policies' | 'data' | 'cloud';
 
