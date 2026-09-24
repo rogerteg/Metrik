@@ -782,21 +782,21 @@ body {
 .task-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 10px 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-  transition: var(--transition-smooth);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   position: relative;
 }
 
 .task-card:hover {
   background: var(--bg-card-hover);
-  border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-  transform: translateY(-1px);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.32), 0 0 10px rgba(99, 102, 241, 0.1);
+  transform: translateY(-2px);
 }
 
 /* Blocked Task Styles (Feature 012 & Feature 025: Strict Movement Lock) */
@@ -1009,10 +1009,14 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 6px;
+  margin-bottom: 2px;
 }
 
 .task-card-content {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .task-textarea {
@@ -1022,13 +1026,15 @@ body {
   outline: none;
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
+  font-weight: 500;
   line-height: 1.4;
   resize: none;
   overflow: hidden;
   word-break: break-word;
-  padding: 0;
-  display: block;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
 }
 
 .task-textarea::placeholder {
@@ -1036,32 +1042,32 @@ body {
 }
 
 .task-textarea:focus {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
 }
 
-/* QA & Engineering Card Fields (Critérios de Aceitação & Cenários de Testes) */
+/* QA & Engineering Card Summary & Fields */
 .task-qa-section {
-  margin-top: 6px;
-  margin-bottom: 4px;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
 .task-qa-toggle-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 3px 6px;
+  padding: 3px 8px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
   user-select: none;
 }
 
 .task-qa-toggle-bar:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.2);
 }
 
 .task-qa-summary {
@@ -1163,38 +1169,148 @@ body {
   color: var(--text-primary);
 }
 
-/* Task Card Footer Actions - Persistent 0.6 Opacity & Smooth Hover */
+/* Task Meta & Indicators Row */
+.task-indicators {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.task-indicator-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.task-indicator-badge.due-date-expired,
+.task-indicator-badge.due-date-overdue {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  font-weight: 600;
+}
+
+.task-indicator-badge.due-date-warning,
+.task-indicator-badge.due-date-today {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #fcd34d;
+  font-weight: 600;
+}
+
+.task-indicator-badge.due-date-normal {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+}
+
+.task-links-summary-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 3px;
+}
+
+.task-links-counter-badge,
+.task-cross-squad-chip,
+.task-blocked-dependency-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 5px;
+  line-height: 1.2;
+}
+
+.task-links-counter-badge {
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: #7dd3fc;
+}
+
+.task-cross-squad-chip {
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+}
+
+.task-blocked-dependency-chip {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+}
+
+.task-metrics-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.badge-metric-time {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
+.badge-lead-time {
+  background: rgba(99, 102, 241, 0.12);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.badge-cycle-time {
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+/* Card Footer - Seamless Hover Toolbar */
 .task-card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-top: 6px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 2px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.06);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
 }
 
-.task-nav-buttons {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.task-card:hover .task-card-footer {
+  opacity: 1;
 }
 
 .btn-nav-step {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-secondary);
-  border-radius: 4px;
-  padding: 1px 6px;
-  font-size: 0.72rem;
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  opacity: 0.6;
-  transition: var(--transition-smooth);
+  transition: all 0.15s ease;
 }
 
 .btn-nav-step:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--text-primary);
-  opacity: 1;
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.4);
+  color: #c7d2fe;
 }
 
 .btn-nav-step:disabled {
@@ -1207,19 +1323,17 @@ body {
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  padding: 3px;
-  border-radius: 4px;
+  padding: 3px 5px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.6;
-  transition: var(--transition-smooth);
+  transition: all 0.15s ease;
 }
 
 .btn-delete-task:hover {
   color: #fb7185;
-  background: rgba(244, 63, 94, 0.12);
-  opacity: 1;
+  background: rgba(244, 63, 94, 0.15);
 }
 
 /* Add Column Button / Card */
