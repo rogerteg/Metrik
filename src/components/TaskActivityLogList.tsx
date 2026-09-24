@@ -10,14 +10,14 @@ export interface TaskActivityLogListProps {
   emptyStateMessage?: string;
 }
 
-const ChevronRightIcon: React.FC<{ className?: string }> = ({ className = 'w-3.5 h-3.5' }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+const ChevronRightIcon: React.FC = () => (
+  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="9 18 15 12 9 6" />
   </svg>
 );
 
-const ChevronDownIcon: React.FC<{ className?: string }> = ({ className = 'w-3.5 h-3.5' }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+const ChevronDownIcon: React.FC = () => (
+  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="6 9 12 15 18 9" />
   </svg>
 );
@@ -31,7 +31,7 @@ export const TaskActivityLogList: React.FC<TaskActivityLogListProps> = ({
 }) => {
   if (!entries || entries.length === 0) {
     return (
-      <div className="p-4 text-center text-xs text-slate-500 italic">
+      <div style={{ padding: 16, textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
         {emptyStateMessage}
       </div>
     );
@@ -41,28 +41,29 @@ export const TaskActivityLogList: React.FC<TaskActivityLogListProps> = ({
   const displayed = isExpanded ? entries : entries.slice(0, collapseThreshold);
 
   return (
-    <div className="flex flex-col gap-2 p-2">
-      <ul className="flex flex-col gap-0.5">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 4 }}>
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
         {displayed.map((entry) => (
           <TaskActivityLogItem key={entry.id} entry={entry} />
         ))}
       </ul>
 
       {hasMore && (
-        <div className="pt-1 border-t border-slate-800/60 flex justify-start">
+        <div style={{ paddingTop: 6, borderTop: '1px solid var(--border-subtle)', display: 'flex', justifyContent: 'flex-start' }}>
           <button
             type="button"
             onClick={onToggleExpand}
-            className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-colors"
+            className="td-type-btn"
+            style={{ padding: '4px 10px', fontSize: '0.75rem' }}
           >
             {isExpanded ? (
               <>
-                <ChevronDownIcon className="w-3.5 h-3.5 text-slate-400" />
+                <ChevronDownIcon />
                 <span>Mostrar menos</span>
               </>
             ) : (
               <>
-                <ChevronRightIcon className="w-3.5 h-3.5 text-slate-400" />
+                <ChevronRightIcon />
                 <span>Mostrar mais</span>
               </>
             )}
