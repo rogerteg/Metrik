@@ -174,7 +174,6 @@ export const Task: React.FC<TaskProps> = ({
 
   const hasAcceptanceCriteria = !!(acEdit.value && acEdit.value.trim().length > 0);
   const hasTestScenarios = !!(tsEdit.value && tsEdit.value.trim().length > 0);
-  const hasQualityContent = hasAcceptanceCriteria || hasTestScenarios || acEdit.isDirty || tsEdit.isDirty;
 
   const [isQaExpanded, setIsQaExpanded] = React.useState(false);
   const [isEditingAC, setIsEditingAC] = React.useState(false);
