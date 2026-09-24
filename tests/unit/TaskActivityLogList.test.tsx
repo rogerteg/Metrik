@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { TaskActivityLogList } from '../../src/components/TaskActivityLogList';
+import { TaskActivityLogList } from '../../src/components/TaskActivityLogList.tsx';
 import { ActivityLogEntry } from '../../src/types/taskActivity';
 
 describe('TaskActivityLogList', () => {

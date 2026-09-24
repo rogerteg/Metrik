@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { TaskActivityCommentForm } from '../../src/components/TaskActivityCommentForm';
+import { TaskActivityCommentForm } from '../../src/components/TaskActivityCommentForm.tsx';
 
 describe('TaskActivityCommentForm', () => {
   it('renders textarea with placeholder "Escreva um comentário..."', () => {
