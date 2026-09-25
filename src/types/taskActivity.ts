@@ -98,35 +98,5 @@ export interface TaskDetailsModalState {
   isSidebarCollapsedMobile: boolean;
 }
 
-export type ActivityCategoryFilter = 'all' | 'comments' | 'mutations' | 'assignments' | 'creations';
-
-export interface ActivityFilterOptions {
-  searchQuery: string;
-  category: ActivityCategoryFilter;
-  unreadOnly: boolean;
-}
-
-export interface ActivityLogEntry {
-  id: string;
-  taskId: string;
-  actorName: string;
-  actorAvatar?: string;
-  type: TaskActivityEventType | 'creation' | 'assignment' | 'unassignment' | 'status_change' | 'priority_change' | 'due_date_change' | 'tag_change' | 'subtask_change' | 'comment';
-  actionText: string;
-  fieldName?: string;
-  previousValue?: string;
-  newValue?: string;
-  timestamp: string;
-  isUnread?: boolean;
-}
-
-export interface TaskActivityViewState {
-  entries: ActivityLogEntry[];
-  isExpanded: boolean;
-  filter: ActivityFilterOptions;
-  isSearchOpen: boolean;
-  unreadCount: number;
-}
-
 
 
