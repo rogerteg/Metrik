@@ -299,3 +299,27 @@ tasks.md               ← o que fazer agora
   ↓
 código                 ← resultado final
 ```
+
+---
+
+## Configuração no Projeto Metrik (project-configured)
+
+> Ajuste local dos templates acima para a convenção real deste repositório. Ao copiar qualquer bloco de sessão, troque as referências genéricas pelas da coluna da direita.
+
+| Referência genérica do template | Neste projeto |
+|---|---|
+| `SDD-SKILL.md` | Skill **`sdd-spec-driven`** (`.agents/skills/sdd-spec-driven/SKILL.md`) |
+| `constitution.md` | `.specify/memory/constitution.md` (Metrik — versão vigente) |
+| `project-context.md` | `.specify/memory/project-context.md` |
+| `lessons-learned.md` | `.specify/memory/lessons-learned.md` |
+| `openspec/specs/<dominio>/spec.md` | `specs/<NNN-feature>/spec.md` |
+| `openspec/changes/<id>/{spec,plan,tasks}.md` | `specs/<NNN-feature>/{spec,plan,tasks}.md` |
+| `openspec/changes/<id>/proposal.md` (brownfield) | `specs/<NNN-feature>/proposal.md` |
+
+**Regras de projeto que o agente DEVE respeitar nesta sessão:**
+1. **Constituição VI (inegociável):** antes de escrever qualquer `tasks.md`, produza e registre explicitamente os **Modelos de Raciocínio Analítico** (Primeiros Princípios, Premortem/Inversão de falhas, MECE, Árvore de Decisão/Poda, Falsificabilidade/TDD, Conformidade Constitucional).
+2. **Constituição III:** nenhuma tarefa é concluída sem `npm run test` (Vitest) e `npm run build` (tsc + Vite) verdes.
+3. **Constituição VII:** nomes de produtos de inspiração ou frameworks de terceiros nunca aparecem em UI, atributos DOM ou comentários de código.
+4. **Constituição IX:** nunca descartar edições do usuário silenciosamente (guarda de rascunho + `beforeunload`).
+
+**Checkpoint de fase:** `spec` → (aprovação) → `plan` → (aprovação) → **modelos de raciocínio** → `tasks` → (aprovação) → implementação.

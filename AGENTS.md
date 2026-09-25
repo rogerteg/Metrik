@@ -99,8 +99,20 @@ Este repositório utiliza o ecossistema **Google Antigravity (AGY)** integrado a
     - `Retomada`: Checkpoint e continuação de sessões anteriores sem perda de contexto.
   - **Precedência inquebrável**: `constitution.md` > `project-context.md` > `lessons-learned.md` > `spec.md` > `plan.md` > `tasks.md` > código.
 
+- **`sdd-spec-driven`** (`/sdd-spec-driven`):
+  - **Função**: Guia completo da metodologia Spec Driven Development (spec-first), consolidando GitHub Spec Kit e OpenSpec.
+  - **Artefatos vivos**: `constitution.md` > `project-context.md` > `lessons-learned.md` > `specs/<dominio>/spec.md` > `changes/<id>/{proposal,spec,plan,tasks}.md`.
+  - **Fases**: Especificar → Planejar → Tarefas → Implementar, com pirâmide de testes, `constitution.md`, checklist de PR, anti-padrões e boas práticas por stack (front-end, back-end, APIs REST, banco).
+  - **Origem**: `D:\Pasta Downloads_22092026\SDD-SKILL.md` (instalada como nova skill em `.agents/skills/sdd-spec-driven/`).
+  - **Comandos**:
+    ```text
+    /sdd-spec-driven [dúvida/conceito/fase]
+    ```
+
 - **`sdd-prompt-master`** (`/sdd-prompt-master` ou `/sdd-master`):
   - **Função**: Templates operacionais de início de sessão (Master Prompts) para os 3 Modos do SDD e bloco de retomada de sessão com rastreamento de tarefas concluídas.
+  - **Configurada para o Metrik**: os templates apontam para a skill `sdd-spec-driven`, `.specify/memory/{constitution,project-context,lessons-learned}.md` e `specs/<NNN-feature>/`. Inclui os checkpoints de fase e a obrigatoriedade dos Modelos de Raciocínio Analítico (Constituição VI). Aliases: `sdd-prompt-master` e `sdd-master`.
+  - **Origem**: `D:\Pasta Downloads_22092026\SDD-PROMPT-MASTER.md` (a versão instalada é mais completa que o arquivo de origem).
 
 - **`skillsdd`** (`/skillsdd` ou `/agenticsdd`):
   - **Função**: Metodologia completa de *Agentic Spec-Driven Development* baseada na obra de Anatoly Volkhover (2025).
@@ -118,6 +130,12 @@ Este repositório utiliza o ecossistema **Google Antigravity (AGY)** integrado a
 - `/speckit-tasks`: Quebra o plano em tarefas atômicas executáveis (`tasks.md`).
 - `/speckit-implement`: Executa a implementação incremental com base nas tarefas.
 - `/speckit-analyze`: Valida a consistência cruzada entre especificação, plano e tarefas.
+- `/speckit-checklist`, `/speckit-converge`, `/speckit-taskstoissues`, `/speckit-constitution`: comandos complementares.
+- **Instalação/configuração**: `specify` CLI **1.0.11** (integração `agy`, script `ps`), state em `.specify/`, skills em `.agents/skills/speckit-*`, workflow `speckit` (Full SDD Cycle) em `.specify/workflows/`. Verificação: `specify check` e `specify integration status`.
+- **⚠️ Não execute `specify init --here --force` nem `specify integration upgrade --force`**: existem **customizações locais intencionais** em arquivos gerenciados que implementam a Constituição VI e não devem ser sobrescritas:
+  - `.specify/templates/tasks-template.md` — seção "Modelos de Raciocínio Analítico Pré-Tarefas".
+  - `.agents/skills/speckit-tasks/SKILL.md` — tratamento explícito de `extensions.yml` inválido (sem falha silenciosa — Constituição IV) e constraints de `data-model.md` nas tarefas.
+  - O aviso `modified managed files` do `specify integration status` é o mecanismo de proteção do SpecKit para essas edições — não é um defeito.
 
 ---
 
