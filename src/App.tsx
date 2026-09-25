@@ -8,7 +8,9 @@ import { FilterBar } from './components/FilterBar';
 import { Board } from './components/Board';
 import { Task } from './components/Task';
 import { TaskDetailsModal } from './components/TaskDetailsModal';
-import { AnalyticsDashboard } from './components/AnalyticsDashboard';
+const AnalyticsDashboard = React.lazy(() =>
+  import('./components/AnalyticsDashboard').then((module) => ({ default: module.AnalyticsDashboard }))
+);
 import { useBoards } from './hooks/useBoards';
 import { BoardSwitcher } from './components/BoardSwitcher';
 import { BoardManagementModal } from './components/BoardManagementModal';
@@ -695,10 +697,18 @@ export const App: React.FC = () => {
           />
         </>
       ) : (
-        <AnalyticsDashboard
-          board={board}
-          tasks={Object.values(board.tasks).flat()}
-        />
+        <React.Suspense
+          fallback={
+            <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-secondary)' }}>
+              Carregando análises…
+            </div>
+          }
+        >
+          <AnalyticsDashboard
+            board={board}
+            tasks={Object.values(board.tasks).flat()}
+          />
+        </React.Suspense>
       )}
 
       {selectedTaskId && (
