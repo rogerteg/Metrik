@@ -66,10 +66,56 @@ export interface TaskActivityCommentFormProps {
 `src/components/TaskDetailsModal.tsx`
 
 ```typescript
+export type TaskDetailTab = 'overview' | 'activity' | 'metrics';
+
 export interface TaskDetailsModalProps {
-  taskId: string | null;
+  task: TaskModel;
   isOpen: boolean;
   onClose: () => void;
-  // Core task fields and callback bindings...
+  onUpdateTask: (id: string, updates: Partial<TaskModel>) => void;
+  onToggleBlocked?: (id: string, reason?: string) => void;
+  onAddComment?: (taskId: string, text: string, isDecision?: boolean) => void;
+  onDeleteComment?: (taskId: string, commentId: string) => void;
+  boardTasks?: TaskModel[];
+  columns?: ColumnModel[];
+  currentBoardId?: string;
+  currentTeamId?: string;
+  allBoards?: BoardModel[];
+  teams?: Team[];
+  users?: User[];          // Fonte para o seletor de Responsável
+  isReadOnly?: boolean;
+  autoSaveComments?: boolean;
+  autoSaveDebounceMs?: number;
+  onAddLink?: (targetTaskId: string, relationType: TaskRelationType, targetBoardId: string, targetTeamId: string) => void;
+  onRemoveLink?: (targetTaskId: string) => void;
+  onNavigateToBoard?: (boardId: string) => void;
 }
 ```
+
+**Layout contract:** context header (breadcrumb + status/assignee pills), title, tab list (`Visão Geral`, `Atividade`, `Métricas`), tab panels, and a metadata sidebar (`TaskMetadataSidebar`) exposing Priority, Assignee, Type, Dates and Impediment.
+
+---
+
+## 6. TaskFlowMetricsPanel Contract
+
+`src/components/TaskFlowMetricsPanel.tsx`
+
+```typescript
+export interface TaskFlowMetricsPanelProps {
+  task: TaskModel;
+  currentColumnTitle?: string;
+  pendingBlockersCount?: number;
+  initiativeProgress?: { total: number; completed: number; percentage: number };
+}
+```
+
+---
+
+## 7. Removed Components (historical — 2026-09-25, T032)
+
+The contracts in sections 1–4 (`TaskActivityHeader`, `TaskActivityLogList`, `TaskActivityLogItem`, `TaskActivityCommentForm`) are **historical**. Those components, `TaskActivityPanel`, the `useTaskActivity` hook and the `activityFormatter` utility were unused after the tabbed redesign and have been **deleted**, together with their unit tests and the orphan `TaskActivityPanel.css`.
+
+Activity rendering and timestamps now have a single source of truth:
+- Feed: `TaskTimeline` → `CommentItem` / `ActivityLogItem`.
+- Timestamp formatting: `CommentItem.formatDate` (`dd/mm/aaaa às hh:mm`).
+- Filtering/sorting: `filterTimelineItems` in `taskActivityLogger.ts`.

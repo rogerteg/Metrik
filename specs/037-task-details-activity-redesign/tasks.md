@@ -147,3 +147,22 @@
 1. Complete Phase 5 (5-item Accordion Collapse `> Mostrar mais` + Comment Card).
 2. Complete Phase 6 (Organized Objective Task Detail Fields Layout).
 3. Run Phase 7 automated tests (`npm test -- --run`) and build validation (`npm run build`).
+
+---
+
+## Phase 8: Convergence
+
+- [x] T019 Remover vazamento de marca de terceiro no comentário de código de `src/utils/taskActivityLogger.ts:38` (helper de diff pill), revisando também o arquivo de teste correspondente e os artefatos da Feature 035 per Constitution VII (contradicts) — CRITICAL
+- [x] T020 Definir e implementar atribuição de responsável (campo `assignee` no `TaskModel`/data-model + eventos `assignment`/`unassignment` com descrição em PT) OU remover o requisito do escopo per FR-006, US2/AS2 (missing)
+- [x] T021 Reconciliar o layout do detalhe: atualizar `plan.md`/`spec.md` para as abas implementadas (Visão Geral / Atividade / Métricas) OU reintroduzir o `TaskActivityPanel` em 2 colunas conforme o plano per FR-007, plan:TaskDetailsModal (contradicts)
+- [x] T022 Reconciliar o feed de atividade do modal com FR-001/FR-002/FR-004 (cabeçalho "Activity", itens em bullet `disc`, accordion `> Mostrar mais` com corte em 5) OU atualizar esses requisitos para o comportamento de timeline implementado per FR-001, FR-002, FR-004 (contradicts)
+- [x] T023 Alinhar o placeholder do compositor de comentário a "Escreva um comentário..." OU atualizar FR-005 para o texto com Markdown per FR-005 (partial)
+- [x] T024 Registrar e justificar nos artefatos (spec/plan) as abas do modal, o `TaskFlowMetricsPanel` e a reescrita visual do feed de atividade per plan ausente (unrequested)
+- [x] T025 Cobrir no detalhe os campos objetivos "Status badge" e "Assignee selector" OU ajustar FR-007 per FR-007 (missing)
+- [x] T026 Adicionar verificação automatizada de performance (<200ms) para busca/filtro do histórico per SC-002 (missing)
+- [x] T027 Adicionar verificação responsiva (ausência de sobreposição entre texto e timestamp) per SC-004 (missing)
+- [x] T028 Criar `tests/unit/TaskActivityPanel.test.tsx` OU corrigir o `plan.md` que o referencia per plan:Project Structure (missing)
+- [x] T029 Ajustar o `plan.md`: remover a dependência "Lucide React" (inexistente no projeto) e atualizar versões de stack (TS/React) e a versão da Constitution per plan:Technical Context (contradicts)
+- [x] T030 Ajustar o caso de borda de estado vazio/"retry if network fails" da `spec.md` para o modelo Local-First (sem dependência de rede) per spec:Edge Cases (partial)
+- [x] T031 Padronizar o formato de timestamp do feed de atividade (FR-003) entre `activityFormatter` e o render efetivo do detalhe per FR-003 (partial)
+- [x] T032 Revisar/remover os componentes não utilizados após o redesenho (`TaskActivityPanel` e filhos) ou justificar sua permanência per code:dead-code (unrequested)

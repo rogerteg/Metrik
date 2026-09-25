@@ -1,83 +1,96 @@
 # Research & Architecture Decisions: Task Details Activity & Objective Fields Redesign
 
+> **Reconciled 2026-09-25** — this document reflects the design as shipped (see `spec.md` § Clarifications, Session 2026-09-25). Where the initial draft described a right-side `TaskActivityPanel` with a bulleted 5-item accordion, those decisions were superseded by a unified, time-bucketed timeline inside a tabbed modal.
+
 ## Overview
 
-This document records technical research, component modularity decisions, and design choices for implementing the redesigned Task Details Activity Panel and Objective Fields layout in Metrik.
+Records the technical and design decisions for the redesigned Task Details modal: a tabbed, objective layout built on the Metrik Design System (vanilla CSS + semantic tokens), with a single unified activity feed and a flow-transparency metrics panel.
 
 ---
 
-## 1. Activity Header Controls & Interactive Toolbar
+## 1. Unified Activity Feed (replaces the separate Activity panel/header)
 
 ### Decision
-Render a compact, high-density top header inside `TaskActivityHeader.tsx`:
-- **Title**: `"Activity"` rendered in prominent, accessible font styling (`text-base font-semibold text-slate-200`).
-- **Search Action Toggle**: Clicking the `Search` icon toggles an inline input field to filter activity log items by keyword in real-time.
-- **Notification Counter Badge**: Clicking the `Bell` icon displaying an unread counter badge (e.g., `3`) filters activity logs to unread notifications/mentions.
-- **Filter Menu Options**: Clicking `SlidersHorizontal` / `Filter` displays a dropdown menu allowing users to filter by specific event types: All Events, Comments Only, Field Mutations, Assignee Changes, Task Creation.
+Render comments and audit events in a single chronological feed via `TaskTimeline.tsx`, with `TimelineFilterBar` (category filters: Todos / Decisões / Comentários / Auditoria; search; density) and `TimelineStatsHeader` (comments, decisions, moves, blocked time). The latest decision is surfaced in a spotlight banner.
 
 ### Rationale
-Consolidating activity controls into the header maximizes screen space and allows users to quickly isolate relevant history without switching tabs or opening separate modals.
+A single source of truth removes the previously duplicated activity surfaces, reduces cognitive load and keeps the modal height manageable.
 
 ---
 
-## 2. Bulleted Activity Log Item Format & Timestamp Layout
+## 2. Feed Item Rendering & Timestamp Anchoring
 
 ### Decision
-Design `TaskActivityLogItem.tsx` using a flexbox layout with right-aligned timestamp anchoring:
-- **Bullet Indicator**: Standard bullet marker (`•` or styled dot) matching the inspiration layout.
-- **Content Area**: `[Actor Name] [Action Verb / Field Diff]` rendered with `truncate min-w-0` so long user names wrap or truncate gracefully without pushing timestamps out of view.
-  - Examples:
-    - `Luis Eduardo Ferreira Santos criou esta tarefa`
-    - `Danillo Barbosa removeu o responsável: Antonio Carlos Ferreira Batista`
-    - `Maria Silva alterou o status para Em Progresso`
-- **Right-Aligned Timestamp**: `ml-4 whitespace-nowrap text-xs text-slate-400 font-mono text-right` formatting dates as `jun 26 às 10:26 am` or `jul 16 às 2:36 pm`.
+Two item renderers, both in vanilla CSS (`TaskActivityFeed.css`, `mrf-*` classes):
+- `CommentItem.tsx` — comment cards with author avatar, decision badge, Markdown rendering and delete action.
+- `ActivityLogItem.tsx` — audit rows with a colored type badge, actor, description and a `De ➔ Para` diff pill.
+
+Timestamps are right-anchored with `white-space: nowrap` + `flex-shrink: 0`; text bodies use `min-width: 0` so long names/values truncate instead of pushing the timestamp out (verified by `tests/unit/activityFeedContract.test.ts`).
 
 ### Rationale
-This layout strictly prevents visual overlap across all screen resolutions, guarantees text readability, and preserves exact alignment with the inspiration screenshot.
+Strictly prevents visual overlap across screen resolutions (SC-004) while keeping content readable. Canonical timestamp format: `CommentItem.formatDate` (`dd/mm/aaaa às hh:mm`).
 
 ---
 
-## 3. Collapsible Accordion Entry Grouping (`> Mostrar mais`)
+## 3. Time-Bucket Grouping & Density (supersedes the `> Mostrar mais` accordion)
 
 ### Decision
-Implement collapsible grouping in `TaskActivityLogList.tsx` governed by a 5-item threshold:
-- **Default State**: If activity entries exceed 5, render the 5 most recent entries, followed by a collapsible trigger button displaying `> Mostrar mais`.
-- **Expanded State**: Clicking `> Mostrar mais` toggles the icon to `v Mostrar menos` and smoothly expands all historical log entries.
-- **State Persistence**: The expanded/collapsed state is managed locally in `useTaskActivity.ts` state.
+Group entries by temporal buckets — Hoje / Ontem / Esta Semana / Anteriores (`groupTimelineItems`) and offer a **density** toggle (detalhado / compacto). Filtering/sorting is a pure, performance-tested function (`filterTimelineItems`, <200ms over 5.000 entries — T026).
 
 ### Rationale
-Tasks with long histories (20+ field updates) remain clean and scrollable, allowing users to inspect recent changes immediately while retaining instant access to complete historical audit logs.
+Preserves full history without a rigid 5-item cut-off, while keeping recent context immediate. Persisting density/search preferences happens via `useTimelinePreferences`.
 
 ---
 
-## 4. Bottom Comment Input Card ("Escreva um comentário...")
+## 4. Comment Composer
 
 ### Decision
-Implement `TaskActivityCommentForm.tsx` as a fixed footer card inside the Activity sidebar:
-- **Container**: Card box with `border border-slate-700/60 bg-slate-800/40 rounded-xl p-3 focus-within:border-indigo-500/80 transition-colors`.
-- **Input Surface**: Textarea with placeholder `"Escreva um comentário..."`.
-- **Draft Guard Integration**: Inherits dirty state tracking so unsaved comment text triggers the Metrik Modal Draft Guard on accidental dismissal.
-- **Submission**: Keyboard shortcut `Ctrl+Enter` / `Cmd+Enter` or explicit "Enviar" button.
+`CommentInputForm.tsx` provides a Markdown composer with a formatting toolbar (bold, italic, list, code), a "Decisão de Projeto" toggle, placeholder `Escreva um comentário...` and a `Ctrl+Enter` shortcut.
 
 ### Rationale
-Placing the comment card at the bottom of the activity sidebar creates a natural conversational stream (history above, input below) matching modern collaboration tools.
+Keeps discussion and decisions in the same stream, with lightweight formatting and an explicit decision marker.
 
 ---
 
-## 5. Objective Task Detail Fields Layout
+## 5. Tabbed Objective Task Detail (supersedes the 2-column layout)
 
 ### Decision
-Structure `TaskDetailsModal.tsx` into a responsive 2-column layout (Main Details on left, Activity Sidebar on right):
-- **Header**: Task Title, ID, and Close Button.
-- **Objective Primary Fields Grid**:
-  - Status (Interactive Badge)
-  - Assignee (Avatar + Selector)
-  - Priority (Badge Indicator)
-  - Tags (Interactive Tag List)
-  - Due Date (DatePicker & Overdue Status)
-  - Flow Metrics (Cycle Time, Lead Time indicators)
-- **Content Sections**: Task Description (Rich text / Markdown preview) & Subtasks Checklist.
-- **Right Column / Drawer**: Dedicated Activity Panel container housing Header, Bulleted Log List, and Comment Input Card.
+Structure `TaskDetailsModal.tsx` with a context header (breadcrumb, status badge, short ID, type, due/blocked/blockers pills) and three tabs:
+- **Visão Geral** — Description, Acceptance Criteria, Test Scenarios, Checklist, Links.
+- **Atividade** — the unified feed and composer.
+- **Métricas** — flow transparency.
+
+The right sidebar (`TaskMetadataSidebar`) exposes Assignee, Priority, Task Type, Dates and Impediment.
 
 ### Rationale
-Separating primary task attributes from historical activity logs keeps the workspace organized, highly objective, and free from visual clutter.
+Separates objective fields, history and metrics without an excessively tall modal; the sidebar keeps the always-relevant attributes at hand.
+
+---
+
+## 6. Assignee (objective ownership field)
+
+### Decision
+Add `assignee?: string` to `TaskModel`. The sidebar offers a selector of registered users (falling back to free text). Changes emit objective audit events (`assignment` / `unassignment`) from `useTaskCollection.updateTask`.
+
+### Rationale
+Establishes explicit ownership with a transparent audit trail, dependency-free and local-first.
+
+---
+
+## 7. Flow-Transparency Metrics
+
+### Decision
+`TaskFlowMetricsPanel.tsx` derives Lead Time, Cycle Time, Blocked Time, card age, lifecycle dates and composition counters from existing task fields (no new persisted data).
+
+### Rationale
+Delivers transparency and value by surfacing already-available flow data (YAGNI).
+
+---
+
+## 8. Styling & Brand Independence
+
+### Decision
+All activity/timeline components use vanilla Metrik tokens (`TaskActivityFeed.css`); no external CSS framework and no third-party brand names in UI text, DOM attributes or source-code comments.
+
+### Rationale
+The project has no CSS framework installed; token-based vanilla CSS works across dark/light/neutral themes (Constitution V, VII).
