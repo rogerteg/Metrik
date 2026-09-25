@@ -8,6 +8,8 @@ export type TaskActivityEventType =
   | 'tags_changed'
   | 'comment_added'
   | 'comment_deleted'
+  | 'assignment'
+  | 'unassignment'
   | 'edited';
 
 export interface TaskComment {

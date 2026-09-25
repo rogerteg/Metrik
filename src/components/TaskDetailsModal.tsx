@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { TaskModel, SubtaskModel, BoardModel, ColumnModel } from '../types/kanban';
+import { TaskModel, SubtaskModel, BoardModel, ColumnModel, getDefaultColumnColor } from '../types/kanban';
 import { TaskRelationType } from '../types/taskTypes';
-import { Team } from '../types/team';
-import { calculateInitiativeProgress } from '../utils/taskRelations';
+import { Team, User } from '../types/team';
+import { calculateInitiativeProgress, getPendingBlockers } from '../utils/taskRelations';
+import { getDueDateStatus, formatDateShort } from '../utils/timeFormatters';
 import { TaskLinksSection } from './TaskLinksSection';
 import { TaskTimeline } from './TaskTimeline';
+import { TaskFlowMetricsPanel } from './TaskFlowMetricsPanel';
+import { TaskTypeBadge } from './TaskTypeBadge';
 import { TaskComment, TaskActivityLog } from '../types/taskActivity';
 import { createTaskActivityEvent, AuditDescriptions } from '../utils/taskActivityLogger';
 import { Modal } from './Modal';
 import { useFieldEdit } from '../hooks/useFieldEdit';
 import { TaskFieldActionToolbar } from './TaskFieldActionToolbar';
 import { TaskMetadataSidebar } from './TaskMetadataSidebar';
-import { TaskActivityPanel } from './TaskActivityPanel';
 import './TaskDetailsModal.css';
 
 interface TaskDetailsModalProps {
@@ -29,6 +31,7 @@ interface TaskDetailsModalProps {
   currentTeamId?: string;
   allBoards?: BoardModel[];
   teams?: Team[];
+  users?: User[];
   isReadOnly?: boolean;
   autoSaveComments?: boolean;
   autoSaveDebounceMs?: number;
@@ -41,6 +44,8 @@ interface TaskDetailsModalProps {
   onRemoveLink?: (targetTaskId: string) => void;
   onNavigateToBoard?: (boardId: string) => void;
 }
+
+type TaskDetailTab = 'overview' | 'activity' | 'metrics';
 
 export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   task,
@@ -56,6 +61,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   currentTeamId = '',
   allBoards = [],
   teams = [],
+  users = [],
   isReadOnly = false,
   autoSaveComments = true,
   autoSaveDebounceMs = 800,
@@ -68,6 +74,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const [localEndDate, setLocalEndDate] = useState(task.endDate || '');
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [showCloseGuard, setShowCloseGuard] = useState(false);
+  const [activeTab, setActiveTab] = useState<TaskDetailTab>('overview');
 
   const handleAddComment = (text: string, isDecision?: boolean) => {
     if (onAddComment) {
@@ -169,6 +176,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
       setLocalEndDate(task.endDate || '');
       setNewSubtaskTitle('');
       setShowCloseGuard(false);
+      setActiveTab('overview');
     }
   }, [task, isOpen]);
 
@@ -284,6 +292,11 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const completedCount = subtasks.filter((st) => st.completed).length;
   const progress = subtasks.length > 0 ? Math.round((completedCount / subtasks.length) * 100) : 0;
 
+  const currentColumn = columns.find((c) => c.id === task.column);
+  const currentBoard = allBoards.find((b) => b.id === currentBoardId);
+  const isCompletedColumn = currentColumn?.category === 'done';
+  const dueDateStatus = task.dueDate ? getDueDateStatus(task.dueDate, isCompletedColumn) : null;
+
   const initiativeProgress = React.useMemo(() => {
     if (task.type !== 'initiative' || !columns || columns.length === 0) {
       return { total: 0, completed: 0, percentage: 0 };
@@ -291,44 +304,74 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     return calculateInitiativeProgress(task, boardTasks, columns);
   }, [task, boardTasks, columns]);
 
-  const formattedActivityEntries = React.useMemo(() => {
-    const entries: any[] = [];
+  const pendingBlockers = React.useMemo(
+    () => (task.links && task.links.length > 0 ? getPendingBlockers(task, boardTasks, columns) : []),
+    [task, boardTasks, columns]
+  );
 
-    (task.activityLog || []).forEach((act) => {
-      entries.push({
-        id: act.id,
-        taskId: act.taskId || task.id,
-        actorName: act.userName || 'Usuário',
-        type: act.eventType || 'edited',
-        actionText: act.description,
-        previousValue: act.fromValue,
-        newValue: act.toValue,
-        timestamp: act.timestamp,
-      });
-    });
+  const totalBlockedMs = task.totalBlockedMs || 0;
 
-    (task.comments || []).forEach((cmt) => {
-      entries.push({
-        id: cmt.id,
-        taskId: cmt.taskId || task.id,
-        actorName: cmt.userName || 'Usuário',
-        type: 'comment',
-        actionText: `${cmt.userName} comentou: ${cmt.text}`,
-        newValue: cmt.text,
-        timestamp: cmt.createdAt,
-      });
-    });
-
-    return entries.sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
-  }, [task.activityLog, task.comments, task.id]);
+  const activityCount = (task.comments || []).length + (task.activityLog || []).length;
 
   return (
     <Modal isOpen={isOpen} onClose={handleRequestClose} title="Detalhes da Tarefa">
       <div className="task-details-redesigned" onKeyDown={handleModalKeyDown}>
-        {/* Main Column (Left: ~65%) */}
+        {/* Main Column (Left) */}
         <div className="td-main-column">
+          {/* Context header: breadcrumb + identity + status at a glance */}
+          <div className="td-hero">
+            <nav className="td-breadcrumb" aria-label="Localização da tarefa">
+              <span className="td-breadcrumb__item" title={currentBoard?.name || 'Quadro'}>
+                {currentBoard?.name || 'Quadro'}
+              </span>
+              <span className="td-breadcrumb__sep" aria-hidden="true">/</span>
+              <span className="td-breadcrumb__item td-breadcrumb__item--current">
+                {currentColumn?.title || 'Sem coluna'}
+              </span>
+            </nav>
+
+            <div className="td-hero__meta">
+              <TaskTypeBadge type={task.type} />
+              <span className="td-hero__id" title={`ID da tarefa: ${task.id}`}>
+                #{task.id.slice(0, 8)}
+              </span>
+              {currentColumn && (
+                <span
+                  className="td-hero__pill td-hero__pill--status"
+                  title={`Status atual: ${currentColumn.title}`}
+                >
+                  <span
+                    className="td-hero__status-dot"
+                    style={{ background: getDefaultColumnColor(currentColumn) }}
+                    aria-hidden="true"
+                  />
+                  {currentColumn.title}
+                </span>
+              )}
+              {task.assignee && (
+                <span
+                  className="td-hero__pill td-hero__pill--assignee"
+                  title={`Responsável: ${task.assignee}`}
+                >
+                  👤 {task.assignee}
+                </span>
+              )}
+              {task.dueDate && dueDateStatus && (
+                <span className={`td-hero__pill td-hero__pill--due-${dueDateStatus}`}>
+                  Entrega: {formatDateShort(task.dueDate)}
+                </span>
+              )}
+              {task.blocked && (
+                <span className="td-hero__pill td-hero__pill--blocked">⛔ Bloqueada</span>
+              )}
+              {pendingBlockers.length > 0 && (
+                <span className="td-hero__pill td-hero__pill--blockers">
+                  🔒 {pendingBlockers.length} {pendingBlockers.length === 1 ? 'bloqueador' : 'bloqueadores'}
+                </span>
+              )}
+            </div>
+          </div>
+
           {/* Title Section */}
           <section className="td-section">
             <div className="td-section-header">
@@ -359,204 +402,254 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             />
           </section>
 
-          {/* Initiative Progress Section */}
-          {task.type === 'initiative' && (
-            <section className="td-initiative-card">
-              <div className="td-initiative-header">
-                <span>Progresso da Iniciativa</span>
-                <span className="td-initiative-progress-val">
-                  {initiativeProgress.completed}/{initiativeProgress.total} ({initiativeProgress.percentage}%)
-                </span>
-              </div>
-              <div className="td-progress-bar-track">
-                <div
-                  className="td-progress-bar-fill"
-                  style={{ width: `${initiativeProgress.percentage}%` }}
+          {/* Tabs */}
+          <div className="td-tabs" role="tablist" aria-label="Seções do detalhe da tarefa">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'overview'}
+              className={`td-tab ${activeTab === 'overview' ? 'is-active' : ''}`}
+              onClick={() => setActiveTab('overview')}
+            >
+              Visão Geral
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'activity'}
+              className={`td-tab ${activeTab === 'activity' ? 'is-active' : ''}`}
+              onClick={() => setActiveTab('activity')}
+            >
+              Atividade
+              {activityCount > 0 && <span className="td-tab__count">{activityCount}</span>}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'metrics'}
+              className={`td-tab ${activeTab === 'metrics' ? 'is-active' : ''}`}
+              onClick={() => setActiveTab('metrics')}
+            >
+              Métricas
+            </button>
+          </div>
+
+          {activeTab === 'overview' && (
+            <div className="td-tabpanel" role="tabpanel" aria-label="Visão Geral">
+              {/* Initiative Progress Section */}
+              {task.type === 'initiative' && (
+                <section className="td-initiative-card">
+                  <div className="td-initiative-header">
+                    <span>Progresso da Iniciativa</span>
+                    <span className="td-initiative-progress-val">
+                      {initiativeProgress.completed}/{initiativeProgress.total} ({initiativeProgress.percentage}%)
+                    </span>
+                  </div>
+                  <div className="td-progress-bar-track">
+                    <div
+                      className="td-progress-bar-fill"
+                      style={{ width: `${initiativeProgress.percentage}%` }}
+                    />
+                  </div>
+                </section>
+              )}
+
+              {/* Description Section */}
+              <section className="td-section">
+                <div className="td-section-header">
+                  <label htmlFor="td-description" className="td-label">
+                    Descrição
+                  </label>
+                  <TaskFieldActionToolbar
+                    status={descEdit.status}
+                    isDirty={descEdit.isDirty}
+                    onSave={descEdit.saveNow}
+                    onDiscard={descEdit.discard}
+                    isReadOnly={isReadOnly}
+                    ariaLabelPrefix="da descrição"
+                  />
+                </div>
+                <textarea
+                  id="td-description"
+                  className="td-textarea"
+                  placeholder="Adicione uma descrição detalhada..."
+                  value={descEdit.value}
+                  onChange={(e) => descEdit.setValue(e.target.value)}
+                  onBlur={descEdit.handleBlur}
+                  onKeyDown={descEdit.handleKeyDown}
+                  rows={4}
                 />
-              </div>
-            </section>
-          )}
+              </section>
 
-          {/* Description Section */}
-          <section className="td-section">
-            <div className="td-section-header">
-              <label htmlFor="td-description" className="td-label">
-                Descrição
-              </label>
-              <TaskFieldActionToolbar
-                status={descEdit.status}
-                isDirty={descEdit.isDirty}
-                onSave={descEdit.saveNow}
-                onDiscard={descEdit.discard}
-                isReadOnly={isReadOnly}
-                ariaLabelPrefix="da descrição"
-              />
-            </div>
-            <textarea
-              id="td-description"
-              className="td-textarea"
-              placeholder="Adicione uma descrição detalhada..."
-              value={descEdit.value}
-              onChange={(e) => descEdit.setValue(e.target.value)}
-              onBlur={descEdit.handleBlur}
-              onKeyDown={descEdit.handleKeyDown}
-              rows={4}
-            />
-          </section>
+              {/* Acceptance Criteria */}
+              <section className="td-section">
+                <div className="td-section-header">
+                  <label htmlFor="td-acceptance-criteria" className="td-label">
+                    Critérios de Aceitação
+                  </label>
+                  <TaskFieldActionToolbar
+                    status={acEdit.status}
+                    isDirty={acEdit.isDirty}
+                    onSave={acEdit.saveNow}
+                    onDiscard={acEdit.discard}
+                    isReadOnly={isReadOnly}
+                    ariaLabelPrefix="dos critérios de aceitação"
+                  />
+                </div>
+                <textarea
+                  id="td-acceptance-criteria"
+                  className="td-textarea"
+                  placeholder="Defina os critérios para aceitação..."
+                  value={acEdit.value}
+                  onChange={(e) => acEdit.setValue(e.target.value)}
+                  onBlur={acEdit.handleBlur}
+                  onKeyDown={acEdit.handleKeyDown}
+                  rows={3}
+                />
+              </section>
 
-          {/* Acceptance Criteria */}
-          <section className="td-section">
-            <div className="td-section-header">
-              <label htmlFor="td-acceptance-criteria" className="td-label">
-                Critérios de Aceitação
-              </label>
-              <TaskFieldActionToolbar
-                status={acEdit.status}
-                isDirty={acEdit.isDirty}
-                onSave={acEdit.saveNow}
-                onDiscard={acEdit.discard}
-                isReadOnly={isReadOnly}
-                ariaLabelPrefix="dos critérios de aceitação"
-              />
-            </div>
-            <textarea
-              id="td-acceptance-criteria"
-              className="td-textarea"
-              placeholder="Defina os critérios para aceitação..."
-              value={acEdit.value}
-              onChange={(e) => acEdit.setValue(e.target.value)}
-              onBlur={acEdit.handleBlur}
-              onKeyDown={acEdit.handleKeyDown}
-              rows={3}
-            />
-          </section>
+              {/* Test Scenarios */}
+              <section className="td-section">
+                <div className="td-section-header">
+                  <label htmlFor="td-test-scenarios" className="td-label">
+                    Cenários de Testes
+                  </label>
+                  <TaskFieldActionToolbar
+                    status={tsEdit.status}
+                    isDirty={tsEdit.isDirty}
+                    onSave={tsEdit.saveNow}
+                    onDiscard={tsEdit.discard}
+                    isReadOnly={isReadOnly}
+                    ariaLabelPrefix="dos cenários de testes"
+                  />
+                </div>
+                <textarea
+                  id="td-test-scenarios"
+                  className="td-textarea"
+                  placeholder="Descreva os cenários de testes..."
+                  value={tsEdit.value}
+                  onChange={(e) => tsEdit.setValue(e.target.value)}
+                  onBlur={tsEdit.handleBlur}
+                  onKeyDown={tsEdit.handleKeyDown}
+                  rows={3}
+                />
+              </section>
 
-          {/* Test Scenarios */}
-          <section className="td-section">
-            <div className="td-section-header">
-              <label htmlFor="td-test-scenarios" className="td-label">
-                Cenários de Testes
-              </label>
-              <TaskFieldActionToolbar
-                status={tsEdit.status}
-                isDirty={tsEdit.isDirty}
-                onSave={tsEdit.saveNow}
-                onDiscard={tsEdit.discard}
-                isReadOnly={isReadOnly}
-                ariaLabelPrefix="dos cenários de testes"
-              />
-            </div>
-            <textarea
-              id="td-test-scenarios"
-              className="td-textarea"
-              placeholder="Descreva os cenários de testes..."
-              value={tsEdit.value}
-              onChange={(e) => tsEdit.setValue(e.target.value)}
-              onBlur={tsEdit.handleBlur}
-              onKeyDown={tsEdit.handleKeyDown}
-              rows={3}
-            />
-          </section>
+              {/* Subtasks / Checklist */}
+              <section className="td-checklist-card">
+                <div className="td-checklist-header">
+                  <label className="td-label">
+                    Checklist ({completedCount}/{subtasks.length})
+                  </label>
+                  {subtasks.length > 0 && (
+                    <span className="td-initiative-progress-val">{progress}%</span>
+                  )}
+                </div>
 
-          {/* Subtasks / Checklist */}
-          <section className="td-checklist-card">
-            <div className="td-checklist-header">
-              <label className="td-label">
-                Checklist ({completedCount}/{subtasks.length})
-              </label>
-              {subtasks.length > 0 && (
-                <span className="td-initiative-progress-val">{progress}%</span>
+                {subtasks.length > 0 && (
+                  <div className="td-progress-bar-track">
+                    <div
+                      className="td-progress-bar-fill"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                )}
+
+                <ul className="td-checklist-items">
+                  {subtasks.map((st) => (
+                    <li
+                      key={st.id}
+                      className={`td-checklist-item ${st.completed ? 'completed' : ''}`}
+                    >
+                      <label className="td-checklist-label">
+                        <input
+                          type="checkbox"
+                          checked={st.completed}
+                          onChange={() => handleToggleSubtask(st.id)}
+                          className="td-checkbox"
+                        />
+                        <span className="td-checklist-text">{st.title}</span>
+                      </label>
+                      <button
+                        type="button"
+                        className="td-checklist-delete-btn"
+                        onClick={() => handleDeleteSubtask(st.id)}
+                        aria-label="Excluir subtarefa"
+                      >
+                        ✕
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+
+                <form onSubmit={handleAddSubtask} className="td-checklist-form">
+                  <input
+                    type="text"
+                    className="td-input"
+                    placeholder="Adicionar um item..."
+                    value={newSubtaskTitle}
+                    onChange={(e) => setNewSubtaskTitle(e.target.value)}
+                  />
+                  <button
+                    type="submit"
+                    className="td-btn-add-subtask"
+                    disabled={!newSubtaskTitle.trim()}
+                  >
+                    Adicionar
+                  </button>
+                </form>
+              </section>
+
+              {/* Task Links & Dependencies */}
+              {onAddLink && onRemoveLink && (
+                <TaskLinksSection
+                  currentTask={task}
+                  currentBoardId={currentBoardId}
+                  currentTeamId={currentTeamId}
+                  boardTasks={boardTasks}
+                  allBoards={allBoards}
+                  teams={teams}
+                  isReadOnly={isReadOnly}
+                  onAddLink={onAddLink}
+                  onRemoveLink={onRemoveLink}
+                  onNavigateToBoard={onNavigateToBoard}
+                />
               )}
             </div>
-
-            {subtasks.length > 0 && (
-              <div className="td-progress-bar-track">
-                <div
-                  className="td-progress-bar-fill"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-            )}
-
-            <ul className="td-checklist-items">
-              {subtasks.map((st) => (
-                <li
-                  key={st.id}
-                  className={`td-checklist-item ${st.completed ? 'completed' : ''}`}
-                >
-                  <label className="td-checklist-label">
-                    <input
-                      type="checkbox"
-                      checked={st.completed}
-                      onChange={() => handleToggleSubtask(st.id)}
-                      className="td-checkbox"
-                    />
-                    <span className="td-checklist-text">{st.title}</span>
-                  </label>
-                  <button
-                    type="button"
-                    className="td-checklist-delete-btn"
-                    onClick={() => handleDeleteSubtask(st.id)}
-                    aria-label="Excluir subtarefa"
-                  >
-                    ✕
-                  </button>
-                </li>
-              ))}
-            </ul>
-
-            <form onSubmit={handleAddSubtask} className="td-checklist-form">
-              <input
-                type="text"
-                className="td-input"
-                placeholder="Adicionar um item..."
-                value={newSubtaskTitle}
-                onChange={(e) => setNewSubtaskTitle(e.target.value)}
-              />
-              <button
-                type="submit"
-                className="td-btn-add-subtask"
-                disabled={!newSubtaskTitle.trim()}
-              >
-                Adicionar
-              </button>
-            </form>
-          </section>
-
-          {/* Task Links & Dependencies */}
-          {onAddLink && onRemoveLink && (
-            <TaskLinksSection
-              currentTask={task}
-              currentBoardId={currentBoardId}
-              currentTeamId={currentTeamId}
-              boardTasks={boardTasks}
-              allBoards={allBoards}
-              teams={teams}
-              isReadOnly={isReadOnly}
-              onAddLink={onAddLink}
-              onRemoveLink={onRemoveLink}
-              onNavigateToBoard={onNavigateToBoard}
-            />
           )}
 
-          {/* Timeline Section */}
-          <section style={{ paddingTop: 16, borderTop: '1px solid var(--border-subtle)' }}>
-            <TaskTimeline
-              taskId={task.id}
-              comments={task.comments}
-              activityLog={task.activityLog}
-              onAddComment={handleAddComment}
-              onDeleteComment={handleDeleteComment}
-              isGuest={isReadOnly}
-            />
-          </section>
+          {activeTab === 'activity' && (
+            <div className="td-tabpanel" role="tabpanel" aria-label="Atividade">
+              <TaskTimeline
+                taskId={task.id}
+                comments={task.comments}
+                activityLog={task.activityLog}
+                onAddComment={handleAddComment}
+                onDeleteComment={handleDeleteComment}
+                isGuest={isReadOnly}
+                totalBlockedMs={totalBlockedMs}
+              />
+            </div>
+          )}
+
+          {activeTab === 'metrics' && (
+            <div className="td-tabpanel" role="tabpanel" aria-label="Métricas">
+              <TaskFlowMetricsPanel
+                task={task}
+                currentColumnTitle={currentColumn?.title}
+                pendingBlockersCount={pendingBlockers.length}
+                initiativeProgress={initiativeProgress}
+              />
+            </div>
+          )}
         </div>
 
-        {/* Sidebar Column (Right: ~35%) */}
+        {/* Sidebar Column (Right) */}
         <div className="td-sidebar-column">
           <TaskMetadataSidebar
             task={task}
             columns={columns}
+            users={users}
             isReadOnly={isReadOnly}
             onUpdateTask={onUpdateTask}
             onToggleBlocked={onToggleBlocked}
@@ -569,12 +662,6 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             localDueDate={localDueDate}
             setLocalDueDate={setLocalDueDate}
             handleDueDateBlur={handleDueDateBlur}
-          />
-
-          <TaskActivityPanel
-            taskId={task.id}
-            initialEntries={formattedActivityEntries}
-            onSubmitComment={handleAddComment}
           />
         </div>
       </div>

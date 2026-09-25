@@ -219,14 +219,34 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
 
         for (const colId of Object.keys(prev.tasks)) {
           nextTasks[colId] = prev.tasks[colId].map((task) => {
-            if (task.id === id) {
-              return {
-                ...task,
-                ...updates,
-                updatedAt: now,
-              };
+            if (task.id !== id) return task;
+
+            // Registra auditoria objetiva quando o responsável muda (FR-006).
+            let activityLog = task.activityLog;
+            const assigneeChanged =
+              'assignee' in updates && (updates.assignee ?? '') !== (task.assignee ?? '');
+
+            if (assigneeChanged) {
+              const nextAssignee = updates.assignee;
+              const auditEvent = createTaskActivityEvent({
+                taskId: task.id,
+                eventType: nextAssignee ? 'assignment' : 'unassignment',
+                description: nextAssignee
+                  ? AuditDescriptions.assigned(nextAssignee, 'Rogerio Teixeira')
+                  : AuditDescriptions.unassigned(task.assignee, 'Rogerio Teixeira'),
+                fromValue: task.assignee,
+                toValue: nextAssignee,
+                user: { id: 'usr_default', name: 'Rogerio Teixeira' },
+              });
+              activityLog = [...(task.activityLog || []), auditEvent];
             }
-            return task;
+
+            return {
+              ...task,
+              ...updates,
+              activityLog,
+              updatedAt: now,
+            };
           });
         }
 

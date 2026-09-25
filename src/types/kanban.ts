@@ -96,6 +96,9 @@ export interface TaskModel {
   /** Lista de etiquetas/tags personalizadas (Feature 004) */
   tags?: string[];
 
+  /** Responsável pela tarefa (nome do usuário atribuído) */
+  assignee?: string;
+
   /** Descrição detalhada da tarefa (Feature 007) */
   description?: string;
 

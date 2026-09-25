@@ -8,7 +8,7 @@ import { parseSimpleMarkdown } from '../../src/utils/simpleMarkdown';
 import { formatDiffPill } from '../../src/utils/taskActivityLogger';
 import { TaskComment, TaskActivityLog } from '../../src/types/taskActivity';
 
-describe('TaskTimelineClickUp - Feature 035 Suite', () => {
+describe('TaskTimeline - Feature 035 Suite', () => {
   const mockComments: TaskComment[] = [
     {
       id: 'c1',
@@ -67,7 +67,7 @@ describe('TaskTimelineClickUp - Feature 035 Suite', () => {
     });
   });
 
-  describe('ClickUp Diff Formatters & ActivityLogItem (FR-006)', () => {
+  describe('Diff Formatters & ActivityLogItem (FR-006)', () => {
     it('formats diff pills correctly with formatDiffPill', () => {
       expect(formatDiffPill('A fazer', 'Em Progresso')).toBe('A fazer ➔ Em Progresso');
       expect(formatDiffPill(undefined, 'Concluído')).toBe('➔ Concluído');

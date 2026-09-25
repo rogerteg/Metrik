@@ -9,6 +9,9 @@ import React from 'react';
  * - *italic* or _italic_ -> <em>
  * - `code` -> <code>
  * - Bullet lists starting with `- ` or `* ` -> <ul><li>
+ * - Blockquotes starting with `> ` -> <blockquote>
+ *
+ * Styling is provided by the Metrik design system (`TaskActivityFeed.css`).
  */
 export function renderFormattedText(text: string): React.ReactNode {
   if (!text) return null;
@@ -21,7 +24,7 @@ export function renderFormattedText(text: string): React.ReactNode {
   const flushList = (keyPrefix: string) => {
     if (currentList.length > 0) {
       renderedElements.push(
-        <ul key={`ul-${keyPrefix}-${renderedElements.length}`} className="list-disc list-inside space-y-1 my-1 pl-1 text-slate-300">
+        <ul key={`ul-${keyPrefix}-${renderedElements.length}`} className="mrf-md-list">
           {currentList}
         </ul>
       );
@@ -44,7 +47,7 @@ export function renderFormattedText(text: string): React.ReactNode {
       flushList(`line-${lineIndex}`);
       const quoteContent = trimmed.substring(2);
       renderedElements.push(
-        <blockquote key={`quote-${lineIndex}`} className="border-l-2 border-amber-500 bg-amber-500/5 pl-3 py-1.5 my-1.5 text-slate-300 italic text-sm rounded-r">
+        <blockquote key={`quote-${lineIndex}`} className="mrf-md-quote">
           {parseInlineFormatting(quoteContent, `quote-${lineIndex}`)}
         </blockquote>
       );
@@ -55,7 +58,7 @@ export function renderFormattedText(text: string): React.ReactNode {
         renderedElements.push(<br key={`br-${lineIndex}`} />);
       } else {
         renderedElements.push(
-          <p key={`p-${lineIndex}`} className="leading-relaxed text-slate-300 text-sm">
+          <p key={`p-${lineIndex}`} className="mrf-md-p">
             {parseInlineFormatting(line, `p-${lineIndex}`)}
           </p>
         );
@@ -83,13 +86,13 @@ function parseInlineFormatting(text: string, keyPrefix: string): React.ReactNode
 
     if ((part.startsWith('**') && part.endsWith('**')) || (part.startsWith('__') && part.endsWith('__'))) {
       const inner = part.slice(2, -2);
-      return <strong key={key} className="font-semibold text-slate-100">{inner}</strong>;
+      return <strong key={key} className="mrf-md-strong">{inner}</strong>;
     }
 
     if (part.startsWith('`') && part.endsWith('`')) {
       const inner = part.slice(1, -1);
       return (
-        <code key={key} className="rounded bg-slate-950 px-1.5 py-0.5 text-xs font-mono text-cyan-300 border border-slate-800">
+        <code key={key} className="mrf-md-code font-mono">
           {inner}
         </code>
       );
@@ -97,7 +100,7 @@ function parseInlineFormatting(text: string, keyPrefix: string): React.ReactNode
 
     if ((part.startsWith('*') && part.endsWith('*')) || (part.startsWith('_') && part.endsWith('_'))) {
       const inner = part.slice(1, -1);
-      return <em key={key} className="italic text-slate-200">{inner}</em>;
+      return <em key={key} className="mrf-md-em">{inner}</em>;
     }
 
     return part;

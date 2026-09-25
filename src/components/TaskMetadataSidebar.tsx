@@ -1,6 +1,7 @@
 import React from 'react';
 import { TaskModel, ColumnModel } from '../types/kanban';
 import { TaskType, TASK_TYPE_CONFIGS } from '../types/taskTypes';
+import { User } from '../types/team';
 import { calculateTaskBlockedTimeMs, formatBlockedTime } from '../utils/timeFormatters';
 
 interface TaskMetadataSidebarProps {
@@ -18,13 +19,15 @@ interface TaskMetadataSidebarProps {
   localDueDate: string;
   setLocalDueDate: (val: string) => void;
   handleDueDateBlur: () => void;
+  /** Lista de usuários para seleção de responsável (opcional) */
+  users?: User[];
 }
 
-const PRIORITY_CONFIGS: Record<string, { label: string; bg: string; text: string; border: string }> = {
-  urgent: { label: 'Urgente', bg: 'bg-rose-950/40', text: 'text-rose-300', border: 'border-rose-700/60' },
-  high: { label: 'Alta', bg: 'bg-amber-950/40', text: 'text-amber-300', border: 'border-amber-700/60' },
-  medium: { label: 'Média', bg: 'bg-sky-950/40', text: 'text-sky-300', border: 'border-sky-700/60' },
-  low: { label: 'Baixa', bg: 'bg-slate-900', text: 'text-slate-300', border: 'border-slate-700/60' },
+const PRIORITY_LABELS: Record<string, string> = {
+  urgent: 'Urgente',
+  high: 'Alta',
+  medium: 'Média',
+  low: 'Baixa',
 };
 
 export const TaskMetadataSidebar: React.FC<TaskMetadataSidebarProps> = ({
@@ -41,9 +44,10 @@ export const TaskMetadataSidebar: React.FC<TaskMetadataSidebarProps> = ({
   localDueDate,
   setLocalDueDate,
   handleDueDateBlur,
+  users = [],
 }) => {
   const priority = task.priority || 'medium';
-  const priorityCfg = PRIORITY_CONFIGS[priority] || PRIORITY_CONFIGS.medium;
+  const priorityLabel = PRIORITY_LABELS[priority] || PRIORITY_LABELS.medium;
 
   const blockedTimeMs = calculateTaskBlockedTimeMs(task);
   const formattedBlockedTime = formatBlockedTime(blockedTimeMs);
@@ -64,7 +68,7 @@ export const TaskMetadataSidebar: React.FC<TaskMetadataSidebarProps> = ({
         </label>
         {isReadOnly ? (
           <span className="td-input" style={{ display: 'inline-block' }}>
-            {priorityCfg.label}
+            {priorityLabel}
           </span>
         ) : (
           <select
@@ -77,6 +81,44 @@ export const TaskMetadataSidebar: React.FC<TaskMetadataSidebarProps> = ({
             <option value="medium">🟡 Média</option>
             <option value="low">🟢 Baixa</option>
           </select>
+        )}
+      </div>
+
+      {/* Assignee / Responsável */}
+      <div className="td-sidebar-field">
+        <label className="td-sidebar-field-label" htmlFor="td-assignee">
+          <svg width={16} height={16} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 .01M19 8v6M22 11h-6" />
+          </svg>
+          Responsável
+        </label>
+        {isReadOnly ? (
+          <span className="td-input" style={{ display: 'inline-block' }}>
+            {task.assignee || 'Não atribuído'}
+          </span>
+        ) : users.length > 0 ? (
+          <select
+            id="td-assignee"
+            className="td-select"
+            value={task.assignee || ''}
+            onChange={(e) => onUpdateTask(task.id, { assignee: e.target.value || undefined })}
+          >
+            <option value="">Não atribuído</option>
+            {users.map((u) => (
+              <option key={u.id} value={u.name}>
+                {u.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            id="td-assignee"
+            type="text"
+            className="td-input"
+            placeholder="Definir responsável..."
+            value={task.assignee || ''}
+            onChange={(e) => onUpdateTask(task.id, { assignee: e.target.value || undefined })}
+          />
         )}
       </div>
 

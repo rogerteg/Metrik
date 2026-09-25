@@ -1,4 +1,11 @@
-import { TaskActivityLog, TaskActivityEventType, TimelineItem, TimelineGroup } from '../types/taskActivity';
+import {
+  TaskActivityLog,
+  TaskActivityEventType,
+  TaskComment,
+  TimelineFilter,
+  TimelineItem,
+  TimelineGroup,
+} from '../types/taskActivity';
 
 export interface CreateActivityEventParams {
   taskId: string;
@@ -35,7 +42,7 @@ export function createTaskActivityEvent(params: CreateActivityEventParams): Task
 }
 
 /**
- * Helper to format ClickUp diff pill text [From ➔ To]
+ * Formata o texto de uma pílula de diff [De ➔ Para].
  */
 export function formatDiffPill(fromValue?: string, toValue?: string): string | null {
   if (!fromValue && !toValue) return null;
@@ -61,10 +68,64 @@ export const AuditDescriptions = {
     `Datas atualizadas (${details}) por ${userName}`,
   tagsChanged: (action: 'adicionada' | 'removida', tag: string, userName: string) =>
     `Tag "${tag}" ${action} por ${userName}`,
+  assigned: (assignee: string, userName: string) =>
+    `Responsável definido: ${assignee} por ${userName}`,
+  unassigned: (previous: string | undefined, userName: string) =>
+    `Responsável removido${previous ? `: ${previous}` : ''} por ${userName}`,
   commentAdded: (userName: string) => `Comentário adicionado por ${userName}`,
   commentDeleted: (userName: string) => `Comentário removido por ${userName}`,
   edited: (field: string, userName: string) => `Campo "${field}" atualizado por ${userName}`,
 };
+
+/**
+ * Filters and sorts the combined comment + activity timeline.
+ * Pure function (no React) so it can be unit-tested and performance-verified.
+ */
+export function filterTimelineItems(
+  comments: TaskComment[],
+  activityLog: TaskActivityLog[],
+  filter: TimelineFilter,
+  searchQuery: string
+): TimelineItem[] {
+  const items: TimelineItem[] = [];
+
+  if (filter === 'all' || filter === 'comments' || filter === 'decisions') {
+    comments.forEach((c) => {
+      if (filter === 'decisions' && !c.isDecision) return;
+      items.push({ type: 'comment', ...c, timestamp: c.createdAt });
+    });
+  }
+
+  if (filter === 'all' || filter === 'activity') {
+    activityLog.forEach((a) => {
+      items.push({ type: 'activity', ...a });
+    });
+  }
+
+  const cleanSearch = searchQuery.trim().toLowerCase();
+  const filtered = items.filter((item) => {
+    if (!cleanSearch) return true;
+    if (item.type === 'comment') {
+      return (
+        item.text.toLowerCase().includes(cleanSearch) ||
+        item.userName.toLowerCase().includes(cleanSearch)
+      );
+    }
+    return (
+      item.description.toLowerCase().includes(cleanSearch) ||
+      item.userName.toLowerCase().includes(cleanSearch) ||
+      Boolean(item.fromValue && item.fromValue.toLowerCase().includes(cleanSearch)) ||
+      Boolean(item.toValue && item.toValue.toLowerCase().includes(cleanSearch))
+    );
+  });
+
+  // Decrescente (mais recente no topo)
+  return filtered.sort((a, b) => {
+    const timeA = new Date(a.timestamp).getTime();
+    const timeB = new Date(b.timestamp).getTime();
+    return timeB - timeA;
+  });
+}
 
 /**
  * Groups a chronologically sorted list of TimelineItems into time buckets:

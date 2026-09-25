@@ -716,6 +716,7 @@ export const App: React.FC = () => {
           currentTeamId={effectiveTeamId}
           allBoards={boards}
           teams={teams}
+          users={users}
           isReadOnly={isGuest}
           autoSaveComments={settings.autoSaveComments ?? true}
           autoSaveDebounceMs={settings.autoSaveDebounceMs ?? 800}

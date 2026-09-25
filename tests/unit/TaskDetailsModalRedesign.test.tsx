@@ -44,23 +44,27 @@ describe('TaskDetailsModal Redesign', () => {
     onDeleteComment: vi.fn(),
   };
 
-  it('renders title input, metadata sidebar, and activity panel', () => {
+  it('renders title input, metadata sidebar, and section tabs', () => {
     render(<TaskDetailsModal {...defaultProps} />);
-    
+
     expect(screen.getByDisplayValue('Implementar Redesign da Modal')).toBeInTheDocument();
-    expect(screen.getByText('Activity')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Visão Geral/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Atividade/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Métricas/i })).toBeInTheDocument();
   });
 
-  it('allows adding a new comment through the Activity panel footer', () => {
+  it('allows adding a new comment through the Activity tab', () => {
     const onAddComment = vi.fn();
     render(<TaskDetailsModal {...defaultProps} onAddComment={onAddComment} />);
 
-    const commentInput = screen.getByPlaceholderText('Escreva um comentário...');
+    fireEvent.click(screen.getByRole('tab', { name: /Atividade/i }));
+
+    const commentInput = screen.getByPlaceholderText(/Escreva um comentário/i);
     fireEvent.change(commentInput, { target: { value: 'Novo comentário enviado' } });
 
-    const submitBtn = screen.getByRole('button', { name: /Enviar/i });
+    const submitBtn = screen.getByTestId('comment-submit-button');
     fireEvent.click(submitBtn);
 
-    expect(onAddComment).toHaveBeenCalledWith('task-100', 'Novo comentário enviado', undefined);
+    expect(onAddComment).toHaveBeenCalledWith('task-100', 'Novo comentário enviado', false);
   });
 });
