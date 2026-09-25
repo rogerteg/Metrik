@@ -195,8 +195,9 @@ describe('Task Component (US2 & US4)', () => {
       />
     );
 
-    const badges = screen.getAllByRole('generic').filter(el => el.classList.contains('task-indicator-badge'));
-    expect(badges.length).toBe(2);
+    // Descrição e checklist agora aparecem no resumo do detalhe inline (glance)
+    const chips = screen.getAllByRole('generic').filter(el => el.classList.contains('task-detail-chip'));
+    expect(chips.length).toBe(2);
     
     // Check if the subtasks text is present
     expect(screen.getByText('1/2')).toBeInTheDocument();

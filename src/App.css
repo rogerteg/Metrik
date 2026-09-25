@@ -1048,101 +1048,170 @@ body {
   box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
 }
 
-/* QA & Engineering Card Summary & Fields */
-.task-qa-section {
+/* ==========================================================================
+   Detalhe inline da tarefa (card) — resumo "glance" + gaveta de edição rápida
+   ========================================================================== */
+.task-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   margin-top: 2px;
-  margin-bottom: 2px;
 }
 
 .task-qa-toggle-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: var(--transition-smooth);
   user-select: none;
 }
 
 .task-qa-toggle-bar:hover {
-  background: rgba(56, 189, 248, 0.08);
-  border-color: rgba(56, 189, 248, 0.2);
+  background: var(--color-progress-bg);
+  border-color: var(--color-progress-border);
+  color: var(--text-primary);
 }
 
-.task-qa-summary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  font-weight: 500;
+.task-qa-toggle-bar:focus-visible {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.18);
 }
 
-.task-qa-summary-item {
+.task-detail-toggle-label {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
-.task-qa-summary-item.has-content {
-  color: #38bdf8;
-  font-weight: 600;
+.task-detail-toggle-label svg {
+  color: var(--color-progress);
+  flex-shrink: 0;
 }
 
 .task-qa-toggle-icon {
-  font-size: 0.65rem;
+  display: inline-flex;
+  align-items: center;
   color: var(--text-muted);
-  transition: transform 0.15s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .task-qa-toggle-icon.expanded {
   transform: rotate(180deg);
 }
 
+/* Resumo de presença (visível recolhido) */
+.task-detail-glance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.task-detail-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--color-progress-bg);
+  border: 1px solid var(--color-progress-border);
+  color: var(--color-progress);
+  font-size: 0.66rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.task-detail-chip svg {
+  flex-shrink: 0;
+}
+
+/* Gaveta expandida */
 .task-qa-fields {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 6px;
+  gap: 8px;
 }
 
+.task-detail-drawer {
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--input-bg);
+  border: 1px solid var(--border-subtle);
+  max-height: 340px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.task-detail-drawer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.task-detail-drawer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.task-detail-drawer::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+}
+
+.task-detail-drawer::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Field boxes */
 .task-field-box {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 6px;
-  padding: 5px 7px;
-  transition: all 0.18s ease;
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 7px 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: var(--transition-smooth);
 }
 
 .task-field-box:focus-within {
-  border-color: rgba(56, 189, 248, 0.4);
-  background: rgba(0, 0, 0, 0.3);
-  box-shadow: 0 0 6px rgba(56, 189, 248, 0.12);
+  border-color: var(--border-focus);
+  background: var(--color-progress-bg);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.15);
 }
 
 .task-field-header {
   display: flex;
   align-items: center;
-  margin-bottom: 3px;
+  justify-content: space-between;
+  gap: 6px;
 }
 
 .task-field-label {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.65rem;
-  font-weight: 600;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
 }
 
 .task-field-label svg {
-  opacity: 0.85;
-  color: #38bdf8;
+  color: var(--color-progress);
+  flex-shrink: 0;
 }
 
 .task-field-textarea {
@@ -1150,12 +1219,13 @@ body {
   background: transparent;
   border: none;
   outline: none;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-family: inherit;
-  font-size: 0.75rem;
-  line-height: 1.35;
+  font-size: 0.78rem;
+  line-height: 1.45;
   resize: vertical;
-  min-height: 20px;
+  min-height: 24px;
+  max-height: 150px;
   word-break: break-word;
   padding: 0;
   display: block;
@@ -1163,12 +1233,191 @@ body {
 }
 
 .task-field-textarea::placeholder {
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--text-muted);
   font-style: italic;
 }
 
 .task-field-textarea:focus {
   color: var(--text-primary);
+}
+
+/* Checklist inline */
+.task-detail-checklist-count {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.task-detail-progress-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--btn-secondary-hover-bg);
+  overflow: hidden;
+}
+
+.task-detail-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #38bdf8, #34d399);
+  transition: width 0.3s ease;
+}
+
+.task-detail-checklist-items {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.task-detail-checklist-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.task-detail-checklist-item:hover {
+  background: var(--btn-secondary-bg);
+}
+
+.task-detail-checklist-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.task-detail-checkbox {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  accent-color: var(--color-progress);
+  cursor: pointer;
+}
+
+.task-detail-checkbox:disabled {
+  cursor: not-allowed;
+}
+
+.task-detail-checklist-text {
+  font-size: 0.76rem;
+  color: var(--text-primary);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.task-detail-checklist-item.is-done .task-detail-checklist-text {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.task-detail-checklist-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 3px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.task-detail-checklist-delete:hover {
+  color: var(--color-blocked);
+  background: var(--color-blocked-bg);
+}
+
+.task-detail-checklist-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.task-detail-checklist-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 7px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.74rem;
+  padding: 5px 8px;
+  transition: var(--transition-smooth);
+}
+
+.task-detail-checklist-input::placeholder {
+  color: var(--text-muted);
+}
+
+.task-detail-checklist-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  background: var(--input-focus-bg);
+}
+
+.task-detail-checklist-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  border: 1px solid var(--border-subtle);
+  background: var(--btn-secondary-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.task-detail-checklist-add:hover:not(:disabled) {
+  background: var(--color-progress-bg);
+  border-color: var(--color-progress-border);
+  color: var(--color-progress);
+}
+
+.task-detail-checklist-add:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.task-detail-open-full {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 2px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px dashed var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.task-detail-open-full:hover {
+  border-color: var(--color-progress-border);
+  color: var(--color-progress);
+  background: var(--color-progress-bg);
 }
 
 /* Task Meta & Indicators Row */

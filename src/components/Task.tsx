@@ -1,4 +1,5 @@
 import React from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { PriorityLevel, TaskModel, isTaskStagnant, STAGNANT_BROWN_COLOR } from '../types/kanban';
 import { isTaskBlocked } from '../utils/taskReorder';
 import { AutoResizeTextarea } from './AutoResizeTextarea';
@@ -15,6 +16,42 @@ import {
 } from '../utils/timeFormatters';
 import { useFieldEdit } from '../hooks/useFieldEdit';
 import { TaskFieldActionToolbar } from './TaskFieldActionToolbar';
+
+/* Ícones compactos do detalhe inline (12px, herdam currentColor) */
+const DetailIcon: React.FC = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M4 6h16M4 12h16M4 18h10" />
+  </svg>
+);
+
+const ChecklistIcon: React.FC = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <polyline points="9 11 12 14 22 4" />
+    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+  </svg>
+);
+
+const DescriptionIcon: React.FC = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <line x1="21" y1="6" x2="3" y2="6" />
+    <line x1="21" y1="12" x2="3" y2="12" />
+    <line x1="21" y1="18" x2="3" y2="18" />
+  </svg>
+);
+
+const CriteriaIcon: React.FC = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <polyline points="8 13 11 16 16 10" />
+  </svg>
+);
+
+const TestIcon: React.FC = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M9 3h6M10 3v6.5L5.5 17a2 2 0 0 0 1.7 3h9.6a2 2 0 0 0 1.7-3L14 9.5V3" />
+  </svg>
+);
 
 export interface TaskProps {
   task: TaskModel;
@@ -146,7 +183,6 @@ export const Task: React.FC<TaskProps> = ({
     ? 'task-card-drop-after'
     : '';
 
-  const hasDescription = !!(task.description && task.description.trim().length > 0);
   const subtasks = task.subtasks || [];
   const completedSubtasks = subtasks.filter(st => st.completed).length;
   const hasSubtasks = subtasks.length > 0;
@@ -172,12 +208,53 @@ export const Task: React.FC<TaskProps> = ({
     isReadOnly: !onUpdateTask || isBlocked,
   });
 
+  const descEdit = useFieldEdit({
+    initialValue: task.description || '',
+    onSave: (val) => onUpdateTask?.(task.id, { description: val }),
+    autoSave: autoSaveComments,
+    debounceMs: autoSaveDebounceMs,
+    isReadOnly: !onUpdateTask || isBlocked,
+  });
+
   const hasAcceptanceCriteria = !!(acEdit.value && acEdit.value.trim().length > 0);
   const hasTestScenarios = !!(tsEdit.value && tsEdit.value.trim().length > 0);
+  const hasInlineDescription = !!(descEdit.value && descEdit.value.trim().length > 0);
+  const hasAnyInlineContent =
+    hasInlineDescription || hasSubtasks || hasAcceptanceCriteria || hasTestScenarios;
+
+  const canEditSubtasks = !isBlocked && !!onUpdateTask;
+
+  const subtaskProgress =
+    subtasks.length > 0 ? Math.round((completedSubtasks / subtasks.length) * 100) : 0;
+
+  const handleToggleSubtask = (subtaskId: string) => {
+    if (!onUpdateTask) return;
+    const nextSubtasks = subtasks.map((st) =>
+      st.id === subtaskId ? { ...st, completed: !st.completed } : st
+    );
+    onUpdateTask(task.id, { subtasks: nextSubtasks });
+  };
+
+  const handleDeleteSubtask = (subtaskId: string) => {
+    if (!onUpdateTask) return;
+    onUpdateTask(task.id, { subtasks: subtasks.filter((st) => st.id !== subtaskId) });
+  };
+
+  const handleAddSubtask = (e: React.FormEvent) => {
+    e.preventDefault();
+    const title = newSubtaskTitle.trim();
+    if (!title || !onUpdateTask) return;
+    onUpdateTask(task.id, {
+      subtasks: [...subtasks, { id: uuidv4(), title, completed: false }],
+    });
+    setNewSubtaskTitle('');
+  };
 
   const [isQaExpanded, setIsQaExpanded] = React.useState(false);
+  const [isEditingDesc, setIsEditingDesc] = React.useState(false);
   const [isEditingAC, setIsEditingAC] = React.useState(false);
   const [isEditingTS, setIsEditingTS] = React.useState(false);
+  const [newSubtaskTitle, setNewSubtaskTitle] = React.useState('');
 
   return (
     <article
@@ -192,7 +269,7 @@ export const Task: React.FC<TaskProps> = ({
             }
           : undefined
       }
-      draggable={!isEditing && !isEditingAC && !isEditingTS && !isBlocked}
+      draggable={!isEditing && !isEditingDesc && !isEditingAC && !isEditingTS && !isBlocked}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
@@ -201,6 +278,7 @@ export const Task: React.FC<TaskProps> = ({
       onClick={(e) => {
         if (
           isEditing ||
+          isEditingDesc ||
           isEditingAC ||
           isEditingTS ||
           (e.target as HTMLElement).closest('.btn-nav-step') ||
@@ -296,50 +374,106 @@ export const Task: React.FC<TaskProps> = ({
           onRemoveTag={(tag) => onRemoveTag?.(task.id, tag)}
         />
 
-        {/* Seção de Engenharia & Qualidade: Critérios de Aceitação e Cenários de Testes (Resumo Compacto por Padrão) */}
-        <div className="task-qa-section" data-testid="task-qa-section">
-          <div
+        {/* Detalhe inline da tarefa: resumo compacto (glance) + gaveta de edição rápida */}
+        <div className="task-detail" data-testid="task-qa-section">
+          <button
+            type="button"
             className="task-qa-toggle-bar"
             onClick={() => setIsQaExpanded((prev) => !prev)}
             title="Alternar critérios de aceitação e cenários de testes"
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                setIsQaExpanded((prev) => !prev);
-              }
-            }}
+            aria-expanded={isQaExpanded}
+            aria-controls={`task-detail-fields-${task.id}`}
           >
-            <div className="task-qa-summary">
-              <span className={`task-qa-summary-item ${hasAcceptanceCriteria ? 'has-content' : ''}`}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="9 11 12 14 22 4"></polyline>
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                </svg>
-                Critérios
-              </span>
-              <span className={`task-qa-summary-item ${hasTestScenarios ? 'has-content' : ''}`}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                </svg>
-                Testes
-              </span>
-            </div>
-            <span className={`task-qa-toggle-icon ${isQaExpanded ? 'expanded' : ''}`} aria-hidden="true">
-              ▼
+            <span className="task-detail-toggle-label">
+              <DetailIcon />
+              Detalhes
             </span>
-          </div>
+            <span className={`task-qa-toggle-icon ${isQaExpanded ? 'expanded' : ''}`} aria-hidden="true">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </span>
+          </button>
+
+          {/* Resumo de presença quando recolhido: dá contexto sem abrir a gaveta */}
+          {hasAnyInlineContent && !isQaExpanded && (
+            <div className="task-detail-glance">
+              {hasSubtasks && (
+                <span
+                  className="task-detail-chip"
+                  title={`Checklist: ${completedSubtasks} de ${subtasks.length} concluídos`}
+                >
+                  <ChecklistIcon />
+                  {completedSubtasks}/{subtasks.length}
+                </span>
+              )}
+              {hasInlineDescription && (
+                <span className="task-detail-chip" title="Esta tarefa possui descrição">
+                  <DescriptionIcon />
+                  Descrição
+                </span>
+              )}
+              {hasAcceptanceCriteria && (
+                <span className="task-detail-chip" title="Esta tarefa possui critérios de aceitação">
+                  <CriteriaIcon />
+                  Critérios
+                </span>
+              )}
+              {hasTestScenarios && (
+                <span className="task-detail-chip" title="Esta tarefa possui cenários de testes">
+                  <TestIcon />
+                  Testes
+                </span>
+              )}
+            </div>
+          )}
 
           {isQaExpanded && (
-            <div className="task-qa-fields" data-testid="task-qa-fields">
+            <div
+              id={`task-detail-fields-${task.id}`}
+              className="task-qa-fields task-detail-drawer"
+              data-testid="task-qa-fields"
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              {/* Descrição */}
               <div className="task-field-box">
                 <div className="task-field-header">
                   <span className="task-field-label">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="9 11 12 14 22 4"></polyline>
-                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                    </svg>
+                    <DescriptionIcon />
+                    Descrição
+                  </span>
+                </div>
+                <textarea
+                  className="task-field-textarea"
+                  value={descEdit.value}
+                  placeholder="Adicione uma descrição..."
+                  aria-label="Descrição da tarefa"
+                  rows={2}
+                  onFocus={() => setIsEditingDesc(true)}
+                  onBlur={() => {
+                    setIsEditingDesc(false);
+                    descEdit.handleBlur();
+                  }}
+                  onChange={(e) => descEdit.setValue(e.target.value)}
+                  onKeyDown={descEdit.handleKeyDown}
+                />
+                <TaskFieldActionToolbar
+                  status={descEdit.status}
+                  isDirty={descEdit.isDirty}
+                  onSave={descEdit.saveNow}
+                  onDiscard={descEdit.discard}
+                  ariaLabelPrefix="da descrição"
+                  compact={true}
+                  isReadOnly={!onUpdateTask || isBlocked}
+                />
+              </div>
+
+              {/* Critérios de Aceitação */}
+              <div className="task-field-box">
+                <div className="task-field-header">
+                  <span className="task-field-label">
+                    <CriteriaIcon />
                     Critérios de Aceitação
                   </span>
                 </div>
@@ -368,16 +502,11 @@ export const Task: React.FC<TaskProps> = ({
                 />
               </div>
 
+              {/* Cenários de Testes */}
               <div className="task-field-box">
                 <div className="task-field-header">
                   <span className="task-field-label">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                      <polyline points="14 2 14 8 20 8"></polyline>
-                      <line x1="16" y1="13" x2="8" y2="13"></line>
-                      <line x1="16" y1="17" x2="8" y2="17"></line>
-                      <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
+                    <TestIcon />
                     Cenários de Testes
                   </span>
                 </div>
@@ -405,11 +534,124 @@ export const Task: React.FC<TaskProps> = ({
                   isReadOnly={!onUpdateTask || isBlocked}
                 />
               </div>
+
+              {/* Checklist / Subtarefas */}
+              {(hasSubtasks || canEditSubtasks) && (
+                <div className="task-field-box task-detail-checklist">
+                  <div className="task-field-header">
+                    <span className="task-field-label">
+                      <ChecklistIcon />
+                      Checklist
+                    </span>
+                    {hasSubtasks && (
+                      <span className="task-detail-checklist-count">
+                        {completedSubtasks}/{subtasks.length} · {subtaskProgress}%
+                      </span>
+                    )}
+                  </div>
+
+                  {hasSubtasks && (
+                    <div
+                      className="task-detail-progress-track"
+                      role="progressbar"
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={subtaskProgress}
+                      aria-label="Progresso do checklist"
+                    >
+                      <div
+                        className="task-detail-progress-fill"
+                        style={{ width: `${subtaskProgress}%` }}
+                      />
+                    </div>
+                  )}
+
+                  {hasSubtasks && (
+                    <ul className="task-detail-checklist-items">
+                      {subtasks.map((st) => (
+                        <li
+                          key={st.id}
+                          className={`task-detail-checklist-item ${st.completed ? 'is-done' : ''}`}
+                        >
+                          <label className="task-detail-checklist-label">
+                            <input
+                              type="checkbox"
+                              className="task-detail-checkbox"
+                              checked={st.completed}
+                              onChange={() => handleToggleSubtask(st.id)}
+                              disabled={!canEditSubtasks}
+                              aria-label={`Alternar subtarefa: ${st.title}`}
+                            />
+                            <span className="task-detail-checklist-text">{st.title}</span>
+                          </label>
+                          {canEditSubtasks && (
+                            <button
+                              type="button"
+                              className="task-detail-checklist-delete"
+                              onClick={() => handleDeleteSubtask(st.id)}
+                              aria-label={`Excluir subtarefa: ${st.title}`}
+                              title="Excluir subtarefa"
+                            >
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18" />
+                                <line x1="6" y1="6" x2="18" y2="18" />
+                              </svg>
+                            </button>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {canEditSubtasks && (
+                    <form className="task-detail-checklist-form" onSubmit={handleAddSubtask}>
+                      <input
+                        type="text"
+                        className="task-detail-checklist-input"
+                        placeholder="Adicionar item..."
+                        aria-label="Nova subtarefa"
+                        value={newSubtaskTitle}
+                        onChange={(e) => setNewSubtaskTitle(e.target.value)}
+                      />
+                      <button
+                        type="submit"
+                        className="task-detail-checklist-add"
+                        disabled={!newSubtaskTitle.trim()}
+                        aria-label="Adicionar subtarefa"
+                        title="Adicionar subtarefa"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="12" y1="5" x2="12" y2="19" />
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                      </button>
+                    </form>
+                  )}
+                </div>
+              )}
+
+              {onClick && (
+                <button
+                  type="button"
+                  className="task-detail-open-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClick();
+                  }}
+                >
+                  Abrir detalhes completos
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="7" y1="17" x2="17" y2="7" />
+                    <polyline points="7 7 17 7 17 17" />
+                  </svg>
+                </button>
+              )}
             </div>
           )}
         </div>
 
-        {(hasDescription || hasSubtasks || hasDueDate || task.startDate || task.endDate) && (
+        {/* Indicadores essenciais (datas) — descrição e checklist agora vivem no detalhe inline */}
+        {(hasDueDate || task.startDate || task.endDate) && (
           <div className="task-indicators" aria-label="Indicadores da tarefa">
             {task.startDate && (
               <span
@@ -449,25 +691,6 @@ export const Task: React.FC<TaskProps> = ({
                   <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
                 {formatDateShort(task.dueDate!)}
-              </span>
-            )}
-            {hasDescription && (
-              <span className="task-indicator-badge" title="Esta tarefa possui uma descrição">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="21" y1="10" x2="3" y2="10"></line>
-                  <line x1="21" y1="6" x2="3" y2="6"></line>
-                  <line x1="21" y1="14" x2="3" y2="14"></line>
-                  <line x1="21" y1="18" x2="3" y2="18"></line>
-                </svg>
-              </span>
-            )}
-            {hasSubtasks && (
-              <span className="task-indicator-badge" title={`${completedSubtasks} de ${subtasks.length} subtarefas concluídas`}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '3px' }}>
-                  <polyline points="9 11 12 14 22 4"></polyline>
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                </svg>
-                {completedSubtasks}/{subtasks.length}
               </span>
             )}
           </div>
