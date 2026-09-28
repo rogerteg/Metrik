@@ -113,7 +113,8 @@
 
 ### Resolvido em 2026-09-28 (P3 — parcial)
 - ✅ Lint configurado (`eslint.config.js`) e integrado ao CI; corrigido 1 erro real (`no-extra-boolean-cast` em `wipAgingMetrics.ts`).
-- ⏳ Pendentes: fatiar `App.css`, decompor arquivos grandes, Prettier, acessibilidade formal.
+- ✅ Auditoria de acessibilidade automatizada com `jest-axe` (`tests/unit/accessibility.test.tsx`) cobrindo `CommentThread`, cartão somente-leitura, cartão editável e `Column` — 0 violações.
+- ⏳ Pendentes: fatiar `App.css`, decompor arquivos grandes (SRP), Prettier, consolidação das duas trilhas de comentário.
 
 ---
 
