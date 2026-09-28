@@ -54,6 +54,8 @@ Em **cada** navegador:
 
 ### 4.2 Medir
 
+> **Harness pronto**: use `tools/parity-probe.js` (sonda de console) e `tools/parity-compare.mjs` (comparador). O roteiro completo, a matriz de cenários e o registro de resultados estão em [`parity-results.md`](parity-results.md).
+
 Para cada coluna, obtenha a largura renderizada no console do navegador:
 
 ```js
@@ -185,4 +187,6 @@ Estas verificações **não** puderam ser executadas neste ambiente e permanecem
 - Cenários de **2, 6 e 12 colunas** e as variações de ampliação (50%/150%/200%) e densidade (1,50/2,00).
 - Paridade das telas de **Analytics**, dos **modais** e dos **temas** claro/escuro/neutro entre navegadores.
 - Arraste real da alça em navegador (a cobertura atual é por teste de componente).
+
+> **Ferramentas de apoio (2026-09-28)**: `tools/parity-probe.js`, `tools/parity-compare.mjs` e o roteiro [`parity-results.md`](parity-results.md) automatizam a captura e a comparação; T023/T024 continuam abertas até a execução nos quatro navegadores.
 

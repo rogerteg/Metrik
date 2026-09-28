@@ -234,8 +234,8 @@ description: "Task list for feature 026 - Cross-Browser Board Render Parity"
 **Purpose**: Regressão, verificação de paridade medida e encerramento documental
 
 - [X] T022 [P] Run the full test suite and the production build from `package.json` scripts, confirming zero regressions and clean output
-- [ ] T023 [P] Execute the cross-browser parity matrix from `quickstart.md` (§4.3) in Edge, Chrome, Firefox and Safari and record the samples
-- [ ] T024 [P] Verify the containment and clipping scenarios for 2, 6 and 12 columns from `quickstart.md` (§5) and record results
+- [ ] T023 [P] Execute the cross-browser parity matrix from `quickstart.md` (§4.3) in Edge, Chrome, Firefox and Safari and record the samples — **harness pronto**: `tools/parity-probe.js` (captura) e `tools/parity-compare.mjs` (comparação); roteiro em `parity-results.md`
+- [ ] T024 [P] Verify the containment and clipping scenarios for 2, 6 and 12 columns from `quickstart.md` (§5) and record results — cenários S4/S5/S8/S10 de `parity-results.md` cobrem 2/6/12 colunas, corrupção e contenção
 - [X] T025 Review and close `checklists/requirements.md` and `checklists/browser-parity.md` against the implemented behaviour
 - [X] T026 Record the final parity verdict and the H1–H4 outcome in `specs/026-cross-browser-column-layout/quickstart.md`
 
