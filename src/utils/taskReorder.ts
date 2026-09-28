@@ -179,6 +179,7 @@ export function reorderBoard(
   const updatedTask: TaskModel = {
     ...activeTask,
     column: targetColumn,
+    lastMovedAt: nowIso,
     updatedAt: nowIso,
     startedAt,
     completedAt,

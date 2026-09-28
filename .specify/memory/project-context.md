@@ -73,7 +73,7 @@
 
 | Entidade | Campos-chave | Relacionamentos | Observações |
 |---|---|---|---|
-| `TaskModel` | `id`, `title`, `column`, `type`, `priority`, `tags`, `description`, `acceptanceCriteria`, `testScenarios`, `subtasks`, `startDate`/`endDate`/`dueDate`, `createdAt`/`startedAt`/`completedAt`, `blocked`/`blockedReason`/`totalBlockedMs`, `links`, `comments`, `activityLog` | pertence a uma `ColumnModel`; `links` ↔ outras tarefas/quadros/squads | Tipo em `card` \| `subtask` \| `initiative` |
+| `TaskModel` | `id`, `title`, `column`, `type`, `priority`, `tags`, `description`, `acceptanceCriteria`, `testScenarios`, `subtasks`, `assignee`, `startDate`/`endDate`/`dueDate`, `createdAt`/`startedAt`/`completedAt`/`lastMovedAt`, `blocked`/`blockedReason`/`totalBlockedMs`, `links`, `comments`, `activityLog` | pertence a uma `ColumnModel`; `links` ↔ outras tarefas/quadros/squads | Tipo em `card` \| `subtask` \| `initiative` |
 | `ColumnModel` | `id`, `title`, `category` (`todo`/`in_progress`/`done`), `wipLimit`, `colorScheme`, `color` | contém tarefas | `category` dirige as métricas de fluxo |
 | `BoardModel` | `id`, `name`, `teamId`, `createdAt`, `lastAccessed` | pertence a um `Team` | Multi-board |
 | `SubtaskModel` | `id`, `title`, `completed` | dentro de `TaskModel.subtasks` | |
@@ -95,14 +95,21 @@
 
 ## 9.7 Áreas de Atenção e Dívida Técnica Conhecida
 
-- `src/App.css` monolítico (>3.000 linhas) com seletores duplicados (ex.: `.task-indicators`, `.task-card-header` aparecem mais de uma vez) — risco de overrides silenciosos.
-- Semântica de somente-leitura do perfil `guest` no board usa callbacks no-op (`isGuest ? () => {} : …`) em vez de `isReadOnly`, permitindo edição "fantasma" que não persiste.
-- Configuração do Vitest não exclui `.kilo/worktrees/**`, fazendo a suíte rodar em duplicidade.
-- Bundle único ~780 KB (aviso do Vite); sem code-splitting.
-- `isTaskStagnant` usa `updatedAt` (muda a cada edição), não o timestamp da última movimentação — o selo "Parado" pode disparar incorretamente.
-- `TaskModel` não possui `assignee`/observadores, embora specs 036/037 mencionem responsável.
-- Presença de arquivos de estilo/componentes legados sem uso após o redesenho de 2026-09 (ex.: `TaskActivityPanel`), a consolidar.
+- `src/App.css` monolítico (~3.470 linhas) com seletores duplicados (ex.: `.kanban-column`, `.task-indicators`, `.task-card-header` aparecem mais de uma vez) — risco de overrides silenciosos.
+- Arquivos grandes com múltiplas responsabilidades: `Task.tsx` (~38 KB), `useTaskCollection.ts` (~34 KB), `App.tsx` (~32 KB) — candidatos a decomposição (SRP).
+- Sem CI/CD (nenhum `.github/workflows`) e sem gate de lint/format (ESLint/Prettier) — a Constituição v1.6.3 reconhece a ausência de lint.
+- Sem cobertura de testes configurada (`coverage` ausente no Vitest).
+- Comentários ainda têm dois caminhos de renderização (`CommentThread` no cartão × `CommentItem` no modal); a edição já existe em ambos.
+- Paridade de parâmetros de largura de coluna entre navegadores (T023/T024 da feature 026) pendente de execução manual nos quatro navegadores; harness pronto em `specs/026-.../tools/`.
+- 4 lacunas de qualidade aceitas na feature 027 (quantificação de latência/fluidez e falha de storage) — ver `specs/027-.../checklists/subtasks-and-comments.md`.
+
+### Resolvido em 2026-09-28 (P1)
+- ✅ Somente-leitura do guest deixou de usar callbacks no-op: `Task` passou a receber `isReadOnly` e desabilita as superfícies de escrita (sem edição "fantasma").
+- ✅ `isTaskStagnant` passou a usar `lastMovedAt` (setado em `moveTask`/`reorderBoard`) em vez de `updatedAt` — edições não resetam mais o selo "Parado".
+- ✅ Edição de comentário disponível no modal (`CommentItem`) e no cartão (`CommentThread`).
+- ✅ `TaskModel` já possui `assignee`; `TaskActivityPanel` legado não existe mais.
+- ✅ Code-splitting (vendor chunks + analytics) e escopo do Vitest já corrigidos; `testTimeout` elevado para 15s.
 
 ---
 
-*Atualizado em: 2026-09-25.*
+*Atualizado em: 2026-09-28.*

@@ -674,18 +674,19 @@ export const App: React.FC = () => {
                   task={task}
                   columnColor={colColor}
                   onClick={() => setSelectedTaskId(task.id)}
-                  onUpdateTitle={isGuest ? () => {} : (id, title) => updateTask(id, { title })}
-                  onDelete={isGuest ? () => {} : deleteTask}
-                  onDiscardIfEmpty={isGuest ? () => {} : discardIfEmpty}
-                  onUpdatePriority={isGuest ? () => {} : setTaskPriority}
-                  onAddTag={isGuest ? () => {} : addTaskTag}
-                  onRemoveTag={isGuest ? () => {} : removeTaskTag}
-                  onToggleBlocked={isGuest ? undefined : toggleTaskBlocked}
-                  onDropTask={isGuest ? () => {} : handleGuardedDropTask}
+                  onUpdateTitle={(id, title) => updateTask(id, { title })}
+                  onDelete={deleteTask}
+                  onDiscardIfEmpty={discardIfEmpty}
+                  onUpdatePriority={setTaskPriority}
+                  onAddTag={addTaskTag}
+                  onRemoveTag={removeTaskTag}
+                  onToggleBlocked={toggleTaskBlocked}
+                  onDropTask={handleGuardedDropTask}
                   isCompleted={currentColumn?.category === 'done'}
                   canMoveLeft={canMoveLeft}
                   canMoveRight={canMoveRight}
-                  onUpdateTask={isGuest ? () => {} : updateTask}
+                  onUpdateTask={updateTask}
+                  isReadOnly={isGuest}
                   initiativeProgress={initiativeProgress}
                   pendingBlockersCount={pendingBlockers.length}
                   autoSaveComments={settings.autoSaveComments ?? true}
@@ -737,6 +738,8 @@ export const App: React.FC = () => {
           onToggleBlocked={toggleTaskBlocked}
           onAddComment={addTaskComment}
           onDeleteComment={deleteTaskComment}
+          onEditComment={isGuest ? undefined : (taskId, commentId, text) => editTaskComment(taskId, commentId, text, currentUser)}
+          currentUserId={currentUser.id}
           boardTasks={allBoardTasks}
           columns={board.columns}
           currentBoardId={activeBoardId || ''}

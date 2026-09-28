@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { TaskTimeline } from '../../src/components/TaskTimeline';
 import { ActivityLogItem } from '../../src/components/ActivityLogItem';
@@ -150,6 +150,61 @@ describe('TaskTimeline - Feature 035 Suite', () => {
 
       expect(screen.getAllByText(/Decidimos utilizar a API v2/i).length).toBeGreaterThan(0);
       expect(screen.queryByText(/Este é um comentário normal/i)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Comment editing parity (Feature 027 — P1)', () => {
+    beforeEach(() => {
+      // Evita vazamento de preferências de timeline (filtro/densidade) entre testes.
+      window.localStorage.clear();
+    });
+
+    it('edits the author own comment from the activity feed', () => {
+      const onEditComment = vi.fn();
+      render(
+        <TaskTimeline
+          taskId="t1"
+          comments={mockComments}
+          activityLog={[]}
+          onEditComment={onEditComment}
+          currentUserId="u1"
+        />
+      );
+
+      fireEvent.click(screen.getByTestId('comment-edit-button-c1'));
+      fireEvent.change(screen.getByTestId('comment-edit-input-c1'), {
+        target: { value: 'comentário revisado' },
+      });
+      fireEvent.click(screen.getByTestId('comment-edit-save-c1'));
+
+      expect(onEditComment).toHaveBeenCalledWith('c1', 'comentário revisado');
+    });
+
+    it('does not offer editing for another author or for guests', () => {
+      const { unmount } = render(
+        <TaskTimeline
+          taskId="t1"
+          comments={mockComments}
+          activityLog={[]}
+          onEditComment={vi.fn()}
+          currentUserId="u1"
+        />
+      );
+      // c2 pertence a outro autor (u2).
+      expect(screen.queryByTestId('comment-edit-button-c2')).toBeNull();
+      unmount();
+
+      render(
+        <TaskTimeline
+          taskId="t1"
+          comments={mockComments}
+          activityLog={[]}
+          onEditComment={vi.fn()}
+          currentUserId="u1"
+          isGuest
+        />
+      );
+      expect(screen.queryByTestId('comment-edit-button-c1')).toBeNull();
     });
   });
 });

@@ -93,6 +93,12 @@ export interface TaskModel {
   /** Timestamp ISO 8601 da conclusão (ingresso em done) */
   completedAt?: string;
 
+  /**
+   * Timestamp ISO 8601 da última movimentação (mudança de coluna ou reordenação).
+   * Usado pelo selo "Parado" — distinto de `updatedAt`, que muda a cada edição.
+   */
+  lastMovedAt?: string;
+
   /** Nível de criticidade / prioridade (Feature 004) */
   priority?: PriorityLevel;
 
@@ -147,12 +153,14 @@ export const STAGNANT_BROWN_COLOR = '#8B4513'; // Saddle Brown / Marrom
 /**
  * Verifica se a tarefa está há muito tempo parada no board sem movimentação.
  * Regra: tarefas que não estejam na coluna concluída ('done') cujo tempo
- * desde a última movimentação (updatedAt ou createdAt) seja superior ao limite em dias.
+ * desde a última **movimentação** (`lastMovedAt`, com fallback para `createdAt`)
+ * seja superior ao limite em dias. Edições de conteúdo (`updatedAt`) não contam
+ * como movimentação — corrige o falso "Parado" de cartões editados recentemente.
  */
 export function isTaskStagnant(task: TaskModel, isCompletedColumn: boolean = false, thresholdDays: number = STAGNATION_THRESHOLD_DAYS, nowMs: number = Date.now()): boolean {
   if (isCompletedColumn) return false;
 
-  const referenceDateStr = task.updatedAt || task.createdAt;
+  const referenceDateStr = task.lastMovedAt || task.createdAt;
   if (!referenceDateStr) return false;
 
   const refMs = new Date(referenceDateStr).getTime();

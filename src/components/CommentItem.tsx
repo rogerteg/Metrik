@@ -6,6 +6,8 @@ export interface CommentItemProps {
   comment: TaskComment;
   onDelete?: (commentId: string) => void;
   canDelete?: boolean;
+  onEdit?: (commentId: string, text: string) => void;
+  canEdit?: boolean;
   compact?: boolean;
 }
 
@@ -54,10 +56,20 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   comment,
   onDelete,
   canDelete = true,
+  onEdit,
+  canEdit = false,
   compact = false,
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [draft, setDraft] = useState(comment.text);
   const isLongText = comment.text.length > 400;
+
+  const saveEdit = () => {
+    if (!onEdit || !draft.trim()) return;
+    onEdit(comment.id, draft);
+    setIsEditing(false);
+  };
 
   const getInitials = (name: string) => {
     return name
@@ -100,20 +112,72 @@ export const CommentItem: React.FC<CommentItemProps> = ({
           </span>
         </div>
 
-        <div className={`mrf-comment__text ${isLongText && !expanded ? 'is-clamped' : ''}`}>
-          {renderFormattedText(isLongText && !expanded ? `${comment.text.slice(0, 400)}...` : comment.text)}
-        </div>
+        {isEditing ? (
+          <div className="mrf-comment__edit">
+            <textarea
+              className="mrf-comment__edit-input"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              aria-label="Editar comentário"
+              data-testid={`comment-edit-input-${comment.id}`}
+            />
+            <div className="mrf-comment__edit-actions">
+              <button
+                type="button"
+                onClick={saveEdit}
+                disabled={!draft.trim()}
+                data-testid={`comment-edit-save-${comment.id}`}
+              >
+                Salvar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditing(false);
+                  setDraft(comment.text);
+                }}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className={`mrf-comment__text ${isLongText && !expanded ? 'is-clamped' : ''}`}>
+              {renderFormattedText(isLongText && !expanded ? `${comment.text.slice(0, 400)}...` : comment.text)}
+            </div>
 
-        {isLongText && (
-          <button
-            type="button"
-            onClick={() => setExpanded(!expanded)}
-            className="mrf-comment__toggle"
-          >
-            {expanded ? 'Ver menos' : 'Ver mais'}
-          </button>
+            {isLongText && (
+              <button
+                type="button"
+                onClick={() => setExpanded(!expanded)}
+                className="mrf-comment__toggle"
+              >
+                {expanded ? 'Ver menos' : 'Ver mais'}
+              </button>
+            )}
+          </>
         )}
       </div>
+
+      {!isEditing && onEdit && canEdit && (
+        <button
+          type="button"
+          onClick={() => {
+            setDraft(comment.text);
+            setIsEditing(true);
+          }}
+          data-testid={`comment-edit-button-${comment.id}`}
+          title="Editar comentário"
+          aria-label="Editar comentário"
+          className="mrf-comment__edit-btn"
+        >
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
+        </button>
+      )}
 
       {onDelete && canDelete && (
         <button

@@ -899,3 +899,73 @@
   font-size: 0.72rem;
   color: var(--text-muted);
 }
+
+/* Edição de comentário no feed de atividade (paridade com o cartão — Feature 027) */
+.mrf-comment__edit-btn {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  padding: 3px;
+  cursor: pointer;
+  line-height: 0;
+  transition: all 0.15s ease;
+}
+
+.mrf-comment__edit-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.mrf-comment__edit {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.mrf-comment__edit-input {
+  width: 100%;
+  min-height: 56px;
+  resize: vertical;
+  background: var(--input-bg, rgba(0, 0, 0, 0.2));
+  border: 1px solid var(--input-border, rgba(255, 255, 255, 0.08));
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  padding: 6px 8px;
+  outline: none;
+}
+
+.mrf-comment__edit-input:focus {
+  border-color: var(--accent-primary, #6366f1);
+}
+
+.mrf-comment__edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.mrf-comment__edit-actions button {
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+
+.mrf-comment__edit-actions button[data-testid^='comment-edit-save'] {
+  background: var(--accent-primary, #6366f1);
+  border-color: transparent;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.mrf-comment__edit-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

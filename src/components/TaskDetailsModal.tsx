@@ -25,6 +25,8 @@ interface TaskDetailsModalProps {
   onToggleBlocked?: (id: string, reason?: string) => void;
   onAddComment?: (taskId: string, text: string, isDecision?: boolean) => void;
   onDeleteComment?: (taskId: string, commentId: string) => void;
+  onEditComment?: (taskId: string, commentId: string, text: string) => void;
+  currentUserId?: string;
   boardTasks?: TaskModel[];
   columns?: ColumnModel[];
   currentBoardId?: string;
@@ -55,6 +57,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   onToggleBlocked,
   onAddComment,
   onDeleteComment,
+  onEditComment,
+  currentUserId,
   boardTasks = [],
   columns = [],
   currentBoardId = '',
@@ -119,6 +123,18 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
         activityLog: [...(task.activityLog || []), auditEvent],
       });
     }
+  };
+
+  const handleEditComment = (commentId: string, text: string) => {
+    if (!text.trim()) return;
+    if (onEditComment) {
+      onEditComment(task.id, commentId, text);
+      return;
+    }
+    const updatedComments = (task.comments || []).map((c) =>
+      c.id === commentId ? { ...c, text: text.trim(), updatedAt: new Date().toISOString() } : c
+    );
+    onUpdateTask(task.id, { comments: updatedComments });
   };
 
   // Field Edit Hooks
@@ -626,6 +642,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                 activityLog={task.activityLog}
                 onAddComment={handleAddComment}
                 onDeleteComment={handleDeleteComment}
+                onEditComment={handleEditComment}
+                currentUserId={currentUserId}
                 isGuest={isReadOnly}
                 totalBlockedMs={totalBlockedMs}
               />

@@ -15,6 +15,8 @@ export interface TaskTimelineProps {
   activityLog?: TaskActivityLog[];
   onAddComment?: (text: string, isDecision?: boolean) => void;
   onDeleteComment?: (commentId: string) => void;
+  onEditComment?: (commentId: string, text: string) => void;
+  currentUserId?: string;
   isGuest?: boolean;
   totalBlockedMs?: number;
 }
@@ -39,6 +41,8 @@ export const TaskTimeline: React.FC<TaskTimelineProps> = ({
   activityLog = [],
   onAddComment,
   onDeleteComment,
+  onEditComment,
+  currentUserId,
   isGuest = false,
   totalBlockedMs = 0,
 }) => {
@@ -166,6 +170,8 @@ export const TaskTimeline: React.FC<TaskTimelineProps> = ({
                         comment={item}
                         onDelete={onDeleteComment}
                         canDelete={!isGuest}
+                        onEdit={onEditComment}
+                        canEdit={!isGuest && !!currentUserId && item.userId === currentUserId}
                         compact={densityMode === 'compact'}
                       />
                     );

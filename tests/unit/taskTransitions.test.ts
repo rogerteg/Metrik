@@ -88,4 +88,28 @@ describe('Task Transitions & Timestamps (US4 & Feature 002)', () => {
     expect(result.current.board.tasks['completed'].some((t) => t.id === task.id)).toBe(true);
     expect(result.current.board.tasks['in-progress'].some((t) => t.id === task.id)).toBe(false);
   });
+
+  it('sets lastMovedAt on move and preserves it across content edits (P1 stagnation fix)', () => {
+    const { result } = renderHook(() => useTaskCollection('test-board'));
+
+    let task: any;
+    act(() => {
+      task = result.current.addTask('todo', 'Cartão para estagnação');
+    });
+
+    act(() => {
+      result.current.moveTask(task.id, 'in-progress');
+    });
+
+    const moved = result.current.board.tasks['in-progress'].find((t) => t.id === task.id);
+    expect(moved?.lastMovedAt).toBeDefined();
+    const movedAt = moved?.lastMovedAt;
+
+    act(() => {
+      result.current.updateTask(task.id, { title: 'Título editado' });
+    });
+
+    const edited = result.current.board.tasks['in-progress'].find((t) => t.id === task.id);
+    expect(edited?.lastMovedAt).toBe(movedAt);
+  });
 });

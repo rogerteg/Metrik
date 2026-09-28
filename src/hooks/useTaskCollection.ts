@@ -407,6 +407,7 @@ export function useTaskCollection(
           blocked,
           blockedAt,
           blockedReason,
+          lastMovedAt: now,
           updatedAt: now,
           activityLog: [...(targetTask.activityLog || []), auditEvent],
         };

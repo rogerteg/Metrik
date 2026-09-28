@@ -14,6 +14,7 @@
 - **2026-09-25 | Transparência por dados existentes** | Derivar métricas de fluxo apenas de campos já persistidos (`createdAt`, `startedAt`, `completedAt`, `totalBlockedMs`, `subtasks`, `comments`, `activityLog`, `links`) entregou valor sem alterar o modelo de dados. | Respeita o Princípio V (YAGNI).
 - **2026-09-28 | Canal de notificação não-obstrutivo** | Injetar `onNotify` opcional em `useTaskCollection` e plugá-lo no `ToastNotification` do `App` removeu `window.alert` dos guards de bloqueio sem acoplar o hook à UI; testes passam a injetar um espião e a provar que nenhum alerta é disparado. | Mantém o domínio testável e sem trava de thread (research Decisão 5 / Constituição III).
 - **2026-09-28 | Comentários reutilizáveis (027 delta)** | Extrair a UI de comentários para `CommentThread` e as regras para helpers puros em `cardComments.ts` permitiu entregar cartão pai **e** subtarefa com um único componente e permissões testáveis, sem reescrever o modal. | Um componente + um módulo puro cobrem várias superfícies com risco baixo.
+- **2026-09-28 | Somente-leitura explícito (P1)** | Trocar callbacks no-op do guest (`isGuest ? () => {} : fn`) por uma prop `isReadOnly` no cartão eliminou a "edição fantasma" e deixou a UI honesta (campos desabilitados, ações ocultas) mantendo handlers reais. | Componentes com `readOnly`/`disabled` nativos (`AutoResizeTextarea`, `TagList`, `PriorityBadge`) tornaram a mudança barata.
 
 ## 10.2 ❌ Anti-Padrões — Não Repetir
 
