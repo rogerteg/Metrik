@@ -32,6 +32,7 @@
 **Monitoramento:** Logs estruturados via prefixo `[Metrik]` no console
 
 **Testes:** Vitest 3 + `@testing-library/react` 16 + `jsdom` 26 (`npm run test`); cobertura via `@vitest/coverage-v8` (`npm run test:coverage`, limiares em `vite.config.ts`)
+**Lint:** ESLint 9 (flat config `eslint.config.js`) + `typescript-eslint` + `eslint-plugin-react-hooks` (`npm run lint`; 0 erros, avisos de `any` não bloqueiam)
 **Build/typecheck:** `npm run build` (`tsc && vite build`)
 **Estilo:** CSS vanilla com design tokens (`src/App.css`); **não há framework CSS instalado**
 
@@ -53,7 +54,7 @@
 - `.specify/memory/` — `constitution.md` e artefatos SDD transversais
 
 **Padrão de imports:** relativos (ex.: `../types/kanban`); sem alias configurado
-**Formatação:** sem ESLint/Prettier configurados (a Constituição v1.6.3 reconhece: sem gate de lint, sem obrigação de lint)
+**Formatação:** ESLint 9 (flat config) configurado e exigido no CI; Prettier ainda **não** adotado (sem formatação automática obrigatória)
 **CSS:** classes sem prefixo global único; componentes do modal usam `td-*`; feed de atividade usa `mrf-*`; usar tokens semânticos (`--text-primary`, `--bg-card`, `--color-progress`, …), nunca cores fixas quando houver token
 
 ---
@@ -97,9 +98,8 @@
 
 - `src/App.css` monolítico (~3.470 linhas) com seletores duplicados (ex.: `.kanban-column`, `.task-indicators`, `.task-card-header` aparecem mais de uma vez) — risco de overrides silenciosos.
 - Arquivos grandes com múltiplas responsabilidades: `Task.tsx` (~38 KB), `useTaskCollection.ts` (~34 KB), `App.tsx` (~32 KB) — candidatos a decomposição (SRP).
-- Sem CI/CD (nenhum `.github/workflows`) e sem gate de lint/format (ESLint/Prettier) — a Constituição v1.6.3 reconhece a ausência de lint.
-- Sem cobertura de testes configurada (`coverage` ausente no Vitest).
 - Comentários ainda têm dois caminhos de renderização (`CommentThread` no cartão × `CommentItem` no modal); a edição já existe em ambos.
+- Prettier ainda não adotado (formatação automática não obrigatória).
 - Paridade de parâmetros de largura de coluna entre navegadores (T023/T024 da feature 026) pendente de execução manual nos quatro navegadores; harness pronto em `specs/026-.../tools/`.
 - 4 lacunas de qualidade aceitas na feature 027 (quantificação de latência/fluidez e falha de storage) — ver `specs/027-.../checklists/subtasks-and-comments.md`.
 
@@ -109,6 +109,11 @@
 - ✅ Edição de comentário disponível no modal (`CommentItem`) e no cartão (`CommentThread`).
 - ✅ `TaskModel` já possui `assignee`; `TaskActivityPanel` legado não existe mais.
 - ✅ Code-splitting (vendor chunks + analytics) e escopo do Vitest já corrigidos; `testTimeout` elevado para 15s.
+- ✅ CI/CD (GitHub Actions) e cobertura com limiares configurados (P2); ESLint 9 no CI com 0 erros (P3).
+
+### Resolvido em 2026-09-28 (P3 — parcial)
+- ✅ Lint configurado (`eslint.config.js`) e integrado ao CI; corrigido 1 erro real (`no-extra-boolean-cast` em `wipAgingMetrics.ts`).
+- ⏳ Pendentes: fatiar `App.css`, decompor arquivos grandes, Prettier, acessibilidade formal.
 
 ---
 

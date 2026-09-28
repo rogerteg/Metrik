@@ -154,7 +154,7 @@ export function groupActiveTasksByColumn(
 
   // Filtrar apenas tarefas ativas em progresso
   const activeTasks = tasks.filter(
-    (t) => !doneColIds.has(t.column) && !Boolean(t.completedAt)
+    (t) => !doneColIds.has(t.column) && !t.completedAt
   );
 
   const completedTasks = tasks.filter((t) => doneColIds.has(t.column) || Boolean(t.completedAt));
