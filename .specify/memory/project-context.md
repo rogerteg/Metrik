@@ -99,7 +99,7 @@
 
 ## 9.7 Áreas de Atenção e Dívida Técnica Conhecida
 
-- 19 seletores duplicados entre os módulos de `src/styles/` (ex.: `.task-indicators`, `.task-card-header`, `.add-column-card`) — sobreposições que exigem análise de cascata para deduplicar com segurança.
+- 12 seletores duplicados entre os módulos de `src/styles/` (ex.: `.task-indicators`, `.task-card-header`, `.add-column-card`) — sobreposições que exigem análise de cascata para deduplicar; ratchet em `tests/unit/cssDuplicationGuard.test.ts`.
 - `App.tsx` (~28 KB) e `Task.tsx` (~30 KB) ainda concentram várias responsabilidades; já delegam a `BoardTask`/`TaskChecklist`/`useTaskComments`. 
 - Paridade de parâmetros de largura de coluna entre navegadores (T023/T024 da feature 026) pendente de execução manual nos quatro navegadores; harness pronto em `specs/026-.../tools/`.
 - 4 lacunas de qualidade aceitas na feature 027 (quantificação de latência/fluidez e falha de storage) — ver `specs/027-.../checklists/subtasks-and-comments.md`.
@@ -121,7 +121,8 @@
 - ✅ Decomposição (início): mutações de comentário extraídas de `useTaskCollection` para `src/hooks/useTaskComments.ts` (composição por `setBoard`, sem mudança de comportamento).
 - ✅ Decomposição: checklist/subtarefas extraído de `Task.tsx` para `src/components/TaskChecklist.tsx` (inclui comentários de subtarefa e confirmação de cascata).
 - ✅ Decomposição: cartão conectado do quadro extraído de `App.tsx` para `src/components/BoardTask.tsx` (resolve coluna, iniciativa, bloqueadores e handlers; App passa props).
-- ⏳ Pendentes: deduplicar os 19 seletores duplicados (exige análise de cascata); demais responsabilidades de `App.tsx` (views/modais) podem ser extraídas incrementalmente.
+- ✅ CSS: removidos 6 seletores com ocorrência anterior totalmente sobrescrita (movidos para o módulo final; `line-height` dos chips preservado). Restam **12** duplicados com merge pendente, agora protegidos por ratchet em `tests/unit/cssDuplicationGuard.test.ts`.
+- ⏳ Pendentes: deduplicar os 12 seletores restantes (merge; exige análise de cascata); demais responsabilidades de `App.tsx` podem ser extraídas incrementalmente.
 
 ---
 

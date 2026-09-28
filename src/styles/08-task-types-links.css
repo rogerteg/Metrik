@@ -83,6 +83,7 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
+  line-height: 1.2;
 }
 
 .task-cross-squad-chip {
@@ -96,6 +97,7 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
+  line-height: 1.2;
 }
 
 .task-blocked-dependency-chip {
@@ -109,6 +111,7 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
+  line-height: 1.2;
 }
 
 .task-initiative-progress {
