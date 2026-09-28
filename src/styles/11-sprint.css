@@ -278,3 +278,55 @@
   color: var(--text-secondary);
   margin: 0;
 }
+
+/* Burndown (Feature 039) */
+.sprint-burndown {
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.sprint-burndown__caption {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.sprint-burndown__axis {
+  stroke: var(--border-subtle);
+  stroke-width: 1;
+}
+
+.sprint-burndown__ideal {
+  stroke: #94a3b8;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+}
+
+.sprint-burndown__real {
+  stroke: var(--accent-primary, #6366f1);
+  stroke-width: 2;
+}
+
+.sprint-burndown__legend {
+  display: flex;
+  gap: 14px;
+  font-size: 0.66rem;
+  color: var(--text-secondary);
+}
+
+.sprint-burndown__legend-ideal::before {
+  content: '— ';
+  color: #94a3b8;
+}
+
+.sprint-burndown__legend-real::before {
+  content: '— ';
+  color: var(--accent-primary, #6366f1);
+}
+
+.sprint-burndown__unavailable {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin: 6px 0 0;
+}

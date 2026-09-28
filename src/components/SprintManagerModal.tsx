@@ -1,7 +1,9 @@
 import React from 'react';
 import { Modal } from './Modal';
+import { SprintBurndownChart } from './SprintBurndownChart';
 import { SprintModel, TaskModel } from '../types/kanban';
 import { orderSprints, getSprintTasks, calculateSprintProgress } from '../utils/sprintMetrics';
+import { buildSprintBurndown } from '../utils/sprintBurndown';
 
 export interface SprintManagerModalProps {
   isOpen: boolean;
@@ -181,6 +183,12 @@ export const SprintManagerModal: React.FC<SprintManagerModalProps> = ({
                           {progress.completed}/{progress.total} · {progress.percentage}%
                         </span>
                       </div>
+                      {(sprint.status === 'active' || sprint.status === 'completed') && (
+                        <SprintBurndownChart
+                          burndown={buildSprintBurndown(sprint, tasks)}
+                          height={120}
+                        />
+                      )}
                       {!isReadOnly && (
                         <div className="sprint-manager__actions">
                           {sprint.status !== 'active' && sprint.status !== 'completed' && (
