@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildSprintBurndown } from '../../src/utils/sprintBurndown';
+import { buildSprintBurndown, buildSprintBurnup } from '../../src/utils/sprintBurndown';
 import { SprintModel, TaskModel } from '../../src/types/kanban';
 
 /** Feature 039 — burndown derivado (sem snapshots). */
@@ -84,5 +84,46 @@ describe('buildSprintBurndown (Feature 039)', () => {
       now,
     );
     expect(result.points).toHaveLength(2); // 01 e 02
+  });
+
+  describe('buildSprintBurnup (Feature 042)', () => {
+    it('is unavailable without a date window', () => {
+      const result = buildSprintBurnup(sprint(), [task({ sprintId: 'sp1' })]);
+      expect(result.available).toBe(false);
+      expect(result.points).toEqual([]);
+    });
+
+    it('accumulates scope and completed per day', () => {
+      const now = new Date('2026-09-04T12:00:00').getTime();
+      const tasks = [
+        task({
+          id: 'a',
+          sprintId: 'sp1',
+          createdAt: '2026-09-01T08:00:00',
+          completedAt: '2026-09-02T10:00:00',
+        }),
+        task({ id: 'b', sprintId: 'sp1', createdAt: '2026-09-03T08:00:00' }),
+      ];
+
+      const result = buildSprintBurnup(
+        sprint({ startDate: '2026-09-01', endDate: '2026-09-04' }),
+        tasks,
+        now,
+      );
+
+      expect(result.available).toBe(true);
+      expect(result.points.map((p) => p.scope)).toEqual([1, 1, 2, 2]);
+      expect(result.points.map((p) => p.completed)).toEqual([0, 1, 1, 1]);
+    });
+
+    it('caps the visible window at today', () => {
+      const now = new Date('2026-09-02T12:00:00').getTime();
+      const result = buildSprintBurnup(
+        sprint({ startDate: '2026-09-01', endDate: '2026-09-14' }),
+        [],
+        now,
+      );
+      expect(result.points).toHaveLength(2);
+    });
   });
 });

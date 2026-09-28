@@ -351,3 +351,26 @@
 .filter-select:focus {
   border-color: var(--accent-primary, #6366f1);
 }
+
+/* Alternância burndown/burnup (Feature 042) */
+.sprint-manager__chart-toggle {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.sprint-manager__chart-toggle button {
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sprint-manager__chart-toggle button.is-active {
+  color: var(--accent-primary, #6366f1);
+  border-color: var(--accent-primary, #6366f1);
+  background: rgba(99, 102, 241, 0.08);
+}

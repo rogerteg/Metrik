@@ -8,7 +8,7 @@ import {
   calculateSprintProgress,
   calculateSprintPoints,
 } from '../utils/sprintMetrics';
-import { buildSprintBurndown } from '../utils/sprintBurndown';
+import { buildSprintBurndown, buildSprintBurnup } from '../utils/sprintBurndown';
 
 export interface SprintManagerModalProps {
   isOpen: boolean;
@@ -69,6 +69,7 @@ export const SprintManagerModal: React.FC<SprintManagerModalProps> = ({
   const [draft, setDraft] = React.useState<DraftState>(emptyDraft);
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [editDraft, setEditDraft] = React.useState<DraftState>(emptyDraft);
+  const [chartMode, setChartMode] = React.useState<'burndown' | 'burnup'>('burndown');
 
   const ordered = React.useMemo(() => orderSprints(sprints), [sprints]);
 
@@ -116,6 +117,32 @@ export const SprintManagerModal: React.FC<SprintManagerModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Sprints">
       <div className="sprint-manager" data-testid="sprint-manager">
+        {ordered.some((s) => s.status === 'active' || s.status === 'completed') && (
+          <div
+            className="sprint-manager__chart-toggle"
+            role="group"
+            aria-label="Visualização do gráfico da sprint"
+          >
+            <button
+              type="button"
+              className={chartMode === 'burndown' ? 'is-active' : ''}
+              onClick={() => setChartMode('burndown')}
+              aria-pressed={chartMode === 'burndown'}
+              data-testid="chart-mode-burndown"
+            >
+              Burndown
+            </button>
+            <button
+              type="button"
+              className={chartMode === 'burnup' ? 'is-active' : ''}
+              onClick={() => setChartMode('burnup')}
+              aria-pressed={chartMode === 'burnup'}
+              data-testid="chart-mode-burnup"
+            >
+              Burnup
+            </button>
+          </div>
+        )}
         {ordered.length === 0 ? (
           <p className="sprint-manager__empty">Nenhuma sprint criada ainda.</p>
         ) : (
@@ -195,7 +222,9 @@ export const SprintManagerModal: React.FC<SprintManagerModalProps> = ({
                       </div>
                       {(sprint.status === 'active' || sprint.status === 'completed') && (
                         <SprintBurndownChart
+                          mode={chartMode}
                           burndown={buildSprintBurndown(sprint, tasks)}
+                          burnup={buildSprintBurnup(sprint, tasks)}
                           height={120}
                         />
                       )}

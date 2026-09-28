@@ -38,4 +38,26 @@ describe('SprintBurndownChart (Feature 039)', () => {
     const { container } = render(<SprintBurndownChart burndown={available} />);
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it('renders burnup scope and completed series in burnup mode (Feature 042)', () => {
+    const burnup = {
+      available: true,
+      committed: 2,
+      points: [
+        { day: '2026-09-01', scope: 1, completed: 0 },
+        { day: '2026-09-02', scope: 2, completed: 1 },
+      ],
+    };
+    render(<SprintBurndownChart mode="burnup" burnup={burnup} />);
+    expect(screen.getByTestId('burnup-chart')).toBeInTheDocument();
+    expect(screen.getByTestId('burnup-scope')).toBeInTheDocument();
+    expect(screen.getByTestId('burnup-completed')).toBeInTheDocument();
+  });
+
+  it('shows a burnup-specific message when unavailable', () => {
+    render(
+      <SprintBurndownChart mode="burnup" burnup={{ available: false, committed: 0, points: [] }} />,
+    );
+    expect(screen.getByTestId('burndown-unavailable')).toHaveTextContent(/burnup/i);
+  });
 });

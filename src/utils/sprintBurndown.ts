@@ -98,3 +98,57 @@ export function buildSprintBurndown(
 
   return { available: true, committed, points };
 }
+
+export interface BurnupPoint {
+  /** Dia (ISO `YYYY-MM-DD`, fuso local). */
+  day: string;
+  /** Escopo acumulado: tarefas criadas até o dia. */
+  scope: number;
+  /** Concluído acumulado: tarefas concluídas até o dia. */
+  completed: number;
+}
+
+export interface SprintBurnup {
+  available: boolean;
+  committed: number;
+  points: BurnupPoint[];
+}
+
+/**
+ * Burnup da sprint (Feature 042): escopo acumulado × trabalho concluído por dia.
+ * Mesma derivação do burndown (sem snapshots), em leitura crescente.
+ */
+export function buildSprintBurnup(
+  sprint: SprintModel,
+  tasks: TaskModel[],
+  nowMs: number = Date.now(),
+): SprintBurnup {
+  const sprintTasks = getSprintTasks(sprint.id, tasks);
+  const committed = sprintTasks.length;
+
+  if (!sprint.startDate || !sprint.endDate) {
+    return { available: false, committed, points: [] };
+  }
+
+  const start = startOfDay(parseDateMs(sprint.startDate));
+  const end = endOfDay(parseDateMs(sprint.endDate));
+  if (Number.isNaN(start) || Number.isNaN(end) || end < start) {
+    return { available: false, committed, points: [] };
+  }
+
+  const startDay = startOfDay(start);
+  const endDay = startOfDay(end);
+  const visibleEndDay = Math.min(endDay, startOfDay(nowMs));
+  const points: BurnupPoint[] = [];
+
+  for (let day = startDay; day <= visibleEndDay; day += MS_DAY) {
+    const dayEnd = endOfDay(day);
+    const scope = sprintTasks.filter((t) => new Date(t.createdAt).getTime() <= dayEnd).length;
+    const completed = sprintTasks.filter(
+      (t) => t.completedAt && new Date(t.completedAt).getTime() <= dayEnd,
+    ).length;
+    points.push({ day: toDayIso(day), scope, completed });
+  }
+
+  return { available: true, committed, points };
+}
