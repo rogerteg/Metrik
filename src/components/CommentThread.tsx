@@ -1,6 +1,7 @@
 import React from 'react';
 import { TaskComment } from '../types/taskActivity';
 import { sortComments, canEditComment, canDeleteComment } from '../utils/cardComments';
+import { CommentItem } from './CommentItem';
 
 export interface CommentThreadProps {
   comments?: TaskComment[];
@@ -15,21 +16,11 @@ export interface CommentThreadProps {
   testIdPrefix?: string;
 }
 
-const formatMoment = (iso: string): string => {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return '';
-  return date.toLocaleString('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
-
 /**
  * Trilha de comentários reutilizável (Feature 027 delta) para cartão pai e subtarefa.
- * Apresentação pura: toda a regra de permissão vem dos helpers de `cardComments`.
- * O isolamento pai × filho é garantido por quem fornece a lista (`comments`).
+ * Compõe `CommentItem` (mesmo renderizador do feed de atividade) — uma única
+ * apresentação de comentário em todo o produto. As permissões vêm de `cardComments`
+ * e o isolamento pai × filho é garantido por quem fornece a lista (`comments`).
  */
 export const CommentThread: React.FC<CommentThreadProps> = ({
   comments,
@@ -44,8 +35,6 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
   testIdPrefix = 'comment',
 }) => {
   const [draft, setDraft] = React.useState('');
-  const [editingId, setEditingId] = React.useState<string | null>(null);
-  const [editingText, setEditingText] = React.useState('');
 
   const ordered = React.useMemo(() => sortComments(comments), [comments]);
 
@@ -54,18 +43,6 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
     if (isReadOnly || !draft.trim()) return;
     onAdd(draft);
     setDraft('');
-  };
-
-  const startEdit = (comment: TaskComment) => {
-    setEditingId(comment.id);
-    setEditingText(comment.text);
-  };
-
-  const saveEdit = () => {
-    if (!editingId || !editingText.trim()) return;
-    onEdit(editingId, editingText);
-    setEditingId(null);
-    setEditingText('');
   };
 
   const requestDelete = (commentId: string) => {
@@ -87,95 +64,19 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
       {ordered.length === 0 ? (
         <p className="metrik-comment-empty">{emptyLabel}</p>
       ) : (
-        <ul className="metrik-comment-list">
-          {ordered.map((comment) => {
-            const editable = !isReadOnly && canEditComment(comment, currentUser.id);
-            const deletable = !isReadOnly && canDeleteComment(comment, currentUser.id, isAdmin);
-            const isEditing = editingId === comment.id;
-
-            return (
-              <li
-                key={comment.id}
-                className="metrik-comment-item"
-                data-testid={`${testIdPrefix}-item`}
-              >
-                <div className="metrik-comment-meta">
-                  <span className="metrik-comment-author" data-testid={`${testIdPrefix}-author`}>
-                    {comment.userName}
-                  </span>
-                  <time className="metrik-comment-time" dateTime={comment.createdAt}>
-                    {formatMoment(comment.createdAt)}
-                    {comment.updatedAt ? ' · editado' : ''}
-                  </time>
-                </div>
-
-                {isEditing ? (
-                  <div className="metrik-comment-edit">
-                    <textarea
-                      className="metrik-comment-edit-input"
-                      value={editingText}
-                      onChange={(e) => setEditingText(e.target.value)}
-                      aria-label="Editar comentário"
-                      data-testid={`${testIdPrefix}-edit-input`}
-                    />
-                    <div className="metrik-comment-actions">
-                      <button
-                        type="button"
-                        className="metrik-comment-save"
-                        onClick={saveEdit}
-                        disabled={!editingText.trim()}
-                        data-testid={`${testIdPrefix}-edit-save`}
-                      >
-                        Salvar
-                      </button>
-                      <button
-                        type="button"
-                        className="metrik-comment-cancel"
-                        onClick={() => {
-                          setEditingId(null);
-                          setEditingText('');
-                        }}
-                      >
-                        Cancelar
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="metrik-comment-text" data-testid={`${testIdPrefix}-text`}>
-                    {comment.text}
-                  </p>
-                )}
-
-                {!isEditing && (editable || deletable) && (
-                  <div className="metrik-comment-actions">
-                    {editable && (
-                      <button
-                        type="button"
-                        className="metrik-comment-edit-btn"
-                        onClick={() => startEdit(comment)}
-                        aria-label={`Editar comentário de ${comment.userName}`}
-                        data-testid={`${testIdPrefix}-edit`}
-                      >
-                        Editar
-                      </button>
-                    )}
-                    {deletable && (
-                      <button
-                        type="button"
-                        className="metrik-comment-delete"
-                        onClick={() => requestDelete(comment.id)}
-                        aria-label={`Excluir comentário de ${comment.userName}`}
-                        data-testid={`${testIdPrefix}-delete`}
-                      >
-                        Excluir
-                      </button>
-                    )}
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+        <div className="metrik-comment-list">
+          {ordered.map((comment) => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              testIdPrefix={testIdPrefix}
+              onEdit={onEdit}
+              canEdit={!isReadOnly && canEditComment(comment, currentUser.id)}
+              onDelete={requestDelete}
+              canDelete={!isReadOnly && canDeleteComment(comment, currentUser.id, isAdmin)}
+            />
+          ))}
+        </div>
       )}
 
       {!isReadOnly && (

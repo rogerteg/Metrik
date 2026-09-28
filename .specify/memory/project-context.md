@@ -100,7 +100,6 @@
 
 - 19 seletores duplicados entre os módulos de `src/styles/` (ex.: `.task-indicators`, `.task-card-header`, `.add-column-card`) — sobreposições que exigem análise de cascata para deduplicar com segurança.
 - Arquivos grandes com múltiplas responsabilidades: `Task.tsx` (~38 KB), `useTaskCollection.ts` (~34 KB), `App.tsx` (~32 KB) — candidatos a decomposição (SRP).
-- Comentários ainda têm dois caminhos de renderização (`CommentThread` no cartão × `CommentItem` no modal); a edição já existe em ambos.
 - Prettier ainda não adotado (formatação automática não obrigatória).
 - Paridade de parâmetros de largura de coluna entre navegadores (T023/T024 da feature 026) pendente de execução manual nos quatro navegadores; harness pronto em `specs/026-.../tools/`.
 - 4 lacunas de qualidade aceitas na feature 027 (quantificação de latência/fluidez e falha de storage) — ver `specs/027-.../checklists/subtasks-and-comments.md`.
@@ -117,7 +116,8 @@
 - ✅ Lint configurado (`eslint.config.js`) e integrado ao CI; corrigido 1 erro real (`no-extra-boolean-cast` em `wipAgingMetrics.ts`).
 - ✅ Auditoria de acessibilidade automatizada com `jest-axe` (`tests/unit/accessibility.test.tsx`) cobrindo `CommentThread`, cartão somente-leitura, cartão editável e `Column` — 0 violações.
 - ✅ `App.css` fatiado em `src/styles/*.css` (10 módulos por feature) como manifesto de `@import` em ordem preservada; guarda `tests/unit/appCssStructure.test.ts` e contrato de geometria agora resolve imports. Build gerou CSS idêntico (mesmo hash).
-- ⏳ Pendentes: deduplicar os 19 seletores duplicados (exige análise de cascata), decompor arquivos grandes (SRP), Prettier, consolidar as duas trilhas de comentário.
+- ✅ Trilhas de comentário consolidadas: `CommentThread` (cartão) agora compõe `CommentItem` (mesmo renderizador do feed de atividade), com `testIdPrefix`; CSS `metrik-comment-*` de item removido.
+- ⏳ Pendentes: deduplicar os 19 seletores duplicados (exige análise de cascata), decompor arquivos grandes (SRP), Prettier.
 
 ---
 

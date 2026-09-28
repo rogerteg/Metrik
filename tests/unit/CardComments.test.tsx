@@ -85,11 +85,11 @@ describe('Task card comments (Feature 027 delta)', () => {
     );
     openDetails();
 
-    fireEvent.click(screen.getByTestId('card-comment-edit'));
-    fireEvent.change(screen.getByTestId('card-comment-edit-input'), {
+    fireEvent.click(screen.getByTestId('card-comment-edit-button-c1'));
+    fireEvent.change(screen.getByTestId('card-comment-edit-input-c1'), {
       target: { value: 'revisado' },
     });
-    fireEvent.click(screen.getByTestId('card-comment-edit-save'));
+    fireEvent.click(screen.getByTestId('card-comment-edit-save-c1'));
 
     expect(onEditComment).toHaveBeenCalledWith('task-comments', 'c1', 'revisado');
   });
@@ -110,7 +110,7 @@ describe('Task card comments (Feature 027 delta)', () => {
     );
     openDetails();
 
-    fireEvent.click(screen.getByTestId('card-comment-delete'));
+    fireEvent.click(screen.getByTestId('card-comment-delete-button-c1'));
 
     expect(window.confirm).toHaveBeenCalled();
     expect(onDeleteComment).toHaveBeenCalledWith('task-comments', 'c1');

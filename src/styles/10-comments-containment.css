@@ -2,7 +2,10 @@
    Extraído de App.css (P3, 2026-09-28). Fatia contígua; a ordem é definida em App.css. */
 
 /* ==========================================================================
-   Feature 027 (delta): comentários no cartão e na subtarefa + contenção
+   Feature 027 (delta): comentários no cartão e na subtarefa + contenção.
+   O item de comentário é renderizado por `CommentItem` (classes `mrf-comment*`
+   em TaskActivityFeed.css), compartilhado com o feed de atividade — daí não
+   haver mais estilos `metrik-comment-item` aqui.
    ========================================================================== */
 
 .task-detail-comments {
@@ -71,53 +74,11 @@
 }
 
 .metrik-comment-list {
-  list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-
-.metrik-comment-item {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  padding: 6px 8px;
-}
-
-[data-theme="light"] .metrik-comment-item {
-  background: rgba(0, 0, 0, 0.02);
-}
-
-.metrik-comment-meta {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.metrik-comment-author {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.metrik-comment-time {
-  font-size: 0.65rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-}
-
-.metrik-comment-text {
-  font-size: 0.78rem;
-  color: var(--text-primary);
-  margin: 3px 0 0;
-  white-space: pre-wrap;
-  word-break: break-word;
 }
 
 .metrik-comment-empty {
@@ -127,41 +88,13 @@
   margin: 4px 0;
 }
 
-.metrik-comment-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 6px;
-  margin-top: 4px;
-}
-
-.metrik-comment-actions button {
-  background: transparent;
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  color: var(--text-secondary);
-  font-size: 0.68rem;
-  padding: 2px 8px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.metrik-comment-actions button:hover {
-  color: var(--text-primary);
-  border-color: var(--border-color);
-}
-
-.metrik-comment-delete {
-  color: #ef4444 !important;
-}
-
 .metrik-comment-composer {
   display: flex;
   gap: 6px;
   margin-top: 6px;
 }
 
-.metrik-comment-input,
-.metrik-comment-edit-input {
+.metrik-comment-input {
   flex: 1;
   min-width: 0;
   background: var(--input-bg);
@@ -173,18 +106,11 @@
   outline: none;
 }
 
-.metrik-comment-edit-input {
-  width: 100%;
-  resize: vertical;
-}
-
-.metrik-comment-input:focus,
-.metrik-comment-edit-input:focus {
+.metrik-comment-input:focus {
   border-color: var(--accent-primary, #6366f1);
 }
 
-.metrik-comment-submit,
-.metrik-comment-save {
+.metrik-comment-submit {
   background: var(--accent-primary, #6366f1);
   border: none;
   border-radius: 6px;
@@ -195,12 +121,7 @@
   cursor: pointer;
 }
 
-.metrik-comment-submit:disabled,
-.metrik-comment-save:disabled {
+.metrik-comment-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.metrik-comment-edit {
-  margin-top: 4px;
 }

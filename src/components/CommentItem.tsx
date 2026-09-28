@@ -9,6 +9,8 @@ export interface CommentItemProps {
   onEdit?: (commentId: string, text: string) => void;
   canEdit?: boolean;
   compact?: boolean;
+  /** Prefixo dos `data-testid` (padrão: `comment`, usado pelo feed de atividade). */
+  testIdPrefix?: string;
 }
 
 const MessageSquareIcon = () => (
@@ -59,6 +61,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
   onEdit,
   canEdit = false,
   compact = false,
+  testIdPrefix = 'comment',
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -84,7 +87,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
 
   return (
     <div
-      data-testid={isDecision ? 'comment-decision-item' : `comment-item-${comment.id}`}
+      data-testid={isDecision ? `${testIdPrefix}-decision-item` : `${testIdPrefix}-item-${comment.id}`}
       className={`mrf-comment ${compact ? 'mrf-comment--compact' : ''} ${isDecision ? 'mrf-comment--decision' : ''}`}
     >
       <div className="mrf-comment__avatar">{getInitials(comment.userName || 'US')}</div>
@@ -92,7 +95,9 @@ export const CommentItem: React.FC<CommentItemProps> = ({
       <div className="mrf-comment__body">
         <div className="mrf-comment__head">
           <div className="mrf-comment__meta">
-            <span className="mrf-comment__author">{comment.userName}</span>
+            <span className="mrf-comment__author" data-testid={`${testIdPrefix}-author`}>
+              {comment.userName}
+            </span>
 
             {isDecision ? (
               <span className="mrf-comment__badge mrf-comment__badge--decision">
@@ -119,14 +124,14 @@ export const CommentItem: React.FC<CommentItemProps> = ({
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               aria-label="Editar comentário"
-              data-testid={`comment-edit-input-${comment.id}`}
+              data-testid={`${testIdPrefix}-edit-input-${comment.id}`}
             />
             <div className="mrf-comment__edit-actions">
               <button
                 type="button"
                 onClick={saveEdit}
                 disabled={!draft.trim()}
-                data-testid={`comment-edit-save-${comment.id}`}
+                data-testid={`${testIdPrefix}-edit-save-${comment.id}`}
               >
                 Salvar
               </button>
@@ -143,7 +148,10 @@ export const CommentItem: React.FC<CommentItemProps> = ({
           </div>
         ) : (
           <>
-            <div className={`mrf-comment__text ${isLongText && !expanded ? 'is-clamped' : ''}`}>
+            <div
+              className={`mrf-comment__text ${isLongText && !expanded ? 'is-clamped' : ''}`}
+              data-testid={`${testIdPrefix}-text`}
+            >
               {renderFormattedText(isLongText && !expanded ? `${comment.text.slice(0, 400)}...` : comment.text)}
             </div>
 
@@ -167,7 +175,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
             setDraft(comment.text);
             setIsEditing(true);
           }}
-          data-testid={`comment-edit-button-${comment.id}`}
+          data-testid={`${testIdPrefix}-edit-button-${comment.id}`}
           title="Editar comentário"
           aria-label="Editar comentário"
           className="mrf-comment__edit-btn"
@@ -183,7 +191,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({
         <button
           type="button"
           onClick={() => onDelete(comment.id)}
-          data-testid={`comment-delete-button-${comment.id}`}
+          data-testid={`${testIdPrefix}-delete-button-${comment.id}`}
           title="Excluir comentário"
           aria-label="Excluir comentário"
           className="mrf-comment__delete"
