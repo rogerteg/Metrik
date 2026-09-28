@@ -6,7 +6,7 @@ import { useDataPortability } from './hooks/useDataPortability';
 import { MetricsBar } from './components/MetricsBar';
 import { FilterBar } from './components/FilterBar';
 import { Board } from './components/Board';
-import { Task } from './components/Task';
+import { BoardTask } from './components/BoardTask';
 import { TaskDetailsModal } from './components/TaskDetailsModal';
 const AnalyticsDashboard = React.lazy(() =>
   import('./components/AnalyticsDashboard').then((module) => ({
@@ -21,11 +21,7 @@ import { useColumnWidths } from './hooks/useColumnWidths';
 import { useTheme } from './hooks/useTheme';
 import { ThemeSelector } from './components/ThemeSelector';
 import { ToastNotification } from './components/ToastNotification';
-import {
-  getDefaultColumnColor,
-  TaskModel,
-  BLOCKED_TASK_MOVE_WARNING_MESSAGE,
-} from './types/kanban';
+import { TaskModel, BLOCKED_TASK_MOVE_WARNING_MESSAGE } from './types/kanban';
 import { isTaskBlocked } from './utils/taskReorder';
 import { ReorderOptions } from './types/dnd';
 import { useTeamAccess } from './hooks/useTeamAccess';
@@ -36,7 +32,6 @@ import { TaskRelationType, CrossSquadTaskSummary } from './types/taskTypes';
 import {
   addBidirectionalLink,
   removeBidirectionalLink,
-  calculateInitiativeProgress,
   getPendingBlockers,
 } from './utils/taskRelations';
 import { DependencySoftBlockModal } from './components/DependencySoftBlockModal';
@@ -674,95 +669,36 @@ export const App: React.FC = () => {
             onMoveColumn={reorderColumn}
             onOpenNewColumnModal={() => setIsNewColumnModalOpen(true)}
             isReadOnly={isGuest}
-            renderTask={(task, columnId) => {
-              const currentIndex = board.columns.findIndex((c) => c.id === columnId);
-              const currentColumn = board.columns[currentIndex];
-              const isBlocked = isTaskBlocked(task);
-              const canMoveLeft = !isGuest && currentIndex > 0 && !isBlocked;
-              const canMoveRight =
-                !isGuest && currentIndex < board.columns.length - 1 && !isBlocked;
-              const colColor = getDefaultColumnColor(currentColumn);
-              const initiativeProgress =
-                task.type === 'initiative'
-                  ? calculateInitiativeProgress(task, allBoardTasks, board.columns)
-                  : undefined;
-              const pendingBlockers =
-                task.links && task.links.length > 0
-                  ? getPendingBlockers(task, allBoardTasks, board.columns)
-                  : [];
-
-              return (
-                <Task
-                  key={task.id}
-                  task={task}
-                  columnColor={colColor}
-                  onClick={() => setSelectedTaskId(task.id)}
-                  onUpdateTitle={(id, title) => updateTask(id, { title })}
-                  onDelete={deleteTask}
-                  onDiscardIfEmpty={discardIfEmpty}
-                  onUpdatePriority={setTaskPriority}
-                  onAddTag={addTaskTag}
-                  onRemoveTag={removeTaskTag}
-                  onToggleBlocked={toggleTaskBlocked}
-                  onDropTask={handleGuardedDropTask}
-                  isCompleted={currentColumn?.category === 'done'}
-                  canMoveLeft={canMoveLeft}
-                  canMoveRight={canMoveRight}
-                  onUpdateTask={updateTask}
-                  isReadOnly={isGuest}
-                  initiativeProgress={initiativeProgress}
-                  pendingBlockersCount={pendingBlockers.length}
-                  autoSaveComments={settings.autoSaveComments ?? true}
-                  autoSaveDebounceMs={settings.autoSaveDebounceMs ?? 800}
-                  currentUser={currentUser}
-                  isAdmin={isAdmin}
-                  onAddComment={
-                    isGuest
-                      ? undefined
-                      : (taskId, text) => addTaskComment(taskId, text, currentUser)
-                  }
-                  onEditComment={
-                    isGuest
-                      ? undefined
-                      : (taskId, commentId, text) =>
-                          editTaskComment(taskId, commentId, text, currentUser)
-                  }
-                  onDeleteComment={
-                    isGuest
-                      ? undefined
-                      : (taskId, commentId) => deleteTaskComment(taskId, commentId, currentUser)
-                  }
-                  onAddSubtaskComment={
-                    isGuest
-                      ? undefined
-                      : (taskId, subtaskId, text) =>
-                          addSubtaskComment(taskId, subtaskId, text, currentUser)
-                  }
-                  onEditSubtaskComment={
-                    isGuest
-                      ? undefined
-                      : (taskId, subtaskId, commentId, text) =>
-                          editSubtaskComment(taskId, subtaskId, commentId, text, currentUser)
-                  }
-                  onDeleteSubtaskComment={
-                    isGuest
-                      ? undefined
-                      : (taskId, subtaskId, commentId) =>
-                          deleteSubtaskComment(taskId, subtaskId, commentId, currentUser, isAdmin)
-                  }
-                  onMoveLeft={() => {
-                    if (canMoveLeft) {
-                      handleGuardedMoveTask(task.id, board.columns[currentIndex - 1].id);
-                    }
-                  }}
-                  onMoveRight={() => {
-                    if (canMoveRight) {
-                      handleGuardedMoveTask(task.id, board.columns[currentIndex + 1].id);
-                    }
-                  }}
-                />
-              );
-            }}
+            renderTask={(task, columnId) => (
+              <BoardTask
+                key={task.id}
+                task={task}
+                columnId={columnId}
+                board={board}
+                allBoardTasks={allBoardTasks}
+                isGuest={isGuest}
+                isAdmin={isAdmin}
+                currentUser={currentUser}
+                autoSaveComments={settings.autoSaveComments ?? true}
+                autoSaveDebounceMs={settings.autoSaveDebounceMs ?? 800}
+                onSelect={setSelectedTaskId}
+                onUpdateTask={updateTask}
+                onDelete={deleteTask}
+                onDiscardIfEmpty={discardIfEmpty}
+                onUpdatePriority={setTaskPriority}
+                onAddTag={addTaskTag}
+                onRemoveTag={removeTaskTag}
+                onToggleBlocked={toggleTaskBlocked}
+                onDropTask={handleGuardedDropTask}
+                onMoveTask={handleGuardedMoveTask}
+                addTaskComment={addTaskComment}
+                editTaskComment={editTaskComment}
+                deleteTaskComment={deleteTaskComment}
+                addSubtaskComment={addSubtaskComment}
+                editSubtaskComment={editSubtaskComment}
+                deleteSubtaskComment={deleteSubtaskComment}
+              />
+            )}
           />
         </>
       ) : (
