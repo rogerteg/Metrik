@@ -6,21 +6,12 @@ import {
   ColumnModel,
   PriorityLevel,
   TaskModel,
-  TaskComment,
   MAX_COLUMNS,
   FLOW_REGRESSION_WARNING_MESSAGE,
   BLOCKED_TASK_MOVE_WARNING_MESSAGE,
 } from '../types/kanban';
 import { createTaskActivityEvent, AuditDescriptions } from '../utils/taskActivityLogger';
-import {
-  createComment,
-  editCommentInList,
-  addCommentToSubtask,
-  editCommentInSubtask,
-  removeCommentFromSubtask,
-  canEditComment,
-  canDeleteComment,
-} from '../utils/cardComments';
+import { useTaskComments } from './useTaskComments';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
 import {
   reorderBoard,
@@ -740,229 +731,15 @@ export function useTaskCollection(
     });
   }, []);
 
-  const addTaskComment = useCallback(
-    (
-      taskId: string,
-      text: string,
-      userOrDecision?: { id: string; name: string } | boolean,
-      isDecisionParam: boolean = false,
-    ) => {
-      const cleanText = text.trim();
-      if (!cleanText) return;
-
-      const user =
-        typeof userOrDecision === 'object' && userOrDecision !== null ? userOrDecision : undefined;
-      const isDecision =
-        typeof userOrDecision === 'boolean' ? userOrDecision : Boolean(isDecisionParam);
-
-      setBoard((prev) => {
-        const nextTasks: Record<string, TaskModel[]> = {};
-        const now = new Date().toISOString();
-        const authorName = user?.name || 'Rogerio Teixeira';
-        const authorId = user?.id || 'usr_default';
-
-        const newComment: TaskComment = {
-          id: crypto.randomUUID
-            ? crypto.randomUUID()
-            : `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-          taskId,
-          userId: authorId,
-          userName: authorName,
-          text: cleanText,
-          isDecision: Boolean(isDecision),
-          createdAt: now,
-        };
-
-        const auditEvent = createTaskActivityEvent({
-          taskId,
-          eventType: 'comment_added',
-          description: AuditDescriptions.commentAdded(authorName),
-          user: { id: authorId, name: authorName },
-        });
-
-        for (const colId of Object.keys(prev.tasks)) {
-          nextTasks[colId] = prev.tasks[colId].map((task) => {
-            if (task.id === taskId) {
-              const comments = [...(task.comments || []), newComment];
-              const activityLog = [...(task.activityLog || []), auditEvent];
-              return {
-                ...task,
-                comments,
-                activityLog,
-                updatedAt: now,
-              };
-            }
-            return task;
-          });
-        }
-        return { ...prev, tasks: nextTasks };
-      });
-    },
-    [],
-  );
-
-  const deleteTaskComment = useCallback(
-    (taskId: string, commentId: string, user?: { id: string; name: string }) => {
-      setBoard((prev) => {
-        const nextTasks: Record<string, TaskModel[]> = {};
-        const now = new Date().toISOString();
-        const actorName = user?.name || 'Rogerio Teixeira';
-        const actorId = user?.id || 'usr_default';
-
-        const auditEvent = createTaskActivityEvent({
-          taskId,
-          eventType: 'comment_deleted',
-          description: AuditDescriptions.commentDeleted(actorName),
-          user: { id: actorId, name: actorName },
-        });
-
-        for (const colId of Object.keys(prev.tasks)) {
-          nextTasks[colId] = prev.tasks[colId].map((task) => {
-            if (task.id === taskId) {
-              const comments = (task.comments || []).filter((c) => c.id !== commentId);
-              const activityLog = [...(task.activityLog || []), auditEvent];
-              return {
-                ...task,
-                comments,
-                activityLog,
-                updatedAt: now,
-              };
-            }
-            return task;
-          });
-        }
-        return { ...prev, tasks: nextTasks };
-      });
-    },
-    [],
-  );
-
-  // Feature 027 (delta) — edição de comentário do cartão e comentários de subtarefa.
-  const editTaskComment = useCallback(
-    (taskId: string, commentId: string, text: string, user?: { id: string; name: string }) => {
-      const author = user ?? { id: 'usr_default', name: 'Rogerio Teixeira' };
-      setBoard((prev) => {
-        const nextTasks: Record<string, TaskModel[]> = {};
-        const now = new Date().toISOString();
-        for (const colId of Object.keys(prev.tasks)) {
-          nextTasks[colId] = prev.tasks[colId].map((task) => {
-            if (task.id !== taskId) return task;
-            const existing = task.comments?.find((c) => c.id === commentId);
-            if (!existing || !canEditComment(existing, author.id)) return task;
-            return {
-              ...task,
-              comments: editCommentInList(task.comments, commentId, text, author, now),
-              updatedAt: now,
-            };
-          });
-        }
-        return { ...prev, tasks: nextTasks };
-      });
-    },
-    [],
-  );
-
-  const addSubtaskComment = useCallback(
-    (taskId: string, subtaskId: string, text: string, user?: { id: string; name: string }) => {
-      const author = user ?? { id: 'usr_default', name: 'Rogerio Teixeira' };
-      const created = createComment({ taskId, text, author });
-      if (!created) return;
-
-      setBoard((prev) => {
-        const nextTasks: Record<string, TaskModel[]> = {};
-        const now = new Date().toISOString();
-        for (const colId of Object.keys(prev.tasks)) {
-          nextTasks[colId] = prev.tasks[colId].map((task) => {
-            if (task.id !== taskId) return task;
-            const hasSubtask = (task.subtasks ?? []).some((s) => s.id === subtaskId);
-            if (!hasSubtask) return task;
-            return {
-              ...task,
-              subtasks: addCommentToSubtask(task.subtasks, subtaskId, created),
-              updatedAt: now,
-            };
-          });
-        }
-        return { ...prev, tasks: nextTasks };
-      });
-    },
-    [],
-  );
-
-  const editSubtaskComment = useCallback(
-    (
-      taskId: string,
-      subtaskId: string,
-      commentId: string,
-      text: string,
-      user?: { id: string; name: string },
-    ) => {
-      const author = user ?? { id: 'usr_default', name: 'Rogerio Teixeira' };
-      setBoard((prev) => {
-        const nextTasks: Record<string, TaskModel[]> = {};
-        const now = new Date().toISOString();
-        for (const colId of Object.keys(prev.tasks)) {
-          nextTasks[colId] = prev.tasks[colId].map((task) => {
-            if (task.id !== taskId) return task;
-            const subtask = (task.subtasks ?? []).find((s) => s.id === subtaskId);
-            const existing = subtask?.comments?.find((c) => c.id === commentId);
-            if (!existing || !canEditComment(existing, author.id)) return task;
-            return {
-              ...task,
-              subtasks: editCommentInSubtask(
-                task.subtasks,
-                subtaskId,
-                commentId,
-                text,
-                author,
-                now,
-              ),
-              updatedAt: now,
-            };
-          });
-        }
-        return { ...prev, tasks: nextTasks };
-      });
-    },
-    [],
-  );
-
-  const deleteSubtaskComment = useCallback(
-    (
-      taskId: string,
-      subtaskId: string,
-      commentId: string,
-      user?: { id: string; name: string },
-      isAdmin: boolean = false,
-    ) => {
-      const author = user ?? { id: 'usr_default', name: 'Rogerio Teixeira' };
-      setBoard((prev) => {
-        const nextTasks: Record<string, TaskModel[]> = {};
-        const now = new Date().toISOString();
-        for (const colId of Object.keys(prev.tasks)) {
-          nextTasks[colId] = prev.tasks[colId].map((task) => {
-            if (task.id !== taskId) return task;
-            const subtask = (task.subtasks ?? []).find((s) => s.id === subtaskId);
-            const existing = subtask?.comments?.find((c) => c.id === commentId);
-            if (!existing || !canDeleteComment(existing, author.id, isAdmin)) return task;
-            return {
-              ...task,
-              subtasks: removeCommentFromSubtask(
-                task.subtasks,
-                subtaskId,
-                commentId,
-                author,
-                isAdmin,
-              ),
-              updatedAt: now,
-            };
-          });
-        }
-        return { ...prev, tasks: nextTasks };
-      });
-    },
-    [],
-  );
+  // Comentários extraídos para hook dedicado (P3 — SRP).
+  const {
+    addTaskComment,
+    deleteTaskComment,
+    editTaskComment,
+    addSubtaskComment,
+    editSubtaskComment,
+    deleteSubtaskComment,
+  } = useTaskComments(setBoard);
 
   const updateBlockedReason = useCallback((taskId: string, reason: string) => {
     setBoard((prev) => {
