@@ -40,6 +40,8 @@
 
 ## 9.3 Convenções Estabelecidas no Projeto
 
+**Estilo/CSS:** `src/App.css` é um **manifesto de `@import`** (ordem = cascata); os estilos vivem em `src/styles/*.css` por feature. Nunca reordene os imports — há guarda em `tests/unit/appCssStructure.test.ts`.
+
 **Nomenclatura de arquivos:** Componentes em `PascalCase.tsx`; tipos em `camelCase.ts`; hooks `useXxx.ts`
 **Nomenclatura de variáveis:** `camelCase`
 **Nomenclatura de funções/métodos:** `camelCase` (verbos)
@@ -96,7 +98,7 @@
 
 ## 9.7 Áreas de Atenção e Dívida Técnica Conhecida
 
-- `src/App.css` monolítico (~3.470 linhas) com seletores duplicados (ex.: `.kanban-column`, `.task-indicators`, `.task-card-header` aparecem mais de uma vez) — risco de overrides silenciosos.
+- 19 seletores duplicados entre os módulos de `src/styles/` (ex.: `.task-indicators`, `.task-card-header`, `.add-column-card`) — sobreposições que exigem análise de cascata para deduplicar com segurança.
 - Arquivos grandes com múltiplas responsabilidades: `Task.tsx` (~38 KB), `useTaskCollection.ts` (~34 KB), `App.tsx` (~32 KB) — candidatos a decomposição (SRP).
 - Comentários ainda têm dois caminhos de renderização (`CommentThread` no cartão × `CommentItem` no modal); a edição já existe em ambos.
 - Prettier ainda não adotado (formatação automática não obrigatória).
@@ -114,7 +116,8 @@
 ### Resolvido em 2026-09-28 (P3 — parcial)
 - ✅ Lint configurado (`eslint.config.js`) e integrado ao CI; corrigido 1 erro real (`no-extra-boolean-cast` em `wipAgingMetrics.ts`).
 - ✅ Auditoria de acessibilidade automatizada com `jest-axe` (`tests/unit/accessibility.test.tsx`) cobrindo `CommentThread`, cartão somente-leitura, cartão editável e `Column` — 0 violações.
-- ⏳ Pendentes: fatiar `App.css`, decompor arquivos grandes (SRP), Prettier, consolidação das duas trilhas de comentário.
+- ✅ `App.css` fatiado em `src/styles/*.css` (10 módulos por feature) como manifesto de `@import` em ordem preservada; guarda `tests/unit/appCssStructure.test.ts` e contrato de geometria agora resolve imports. Build gerou CSS idêntico (mesmo hash).
+- ⏳ Pendentes: deduplicar os 19 seletores duplicados (exige análise de cascata), decompor arquivos grandes (SRP), Prettier, consolidar as duas trilhas de comentário.
 
 ---
 

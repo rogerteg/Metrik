@@ -20,7 +20,26 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '../..');
 const readSource = (relativePath: string) => readFileSync(path.join(repoRoot, relativePath), 'utf8');
 
-const appCss = readSource('src/App.css');
+/**
+ * Resolve `@import` recursivamente para ler a folha de estilo efetiva.
+ * Desde P3 (2026-09-28) o `src/App.css` é um manifesto de `@import` para
+ * `src/styles/*.css`; a guarda de geometria deve enxergar o CSS concatenado.
+ */
+function readCssWithImports(relativePath: string, seen = new Set<string>()): string {
+  const key = relativePath.replace(/\\/g, '/');
+  if (seen.has(key)) return '';
+  seen.add(key);
+
+  const css = readFileSync(path.join(repoRoot, relativePath), 'utf8');
+  const dir = path.dirname(relativePath);
+
+  return css.replace(/@import\s+(['"])([^'"]+)\1\s*;/g, (_match, _quote, target: string) => {
+    const resolved = target.startsWith('.') ? path.join(dir, target) : target;
+    return readCssWithImports(resolved, seen);
+  });
+}
+
+const appCss = readCssWithImports('src/App.css');
 
 /** Extrai as declarações do bloco base `.kanban-column { ... }` (ignora `:hover`, `.is-*`, etc.). */
 function extractBaseColumnBlock(css: string): string {

@@ -1,0 +1,1062 @@
+/* Metrik — design-system-core
+   Extraído de App.css (P3, 2026-09-28). Fatia contígua; a ordem é definida em App.css. */
+
+/* ==========================================================================
+   Metrik Design System - Core Kanban Board
+   Aesthetics: Sleek Modern Dark Mode, Glassmorphism, Micro-interactions
+   ========================================================================== */
+
+@import '../components/Settings/Settings.css';
+
+:root,
+[data-theme="dark"] {
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Color Palette - Enterprise Dark Mode */
+  --bg-primary: #0b0f19;
+  --bg-secondary: #0f172a;
+  --bg-board: #0b0f19;
+  --bg-column: #121a2d;
+  --bg-column-header: #152037;
+  --bg-card: #1e293b;
+  --bg-card-hover: #24344d;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(56, 189, 248, 0.5);
+
+  --color-surface-elevated: #1e293b;
+  --card-bg: #1e293b;
+
+  /* Status Tokens */
+  --color-todo: #94a3b8;
+  --color-todo-bg: rgba(148, 163, 184, 0.12);
+  --color-todo-border: rgba(148, 163, 184, 0.25);
+
+  --color-progress: #38bdf8;
+  --color-progress-bg: rgba(56, 189, 248, 0.12);
+  --color-progress-border: rgba(56, 189, 248, 0.3);
+
+  --color-blocked: #f43f5e;
+  --color-blocked-bg: rgba(244, 63, 94, 0.14);
+  --color-blocked-border: rgba(244, 63, 94, 0.4);
+  --color-blocked-glow: rgba(244, 63, 94, 0.2);
+
+  --color-completed: #10b981;
+  --color-completed-bg: rgba(16, 185, 129, 0.12);
+  --color-completed-border: rgba(16, 185, 129, 0.3);
+
+  /* Text Tokens */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --color-text: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+
+  /* Action Buttons & Inputs */
+  --btn-secondary-bg: rgba(255, 255, 255, 0.05);
+  --btn-secondary-hover-bg: rgba(255, 255, 255, 0.1);
+  --btn-secondary-border: rgba(255, 255, 255, 0.08);
+  --btn-secondary-hover-border: rgba(255, 255, 255, 0.2);
+  --btn-secondary-text: #94a3b8;
+  --btn-secondary-hover-text: #f8fafc;
+  --input-bg: rgba(0, 0, 0, 0.2);
+  --input-border: rgba(255, 255, 255, 0.08);
+  --input-focus-bg: rgba(0, 0, 0, 0.35);
+
+  /* Scrollbar Tokens */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.12);
+  --scrollbar-thumb-hover: rgba(56, 189, 248, 0.4);
+
+  /* Metrik Column Geometry Contract — espelha src/utils/columnGeometry.ts.
+     Alterar um lado sem o outro quebra tests/unit/columnGeometryContract.test.ts */
+  --metrik-column-width-default: 290px;
+  --metrik-column-width-min: 220px;
+  --metrik-column-width-max: 650px;
+
+  /* Pista determinística da barra de rolagem horizontal (Feature 026, FR-004):
+     mesma espessura no WebKit (::-webkit-scrollbar) e no Firefox (scrollbar-width: thin),
+     para que a altura útil das colunas não varie com o estilo de barra do navegador. */
+  --metrik-scrollbar-lane: 8px;
+
+  /* Shadows & Glass */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.5);
+  --backdrop-blur: blur(8px);
+
+  /* Background Radials & Brand */
+  --bg-radial-1: rgba(56, 189, 248, 0.06);
+  --bg-radial-2: rgba(244, 63, 94, 0.05);
+  --brand-gradient: linear-gradient(to right, #f8fafc, #94a3b8);
+
+  /* Transitions */
+  --transition-smooth: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Light Theme - Clean Modern Enterprise Light Mode */
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-board: #f1f5f9;
+  --bg-column: #e2e8f0;
+  --bg-column-header: #cbd5e1;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --border-subtle: rgba(0, 0, 0, 0.09);
+  --border-color: rgba(0, 0, 0, 0.09);
+  --border-focus: rgba(2, 132, 199, 0.5);
+
+  --color-surface-elevated: #ffffff;
+  --card-bg: #ffffff;
+
+  /* Status Tokens (WCAG AA Compliant for Light Backgrounds) */
+  --color-todo: #475569;
+  --color-todo-bg: rgba(71, 85, 105, 0.1);
+  --color-todo-border: rgba(71, 85, 105, 0.25);
+
+  --color-progress: #0284c7;
+  --color-progress-bg: rgba(2, 132, 199, 0.1);
+  --color-progress-border: rgba(2, 132, 199, 0.28);
+
+  --color-blocked: #e11d48;
+  --color-blocked-bg: rgba(225, 29, 72, 0.1);
+  --color-blocked-border: rgba(225, 29, 72, 0.35);
+  --color-blocked-glow: rgba(225, 29, 72, 0.15);
+
+  --color-completed: #059669;
+  --color-completed-bg: rgba(5, 150, 105, 0.1);
+  --color-completed-border: rgba(5, 150, 105, 0.3);
+
+  /* Text Tokens */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --color-text: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+
+  /* Action Buttons & Inputs */
+  --btn-secondary-bg: rgba(0, 0, 0, 0.05);
+  --btn-secondary-hover-bg: rgba(0, 0, 0, 0.09);
+  --btn-secondary-border: rgba(0, 0, 0, 0.12);
+  --btn-secondary-hover-border: rgba(0, 0, 0, 0.2);
+  --btn-secondary-text: #334155;
+  --btn-secondary-hover-text: #0f172a;
+  --input-bg: #f8fafc;
+  --input-border: rgba(0, 0, 0, 0.15);
+  --input-focus-bg: #ffffff;
+
+  /* Scrollbar Tokens */
+  --scrollbar-thumb: rgba(0, 0, 0, 0.16);
+  --scrollbar-thumb-hover: rgba(2, 132, 199, 0.4);
+
+  /* Shadows & Glass */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.15);
+  --backdrop-blur: blur(8px);
+
+  /* Background Radials & Brand */
+  --bg-radial-1: rgba(2, 132, 199, 0.05);
+  --bg-radial-2: rgba(225, 29, 72, 0.03);
+  --brand-gradient: linear-gradient(to right, #0f172a, #334155);
+}
+
+/* Neutral Theme - Balanced Slate/Warm Neutral for Visual Ergonomics */
+[data-theme="neutral"] {
+  --bg-primary: #1e222b;
+  --bg-secondary: #282e3d;
+  --bg-board: #1e222b;
+  --bg-column: #262c3a;
+  --bg-column-header: #2e3546;
+  --bg-card: #2f3647;
+  --bg-card-hover: #373f52;
+  --border-subtle: rgba(255, 255, 255, 0.09);
+  --border-color: rgba(255, 255, 255, 0.09);
+  --border-focus: rgba(56, 189, 248, 0.5);
+
+  --color-surface-elevated: #2f3647;
+  --card-bg: #2f3647;
+
+  /* Status Tokens */
+  --color-todo: #94a3b8;
+  --color-todo-bg: rgba(148, 163, 184, 0.12);
+  --color-todo-border: rgba(148, 163, 184, 0.25);
+
+  --color-progress: #38bdf8;
+  --color-progress-bg: rgba(56, 189, 248, 0.14);
+  --color-progress-border: rgba(56, 189, 248, 0.35);
+
+  --color-blocked: #f43f5e;
+  --color-blocked-bg: rgba(244, 63, 94, 0.15);
+  --color-blocked-border: rgba(244, 63, 94, 0.4);
+  --color-blocked-glow: rgba(244, 63, 94, 0.2);
+
+  --color-completed: #10b981;
+  --color-completed-bg: rgba(16, 185, 129, 0.14);
+  --color-completed-border: rgba(16, 185, 129, 0.35);
+
+  /* Text Tokens */
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --color-text: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+
+  /* Action Buttons & Inputs */
+  --btn-secondary-bg: rgba(255, 255, 255, 0.06);
+  --btn-secondary-hover-bg: rgba(255, 255, 255, 0.11);
+  --btn-secondary-border: rgba(255, 255, 255, 0.12);
+  --btn-secondary-hover-border: rgba(255, 255, 255, 0.22);
+  --btn-secondary-text: #cbd5e1;
+  --btn-secondary-hover-text: #f1f5f9;
+  --input-bg: rgba(0, 0, 0, 0.22);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-focus-bg: rgba(0, 0, 0, 0.32);
+
+  /* Scrollbar Tokens */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.14);
+  --scrollbar-thumb-hover: rgba(56, 189, 248, 0.4);
+
+  /* Shadows & Glass */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.45);
+  --backdrop-blur: blur(8px);
+
+  /* Background Radials & Brand */
+  --bg-radial-1: rgba(56, 189, 248, 0.05);
+  --bg-radial-2: rgba(244, 63, 94, 0.04);
+  --brand-gradient: linear-gradient(to right, #f1f5f9, #94a3b8);
+}
+
+/* Global Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(circle at 15% 15%, var(--bg-radial-1) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, var(--bg-radial-2) 0%, transparent 40%);
+  background-attachment: fixed;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* App Container - Fits in single viewport page */
+.app-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+/* Top Header */
+.app-header {
+  position: relative;
+  z-index: 500;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  backdrop-filter: var(--backdrop-blur);
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 0 16px rgba(129, 140, 248, 0.25);
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.brand-logo-container:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 20px rgba(129, 140, 248, 0.45);
+}
+
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.brand-logo {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #0f172a;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+}
+
+.brand-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: background 0.2s ease;
+}
+
+.brand-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: var(--transition-smooth);
+}
+
+.btn-danger {
+  background: rgba(244, 63, 94, 0.12);
+  color: #fb7185;
+  border-color: rgba(244, 63, 94, 0.25);
+}
+
+.btn-danger:hover {
+  background: rgba(244, 63, 94, 0.22);
+  border-color: rgba(244, 63, 94, 0.45);
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.2);
+}
+
+.btn-secondary {
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border-color: var(--btn-secondary-border);
+}
+
+.btn-secondary:hover {
+  background: var(--btn-secondary-hover-bg);
+  color: var(--btn-secondary-hover-text);
+  border-color: var(--btn-secondary-hover-border);
+}
+
+/* Theme Selector - Segmented Control (Feature 022) */
+.theme-selector {
+  display: inline-flex;
+  align-items: center;
+  background: var(--btn-secondary-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+  backdrop-filter: var(--backdrop-blur);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-smooth);
+}
+
+.theme-option-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  line-height: 1;
+}
+
+.theme-option-btn:hover:not(.active) {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .theme-option-btn:hover:not(.active) {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.theme-option-btn.active {
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
+
+[data-theme="light"] .theme-option-btn.active {
+  color: #0f172a;
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.theme-option-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.theme-option-label {
+  font-size: 0.78rem;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 960px) {
+  .theme-option-label {
+    display: none;
+  }
+  .theme-option-btn {
+    padding: 6px 8px;
+  }
+}
+
+/* Kanban Board Grid - Single Horizontal Row ("na mesma reta") */
+/* Contenção horizontal explícita (Feature 026, GC-10/GC-11):
+   as colunas mantêm a largura resolvida (`flex: 0 0 auto` em `.kanban-column`), nunca
+   encolhem nem quebram linha, e todo transbordo acontece dentro DESTE contêiner rolável —
+   o cabeçalho, as métricas e os filtros não se deslocam. */
+.kanban-board-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 6px 8px 4px;
+  /* Pista de barra determinística (FR-004): reserva o espaço e usa a mesma
+     espessura entre motores, independente do estilo nativo do navegador. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-gutter: stable;
+}
+
+/* Custom Horizontal Scrollbar for Board */
+.kanban-board-grid::-webkit-scrollbar {
+  height: var(--metrik-scrollbar-lane);
+}
+
+.kanban-board-grid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+}
+
+.kanban-board-grid::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+.kanban-board-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Column Container - Clean Layout Structure */
+.kanban-column {
+  background: var(--bg-column);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  width: var(--metrik-column-width-default);
+  min-width: var(--metrik-column-width-min);
+  max-width: var(--metrik-column-width-max);
+  flex: 0 0 auto;
+  position: relative;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.kanban-column:hover {
+  border-color: var(--border-focus);
+}
+
+.kanban-column.is-resizing {
+  user-select: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+
+.kanban-column.is-column-dragging {
+  opacity: 0.45;
+  border-style: dashed;
+  border-color: #38bdf8;
+  transform: scale(0.99);
+}
+
+.kanban-column.column-drop-before {
+  border-left: 3px solid #38bdf8;
+  box-shadow: -4px 0 12px rgba(56, 189, 248, 0.35);
+}
+
+.kanban-column.column-drop-after {
+  border-right: 3px solid #38bdf8;
+  box-shadow: 4px 0 12px rgba(56, 189, 248, 0.35);
+}
+
+.kanban-column.is-fixed-column {
+  border-top: 3px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Column Drag Handle */
+.column-drag-handle {
+  cursor: grab;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  user-select: none;
+  padding: 2px 3px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background 0.15s ease;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.column-drag-handle:hover {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  opacity: 1;
+}
+
+.column-drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Column Fixed Badge (Lock) */
+.column-fixed-badge {
+  font-size: 0.7rem;
+  opacity: 0.65;
+  cursor: help;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Column Move Button Group */
+.column-move-btn-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  padding: 1px;
+}
+
+.btn-move-column {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  opacity: 0.7;
+}
+
+.btn-move-column:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  opacity: 1;
+}
+
+.btn-move-column:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+/* Column Resize Handle */
+.column-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -5px;
+  bottom: 0;
+  width: 10px;
+  cursor: col-resize;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.column-resize-handle::after {
+  content: '';
+  width: 2px;
+  height: 22px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.column-resize-handle:hover::after,
+.kanban-column.is-resizing .column-resize-handle::after {
+  height: 100%;
+  width: 2px;
+  background: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+}
+
+/* Column Header - Compact Header Row */
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  gap: 6px;
+}
+
+.column-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.column-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+.badge-todo {
+  background: var(--color-todo-bg);
+  color: var(--color-todo);
+  border-color: var(--color-todo-border);
+}
+
+.badge-progress {
+  background: var(--color-progress-bg);
+  color: var(--color-progress);
+  border-color: var(--color-progress-border);
+}
+
+.badge-blocked {
+  background: var(--color-blocked-bg);
+  color: var(--color-blocked);
+  border-color: var(--color-blocked-border);
+}
+
+.badge-completed {
+  background: var(--color-completed-bg);
+  color: var(--color-completed);
+  border-color: var(--color-completed-border);
+}
+
+.column-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--btn-secondary-bg);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.column-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.btn-add-task {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  transition: var(--transition-smooth);
+  opacity: 0.75;
+}
+
+.btn-add-task:hover {
+  background: var(--btn-secondary-hover-bg);
+  color: var(--text-primary);
+  border-color: var(--btn-secondary-hover-border);
+  opacity: 1;
+}
+
+/* Tasks List Container - Internal vertical scroll */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 3px;
+}
+
+/* Custom Scrollbar for Tasks List */
+.tasks-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.tasks-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tasks-list::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+.tasks-list::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Task Card - Sleek Card Structure */
+.task-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+.task-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.32), 0 0 10px rgba(99, 102, 241, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Blocked Task Styles (Feature 012 & Feature 025: Strict Movement Lock) */
+.task-card.task-card-blocked,
+.task-card.task-card-blocked-locked {
+  border-left: 4px solid #ef4444 !important;
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, var(--bg-card) 25%);
+}
+
+.task-card.task-card-blocked:hover,
+.task-card.task-card-blocked-locked:hover {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.12) 0%, var(--bg-card-hover) 25%);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.task-card.task-card-blocked-locked,
+.task-card.task-card-blocked:not([draggable="true"]) {
+  cursor: not-allowed !important;
+}
+
+.task-card-blocked-badge-clickable {
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.task-card-blocked-badge-clickable:hover {
+  background: rgba(239, 68, 68, 0.35);
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+/* Contextual Toast Notification (Feature 025) */
+.metrik-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  max-width: 440px;
+  animation: metrikToastSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes metrikToastSlideIn {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.metrik-toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #1e293b;
+  color: #f8fafc;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.metrik-toast-icon {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.metrik-toast-message {
+  flex: 1;
+  font-weight: 500;
+}
+
+.metrik-toast-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.metrik-toast-close:hover {
+  color: #f8fafc;
+}
+
+/* Stagnant Task Styles (Card Parado / Marrom) */
+.task-card.task-card-stagnant:not(.task-card-blocked) {
+  border-left: 4px solid #8B4513 !important;
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.22) 0%, rgba(101, 50, 14, 0.14) 50%, var(--bg-card) 100%);
+  border-color: rgba(139, 69, 19, 0.4);
+  box-shadow: 0 0 10px rgba(139, 69, 19, 0.15);
+}
+
+.task-card.task-card-stagnant:not(.task-card-blocked):hover {
+  background: linear-gradient(135deg, rgba(139, 69, 19, 0.3) 0%, rgba(101, 50, 14, 0.2) 50%, var(--bg-card-hover) 100%);
+  border-color: rgba(160, 82, 45, 0.6);
+  box-shadow: 0 0 14px rgba(139, 69, 19, 0.25);
+}
+
+.task-stagnant-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(139, 69, 19, 0.25);
+  color: #fcd34d;
+  border: 1px solid rgba(139, 69, 19, 0.5);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.task-indicator-badge.date-start-badge {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.task-indicator-badge.date-end-badge {
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+.task-blocked-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Drag and Drop Styles (Feature 003) */
+.task-card[draggable="true"] {
+  cursor: grab;
+}
+
+.task-card[draggable="true"]:active,
+.task-card-dragging {
+  cursor: grabbing !important;
+  opacity: 0.6;
+  transform: scale(0.98);
+  box-shadow: var(--shadow-lg);
+  border-color: #38bdf8;
+}
+
+/* Drop Target Visual Cue on Card */
+.task-card-drop-before {
+  border-top: 2px solid #38bdf8 !important;
+}
+
+.task-card-drop-after {
+  border-bottom: 2px solid #38bdf8 !important;
+}
+
+/* Empty Column Drop Target Zone */
+.empty-column-drop-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  text-align: center;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-family: var(--font-family);
+  user-select: none;
+  background: rgba(255, 255, 255, 0.02);
+  transition: var(--transition-smooth);
+}
+
+.kanban-column-drop-target .empty-column-drop-zone {
+  border-color: rgba(56, 189, 248, 0.5);
+  color: var(--color-progress);
+  background: rgba(56, 189, 248, 0.06);
+}
+
+/* Blocked Column Task Highlight */
+.kanban-column-blocked .task-card {
+  border-left: 3px solid var(--color-blocked);
+}
+
+.kanban-column-progress .task-card {
+  border-left: 3px solid var(--color-progress);
+}
+
+.kanban-column-completed .task-card {
+  border-left: 3px solid var(--color-completed);
+}
+
+/* Card Header / Content */
+.task-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.task-card-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.task-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.4;
+  resize: none;
+  overflow: hidden;
+  word-break: break-word;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+
+.task-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.task-textarea:focus {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
+}
