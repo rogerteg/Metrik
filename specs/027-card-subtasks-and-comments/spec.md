@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-14
 
-**Status**: Draft
+**Status**: Draft — parcialmente entregue por features posteriores (035–037); ver reconciliação em `tasks.md`
 
 **Input**: User description: "Ajustar o sistema, melhorar de forma que dentro do card, possibilite criar uma subtarefa. E ter um campo que possibilite fazer comentario dentro do Card pai, e dentro do card, da subtarefa, ou seja, o Card filho."
 

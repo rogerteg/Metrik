@@ -1,5 +1,7 @@
 # Implementation Tasks: Feature 009 (Due Dates)
 
+> ⚠️ **Spec histórica — capacidade entregue.** `dueDate` no `TaskModel`, `getDueDateStatus`/`formatDateShort` e o badge no cartão já existem. Este `tasks.md` é registro histórico; **não implementar**. _(Reconciliado em 2026-09-28.)_
+
 ## Phase 1: Data Model & Utilities
 - [ ] T001 Update `src/types/kanban.ts` to add `dueDate?: string;` to `TaskModel`.
 - [ ] T002 Update `src/utils/timeFormatters.ts` with `getDueDateStatus` and `formatDateShort`.

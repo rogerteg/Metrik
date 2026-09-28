@@ -1,5 +1,7 @@
 # Implementation Tasks: Feature 008 (Analytics Dashboard)
 
+> ⚠️ **Spec histórica — capacidade entregue.** `AnalyticsDashboard`, `useAnalyticsData` e os gráficos em `src/components/charts/` existem e evoluíram (features 017–021, 030). Este `tasks.md` é registro histórico; **não implementar**. _(Reconciliado em 2026-09-28.)_
+
 ## Phase 1: Data Transformation Hooks
 - [ ] T001 Create `src/hooks/useAnalyticsData.ts` to transform completed tasks into daily throughput and scatter plot datasets.
 - [ ] T002 Write unit tests for `useAnalyticsData.test.ts` to ensure date grouping and zero-filling logic is accurate.

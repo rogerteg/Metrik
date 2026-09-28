@@ -97,32 +97,32 @@ description: "Task list for feature 027 - Card Subtasks and Comments"
 
 ## Phase 1: Setup & Data Models
 
-- [ ] T001 Update TypeScript types in `src/types/kanban.ts` to include `CommentModel`, optional `comments` on `SubtaskModel`, and optional `comments` on `TaskModel`.
+- [ ] T001 Update TypeScript types in `src/types/kanban.ts` to include `CommentModel`, optional `comments` on `SubtaskModel`, and optional `comments` on `TaskModel`. *(Parcial: `TaskComment` e `comments` no `TaskModel` existem; **não** há `comments` em `SubtaskModel`.)*
 
 ---
 
 ## Phase 2: Foundational Domain & Contract Tests (Blocking Prerequisites)
 
-- [ ] T002 [P] Write failing unit tests in `tests/unit/cardChildren.test.ts` covering subtask addition, toggle, cascade deletion, and comment creation/normalization/validation.
-- [ ] T003 Create pure domain utility functions in `src/utils/cardChildren.ts` (`addSubtaskToCard`, `toggleSubtaskInCard`, `removeSubtaskFromCard`, `addCommentToTarget`, `editCommentInTarget`, `removeCommentFromTarget`, `canManageComment`).
-- [ ] T004 [P] Write contract and authorization tests in `tests/unit/cardChildrenContract.test.ts` ensuring guest read-only enforcement and single-owner invariants (CC-01 to CC-14).
+- [ ] T002 [P] Write failing unit tests in `tests/unit/cardChildren.test.ts` covering subtask addition, toggle, cascade deletion, and comment creation/normalization/validation. *(Não existe; arquitetura de módulo puro não adotada.)*
+- [ ] T003 Create pure domain utility functions in `src/utils/cardChildren.ts` (`addSubtaskToCard`, `toggleSubtaskInCard`, `removeSubtaskFromCard`, `addCommentToTarget`, `editCommentInTarget`, `removeCommentFromTarget`, `canManageComment`). *(Superseded: lógica implementada inline em `Task.tsx`/`TaskDetailsModal.tsx`/`useTaskCollection.ts`.)*
+- [ ] T004 [P] Write contract and authorization tests in `tests/unit/cardChildrenContract.test.ts` ensuring guest read-only enforcement and single-owner invariants (CC-01 to CC-14). *(Não existe.)*
 
 ---
 
 ## Phase 3: User Story 1 - Subtarefas Direto no Cartão (Priority: P1) 🎯 MVP
 
-- [ ] T005 [P] [US1] Write failing component tests in `tests/unit/Task.test.tsx` asserting subtask creation input, toggle, removal, and counter updates directly in `Task.tsx`.
-- [ ] T006 [US1] Implement collapsible subtasks section with inline creation and completion toggle in `src/components/Task.tsx`.
-- [ ] T007 [US1] Update progress badge in `src/components/Task.tsx` to react immediately to subtask additions and state changes.
-- [ ] T008 [US1] Add CSS styles for inline subtask items, checkboxes, and scroll containment in `src/App.css`.
+- [ ] T005 [P] [US1] Write failing component tests in `tests/unit/Task.test.tsx` asserting subtask creation input, toggle, removal, and counter updates directly in `Task.tsx`. *(Parcial: `Task.test.tsx` cobre apenas a renderização do indicador, não criação/toggle/remoção.)*
+- [X] T006 [US1] Implement collapsible subtasks section with inline creation and completion toggle in `src/components/Task.tsx`. *(Entregue: `handleAddSubtask`/`handleToggleSubtask`/`handleDeleteSubtask`.)*
+- [X] T007 [US1] Update progress badge in `src/components/Task.tsx` to react immediately to subtask additions and state changes. *(Entregue: progresso derivado de `task.subtasks`.)*
+- [X] T008 [US1] Add CSS styles for inline subtask items, checkboxes, and scroll containment in `src/App.css`. *(Entregue: estilos `task-detail-checklist*`; a contenção `max-height` de T016 segue pendente.)*
 
 ---
 
 ## Phase 4: User Story 2 - Comentar no Cartão Pai (Priority: P1)
 
-- [ ] T009 [P] [US2] Write failing tests in `tests/unit/TaskDetailsModal.test.tsx` and `tests/unit/Task.test.tsx` for parent card comment creation, listing, editing, and deletion.
-- [ ] T010 [US2] Implement parent card comments list and comment composer in `src/components/Task.tsx` with comment count badge.
-- [ ] T011 [US2] Implement parent card comments section in `src/components/TaskDetailsModal.tsx` maintaining parity with card capabilities.
+- [ ] T009 [P] [US2] Write failing tests in `tests/unit/TaskDetailsModal.test.tsx` and `tests/unit/Task.test.tsx` for parent card comment creation, listing, editing, and deletion. *(Parcial: criação/listagem/exclusão cobertas; **edição não existe**.)*
+- [ ] T010 [US2] Implement parent card comments list and comment composer in `src/components/Task.tsx` with comment count badge. *(Não entregue no cartão; comentários do pai vivem apenas no modal `TaskDetailsModal.tsx`.)*
+- [X] T011 [US2] Implement parent card comments section in `src/components/TaskDetailsModal.tsx` maintaining parity with card capabilities. *(Entregue no modal.)*
 
 ---
 
@@ -138,5 +138,29 @@ description: "Task list for feature 027 - Card Subtasks and Comments"
 
 - [ ] T015 [P] Ensure WCAG 2.1 AA accessibility (aria labels, keyboard navigation, focus trap in delete confirmation) in `src/components/Task.tsx` and `src/components/TaskDetailsModal.tsx`.
 - [ ] T016 [P] Add CSS scroll containment rules (`max-height: 240px; overflow-y: auto`) to prevent cards from expanding infinitely when containing up to 50 subtasks or 200 comments in `src/App.css`.
-- [ ] T017 Run full automated test suite (`npm test`) and production build (`npm run build`) ensuring zero regressions and all tests green.
+- [X] T017 Run full automated test suite (`npm test`) and production build (`npm run build`) ensuring zero regressions and all tests green. *(Executado em ciclos posteriores: 556 testes verdes, build limpo.)*
 - [ ] T018 Review and close `specs/027-card-subtasks-and-comments/checklists/requirements.md` and `subtasks-and-comments.md`.
+
+---
+
+## Reconciliação Spec × Código (2026-09-28)
+
+**Veredito:** a 027 foi **parcialmente entregue por features posteriores** (035–037 entregaram subtarefas inline e comentários no modal), mas **não** implementada conforme a arquitetura especificada (módulo puro `cardChildren.ts`). Das 18 tarefas, **5 concluídas**, **13 abertas/parciais**.
+
+| História | Estado | Evidência |
+|---|---|---|
+| US1 — Subtarefas no cartão | ✅ Entregue | `src/components/Task.tsx` (`handleAddSubtask` L267, `handleToggleSubtask` L254, `handleDeleteSubtask` L262) + CSS `task-detail-checklist*` em `App.css`. Lacuna: cobertura de teste de criação/toggle/remoção (T005). |
+| US2 — Comentários no pai | ⚠️ Parcial | `TaskDetailsModal.tsx` (33 refs) + `useTaskCollection.addTaskComment`/`deleteTaskComment`. Faltam: edição de comentário, composer no cartão (`Task.tsx`) e badge de contagem. |
+| US3 — Comentários na subtarefa | ❌ Ausente | Nenhuma referência a comentários de subtarefa em `src/`. |
+| Arquitetura `cardChildren.ts` | ❌ Não adotada | Lógica de subtarefa/comentário está inline; spec/plan/contrato descrevem módulo puro que nunca existiu. |
+| Cascata/confirmação (T014) | ❌ Ausente | `handleDeleteSubtask` remove sem diálogo de confirmação. |
+| Contenção de rolagem (T016) | ❌ Ausente | Sem `max-height: 240px` em `App.css`. |
+
+**Delta aberto (Modo 2 — brownfield):**
+1. Reconciliar a spec 027 com a arquitetura real (inline) **ou** criar `cardChildren.ts` e migrar — decisão de design pendente.
+2. Implementar US3 (comentários na subtarefa) + campo `comments` em `SubtaskModel`.
+3. Adicionar edição de comentário (US2 AC3).
+4. Diálogo de confirmação de cascata ao remover subtarefa (T014).
+5. Contenção de rolagem `max-height` (T016) e revisão de acessibilidade (T015).
+
+> Próximo passo recomendado: abrir um **proposal.md** de Modo 2 para o delta acima antes de implementar; não marcar a 027 como concluída.

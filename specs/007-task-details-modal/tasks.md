@@ -1,5 +1,7 @@
 # Implementation Tasks: Feature 007 (Task Details Modal)
 
+> ⚠️ **Spec histórica — capacidade entregue.** `Modal.tsx` e `TaskDetailsModal.tsx` existem e evoluíram nas features 035–037. Este `tasks.md` é registro histórico; **não implementar**. _(Reconciliado em 2026-09-28.)_
+
 ## Phase 1: Data Model & State
 - [ ] T001 Update `TaskModel` in `src/types/kanban.ts` to include `description?: string` and `subtasks?: SubtaskModel[]`.
 - [ ] T002 Update `useTaskCollection.ts` to allow updating `description` and `subtasks` via `updateTask`.

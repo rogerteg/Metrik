@@ -1,5 +1,7 @@
 # Implementation Tasks: Feature 006 (Data Portability)
 
+> ⚠️ **Spec histórica — capacidade entregue.** `useDataPortability.ts` (export/import) e `overwriteBoard` já existem e são usados em `App.tsx`. Este `tasks.md` é registro histórico; **não implementar**. _(Reconciliado em 2026-09-28.)_
+
 ## Phase 1: Core Hook Implementation
 - [ ] T001 Adicionar função `overwriteBoard(newState: BoardState)` em `src/hooks/useTaskCollection.ts` que substitui o estado completo e salva no localStorage.
 - [ ] T002 Criar o hook `src/hooks/useDataPortability.ts` com a função `exportData(board: BoardState)` usando `Blob` e `URL.createObjectURL`.

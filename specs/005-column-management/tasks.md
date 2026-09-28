@@ -1,5 +1,7 @@
 # Tasks: Column Management
 
+> ⚠️ **Spec histórica — capacidade entregue.** A gestão de colunas (CRUD + reordenação) já existe em `useTaskCollection` (`addColumn`/`updateColumn`/`deleteColumn`/`reorderColumn`), `Column.tsx` e `Board.tsx`. Este `tasks.md` é registro histórico; **não implementar**. _(Reconciliado em 2026-09-28.)_
+
 **Feature**: `005-column-management`
 **Date**: 2026-09-09
 **Spec**: [specs/005-column-management/spec.md](file:///c:/Users/Rogerio%20Teixeira/OneDrive/Documentos/Antigravity/Metrik/specs/005-column-management/spec.md)
