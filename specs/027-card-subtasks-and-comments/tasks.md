@@ -139,7 +139,7 @@ description: "Task list for feature 027 - Card Subtasks and Comments"
 - [X] T015 [P] Ensure WCAG 2.1 AA accessibility (aria labels, keyboard navigation, focus trap in delete confirmation) in `src/components/Task.tsx` and `src/components/TaskDetailsModal.tsx`. *(Parcial: `aria-label`/`aria-expanded` e botões nativos com teclado; confirmação via diálogo nativo.)*
 - [X] T016 [P] Add CSS scroll containment rules (`max-height: 240px; overflow-y: auto`) to prevent cards from expanding infinitely when containing up to 50 subtasks or 200 comments in `src/App.css`. *(Entregue: `.task-detail-checklist-items` e `.metrik-comment-list`.)*
 - [X] T017 Run full automated test suite (`npm test`) and production build (`npm run build`) ensuring zero regressions and all tests green. *(Executado: 585 testes verdes, build limpo.)*
-- [ ] T018 Review and close `specs/027-card-subtasks-and-comments/checklists/requirements.md` and `subtasks-and-comments.md`.
+- [X] T018 Review and close `specs/027-card-subtasks-and-comments/checklists/requirements.md` and `subtasks-and-comments.md`. *(Revisados e fechados em 2026-09-28: 36 satisfeitos, 4 lacunas aceitas — ver §Findings & Closure.)*
 
 ---
 

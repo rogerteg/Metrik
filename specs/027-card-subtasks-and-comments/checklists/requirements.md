@@ -36,3 +36,9 @@
 - Zero marcadores `[NEEDS CLARIFICATION]`: as lacunas foram resolvidas por padrões documentados em `Assumptions` — reaproveitamento do modelo de subtarefa existente, autoria pela sessão ativa, remoção da subtarefa levando junto os comentários dela, e ausência de thread/reagrupamento.
 - Levantamento no código que embasou a spec: subtarefas já existem como lista simples (`id`, `title`, `completed`) e são gerenciáveis **apenas** no modal de detalhes; no cartão há somente o indicador de progresso. **Não existe nenhuma capacidade de comentário** hoje — todo o comportamento de comentário é novo.
 - Itens marcados como incompletos exigiriam atualização da spec antes de `/speckit-clarify` ou `/speckit-plan`.
+
+## Closure (2026-09-28 — T018)
+
+- **Revisado e fechado** em conjunto com `subtasks-and-comments.md`, contra a implementação do delta Modo 2 (`proposal.md`).
+- A spec-base permanece válida; as ambiguidades de escopo foram resolvidas no delta: modelo canônico de comentário (`TaskComment`, D-2), matriz de permissão, contenção de rolagem (240px) e edição de comentário.
+- Todas as lacunas de qualidade remanescentes (4) estão registradas como **aceitas** em `subtasks-and-comments.md §Findings & Closure`.
