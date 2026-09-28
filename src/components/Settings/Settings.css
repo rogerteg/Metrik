@@ -305,12 +305,24 @@
   display: inline-block;
 }
 
-.dot-cyan { background: #38bdf8; }
-.dot-yellow { background: #f59e0b; }
-.dot-blue { background: #3b82f6; }
-.dot-green { background: #10b981; }
-.dot-slate { background: #94a3b8; }
-.dot-teal { background: #14b8a6; }
+.dot-cyan {
+  background: #38bdf8;
+}
+.dot-yellow {
+  background: #f59e0b;
+}
+.dot-blue {
+  background: #3b82f6;
+}
+.dot-green {
+  background: #10b981;
+}
+.dot-slate {
+  background: #94a3b8;
+}
+.dot-teal {
+  background: #14b8a6;
+}
 
 .theme-option-label {
   font-size: 0.85rem;
@@ -371,7 +383,7 @@
   border-color: rgba(255, 255, 255, 0.12);
 }
 
-.settings-switch-label input[type="checkbox"] {
+.settings-switch-label input[type='checkbox'] {
   margin-top: 3px;
   width: 18px;
   height: 18px;
@@ -534,10 +546,21 @@
   flex-shrink: 0;
 }
 
-.status-connected { background: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
-.status-configured { background: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
-.status-error { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
-.status-unconfigured { background: #64748b; }
+.status-connected {
+  background: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+.status-configured {
+  background: #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+.status-error {
+  background: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+.status-unconfigured {
+  background: #64748b;
+}
 
 .cloud-status-title {
   font-size: 1.1rem;

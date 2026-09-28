@@ -74,10 +74,7 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
             borderColor: currentConfig.border,
           }}
         >
-          <span
-            className="priority-badge__dot"
-            style={{ backgroundColor: currentConfig.color }}
-          />
+          <span className="priority-badge__dot" style={{ backgroundColor: currentConfig.color }} />
           <span className="priority-badge__label">{currentConfig.label}</span>
         </button>
       ) : (
@@ -108,10 +105,7 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
                 className={`priority-menu__item ${isSelected ? 'is-selected' : ''}`}
                 onClick={handleSelect(lvl)}
               >
-                <span
-                  className="priority-badge__dot"
-                  style={{ backgroundColor: config.color }}
-                />
+                <span className="priority-badge__dot" style={{ backgroundColor: config.color }} />
                 <span className="priority-menu__item-label">{config.label}</span>
                 {isSelected && <span className="priority-menu__checkmark">✓</span>}
               </button>

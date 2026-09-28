@@ -18,7 +18,7 @@ describe('useFieldEdit Hook (TDD - Feature 032)', () => {
       useFieldEdit({
         initialValue: 'Texto original',
         onSave,
-      })
+      }),
     );
 
     expect(result.current.value).toBe('Texto original');
@@ -34,7 +34,7 @@ describe('useFieldEdit Hook (TDD - Feature 032)', () => {
         initialValue: 'Original',
         onSave,
         autoSave: false,
-      })
+      }),
     );
 
     act(() => {
@@ -60,7 +60,7 @@ describe('useFieldEdit Hook (TDD - Feature 032)', () => {
         initialValue: 'Início',
         onSave,
         autoSave: true,
-      })
+      }),
     );
 
     act(() => {
@@ -100,7 +100,7 @@ describe('useFieldEdit Hook (TDD - Feature 032)', () => {
         onSave,
         autoSave: true,
         debounceMs: 500,
-      })
+      }),
     );
 
     act(() => {
@@ -136,7 +136,7 @@ describe('useFieldEdit Hook (TDD - Feature 032)', () => {
         initialValue: 'Antes',
         onSave,
         autoSave: true,
-      })
+      }),
     );
 
     act(() => {
@@ -161,7 +161,7 @@ describe('useFieldEdit Hook (TDD - Feature 032)', () => {
         initialValue: 'Texto',
         onSave,
         autoSave: false,
-      })
+      }),
     );
 
     act(() => {
@@ -195,7 +195,7 @@ describe('useFieldEdit Hook (TDD - Feature 032)', () => {
         initialValue: 'Conteúdo Seguro',
         onSave,
         autoSave: true,
-      })
+      }),
     );
 
     act(() => {
@@ -226,7 +226,7 @@ describe('useFieldEdit Hook (TDD - Feature 032)', () => {
         initialValue: 'Inicial',
         onSave,
         autoSave: false,
-      })
+      }),
     );
 
     act(() => {
@@ -259,7 +259,7 @@ describe('useFieldEdit Hook (TDD - Feature 032)', () => {
       useFieldEdit({
         initialValue: 'Inicial',
         onSave,
-      })
+      }),
     );
 
     act(() => {
@@ -291,7 +291,7 @@ describe('useFieldEdit Hook (TDD - Feature 032)', () => {
         initialValue: 'Somente Leitura',
         onSave,
         isReadOnly: true,
-      })
+      }),
     );
 
     act(() => {
@@ -311,7 +311,7 @@ describe('useFieldEdit Hook (TDD - Feature 032)', () => {
           initialValue,
           onSave,
         }),
-      { initialProps: { initialValue: 'Versão 1' } }
+      { initialProps: { initialValue: 'Versão 1' } },
     );
 
     expect(result.current.value).toBe('Versão 1');

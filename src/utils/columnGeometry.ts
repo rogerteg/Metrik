@@ -100,7 +100,7 @@ export function reportGeometryDivergence(report: GeometryDivergenceReport): void
   const reason = report.reason === null ? 'none' : report.reason;
   console.warn(
     `${GEOMETRY_DIAGNOSTIC_PREFIX} Column geometry divergence — columnId=${report.columnId} ` +
-      `expected=${report.expected} resolved=${report.resolved} preference=${preference} reason=${reason}`
+      `expected=${report.expected} resolved=${report.resolved} preference=${preference} reason=${reason}`,
   );
 }
 
@@ -110,7 +110,7 @@ export function reportGeometryDivergence(report: GeometryDivergenceReport): void
  */
 export function resolvePersistedWidthMap(
   persisted: unknown,
-  report: (report: GeometryDivergenceReport) => void = reportGeometryDivergence
+  report: (report: GeometryDivergenceReport) => void = reportGeometryDivergence,
 ): Record<string, number> {
   if (persisted === null || typeof persisted !== 'object' || Array.isArray(persisted)) {
     return {};

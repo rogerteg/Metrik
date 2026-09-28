@@ -1,11 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useTeamAccess } from '../../src/hooks/useTeamAccess';
-import {
-  ACTIVE_USER_STORAGE_KEY,
-  DEFAULT_TEAM_ID,
-  DEFAULT_USER_ID,
-} from '../../src/types/team';
+import { ACTIVE_USER_STORAGE_KEY, DEFAULT_TEAM_ID, DEFAULT_USER_ID } from '../../src/types/team';
 
 describe('useTeamAccess Hook (Feature 023 - Team Access Control)', () => {
   beforeEach(() => {

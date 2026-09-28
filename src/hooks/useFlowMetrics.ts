@@ -1,14 +1,10 @@
 import { useMemo } from 'react';
 import { FlowMetricsSummary, TaskModel } from '../types/kanban';
-import {
-  calculateLeadTimeMs,
-  calculateCycleTimeMs,
-  formatDuration,
-} from '../utils/timeFormatters';
+import { calculateLeadTimeMs, calculateCycleTimeMs, formatDuration } from '../utils/timeFormatters';
 
 export function useFlowMetrics(
   completedTasks: TaskModel[],
-  allBoardTasks?: TaskModel[]
+  allBoardTasks?: TaskModel[],
 ): FlowMetricsSummary {
   return useMemo(() => {
     const throughput = completedTasks.length;
@@ -62,7 +58,10 @@ export function useFlowMetrics(
     let formattedFlowEfficiency = '-';
 
     if (totalCycleTimeMs > 0) {
-      flowEfficiency = Math.min(100, Math.max(0, Math.round((totalActiveTimeMs / totalCycleTimeMs) * 100)));
+      flowEfficiency = Math.min(
+        100,
+        Math.max(0, Math.round((totalActiveTimeMs / totalCycleTimeMs) * 100)),
+      );
       formattedFlowEfficiency = `${flowEfficiency}%`;
     }
 

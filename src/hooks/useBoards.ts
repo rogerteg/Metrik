@@ -50,7 +50,7 @@ export function useBoards() {
     if (rawBoards) {
       const parsed: BoardModel[] = JSON.parse(rawBoards);
       // Migrate legacy boards that do not have teamId assigned
-      currentBoards = parsed.map(b => ({
+      currentBoards = parsed.map((b) => ({
         ...b,
         teamId: b.teamId || DEFAULT_TEAM_ID,
       }));
@@ -62,9 +62,9 @@ export function useBoards() {
         name: 'Quadro Principal',
         teamId: DEFAULT_TEAM_ID,
         createdAt: new Date().toISOString(),
-        lastAccessed: new Date().toISOString()
+        lastAccessed: new Date().toISOString(),
       };
-      
+
       currentBoards = [defaultBoard];
       currentActiveId = defaultBoard.id;
 
@@ -89,85 +89,84 @@ export function useBoards() {
       name,
       teamId,
       createdAt: new Date().toISOString(),
-      lastAccessed: new Date().toISOString()
+      lastAccessed: new Date().toISOString(),
     };
-    
-    setBoards(prev => {
+
+    setBoards((prev) => {
       const updated = [...prev, newBoard];
       localStorage.setItem(BOARDS_INDEX_KEY, JSON.stringify(updated));
       return updated;
     });
-    
+
     // Automatically switch to the new board
     setActiveBoardId(newBoard.id);
     localStorage.setItem(ACTIVE_BOARD_KEY, newBoard.id);
-    
+
     return newBoard.id;
   }, []);
 
   const switchBoard = useCallback((id: string) => {
-    setBoards(prev => {
-      const updated = prev.map(b => 
-        b.id === id ? { ...b, lastAccessed: new Date().toISOString() } : b
+    setBoards((prev) => {
+      const updated = prev.map((b) =>
+        b.id === id ? { ...b, lastAccessed: new Date().toISOString() } : b,
       );
       localStorage.setItem(BOARDS_INDEX_KEY, JSON.stringify(updated));
       return updated;
     });
-    
+
     setActiveBoardId(id);
     localStorage.setItem(ACTIVE_BOARD_KEY, id);
   }, []);
 
   const renameBoard = useCallback((id: string, newName: string) => {
-    setBoards(prev => {
-      const updated = prev.map(b => 
-        b.id === id ? { ...b, name: newName } : b
-      );
+    setBoards((prev) => {
+      const updated = prev.map((b) => (b.id === id ? { ...b, name: newName } : b));
       localStorage.setItem(BOARDS_INDEX_KEY, JSON.stringify(updated));
       return updated;
     });
   }, []);
 
   const updateBoardTeam = useCallback((id: string, teamId: string) => {
-    setBoards(prev => {
-      const updated = prev.map(b => 
-        b.id === id ? { ...b, teamId } : b
-      );
+    setBoards((prev) => {
+      const updated = prev.map((b) => (b.id === id ? { ...b, teamId } : b));
       localStorage.setItem(BOARDS_INDEX_KEY, JSON.stringify(updated));
       return updated;
     });
   }, []);
 
-  const deleteBoard = useCallback((id: string) => {
-    setBoards(prev => {
-      if (prev.length <= 1) return prev; // Don't delete the last board
-      
-      const updated = prev.filter(b => b.id !== id);
-      localStorage.setItem(BOARDS_INDEX_KEY, JSON.stringify(updated));
-      
-      // Clean up local storage for the deleted board
-      localStorage.removeItem(`metrik-tasks-${id}`);
-      
-      // If we deleted the active board, switch to the first available
-      if (activeBoardId === id) {
-        const nextId = updated[0].id;
-        setActiveBoardId(nextId);
-        localStorage.setItem(ACTIVE_BOARD_KEY, nextId);
-      }
-      
-      return updated;
-    });
-  }, [activeBoardId]);
+  const deleteBoard = useCallback(
+    (id: string) => {
+      setBoards((prev) => {
+        if (prev.length <= 1) return prev; // Don't delete the last board
+
+        const updated = prev.filter((b) => b.id !== id);
+        localStorage.setItem(BOARDS_INDEX_KEY, JSON.stringify(updated));
+
+        // Clean up local storage for the deleted board
+        localStorage.removeItem(`metrik-tasks-${id}`);
+
+        // If we deleted the active board, switch to the first available
+        if (activeBoardId === id) {
+          const nextId = updated[0].id;
+          setActiveBoardId(nextId);
+          localStorage.setItem(ACTIVE_BOARD_KEY, nextId);
+        }
+
+        return updated;
+      });
+    },
+    [activeBoardId],
+  );
 
   return {
     boards,
     activeBoardId,
-    activeBoard: boards.find(b => b.id === activeBoardId) || null,
+    activeBoard: boards.find((b) => b.id === activeBoardId) || null,
     isInitialized,
     createBoard,
     switchBoard,
     renameBoard,
     updateBoardTeam,
-    deleteBoard
+    deleteBoard,
   };
 }

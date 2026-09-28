@@ -34,7 +34,7 @@ describe('Task Autosave & Save/Discard Buttons (US1 - Feature 032)', () => {
         onDiscardIfEmpty={vi.fn()}
         onUpdateTask={onUpdateTask}
         autoSaveComments={false}
-      />
+      />,
     );
 
     // Expande a seção de QA
@@ -53,8 +53,12 @@ describe('Task Autosave & Save/Discard Buttons (US1 - Feature 032)', () => {
     // Agora a toolbar contextual surge
     expect(screen.getByText(/alterações não salvas/i)).toBeInTheDocument();
 
-    const saveBtn = screen.getByRole('button', { name: /salvar alterações dos critérios de aceitação/i });
-    const discardBtn = screen.getByRole('button', { name: /descartar alterações dos critérios de aceitação/i });
+    const saveBtn = screen.getByRole('button', {
+      name: /salvar alterações dos critérios de aceitação/i,
+    });
+    const discardBtn = screen.getByRole('button', {
+      name: /descartar alterações dos critérios de aceitação/i,
+    });
 
     expect(saveBtn).toBeInTheDocument();
     expect(discardBtn).toBeInTheDocument();
@@ -67,7 +71,9 @@ describe('Task Autosave & Save/Discard Buttons (US1 - Feature 032)', () => {
 
     // Digita novamente e clica em salvar
     fireEvent.change(acTextarea, { target: { value: 'Critérios aprovados' } });
-    const newSaveBtn = screen.getByRole('button', { name: /salvar alterações dos critérios de aceitação/i });
+    const newSaveBtn = screen.getByRole('button', {
+      name: /salvar alterações dos critérios de aceitação/i,
+    });
     fireEvent.click(newSaveBtn);
 
     expect(onUpdateTask).toHaveBeenCalledWith('task-1', {
@@ -86,7 +92,7 @@ describe('Task Autosave & Save/Discard Buttons (US1 - Feature 032)', () => {
         onDiscardIfEmpty={vi.fn()}
         onUpdateTask={onUpdateTask}
         autoSaveComments={false}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByTestId('task-qa-section').querySelector('.task-qa-toggle-bar')!);
@@ -115,7 +121,7 @@ describe('Task Autosave & Save/Discard Buttons (US1 - Feature 032)', () => {
         onUpdateTask={onUpdateTask}
         autoSaveComments={true}
         autoSaveDebounceMs={800}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByTestId('task-qa-section').querySelector('.task-qa-toggle-bar')!);

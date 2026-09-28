@@ -5,38 +5,21 @@ import { WipLimitBadge } from '../../src/components/WipLimitBadge';
 describe('WipLimitBadge Component (T008)', () => {
   it('renders count/limit when limit is configured', () => {
     render(
-      <WipLimitBadge
-        columnId="in-progress"
-        currentCount={2}
-        limit={3}
-        onUpdateLimit={vi.fn()}
-      />
+      <WipLimitBadge columnId="in-progress" currentCount={2} limit={3} onUpdateLimit={vi.fn()} />,
     );
 
     expect(screen.getByText('2/3')).toBeInTheDocument();
   });
 
   it('renders count only when limit is null', () => {
-    render(
-      <WipLimitBadge
-        columnId="todo"
-        currentCount={5}
-        limit={null}
-        onUpdateLimit={vi.fn()}
-      />
-    );
+    render(<WipLimitBadge columnId="todo" currentCount={5} limit={null} onUpdateLimit={vi.fn()} />);
 
     expect(screen.getByText('5')).toBeInTheDocument();
   });
 
   it('renders overload style when currentCount exceeds limit', () => {
     const { container } = render(
-      <WipLimitBadge
-        columnId="in-progress"
-        currentCount={4}
-        limit={3}
-        onUpdateLimit={vi.fn()}
-      />
+      <WipLimitBadge columnId="in-progress" currentCount={4} limit={3} onUpdateLimit={vi.fn()} />,
     );
 
     expect(screen.getByText('4/3 ⚠️')).toBeInTheDocument();
@@ -51,7 +34,7 @@ describe('WipLimitBadge Component (T008)', () => {
         currentCount={2}
         limit={3}
         onUpdateLimit={handleUpdate}
-      />
+      />,
     );
 
     const badge = screen.getByText('2/3');
@@ -74,7 +57,7 @@ describe('WipLimitBadge Component (T008)', () => {
         currentCount={2}
         limit={3}
         onUpdateLimit={handleUpdate}
-      />
+      />,
     );
 
     const badge = screen.getByText('2/3');

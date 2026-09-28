@@ -60,7 +60,9 @@
   flex-direction: column;
   position: relative;
   min-height: 300px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .chart-header-row {
@@ -691,7 +693,7 @@
   user-select: none;
 }
 
-.toggle-switch-row input[type="checkbox"] {
+.toggle-switch-row input[type='checkbox'] {
   display: none;
 }
 
@@ -967,9 +969,17 @@
 }
 
 @keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.8; }
-  50% { opacity: 0.3; }
-  100% { transform: scale(1); opacity: 0.8; }
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
 }
 
 /* Rich Tooltip */
@@ -2144,10 +2154,22 @@
   border-radius: 4px;
 }
 
-.tag-p50 { color: #10b981; background: rgba(16, 185, 129, 0.12); }
-.tag-p70 { color: #eab308; background: rgba(234, 179, 8, 0.12); }
-.tag-p85 { color: #f97316; background: rgba(249, 115, 22, 0.12); }
-.tag-p95 { color: #ef4444; background: rgba(239, 68, 68, 0.12); }
+.tag-p50 {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+}
+.tag-p70 {
+  color: #eab308;
+  background: rgba(234, 179, 8, 0.12);
+}
+.tag-p85 {
+  color: #f97316;
+  background: rgba(249, 115, 22, 0.12);
+}
+.tag-p95 {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+}
 
 .percentile-bulk-actions {
   display: flex;
@@ -2233,10 +2255,18 @@
   border-radius: 2px;
 }
 
-.zone-green .color-box { background: #22c55e; }
-.zone-yellow .color-box { background: #eab308; }
-.zone-orange .color-box { background: #f97316; }
-.zone-red .color-box { background: #ef4444; }
+.zone-green .color-box {
+  background: #22c55e;
+}
+.zone-yellow .color-box {
+  background: #eab308;
+}
+.zone-orange .color-box {
+  background: #f97316;
+}
+.zone-red .color-box {
+  background: #ef4444;
+}
 
 .wip-aging-svg {
   width: 100%;
@@ -2324,10 +2354,22 @@
   border-radius: 3px;
 }
 
-.risk-tag.zone-green { color: #22c55e; background: rgba(34, 197, 94, 0.12); }
-.risk-tag.zone-yellow { color: #eab308; background: rgba(234, 179, 8, 0.12); }
-.risk-tag.zone-orange { color: #f97316; background: rgba(249, 115, 22, 0.12); }
-.risk-tag.zone-red { color: #ef4444; background: rgba(239, 68, 68, 0.12); }
+.risk-tag.zone-green {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+}
+.risk-tag.zone-yellow {
+  color: #eab308;
+  background: rgba(234, 179, 8, 0.12);
+}
+.risk-tag.zone-orange {
+  color: #f97316;
+  background: rgba(249, 115, 22, 0.12);
+}
+.risk-tag.zone-red {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+}
 
 .tooltip-blocked-reason {
   margin-top: 0.4rem;
@@ -2374,7 +2416,9 @@
 }
 
 .summary-metric-card {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .summary-metric-card:hover {
@@ -2383,7 +2427,9 @@
 }
 
 .histogram-bar {
-  transition: fill 0.15s ease, opacity 0.15s ease;
+  transition:
+    fill 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .histogram-bar:hover {
@@ -2947,8 +2993,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .dataset-drawer-content {
@@ -2964,8 +3014,12 @@
 }
 
 @keyframes slideLeft {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .dataset-drawer-header {
@@ -3129,7 +3183,7 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-.drawer-type-checkbox-label input[type="checkbox"] {
+.drawer-type-checkbox-label input[type='checkbox'] {
   width: 16px;
   height: 16px;
   accent-color: #38bdf8;
@@ -3183,10 +3237,3 @@
 .drawer-btn-apply:hover {
   background: #0369a1;
 }
-
-
-
-
-
-
-

@@ -63,7 +63,15 @@ describe('Supabase Sync Service', () => {
 
       const tasksByBoardId: Record<string, BoardState> = {
         'board-main': {
-          columns: [{ id: 'col-todo', title: 'A Fazer', category: 'todo', wipLimit: 5, colorScheme: 'todo' }],
+          columns: [
+            {
+              id: 'col-todo',
+              title: 'A Fazer',
+              category: 'todo',
+              wipLimit: 5,
+              colorScheme: 'todo',
+            },
+          ],
           tasks: {
             'col-todo': [mockTask],
           },

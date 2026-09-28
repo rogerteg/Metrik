@@ -38,7 +38,9 @@ export const WipAgingFilterDrawer: React.FC<WipAgingFilterDrawerProps> = ({
         type="button"
         className={`wip-drawer-toggle-btn left-toggle ${isOpen ? 'is-active' : ''}`}
         onClick={onToggleOpen}
-        title={isOpen ? 'Ocultar configuração do dataset' : 'Configuração do Dataset (Workflow & Datas)'}
+        title={
+          isOpen ? 'Ocultar configuração do dataset' : 'Configuração do Dataset (Workflow & Datas)'
+        }
         aria-expanded={isOpen}
         data-testid="wip-dataset-toggle"
       >
@@ -68,7 +70,8 @@ export const WipAgingFilterDrawer: React.FC<WipAgingFilterDrawerProps> = ({
 
         <div className="drawer-notice-box">
           <p>
-            Tarefas em andamento têm a idade calculada a partir de sua data de início. Use os filtros para restringir a janela de análise.
+            Tarefas em andamento têm a idade calculada a partir de sua data de início. Use os
+            filtros para restringir a janela de análise.
           </p>
         </div>
 
@@ -107,11 +110,7 @@ export const WipAgingFilterDrawer: React.FC<WipAgingFilterDrawerProps> = ({
           </div>
 
           <div className="drawer-actions">
-            <button
-              type="submit"
-              className="drawer-submit-btn"
-              data-testid="wip-apply-filters-btn"
-            >
+            <button type="submit" className="drawer-submit-btn" data-testid="wip-apply-filters-btn">
               LOAD / Aplicar
             </button>
             <button

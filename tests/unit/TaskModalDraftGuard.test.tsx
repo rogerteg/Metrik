@@ -27,7 +27,7 @@ describe('TaskDetailsModal Close Guard & Preference Persistence', () => {
         onClose={handleClose}
         onUpdateTask={handleUpdate}
         autoSaveComments={false}
-      />
+      />,
     );
 
     const titleInput = screen.getByDisplayValue('Tarefa Guard Rascunhos');

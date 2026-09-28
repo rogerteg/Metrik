@@ -48,4 +48,3 @@ describe('Supabase Client (Local-First Sovereignty)', () => {
     expect(status.url).toBe('https://kmvjtitcberfjsreolhr.supabase.co');
   });
 });
-

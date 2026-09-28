@@ -59,12 +59,15 @@ export function calculateItemAgeDays(task: TaskModel, referenceDate: Date = new 
 /**
  * Calcula o tempo decorrido na etapa atual em dias.
  */
-export function calculateTimeInStageDays(task: TaskModel, referenceDate: Date = new Date()): number {
+export function calculateTimeInStageDays(
+  task: TaskModel,
+  referenceDate: Date = new Date(),
+): number {
   const baseTimestamp = task.updatedAt
     ? new Date(task.updatedAt).getTime()
     : task.startedAt
-    ? new Date(task.startedAt).getTime()
-    : new Date(task.createdAt).getTime();
+      ? new Date(task.startedAt).getTime()
+      : new Date(task.createdAt).getTime();
 
   const diffMs = Math.max(0, referenceDate.getTime() - baseTimestamp);
   return Number(Math.max(0.1, diffMs / 86400000).toFixed(1));
@@ -89,7 +92,7 @@ export function getDeterministicJitter(id: string, maxOffsetPx: number = 16): nu
  */
 export function calculateStagePacePercentiles(
   completedTasks: TaskModel[],
-  columns: ColumnModel[]
+  columns: ColumnModel[],
 ): Map<string, StagePacePercentiles> {
   const result = new Map<string, StagePacePercentiles>();
 
@@ -145,17 +148,15 @@ export function calculateStagePacePercentiles(
 export function groupActiveTasksByColumn(
   tasks: TaskModel[],
   columns: ColumnModel[],
-  referenceDate: Date = new Date()
+  referenceDate: Date = new Date(),
 ): StageWipColumn[] {
   // Identificar colunas concluídas
   const doneColIds = new Set(
-    columns.filter((c) => c.category === 'done' || c.id === 'done').map((c) => c.id)
+    columns.filter((c) => c.category === 'done' || c.id === 'done').map((c) => c.id),
   );
 
   // Filtrar apenas tarefas ativas em progresso
-  const activeTasks = tasks.filter(
-    (t) => !doneColIds.has(t.column) && !t.completedAt
-  );
+  const activeTasks = tasks.filter((t) => !doneColIds.has(t.column) && !t.completedAt);
 
   const completedTasks = tasks.filter((t) => doneColIds.has(t.column) || Boolean(t.completedAt));
   const percentilesMap = calculateStagePacePercentiles(completedTasks, columns);

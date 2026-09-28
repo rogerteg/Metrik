@@ -3,7 +3,12 @@ import { renderHook, act } from '@testing-library/react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useTaskCollection } from '../../src/hooks/useTaskCollection';
 import { reorderBoard } from '../../src/utils/taskReorder';
-import { BLOCKED_TASK_MOVE_WARNING_MESSAGE, BoardState, ColumnModel, TaskModel } from '../../src/types/kanban';
+import {
+  BLOCKED_TASK_MOVE_WARNING_MESSAGE,
+  BoardState,
+  ColumnModel,
+  TaskModel,
+} from '../../src/types/kanban';
 import { Task } from '../../src/components/Task';
 
 describe('Blocked Task Movement Guard', () => {
@@ -18,7 +23,13 @@ describe('Blocked Task Movement Guard', () => {
 
   const columns: ColumnModel[] = [
     { id: 'todo', title: 'A Fazer', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-    { id: 'in_progress', title: 'Em Progresso', category: 'in_progress', wipLimit: null, colorScheme: 'progress' },
+    {
+      id: 'in_progress',
+      title: 'Em Progresso',
+      category: 'in_progress',
+      wipLimit: null,
+      colorScheme: 'progress',
+    },
     { id: 'done', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
   ];
 
@@ -95,7 +106,7 @@ describe('Blocked Task Movement Guard', () => {
       vi.stubGlobal('alert', alertMock);
 
       const { result } = renderHook(() =>
-        useTaskCollection('test-blocked-move-hook', { onNotify: notifyMock })
+        useTaskCollection('test-blocked-move-hook', { onNotify: notifyMock }),
       );
 
       let createdTask: TaskModel;
@@ -120,7 +131,9 @@ describe('Blocked Task Movement Guard', () => {
       expect(notifyMock).toHaveBeenCalledWith(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
       expect(alertMock).not.toHaveBeenCalled();
       expect(result.current.board.tasks['todo'].some((t) => t.id === createdTask.id)).toBe(true);
-      expect(result.current.board.tasks['in-progress'].some((t) => t.id === createdTask.id)).toBe(false);
+      expect(result.current.board.tasks['in-progress'].some((t) => t.id === createdTask.id)).toBe(
+        false,
+      );
 
       // Now unblock the task
       act(() => {
@@ -136,7 +149,9 @@ describe('Blocked Task Movement Guard', () => {
       });
 
       expect(result.current.board.tasks['todo'].some((t) => t.id === createdTask.id)).toBe(false);
-      expect(result.current.board.tasks['in-progress'].some((t) => t.id === createdTask.id)).toBe(true);
+      expect(result.current.board.tasks['in-progress'].some((t) => t.id === createdTask.id)).toBe(
+        true,
+      );
     });
 
     it('reorderOrMoveTask notifies via the non-blocking channel and does NOT move card across columns while blocked', () => {
@@ -145,7 +160,7 @@ describe('Blocked Task Movement Guard', () => {
       vi.stubGlobal('alert', alertMock);
 
       const { result } = renderHook(() =>
-        useTaskCollection('test-blocked-dnd-hook', { onNotify: notifyMock })
+        useTaskCollection('test-blocked-dnd-hook', { onNotify: notifyMock }),
       );
 
       let createdTask: TaskModel;
@@ -169,7 +184,9 @@ describe('Blocked Task Movement Guard', () => {
       expect(notifyMock).toHaveBeenCalledWith(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
       expect(alertMock).not.toHaveBeenCalled();
       expect(result.current.board.tasks['todo'].some((t) => t.id === createdTask.id)).toBe(true);
-      expect(result.current.board.tasks['in-progress'].some((t) => t.id === createdTask.id)).toBe(false);
+      expect(result.current.board.tasks['in-progress'].some((t) => t.id === createdTask.id)).toBe(
+        false,
+      );
     });
   });
 
@@ -190,7 +207,7 @@ describe('Blocked Task Movement Guard', () => {
           onUpdateTitle={vi.fn()}
           onDelete={vi.fn()}
           onDiscardIfEmpty={vi.fn()}
-        />
+        />,
       );
 
       const card = screen.getByRole('article');
@@ -210,7 +227,7 @@ describe('Blocked Task Movement Guard', () => {
           onUpdateTitle={vi.fn()}
           onDelete={vi.fn()}
           onDiscardIfEmpty={vi.fn()}
-        />
+        />,
       );
 
       const card = screen.getByRole('article');
@@ -228,7 +245,7 @@ describe('Blocked Task Movement Guard', () => {
           onUpdateTitle={vi.fn()}
           onDelete={vi.fn()}
           onDiscardIfEmpty={vi.fn()}
-        />
+        />,
       );
 
       expect(screen.queryByLabelText('Mover para coluna anterior')).toBeNull();
@@ -246,7 +263,7 @@ describe('Blocked Task Movement Guard', () => {
           onUpdateTitle={vi.fn()}
           onDelete={vi.fn()}
           onDiscardIfEmpty={vi.fn()}
-        />
+        />,
       );
 
       expect(screen.queryByLabelText('Mover para coluna anterior')).toBeNull();
@@ -260,7 +277,7 @@ describe('Blocked Task Movement Guard', () => {
           onUpdateTitle={vi.fn()}
           onDelete={vi.fn()}
           onDiscardIfEmpty={vi.fn()}
-        />
+        />,
       );
 
       const card = screen.getByRole('article');
@@ -277,7 +294,7 @@ describe('Blocked Task Movement Guard', () => {
           onUpdateTitle={vi.fn()}
           onDelete={vi.fn()}
           onDiscardIfEmpty={vi.fn()}
-        />
+        />,
       );
 
       const badge = screen.getByTestId('task-blocked-badge');
@@ -303,7 +320,7 @@ describe('Blocked Task Movement Guard', () => {
           onUpdateTitle={vi.fn()}
           onDelete={vi.fn()}
           onDiscardIfEmpty={vi.fn()}
-        />
+        />,
       );
 
       fireEvent.click(screen.getByTestId('task-blocked-badge'));
@@ -332,7 +349,7 @@ describe('Blocked Task Movement Guard', () => {
           onUpdateTitle={vi.fn()}
           onDelete={vi.fn()}
           onDiscardIfEmpty={vi.fn()}
-        />
+        />,
       );
 
       const card = screen.getByRole('article');

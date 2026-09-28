@@ -46,7 +46,7 @@ export const ManageBoardsView: React.FC<ManageBoardsViewProps> = ({
   const isGuest = useMemo(() => {
     if (!activeUser) return false;
     return teams.some((t) =>
-      t.members?.some((m) => m.userId === activeUser.id && m.role === 'guest')
+      t.members?.some((m) => m.userId === activeUser.id && m.role === 'guest'),
     );
   }, [activeUser, teams]);
 
@@ -185,7 +185,9 @@ export const ManageBoardsView: React.FC<ManageBoardsViewProps> = ({
 
       {/* Painel de Criação Rápida */}
       <section className="manage-boards-create-section" aria-labelledby="create-board-heading">
-        <h2 id="create-board-heading" className="section-title">Criar Novo Quadro</h2>
+        <h2 id="create-board-heading" className="section-title">
+          Criar Novo Quadro
+        </h2>
         <form className="create-board-form" onSubmit={handleCreateSubmit}>
           <div className="form-group">
             <input
@@ -221,14 +223,20 @@ export const ManageBoardsView: React.FC<ManageBoardsViewProps> = ({
             + Criar Quadro
           </button>
         </form>
-        {createError && <p className="create-error-text" role="alert">{createError}</p>}
+        {createError && (
+          <p className="create-error-text" role="alert">
+            {createError}
+          </p>
+        )}
       </section>
 
       {/* Barra de Filtros & Alternador Dual Grade/Tabela */}
       <section className="manage-boards-toolbar" aria-label="Filtros e Visualização">
         <div className="toolbar-filters">
           <div className="search-box">
-            <span className="search-icon" aria-hidden="true">🔍</span>
+            <span className="search-icon" aria-hidden="true">
+              🔍
+            </span>
             <input
               type="search"
               className="manage-input search-input"
@@ -250,7 +258,9 @@ export const ManageBoardsView: React.FC<ManageBoardsViewProps> = ({
           </div>
 
           <div className="filter-team-box">
-            <label htmlFor="filter-squad-select" className="filter-label">Squad:</label>
+            <label htmlFor="filter-squad-select" className="filter-label">
+              Squad:
+            </label>
             <select
               id="filter-squad-select"
               className="manage-select"

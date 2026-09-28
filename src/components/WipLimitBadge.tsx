@@ -14,9 +14,7 @@ export const WipLimitBadge: React.FC<WipLimitBadgeProps> = ({
   onUpdateLimit,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [inputValue, setInputValue] = useState<string>(
-    limit !== null ? String(limit) : ''
-  );
+  const [inputValue, setInputValue] = useState<string>(limit !== null ? String(limit) : '');
 
   useEffect(() => {
     setInputValue(limit !== null ? String(limit) : '');
@@ -68,9 +66,7 @@ export const WipLimitBadge: React.FC<WipLimitBadgeProps> = ({
 
   const isOverloaded = limit !== null && currentCount > limit;
   const displayText =
-    limit !== null
-      ? `${currentCount}/${limit}${isOverloaded ? ' ⚠️' : ''}`
-      : `${currentCount}`;
+    limit !== null ? `${currentCount}/${limit}${isOverloaded ? ' ⚠️' : ''}` : `${currentCount}`;
 
   return (
     <span

@@ -97,7 +97,7 @@ describe('useColumnWidths (US2 — FR-009, FR-010, GC-03, GC-05, GC-09)', () => 
   it('discards invalid or out-of-range persisted widths on load (GC-09)', () => {
     localStorage.setItem(
       storageKey,
-      JSON.stringify({ todo: 'largo', doing: 99999, done: MIN_COLUMN_WIDTH - 1, review: 300 })
+      JSON.stringify({ todo: 'largo', doing: 99999, done: MIN_COLUMN_WIDTH - 1, review: 300 }),
     );
 
     const { result } = renderHook(() => useColumnWidths(BOARD_ID));
@@ -120,10 +120,7 @@ describe('useColumnWidths (US2 — FR-009, FR-010, GC-03, GC-05, GC-09)', () => 
 
   it('prunes discarded preferences on load so the diagnostic is not repeated (FR-009)', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    localStorage.setItem(
-      storageKey,
-      JSON.stringify({ todo: 'largo', doing: 99999, review: 300 })
-    );
+    localStorage.setItem(storageKey, JSON.stringify({ todo: 'largo', doing: 99999, review: 300 }));
 
     const first = renderHook(() => useColumnWidths(BOARD_ID));
 
@@ -158,7 +155,7 @@ describe('useColumnWidths (US2 — FR-009, FR-010, GC-03, GC-05, GC-09)', () => 
 
     const { result, rerender } = renderHook(
       ({ boardId }: { boardId: string }) => useColumnWidths(boardId),
-      { initialProps: { boardId: 'board-a' } }
+      { initialProps: { boardId: 'board-a' } },
     );
 
     expect(result.current.columnWidths.todo).toBe(310);

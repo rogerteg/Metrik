@@ -100,6 +100,3 @@ export interface TaskDetailsModalState {
   showDirtyConfirmDialog: boolean;
   isSidebarCollapsedMobile: boolean;
 }
-
-
-

@@ -73,7 +73,7 @@ describe('TeamManagementModal Component (US2 & US4)', () => {
         onRemoveMember={vi.fn()}
         onCreateInvitation={vi.fn()}
         onAcceptInvitation={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText('Squad Alfa')).toBeDefined();
@@ -97,7 +97,7 @@ describe('TeamManagementModal Component (US2 & US4)', () => {
         onRemoveMember={vi.fn()}
         onCreateInvitation={vi.fn()}
         onAcceptInvitation={vi.fn()}
-      />
+      />,
     );
 
     // Click on tab "Criar Squad"
@@ -132,7 +132,7 @@ describe('TeamManagementModal Component (US2 & US4)', () => {
         onCreateInvitation={vi.fn()}
         onAcceptInvitation={vi.fn()}
         initialTab="members"
-      />
+      />,
     );
 
     expect(screen.getByText('Alice Silva')).toBeDefined();
@@ -161,7 +161,7 @@ describe('TeamManagementModal Component (US2 & US4)', () => {
         onCreateInvitation={onCreateInvite}
         onAcceptInvitation={vi.fn()}
         initialTab="invite"
-      />
+      />,
     );
 
     const emailInput = screen.getByPlaceholderText(/e-mail do convidado/i);
@@ -191,7 +191,7 @@ describe('TeamManagementModal Component (US2 & US4)', () => {
         onCreateInvitation={vi.fn()}
         onAcceptInvitation={onAcceptInvite}
         initialTab="join-code"
-      />
+      />,
     );
 
     const codeInput = screen.getByPlaceholderText(/código do convite/i);

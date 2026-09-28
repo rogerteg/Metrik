@@ -569,12 +569,24 @@
   text-overflow: ellipsis;
 }
 
-.mrf-stat--comments .mrf-stat__icon { color: var(--color-progress); }
-.mrf-stat--decisions .mrf-stat__icon { color: #fcd34d; }
-.mrf-stat--decisions .mrf-stat__value { color: #fcd34d; }
-.mrf-stat--moves .mrf-stat__icon { color: #a78bfa; }
-.mrf-stat--blocked .mrf-stat__icon { color: #fb7185; }
-.mrf-stat--blocked .mrf-stat__value { color: #fb7185; }
+.mrf-stat--comments .mrf-stat__icon {
+  color: var(--color-progress);
+}
+.mrf-stat--decisions .mrf-stat__icon {
+  color: #fcd34d;
+}
+.mrf-stat--decisions .mrf-stat__value {
+  color: #fcd34d;
+}
+.mrf-stat--moves .mrf-stat__icon {
+  color: #a78bfa;
+}
+.mrf-stat--blocked .mrf-stat__icon {
+  color: #fb7185;
+}
+.mrf-stat--blocked .mrf-stat__value {
+  color: #fb7185;
+}
 
 /* --------------------------------------------------------------------------
    TimelineFilterBar
@@ -820,8 +832,12 @@
   padding-right: 4px;
 }
 
-.mrf-timeline__list::-webkit-scrollbar { width: 6px; }
-.mrf-timeline__list::-webkit-scrollbar-track { background: transparent; }
+.mrf-timeline__list::-webkit-scrollbar {
+  width: 6px;
+}
+.mrf-timeline__list::-webkit-scrollbar-track {
+  background: transparent;
+}
 .mrf-timeline__list::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 999px;

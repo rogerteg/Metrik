@@ -38,7 +38,12 @@ describe('Task card comments (Feature 027 delta)', () => {
 
   it('shows the comment count chip and renders the parent thread when expanded', () => {
     render(
-      <Task task={baseTask} onUpdateTitle={vi.fn()} onDelete={vi.fn()} onDiscardIfEmpty={vi.fn()} />
+      <Task
+        task={baseTask}
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+      />,
     );
 
     expect(screen.getByTestId('task-comments-chip')).toHaveTextContent('1');
@@ -59,7 +64,7 @@ describe('Task card comments (Feature 027 delta)', () => {
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
         onAddComment={onAddComment}
-      />
+      />,
     );
     openDetails();
 
@@ -81,7 +86,7 @@ describe('Task card comments (Feature 027 delta)', () => {
         onDiscardIfEmpty={vi.fn()}
         onAddComment={vi.fn()}
         onEditComment={onEditComment}
-      />
+      />,
     );
     openDetails();
 
@@ -106,7 +111,7 @@ describe('Task card comments (Feature 027 delta)', () => {
         onAddComment={vi.fn()}
         onEditComment={vi.fn()}
         onDeleteComment={onDeleteComment}
-      />
+      />,
     );
     openDetails();
 
@@ -118,7 +123,12 @@ describe('Task card comments (Feature 027 delta)', () => {
 
   it('hides the composer in read-only mode but still lists comments', () => {
     render(
-      <Task task={baseTask} onUpdateTitle={vi.fn()} onDelete={vi.fn()} onDiscardIfEmpty={vi.fn()} />
+      <Task
+        task={baseTask}
+        onUpdateTitle={vi.fn()}
+        onDelete={vi.fn()}
+        onDiscardIfEmpty={vi.fn()}
+      />,
     );
     openDetails();
 
@@ -142,7 +152,7 @@ describe('Task card comments (Feature 027 delta)', () => {
         onUpdateTask={vi.fn()}
         onAddComment={vi.fn()}
         onAddSubtaskComment={onAddSubtaskComment}
-      />
+      />,
     );
     openDetails();
 
@@ -186,16 +196,20 @@ describe('Task card comments (Feature 027 delta)', () => {
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
         onUpdateTask={onUpdateTask}
-      />
+      />,
     );
     openDetails();
 
-    fireEvent.click(screen.getByRole('button', { name: /Excluir subtarefa: Passo com comentário/i }));
+    fireEvent.click(
+      screen.getByRole('button', { name: /Excluir subtarefa: Passo com comentário/i }),
+    );
     expect(confirmSpy).toHaveBeenCalled();
     expect(onUpdateTask).not.toHaveBeenCalled();
 
     confirmSpy.mockReturnValue(true);
-    fireEvent.click(screen.getByRole('button', { name: /Excluir subtarefa: Passo com comentário/i }));
+    fireEvent.click(
+      screen.getByRole('button', { name: /Excluir subtarefa: Passo com comentário/i }),
+    );
     expect(onUpdateTask).toHaveBeenCalledWith('task-comments', { subtasks: [] });
   });
 });

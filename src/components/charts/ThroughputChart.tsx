@@ -16,8 +16,18 @@ export const ThroughputChart: React.FC<ThroughputChartProps> = ({
 }) => {
   return (
     <div className={`chart-container ${isExpanded ? 'is-chart-expanded' : ''}`}>
-      <div className="chart-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h3 className="chart-title" style={{ margin: 0 }}>Throughput (Últimos 14 dias)</h3>
+      <div
+        className="chart-header-row"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1rem',
+        }}
+      >
+        <h3 className="chart-title" style={{ margin: 0 }}>
+          Throughput (Últimos 14 dias)
+        </h3>
         {onToggleExpand && (
           <button
             type="button"
@@ -31,7 +41,7 @@ export const ThroughputChart: React.FC<ThroughputChartProps> = ({
         )}
       </div>
       <div className="chart-y-axis-label">Tarefas Concluídas</div>
-      
+
       <div className="bar-chart-area">
         {/* Y-Axis lines (optional visual guides) */}
         <div className="chart-grid-lines">
@@ -55,15 +65,12 @@ export const ThroughputChart: React.FC<ThroughputChartProps> = ({
             const dateLabel = `${dateObj.getUTCDate().toString().padStart(2, '0')}/${(dateObj.getUTCMonth() + 1).toString().padStart(2, '0')}`;
 
             return (
-              <div 
-                key={point.date} 
+              <div
+                key={point.date}
                 className="bar-wrapper"
                 title={`${dateLabel}: ${point.count} tarefas`}
               >
-                <div 
-                  className="bar" 
-                  style={{ height: `${heightPercent}%` }}
-                >
+                <div className="bar" style={{ height: `${heightPercent}%` }}>
                   {point.count > 0 && <span className="bar-value">{point.count}</span>}
                 </div>
                 <div className="bar-label">{dateLabel}</div>

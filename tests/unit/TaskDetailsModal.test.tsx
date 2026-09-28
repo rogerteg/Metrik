@@ -13,7 +13,7 @@ describe('TaskDetailsModal', () => {
     subtasks: [
       { id: 's1', title: 'Subtask 1', completed: false },
       { id: 's2', title: 'Subtask 2', completed: true },
-    ]
+    ],
   };
 
   const mockOnClose = vi.fn();
@@ -24,8 +24,15 @@ describe('TaskDetailsModal', () => {
   });
 
   it('renders correctly when open', () => {
-    render(<TaskDetailsModal task={mockTask} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
-    
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />,
+    );
+
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Initial Title')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Initial description')).toBeInTheDocument();
@@ -34,54 +41,89 @@ describe('TaskDetailsModal', () => {
   });
 
   it('does not render when closed', () => {
-    render(<TaskDetailsModal task={mockTask} isOpen={false} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={false}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />,
+    );
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('calls onUpdateTask when title is changed and blurred', () => {
-    render(<TaskDetailsModal task={mockTask} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
-    
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />,
+    );
+
     const titleInput = screen.getByDisplayValue('Initial Title');
     fireEvent.change(titleInput, { target: { value: 'New Title' } });
     fireEvent.blur(titleInput);
-    
+
     expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { title: 'New Title' });
   });
 
   it('calls onUpdateTask when description is changed and blurred', () => {
-    render(<TaskDetailsModal task={mockTask} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
-    
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />,
+    );
+
     const descInput = screen.getByDisplayValue('Initial description');
     fireEvent.change(descInput, { target: { value: 'New description' } });
     fireEvent.blur(descInput);
-    
+
     expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { description: 'New description' });
   });
 
   it('calls onUpdateTask when due date is changed and blurred', () => {
-    render(<TaskDetailsModal task={mockTask} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
-    
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />,
+    );
+
     // The input should exist (type=date)
     // We can query it by its label or ID, or placeholder if we added one, but let's just find the date input.
     // In our implementation, we added: <label htmlFor="td-dueDate" className="td-label">Data de Entrega</label>
     const dateInput = screen.getByLabelText('Data de Entrega');
-    
+
     fireEvent.change(dateInput, { target: { value: '2026-10-15' } });
     fireEvent.blur(dateInput);
-    
+
     expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { dueDate: '2026-10-15' });
   });
 
   it('calls onUpdateTask with undefined when due date is cleared', () => {
     const taskWithDueDate: TaskModel = {
       ...mockTask,
-      dueDate: '2026-10-15'
+      dueDate: '2026-10-15',
     };
-    
-    render(<TaskDetailsModal task={taskWithDueDate} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
-    
+
+    render(
+      <TaskDetailsModal
+        task={taskWithDueDate}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />,
+    );
+
     const dateInput = screen.getByLabelText('Data de Entrega');
-    
+
     fireEvent.change(dateInput, { target: { value: '' } });
     fireEvent.blur(dateInput);
 
@@ -89,14 +131,21 @@ describe('TaskDetailsModal', () => {
   });
 
   it('adds a new subtask', () => {
-    render(<TaskDetailsModal task={mockTask} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
-    
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />,
+    );
+
     const addInput = screen.getByPlaceholderText('Adicionar um item...');
     fireEvent.change(addInput, { target: { value: 'Subtask 3' } });
-    
+
     const addButton = screen.getByRole('button', { name: 'Adicionar' });
     fireEvent.click(addButton);
-    
+
     expect(mockOnUpdateTask).toHaveBeenCalledTimes(1);
     const updateArg = mockOnUpdateTask.mock.calls[0][1];
     expect(updateArg.subtasks).toHaveLength(3);
@@ -105,23 +154,37 @@ describe('TaskDetailsModal', () => {
   });
 
   it('toggles a subtask', () => {
-    render(<TaskDetailsModal task={mockTask} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
-    
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />,
+    );
+
     // Subtask 1 is unchecked initially
     const checkboxes = screen.getAllByRole('checkbox');
     fireEvent.click(checkboxes[0]);
-    
+
     expect(mockOnUpdateTask).toHaveBeenCalledTimes(1);
     const updateArg = mockOnUpdateTask.mock.calls[0][1];
     expect(updateArg.subtasks[0].completed).toBe(true); // Toggled
   });
 
   it('deletes a subtask', () => {
-    render(<TaskDetailsModal task={mockTask} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
-    
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />,
+    );
+
     const deleteButtons = screen.getAllByLabelText('Excluir subtarefa');
     fireEvent.click(deleteButtons[0]);
-    
+
     expect(mockOnUpdateTask).toHaveBeenCalledTimes(1);
     const updateArg = mockOnUpdateTask.mock.calls[0][1];
     expect(updateArg.subtasks).toHaveLength(1);
@@ -129,11 +192,18 @@ describe('TaskDetailsModal', () => {
   });
 
   it('calls onClose when close button is clicked', () => {
-    render(<TaskDetailsModal task={mockTask} isOpen={true} onClose={mockOnClose} onUpdateTask={mockOnUpdateTask} />);
-    
+    render(
+      <TaskDetailsModal
+        task={mockTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+      />,
+    );
+
     const closeButton = screen.getByLabelText('Fechar');
     fireEvent.click(closeButton);
-    
+
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
@@ -146,7 +216,7 @@ describe('TaskDetailsModal', () => {
         onClose={mockOnClose}
         onUpdateTask={mockOnUpdateTask}
         onToggleBlocked={onToggleBlocked}
-      />
+      />,
     );
 
     const blockBtn = screen.getByRole('button', { name: /marcar como bloqueada/i });
@@ -169,7 +239,7 @@ describe('TaskDetailsModal', () => {
         isOpen={true}
         onClose={mockOnClose}
         onUpdateTask={mockOnUpdateTask}
-      />
+      />,
     );
 
     expect(screen.getByText('Tarefa atualmente impedida')).toBeInTheDocument();
@@ -181,7 +251,9 @@ describe('TaskDetailsModal', () => {
     fireEvent.change(reasonInput, { target: { value: 'Novo Motivo do Impedimento' } });
     fireEvent.blur(reasonInput);
 
-    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { blockedReason: 'Novo Motivo do Impedimento' });
+    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', {
+      blockedReason: 'Novo Motivo do Impedimento',
+    });
   });
 
   it('updates startDate and endDate when changed and blurred', () => {
@@ -191,7 +263,7 @@ describe('TaskDetailsModal', () => {
         isOpen={true}
         onClose={mockOnClose}
         onUpdateTask={mockOnUpdateTask}
-      />
+      />,
     );
 
     const startDateInput = screen.getByLabelText('Início da Tarefa');
@@ -212,17 +284,25 @@ describe('TaskDetailsModal', () => {
         isOpen={true}
         onClose={mockOnClose}
         onUpdateTask={mockOnUpdateTask}
-      />
+      />,
     );
 
     const acInput = screen.getByLabelText('Critérios de Aceitação');
-    fireEvent.change(acInput, { target: { value: 'O sistema deve aceitar apenas emails válidos.' } });
+    fireEvent.change(acInput, {
+      target: { value: 'O sistema deve aceitar apenas emails válidos.' },
+    });
     fireEvent.blur(acInput);
-    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { acceptanceCriteria: 'O sistema deve aceitar apenas emails válidos.' });
+    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', {
+      acceptanceCriteria: 'O sistema deve aceitar apenas emails válidos.',
+    });
 
     const tsInput = screen.getByLabelText('Cenários de Testes');
-    fireEvent.change(tsInput, { target: { value: 'Dado um email sem @, quando submetido, então exibe erro.' } });
+    fireEvent.change(tsInput, {
+      target: { value: 'Dado um email sem @, quando submetido, então exibe erro.' },
+    });
     fireEvent.blur(tsInput);
-    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', { testScenarios: 'Dado um email sem @, quando submetido, então exibe erro.' });
+    expect(mockOnUpdateTask).toHaveBeenCalledWith('t1', {
+      testScenarios: 'Dado um email sem @, quando submetido, então exibe erro.',
+    });
   });
 });

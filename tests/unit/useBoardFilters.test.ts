@@ -7,12 +7,30 @@ describe('useBoardFilters Hook (Foundational)', () => {
   const sampleBoard: BoardState = {
     columns: [
       { id: 'todo', title: 'Todo', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-      { id: 'in-progress', title: 'In Progress', category: 'in_progress', wipLimit: null, colorScheme: 'progress' },
-      { id: 'blocked', title: 'Blocked', category: 'in_progress', wipLimit: null, colorScheme: 'blocked' },
-      { id: 'completed', title: 'Completed', category: 'done', wipLimit: null, colorScheme: 'completed' },
+      {
+        id: 'in-progress',
+        title: 'In Progress',
+        category: 'in_progress',
+        wipLimit: null,
+        colorScheme: 'progress',
+      },
+      {
+        id: 'blocked',
+        title: 'Blocked',
+        category: 'in_progress',
+        wipLimit: null,
+        colorScheme: 'blocked',
+      },
+      {
+        id: 'completed',
+        title: 'Completed',
+        category: 'done',
+        wipLimit: null,
+        colorScheme: 'completed',
+      },
     ],
     tasks: {
-      'todo': [
+      todo: [
         {
           id: 't-1',
           title: 'Criar API REST',
@@ -40,8 +58,8 @@ describe('useBoardFilters Hook (Foundational)', () => {
           tags: ['Bug', 'Backend'],
         },
       ],
-      'blocked': [],
-      'completed': [
+      blocked: [],
+      completed: [
         {
           id: 't-4',
           title: 'Configurar CI/CD',
@@ -51,7 +69,7 @@ describe('useBoardFilters Hook (Foundational)', () => {
           tags: ['DevOps'],
         },
       ],
-    }
+    },
   };
 
   it('returns complete board and zero active filters initially', () => {
@@ -62,7 +80,7 @@ describe('useBoardFilters Hook (Foundational)', () => {
     expect(result.current.visibleCount).toBe(4);
     expect(result.current.filteredBoard.tasks['todo'].length).toBe(2);
     expect(result.current.availableTags).toEqual(
-      expect.arrayContaining(['API', 'Backend', 'Bug', 'DevOps', 'Frontend', 'UI'])
+      expect.arrayContaining(['API', 'Backend', 'Bug', 'DevOps', 'Frontend', 'UI']),
     );
   });
 
@@ -143,7 +161,7 @@ describe('useBoardFilters Hook (Foundational)', () => {
       ...sampleBoard,
       tasks: {
         ...sampleBoard.tasks,
-        'todo': [
+        todo: [
           ...sampleBoard.tasks['todo'],
           {
             id: 't-blocked',
@@ -152,9 +170,9 @@ describe('useBoardFilters Hook (Foundational)', () => {
             createdAt: '2026-09-01T10:00:00Z',
             blocked: true,
             blockedReason: 'Falta spec',
-          }
-        ]
-      }
+          },
+        ],
+      },
     };
 
     const { result } = renderHook(() => useBoardFilters(boardWithBlocked));
@@ -170,7 +188,7 @@ describe('useBoardFilters Hook (Foundational)', () => {
     expect(result.current.hasActiveFilters).toBe(true);
     expect(result.current.filters.onlyBlocked).toBe(true);
     expect(result.current.visibleCount).toBe(1);
-    expect(result.current.filteredBoard.tasks['todo'].map(t => t.id)).toEqual(['t-blocked']);
+    expect(result.current.filteredBoard.tasks['todo'].map((t) => t.id)).toEqual(['t-blocked']);
 
     // Toggle back
     act(() => {

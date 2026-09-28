@@ -55,11 +55,7 @@ export const TaskFieldActionToolbar: React.FC<TaskFieldActionToolbarProps> = ({
             Salvando...
           </span>
         )}
-        {status === 'saved' && (
-          <span className="task-field-status status-saved">
-            ✓ Salvo
-          </span>
-        )}
+        {status === 'saved' && <span className="task-field-status status-saved">✓ Salvo</span>}
       </div>
 
       {!isReadOnly && (
@@ -87,7 +83,9 @@ export const TaskFieldActionToolbar: React.FC<TaskFieldActionToolbarProps> = ({
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
             <span className="btn-action-text">Descartar</span>
-            <kbd className="action-kbd-hint" aria-hidden="true">Esc</kbd>
+            <kbd className="action-kbd-hint" aria-hidden="true">
+              Esc
+            </kbd>
           </button>
 
           <button
@@ -112,7 +110,9 @@ export const TaskFieldActionToolbar: React.FC<TaskFieldActionToolbarProps> = ({
               <polyline points="20 6 9 17 4 12" />
             </svg>
             <span className="btn-action-text">Salvar</span>
-            <kbd className="action-kbd-hint" aria-hidden="true">Ctrl+S</kbd>
+            <kbd className="action-kbd-hint" aria-hidden="true">
+              Ctrl+S
+            </kbd>
           </button>
         </div>
       )}

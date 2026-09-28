@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { TaskModel, SubtaskModel, BoardModel, ColumnModel, getDefaultColumnColor } from '../types/kanban';
+import {
+  TaskModel,
+  SubtaskModel,
+  BoardModel,
+  ColumnModel,
+  getDefaultColumnColor,
+} from '../types/kanban';
 import { TaskRelationType } from '../types/taskTypes';
 import { Team, User } from '../types/team';
 import { calculateInitiativeProgress, getPendingBlockers } from '../utils/taskRelations';
@@ -41,7 +47,7 @@ interface TaskDetailsModalProps {
     targetTaskId: string,
     relationType: TaskRelationType,
     targetBoardId: string,
-    targetTeamId: string
+    targetTeamId: string,
   ) => void;
   onRemoveLink?: (targetTaskId: string) => void;
   onNavigateToBoard?: (boardId: string) => void;
@@ -86,7 +92,9 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     } else {
       const now = new Date().toISOString();
       const newComment: TaskComment = {
-        id: crypto.randomUUID ? crypto.randomUUID() : `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        id: crypto.randomUUID
+          ? crypto.randomUUID()
+          : `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
         taskId: task.id,
         userId: 'usr_default',
         userName: 'Rogerio Teixeira',
@@ -132,7 +140,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
       return;
     }
     const updatedComments = (task.comments || []).map((c) =>
-      c.id === commentId ? { ...c, text: text.trim(), updatedAt: new Date().toISOString() } : c
+      c.id === commentId ? { ...c, text: text.trim(), updatedAt: new Date().toISOString() } : c,
     );
     onUpdateTask(task.id, { comments: updatedComments });
   };
@@ -197,11 +205,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   }, [task, isOpen]);
 
   const isAnyDirty =
-    titleEdit.isDirty ||
-    descEdit.isDirty ||
-    acEdit.isDirty ||
-    tsEdit.isDirty ||
-    brEdit.isDirty;
+    titleEdit.isDirty || descEdit.isDirty || acEdit.isDirty || tsEdit.isDirty || brEdit.isDirty;
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -293,7 +297,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const handleToggleSubtask = (subtaskId: string) => {
     const currentSubtasks = task.subtasks || [];
     const nextSubtasks = currentSubtasks.map((st) =>
-      st.id === subtaskId ? { ...st, completed: !st.completed } : st
+      st.id === subtaskId ? { ...st, completed: !st.completed } : st,
     );
     onUpdateTask(task.id, { subtasks: nextSubtasks });
   };
@@ -321,8 +325,9 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   }, [task, boardTasks, columns]);
 
   const pendingBlockers = React.useMemo(
-    () => (task.links && task.links.length > 0 ? getPendingBlockers(task, boardTasks, columns) : []),
-    [task, boardTasks, columns]
+    () =>
+      task.links && task.links.length > 0 ? getPendingBlockers(task, boardTasks, columns) : [],
+    [task, boardTasks, columns],
   );
 
   const totalBlockedMs = task.totalBlockedMs || 0;
@@ -340,7 +345,9 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               <span className="td-breadcrumb__item" title={currentBoard?.name || 'Quadro'}>
                 {currentBoard?.name || 'Quadro'}
               </span>
-              <span className="td-breadcrumb__sep" aria-hidden="true">/</span>
+              <span className="td-breadcrumb__sep" aria-hidden="true">
+                /
+              </span>
               <span className="td-breadcrumb__item td-breadcrumb__item--current">
                 {currentColumn?.title || 'Sem coluna'}
               </span>
@@ -382,7 +389,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               )}
               {pendingBlockers.length > 0 && (
                 <span className="td-hero__pill td-hero__pill--blockers">
-                  🔒 {pendingBlockers.length} {pendingBlockers.length === 1 ? 'bloqueador' : 'bloqueadores'}
+                  🔒 {pendingBlockers.length}{' '}
+                  {pendingBlockers.length === 1 ? 'bloqueador' : 'bloqueadores'}
                 </span>
               )}
             </div>
@@ -458,7 +466,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                   <div className="td-initiative-header">
                     <span>Progresso da Iniciativa</span>
                     <span className="td-initiative-progress-val">
-                      {initiativeProgress.completed}/{initiativeProgress.total} ({initiativeProgress.percentage}%)
+                      {initiativeProgress.completed}/{initiativeProgress.total} (
+                      {initiativeProgress.percentage}%)
                     </span>
                   </div>
                   <div className="td-progress-bar-track">
@@ -564,10 +573,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
                 {subtasks.length > 0 && (
                   <div className="td-progress-bar-track">
-                    <div
-                      className="td-progress-bar-fill"
-                      style={{ width: `${progress}%` }}
-                    />
+                    <div className="td-progress-bar-fill" style={{ width: `${progress}%` }} />
                   </div>
                 )}
 
@@ -686,37 +692,45 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
 
       {/* Close Guard Dialog */}
       {showCloseGuard && (
-        <div className="td-close-guard-overlay" role="alertdialog" aria-modal="true" aria-labelledby="guard-title">
+        <div
+          className="td-close-guard-overlay"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="guard-title"
+        >
           <div className="td-close-guard-dialog">
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <span style={{ fontSize: '1.5rem' }}>⚠️</span>
-              <h3 id="guard-title" style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+              <h3
+                id="guard-title"
+                style={{
+                  margin: 0,
+                  fontSize: '1.1rem',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                }}
+              >
                 Existem alterações não salvas
               </h3>
             </div>
-            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: '0.85rem',
+                color: 'var(--text-secondary)',
+                lineHeight: 1.5,
+              }}
+            >
               Você possui modificações pendentes nesta tarefa. Deseja salvar antes de fechar?
             </p>
             <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={handleSaveAndClose}
-              >
+              <button type="button" className="btn btn-primary" onClick={handleSaveAndClose}>
                 Salvar e Fechar
               </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={handleDiscardAndClose}
-              >
+              <button type="button" className="btn btn-danger" onClick={handleDiscardAndClose}>
                 Descartar
               </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={handleContinueEditing}
-              >
+              <button type="button" className="btn btn-secondary" onClick={handleContinueEditing}>
                 Continuar Editando
               </button>
             </div>

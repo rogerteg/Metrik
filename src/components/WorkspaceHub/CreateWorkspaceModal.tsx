@@ -96,7 +96,11 @@ export const CreateWorkspaceModal: React.FC<CreateWorkspaceModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="modal-form">
-          {error && <div className="modal-error-banner" role="alert">{error}</div>}
+          {error && (
+            <div className="modal-error-banner" role="alert">
+              {error}
+            </div>
+          )}
 
           <div className="form-group">
             <label htmlFor="workspace-name-input">Nome do Espaço *</label>
@@ -143,18 +147,10 @@ export const CreateWorkspaceModal: React.FC<CreateWorkspaceModalProps> = ({
           </div>
 
           <div className="modal-actions">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-            >
+            <button type="button" className="btn btn-secondary" onClick={onClose}>
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={!name.trim()}
-            >
+            <button type="submit" className="btn btn-primary" disabled={!name.trim()}>
               Criar Espaço
             </button>
           </div>

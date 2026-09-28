@@ -26,7 +26,7 @@ export function renderFormattedText(text: string): React.ReactNode {
       renderedElements.push(
         <ul key={`ul-${keyPrefix}-${renderedElements.length}`} className="mrf-md-list">
           {currentList}
-        </ul>
+        </ul>,
       );
       currentList = [];
     }
@@ -41,7 +41,7 @@ export function renderFormattedText(text: string): React.ReactNode {
       currentList.push(
         <li key={`li-${lineIndex}-${currentList.length}`}>
           {parseInlineFormatting(listContent, `line-${lineIndex}`)}
-        </li>
+        </li>,
       );
     } else if (trimmed.startsWith('> ')) {
       flushList(`line-${lineIndex}`);
@@ -49,7 +49,7 @@ export function renderFormattedText(text: string): React.ReactNode {
       renderedElements.push(
         <blockquote key={`quote-${lineIndex}`} className="mrf-md-quote">
           {parseInlineFormatting(quoteContent, `quote-${lineIndex}`)}
-        </blockquote>
+        </blockquote>,
       );
     } else {
       flushList(`line-${lineIndex}`);
@@ -60,7 +60,7 @@ export function renderFormattedText(text: string): React.ReactNode {
         renderedElements.push(
           <p key={`p-${lineIndex}`} className="mrf-md-p">
             {parseInlineFormatting(line, `p-${lineIndex}`)}
-          </p>
+          </p>,
         );
       }
     }
@@ -84,9 +84,16 @@ function parseInlineFormatting(text: string, keyPrefix: string): React.ReactNode
   return parts.map((part, index) => {
     const key = `${keyPrefix}-part-${index}`;
 
-    if ((part.startsWith('**') && part.endsWith('**')) || (part.startsWith('__') && part.endsWith('__'))) {
+    if (
+      (part.startsWith('**') && part.endsWith('**')) ||
+      (part.startsWith('__') && part.endsWith('__'))
+    ) {
       const inner = part.slice(2, -2);
-      return <strong key={key} className="mrf-md-strong">{inner}</strong>;
+      return (
+        <strong key={key} className="mrf-md-strong">
+          {inner}
+        </strong>
+      );
     }
 
     if (part.startsWith('`') && part.endsWith('`')) {
@@ -98,9 +105,16 @@ function parseInlineFormatting(text: string, keyPrefix: string): React.ReactNode
       );
     }
 
-    if ((part.startsWith('*') && part.endsWith('*')) || (part.startsWith('_') && part.endsWith('_'))) {
+    if (
+      (part.startsWith('*') && part.endsWith('*')) ||
+      (part.startsWith('_') && part.endsWith('_'))
+    ) {
       const inner = part.slice(1, -1);
-      return <em key={key} className="mrf-md-em">{inner}</em>;
+      return (
+        <em key={key} className="mrf-md-em">
+          {inner}
+        </em>
+      );
     }
 
     return part;

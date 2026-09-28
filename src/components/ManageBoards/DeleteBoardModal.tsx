@@ -44,8 +44,8 @@ export const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({
           {isSoleBoard ? (
             <div className="delete-board-warning-sole" role="alert">
               <p>
-                <strong>Operação bloqueada:</strong> Este é o único quadro disponível no momento.
-                O Metrik exige ao menos um quadro ativo para navegação e trabalho.
+                <strong>Operação bloqueada:</strong> Este é o único quadro disponível no momento. O
+                Metrik exige ao menos um quadro ativo para navegação e trabalho.
               </p>
               <p className="delete-board-note">
                 Para excluir este quadro, crie um novo quadro primeiro.
@@ -61,8 +61,8 @@ export const DeleteBoardModal: React.FC<DeleteBoardModalProps> = ({
                 <div className="delete-board-tasks-impact" role="alert">
                   <span className="impact-icon">⚠️</span>
                   <span>
-                    Este quadro contém <strong>{tasksCount} tarefa(s)</strong> associada(s) que serão
-                    permanentemente excluídas.
+                    Este quadro contém <strong>{tasksCount} tarefa(s)</strong> associada(s) que
+                    serão permanentemente excluídas.
                   </span>
                 </div>
               ) : (

@@ -44,7 +44,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       <div className="filter-bar__top">
         {/* Campo de Busca Textual */}
         <div className="filter-search-box">
-          <span className="filter-search-icon" aria-hidden="true">🔍</span>
+          <span className="filter-search-icon" aria-hidden="true">
+            🔍
+          </span>
           <input
             type="search"
             className="filter-search-input"
@@ -87,7 +89,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
       <div className="filter-bar__controls">
         {/* Seletor de Prioridade */}
-        <div className="filter-group filter-group--priority" role="group" aria-label="Filtrar por prioridade">
+        <div
+          className="filter-group filter-group--priority"
+          role="group"
+          aria-label="Filtrar por prioridade"
+        >
           <span className="filter-group__label">Prioridade:</span>
           <div className="filter-pills">
             {PRIORITY_OPTIONS.map((opt) => {
@@ -106,10 +112,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                   }
                 >
                   {opt.color && (
-                    <span
-                      className="filter-pill__dot"
-                      style={{ backgroundColor: opt.color }}
-                    />
+                    <span className="filter-pill__dot" style={{ backgroundColor: opt.color }} />
                   )}
                   <span>{opt.label}</span>
                 </button>
@@ -120,7 +123,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
         {/* Pílulas de Tags Disponíveis */}
         {availableTags.length > 0 && (
-          <div className="filter-group filter-group--tags" role="group" aria-label="Filtrar por etiqueta">
+          <div
+            className="filter-group filter-group--tags"
+            role="group"
+            aria-label="Filtrar por etiqueta"
+          >
             <span className="filter-group__label">Tags:</span>
             <div className="filter-pills">
               {availableTags.map((tag) => {
@@ -143,10 +150,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                         : undefined
                     }
                   >
-                    <span
-                      className="filter-pill__dot"
-                      style={{ backgroundColor: theme.color }}
-                    />
+                    <span className="filter-pill__dot" style={{ backgroundColor: theme.color }} />
                     <span>{tag}</span>
                   </button>
                 );
@@ -157,7 +161,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
         {/* Filtro de Bloqueados (Feature 013) */}
         {onToggleOnlyBlocked && (
-          <div className="filter-group filter-group--blocked" role="group" aria-label="Filtrar por impedimento">
+          <div
+            className="filter-group filter-group--blocked"
+            role="group"
+            aria-label="Filtrar por impedimento"
+          >
             <span className="filter-group__label">Status:</span>
             <div className="filter-pills">
               <button
@@ -168,7 +176,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                 data-testid="filter-only-blocked"
                 style={
                   filters.onlyBlocked
-                    ? { borderColor: '#ef4444', color: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.15)' }
+                    ? {
+                        borderColor: '#ef4444',
+                        color: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                      }
                     : undefined
                 }
               >

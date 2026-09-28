@@ -19,7 +19,7 @@ import { BoardSummaryMetrics } from '../types/boardManagement';
 export function computeBoardSummaryMetrics(
   board: BoardModel & Partial<BoardState>,
   activeBoardId: string | null,
-  injectedState?: BoardState | null
+  injectedState?: BoardState | null,
 ): BoardSummaryMetrics {
   const isActive = Boolean(activeBoardId && board.id === activeBoardId);
 

@@ -85,8 +85,9 @@ export const TagList: React.FC<TagListProps> = ({
         );
       })}
 
-      {!readOnly && onAddTag && (
-        isAdding ? (
+      {!readOnly &&
+        onAddTag &&
+        (isAdding ? (
           <input
             ref={inputRef}
             type="text"
@@ -112,8 +113,7 @@ export const TagList: React.FC<TagListProps> = ({
           >
             + Tag
           </button>
-        )
-      )}
+        ))}
     </div>
   );
 };

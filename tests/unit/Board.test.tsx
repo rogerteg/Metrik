@@ -13,13 +13,23 @@ describe('Board — largura explícita por coluna (US1, GC-01)', () => {
   const board: BoardState = {
     columns: [
       { id: 'todo', title: 'A Fazer', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-      { id: 'doing', title: 'Em Progresso', category: 'in_progress', wipLimit: 3, colorScheme: 'progress' },
-      { id: 'done', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
+      {
+        id: 'doing',
+        title: 'Em Progresso',
+        category: 'in_progress',
+        wipLimit: 3,
+        colorScheme: 'progress',
+      },
+      {
+        id: 'done',
+        title: 'Concluído',
+        category: 'done',
+        wipLimit: null,
+        colorScheme: 'completed',
+      },
     ],
     tasks: {
-      todo: [
-        { id: 't1', title: 'Cartão 1', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
-      ],
+      todo: [{ id: 't1', title: 'Cartão 1', column: 'todo', createdAt: '2026-09-08T10:00:00Z' }],
       doing: [],
       done: [],
     },
@@ -32,7 +42,7 @@ describe('Board — largura explícita por coluna (US1, GC-01)', () => {
         columnWidths={columnWidths}
         onAddTask={() => {}}
         renderTask={(task) => <div key={task.id}>{task.title}</div>}
-      />
+      />,
     );
 
   it('renders every column with an explicit width even without persisted preferences', () => {
@@ -54,11 +64,7 @@ describe('Board — largura explícita por coluna (US1, GC-01)', () => {
 
     const widths = columns.map((column) => column.style.width);
 
-    expect(widths).toEqual([
-      `${DEFAULT_COLUMN_WIDTH}px`,
-      '440px',
-      `${DEFAULT_COLUMN_WIDTH}px`,
-    ]);
+    expect(widths).toEqual([`${DEFAULT_COLUMN_WIDTH}px`, '440px', `${DEFAULT_COLUMN_WIDTH}px`]);
   });
 
   it('falls back to the default when a persisted preference is not usable (GC-09)', () => {
@@ -75,8 +81,6 @@ describe('Board — largura explícita por coluna (US1, GC-01)', () => {
     const grid = container.querySelector('.kanban-board-grid');
 
     expect(grid).toBeInTheDocument();
-    expect(container.querySelectorAll('.kanban-column')).toHaveLength(
-      board.columns.length
-    );
+    expect(container.querySelectorAll('.kanban-column')).toHaveLength(board.columns.length);
   });
 });

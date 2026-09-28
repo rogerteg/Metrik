@@ -47,7 +47,7 @@ describe('TaskTimeline - Feature 035 Suite', () => {
   describe('SVG Sizing Security (FR-001 & SC-001)', () => {
     it('renders timeline with SVG icons bounded to <= 20px', () => {
       const { container } = render(
-        <TaskTimeline taskId="t1" comments={mockComments} activityLog={mockActivity} />
+        <TaskTimeline taskId="t1" comments={mockComments} activityLog={mockActivity} />,
       );
 
       const svgElements = container.querySelectorAll('svg');
@@ -56,7 +56,7 @@ describe('TaskTimeline - Feature 035 Suite', () => {
       svgElements.forEach((svg) => {
         const widthAttr = svg.getAttribute('width');
         const heightAttr = svg.getAttribute('height');
-        
+
         if (widthAttr) {
           expect(parseInt(widthAttr, 10)).toBeLessThanOrEqual(20);
         }
@@ -85,7 +85,7 @@ describe('TaskTimeline - Feature 035 Suite', () => {
   describe('Markdown Parsing (FR-003 & FR-009)', () => {
     it('parses bold, inline code, bullets, and blockquotes safely', () => {
       const { container } = render(
-        <div>{parseSimpleMarkdown('**Negrito** e `código`\n> Citação importante\n- Item 1')}</div>
+        <div>{parseSimpleMarkdown('**Negrito** e `código`\n> Citação importante\n- Item 1')}</div>,
       );
 
       expect(container.querySelector('strong')).toHaveTextContent('Negrito');
@@ -168,7 +168,7 @@ describe('TaskTimeline - Feature 035 Suite', () => {
           activityLog={[]}
           onEditComment={onEditComment}
           currentUserId="u1"
-        />
+        />,
       );
 
       fireEvent.click(screen.getByTestId('comment-edit-button-c1'));
@@ -188,7 +188,7 @@ describe('TaskTimeline - Feature 035 Suite', () => {
           activityLog={[]}
           onEditComment={vi.fn()}
           currentUserId="u1"
-        />
+        />,
       );
       // c2 pertence a outro autor (u2).
       expect(screen.queryByTestId('comment-edit-button-c2')).toBeNull();
@@ -202,7 +202,7 @@ describe('TaskTimeline - Feature 035 Suite', () => {
           onEditComment={vi.fn()}
           currentUserId="u1"
           isGuest
-        />
+        />,
       );
       expect(screen.queryByTestId('comment-edit-button-c1')).toBeNull();
     });

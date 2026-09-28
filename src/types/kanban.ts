@@ -41,21 +41,26 @@ export const PRESET_COLUMN_COLORS: { name: string; hex: string }[] = [
   { name: 'Slate', hex: '#64748b' },
 ];
 
-export const getDefaultColumnColor = (column?: { colorScheme?: string; category?: ColumnCategory; color?: string } | null): string => {
+export const getDefaultColumnColor = (
+  column?: { colorScheme?: string; category?: ColumnCategory; color?: string } | null,
+): string => {
   if (!column) return '#38bdf8';
   if (column.color) return column.color;
   switch (column.colorScheme) {
-    case 'todo': return '#6366f1';
-    case 'progress': return '#38bdf8';
-    case 'blocked': return '#f43f5e';
-    case 'completed': return '#10b981';
+    case 'todo':
+      return '#6366f1';
+    case 'progress':
+      return '#38bdf8';
+    case 'blocked':
+      return '#f43f5e';
+    case 'completed':
+      return '#10b981';
     default:
       if (column.category === 'todo') return '#6366f1';
       if (column.category === 'done') return '#10b981';
       return '#38bdf8';
   }
 };
-
 
 export type PriorityLevel = 'urgent' | 'high' | 'medium' | 'low';
 
@@ -157,7 +162,12 @@ export const STAGNANT_BROWN_COLOR = '#8B4513'; // Saddle Brown / Marrom
  * seja superior ao limite em dias. Edições de conteúdo (`updatedAt`) não contam
  * como movimentação — corrige o falso "Parado" de cartões editados recentemente.
  */
-export function isTaskStagnant(task: TaskModel, isCompletedColumn: boolean = false, thresholdDays: number = STAGNATION_THRESHOLD_DAYS, nowMs: number = Date.now()): boolean {
+export function isTaskStagnant(
+  task: TaskModel,
+  isCompletedColumn: boolean = false,
+  thresholdDays: number = STAGNATION_THRESHOLD_DAYS,
+  nowMs: number = Date.now(),
+): boolean {
   if (isCompletedColumn) return false;
 
   const referenceDateStr = task.lastMovedAt || task.createdAt;
@@ -225,4 +235,3 @@ export const BLOCKED_TAG_KEYWORDS = ['bloqueado', 'bloqueada', 'blocked', 'imped
 /** Mensagem padronizada de aviso para tentativa de movimentação de tarefa bloqueada (Feature 025) */
 export const BLOCKED_TASK_MOVE_WARNING_MESSAGE =
   'Cartão bloqueado: retire a etiqueta de bloqueado para mover entre colunas.';
-

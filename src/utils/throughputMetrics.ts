@@ -40,7 +40,7 @@ export type ThroughputTimeWindow = 14 | 30 | 60 | 90 | 0;
 
 /**
  * Extrai a série de Throughput diário contínua com preenchimento obrigatório de dias sem conclusões (com count: 0).
- * 
+ *
  * @param tasks Lista de tarefas do board
  * @param daysWindow Quantidade de dias da janela histórica (14, 30, 60, 90 ou 0 para todo o histórico)
  * @param referenceDate Data de referência / término (padrão: hoje)
@@ -48,7 +48,7 @@ export type ThroughputTimeWindow = 14 | 30 | 60 | 90 | 0;
 export function extractThroughputSeries(
   tasks: TaskModel[],
   daysWindow: number = 30,
-  referenceDate: Date = new Date()
+  referenceDate: Date = new Date(),
 ): ThroughputDailyPoint[] {
   const completedTasks = tasks.filter((t) => Boolean(t.completedAt));
 

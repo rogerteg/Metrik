@@ -60,7 +60,7 @@
   transition: all 0.15s ease;
 }
 
-[data-theme="light"] .task-link-item {
+[data-theme='light'] .task-link-item {
   background: rgba(0, 0, 0, 0.02);
 }
 
@@ -196,7 +196,7 @@
   gap: 10px;
 }
 
-[data-theme="light"] .task-add-link-form {
+[data-theme='light'] .task-add-link-form {
   background: rgba(0, 0, 0, 0.03);
 }
 

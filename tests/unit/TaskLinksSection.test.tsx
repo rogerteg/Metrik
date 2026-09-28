@@ -55,7 +55,7 @@ describe('Feature 024 - User Story 2 & 3: TaskLinksSection Component', () => {
         teams={teams}
         onAddLink={vi.fn()}
         onRemoveLink={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText(/Nenhum vínculo associado/i)).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe('Feature 024 - User Story 2 & 3: TaskLinksSection Component', () => {
         teams={teams}
         onAddLink={vi.fn()}
         onRemoveLink={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText(/Tarefa no Mesmo Quadro/i)).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe('Feature 024 - User Story 2 & 3: TaskLinksSection Component', () => {
         teams={teams}
         onAddLink={vi.fn()}
         onRemoveLink={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText(/Squad Backend/i)).toBeInTheDocument();
@@ -137,7 +137,7 @@ describe('Feature 024 - User Story 2 & 3: TaskLinksSection Component', () => {
         teams={teams}
         onAddLink={onAddLink}
         onRemoveLink={vi.fn()}
-      />
+      />,
     );
 
     // Open add link form
@@ -156,7 +156,7 @@ describe('Feature 024 - User Story 2 & 3: TaskLinksSection Component', () => {
       'task-2',
       'relates_to', // default relation
       'board-main',
-      'team-frontend'
+      'team-frontend',
     );
   });
 
@@ -186,7 +186,7 @@ describe('Feature 024 - User Story 2 & 3: TaskLinksSection Component', () => {
         teams={teams}
         onAddLink={vi.fn()}
         onRemoveLink={onRemoveLink}
-      />
+      />,
     );
 
     const btnRemove = screen.getByTitle(/Remover vínculo/i);
@@ -207,7 +207,7 @@ describe('Feature 024 - User Story 2 & 3: TaskLinksSection Component', () => {
         isReadOnly={true}
         onAddLink={vi.fn()}
         onRemoveLink={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.queryByRole('button', { name: /Adicionar Vínculo/i })).not.toBeInTheDocument();

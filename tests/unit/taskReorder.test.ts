@@ -5,15 +5,33 @@ import { BoardState, ColumnModel, TaskModel } from '../../src/types/kanban';
 describe('reorderBoard (Pure Reordering & Transition Function)', () => {
   const columns: ColumnModel[] = [
     { id: 'todo', title: 'Todo', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-    { id: 'in-progress', title: 'In Progress', category: 'in_progress', wipLimit: null, colorScheme: 'progress' },
-    { id: 'blocked', title: 'Blocked', category: 'in_progress', wipLimit: null, colorScheme: 'blocked' },
-    { id: 'completed', title: 'Completed', category: 'done', wipLimit: null, colorScheme: 'completed' }
+    {
+      id: 'in-progress',
+      title: 'In Progress',
+      category: 'in_progress',
+      wipLimit: null,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'blocked',
+      title: 'Blocked',
+      category: 'in_progress',
+      wipLimit: null,
+      colorScheme: 'blocked',
+    },
+    {
+      id: 'completed',
+      title: 'Completed',
+      category: 'done',
+      wipLimit: null,
+      colorScheme: 'completed',
+    },
   ];
 
   const sampleBoard: BoardState = {
     columns,
     tasks: {
-      'todo': [
+      todo: [
         {
           id: 'task-1',
           title: 'Task 1',
@@ -30,8 +48,8 @@ describe('reorderBoard (Pure Reordering & Transition Function)', () => {
           startedAt: '2026-09-08T09:15:00Z',
         },
       ],
-      'blocked': [],
-      'completed': [
+      blocked: [],
+      completed: [
         {
           id: 'task-3',
           title: 'Task 3',
@@ -41,7 +59,7 @@ describe('reorderBoard (Pure Reordering & Transition Function)', () => {
           completedAt: '2026-09-08T10:00:00Z',
         },
       ],
-    }
+    },
   };
 
   it('moves a task to another column appending to the end when no targetTaskId is specified', () => {
@@ -88,12 +106,14 @@ describe('reorderBoard (Pure Reordering & Transition Function)', () => {
     const localBoard: BoardState = {
       columns,
       tasks: {
-        'todo': [
+        todo: [
           { id: 'a', title: 'A', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
           { id: 'b', title: 'B', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
         ],
-        'in-progress': [], 'blocked': [], 'completed': []
-      }
+        'in-progress': [],
+        blocked: [],
+        completed: [],
+      },
     };
 
     const result = reorderBoard(localBoard, {
@@ -111,12 +131,14 @@ describe('reorderBoard (Pure Reordering & Transition Function)', () => {
     const localBoard: BoardState = {
       columns,
       tasks: {
-        'todo': [
+        todo: [
           { id: 'a', title: 'A', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
           { id: 'b', title: 'B', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
         ],
-        'in-progress': [], 'blocked': [], 'completed': []
-      }
+        'in-progress': [],
+        blocked: [],
+        completed: [],
+      },
     };
 
     const result = reorderBoard(localBoard, {
@@ -190,14 +212,54 @@ describe('isTaskBlocked (Pure Predicate - Feature 025)', () => {
   });
 
   it('returns true when task.tags contains "bloqueada", "blocked" or "impedimento"', () => {
-    expect(isTaskBlocked({ id: '1', title: 'A', column: 'c', createdAt: '2026-09-14', tags: ['bloqueada'] })).toBe(true);
-    expect(isTaskBlocked({ id: '2', title: 'B', column: 'c', createdAt: '2026-09-14', tags: ['BLOCKED'] })).toBe(true);
-    expect(isTaskBlocked({ id: '3', title: 'C', column: 'c', createdAt: '2026-09-14', tags: ['Impedimento'] })).toBe(true);
+    expect(
+      isTaskBlocked({
+        id: '1',
+        title: 'A',
+        column: 'c',
+        createdAt: '2026-09-14',
+        tags: ['bloqueada'],
+      }),
+    ).toBe(true);
+    expect(
+      isTaskBlocked({
+        id: '2',
+        title: 'B',
+        column: 'c',
+        createdAt: '2026-09-14',
+        tags: ['BLOCKED'],
+      }),
+    ).toBe(true);
+    expect(
+      isTaskBlocked({
+        id: '3',
+        title: 'C',
+        column: 'c',
+        createdAt: '2026-09-14',
+        tags: ['Impedimento'],
+      }),
+    ).toBe(true);
   });
 
   it('returns true when task.tags contains a prefix variation (prefix-aware predicate)', () => {
-    expect(isTaskBlocked({ id: '1', title: 'A', column: 'c', createdAt: '2026-09-14', tags: ['bloqueado-urgente'] })).toBe(true);
-    expect(isTaskBlocked({ id: '2', title: 'B', column: 'c', createdAt: '2026-09-14', tags: ['blocked-by-vendor'] })).toBe(true);
+    expect(
+      isTaskBlocked({
+        id: '1',
+        title: 'A',
+        column: 'c',
+        createdAt: '2026-09-14',
+        tags: ['bloqueado-urgente'],
+      }),
+    ).toBe(true);
+    expect(
+      isTaskBlocked({
+        id: '2',
+        title: 'B',
+        column: 'c',
+        createdAt: '2026-09-14',
+        tags: ['blocked-by-vendor'],
+      }),
+    ).toBe(true);
   });
 
   it('returns false when task.tags has unrelated tags', () => {
@@ -215,14 +277,26 @@ describe('isTaskBlocked (Pure Predicate - Feature 025)', () => {
 describe('reorderBoard - Blocked Task Movement Lock (Feature 025)', () => {
   const columns: ColumnModel[] = [
     { id: 'todo', title: 'Todo', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-    { id: 'in-progress', title: 'In Progress', category: 'in_progress', wipLimit: null, colorScheme: 'progress' },
-    { id: 'completed', title: 'Completed', category: 'done', wipLimit: null, colorScheme: 'completed' },
+    {
+      id: 'in-progress',
+      title: 'In Progress',
+      category: 'in_progress',
+      wipLimit: null,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'completed',
+      title: 'Completed',
+      category: 'done',
+      wipLimit: null,
+      colorScheme: 'completed',
+    },
   ];
 
   const boardWithBlocked: BoardState = {
     columns,
     tasks: {
-      'todo': [
+      todo: [
         {
           id: 'blocked-task-1',
           title: 'Blocked Card 1',
@@ -246,7 +320,7 @@ describe('reorderBoard - Blocked Task Movement Lock (Feature 025)', () => {
         },
       ],
       'in-progress': [],
-      'completed': [],
+      completed: [],
     },
   };
 

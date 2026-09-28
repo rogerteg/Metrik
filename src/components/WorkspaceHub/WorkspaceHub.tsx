@@ -53,9 +53,7 @@ export const WorkspaceHub: React.FC<WorkspaceHubProps> = ({
 
   const filteredBoards = React.useMemo(() => {
     if (!query) return workspaceFilteredBoards;
-    return workspaceFilteredBoards.filter((b) =>
-      b.name.toLowerCase().includes(query)
-    );
+    return workspaceFilteredBoards.filter((b) => b.name.toLowerCase().includes(query));
   }, [workspaceFilteredBoards, query]);
 
   // Filtrar favoritos pelo termo de busca também para consistência na interface

@@ -33,7 +33,9 @@ export const ToastNotification: React.FC<ToastNotificationProps> = ({
       data-testid="metrik-toast"
     >
       <div className="metrik-toast-content">
-        <span className="metrik-toast-icon" aria-hidden="true">⛔</span>
+        <span className="metrik-toast-icon" aria-hidden="true">
+          ⛔
+        </span>
         <span className="metrik-toast-message">{message}</span>
         <button
           type="button"

@@ -11,7 +11,14 @@ const users: User[] = [
 ];
 
 const columns: ColumnModel[] = [
-  { id: 'col-progress', title: 'Em Progresso', category: 'in_progress', wipLimit: null, colorScheme: 'progress', color: '#38bdf8' },
+  {
+    id: 'col-progress',
+    title: 'Em Progresso',
+    category: 'in_progress',
+    wipLimit: null,
+    colorScheme: 'progress',
+    color: '#38bdf8',
+  },
 ];
 
 const task: TaskModel = {
@@ -36,7 +43,7 @@ describe('Task assignee & status (Feature 037 - Phase 8 / T020, T025)', () => {
         onUpdateTask={onUpdateTask}
         columns={columns}
         users={users}
-      />
+      />,
     );
 
     // Status badge (FR-007)
@@ -61,7 +68,9 @@ describe('Task assignee & status (Feature 037 - Phase 8 / T020, T025)', () => {
       result.current.updateTask(created.id, { assignee: 'Ana Silva' });
     });
 
-    let updated = Object.values(result.current.board.tasks).flat().find((t) => t.id === created.id);
+    let updated = Object.values(result.current.board.tasks)
+      .flat()
+      .find((t) => t.id === created.id);
     expect(updated?.assignee).toBe('Ana Silva');
     const assignmentEvent = updated?.activityLog?.find((e) => e.eventType === 'assignment');
     expect(assignmentEvent).toBeDefined();
@@ -71,7 +80,9 @@ describe('Task assignee & status (Feature 037 - Phase 8 / T020, T025)', () => {
       result.current.updateTask(created.id, { assignee: undefined });
     });
 
-    updated = Object.values(result.current.board.tasks).flat().find((t) => t.id === created.id);
+    updated = Object.values(result.current.board.tasks)
+      .flat()
+      .find((t) => t.id === created.id);
     expect(updated?.assignee).toBeUndefined();
     const unassignmentEvent = updated?.activityLog?.find((e) => e.eventType === 'unassignment');
     expect(unassignmentEvent).toBeDefined();

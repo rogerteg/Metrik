@@ -37,8 +37,20 @@ describe('Feature 024 - User Story 3: Cross-Squad Task Discovery & Linking', () 
 
   const remoteBoardState: BoardState = {
     columns: [
-      { id: 'col-back-todo', title: 'A Fazer', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-      { id: 'col-back-done', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
+      {
+        id: 'col-back-todo',
+        title: 'A Fazer',
+        category: 'todo',
+        wipLimit: null,
+        colorScheme: 'todo',
+      },
+      {
+        id: 'col-back-done',
+        title: 'Concluído',
+        category: 'done',
+        wipLimit: null,
+        colorScheme: 'completed',
+      },
     ],
     tasks: {
       'col-back-todo': [
@@ -72,7 +84,7 @@ describe('Feature 024 - User Story 3: Cross-Squad Task Discovery & Linking', () 
         teams={teams}
         onAddLink={onAddLink}
         onRemoveLink={vi.fn()}
-      />
+      />,
     );
 
     // Open add link form
@@ -108,7 +120,7 @@ describe('Feature 024 - User Story 3: Cross-Squad Task Discovery & Linking', () 
       'task-back-endpoint',
       'is_blocked_by',
       'board-back',
-      'team-back'
+      'team-back',
     );
   });
 
@@ -137,7 +149,7 @@ describe('Feature 024 - User Story 3: Cross-Squad Task Discovery & Linking', () 
         teams={teams}
         onAddLink={vi.fn()}
         onRemoveLink={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText(/Endpoint de Pagamentos v2/i)).toBeInTheDocument();

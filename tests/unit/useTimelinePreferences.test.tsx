@@ -42,7 +42,12 @@ describe('useTimelinePreferences Hook', () => {
   it('restores stored preferences from localStorage on initialization', () => {
     window.localStorage.setItem(
       'metrik-timeline-prefs',
-      JSON.stringify({ version: 1, densityMode: 'compact', activeFilter: 'comments', searchQuery: 'bug' })
+      JSON.stringify({
+        version: 1,
+        densityMode: 'compact',
+        activeFilter: 'comments',
+        searchQuery: 'bug',
+      }),
     );
 
     const { result } = renderHook(() => useTimelinePreferences());

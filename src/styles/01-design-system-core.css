@@ -9,7 +9,7 @@
 @import '../components/Settings/Settings.css';
 
 :root,
-[data-theme="dark"] {
+[data-theme='dark'] {
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
@@ -96,7 +96,7 @@
 }
 
 /* Light Theme - Clean Modern Enterprise Light Mode */
-[data-theme="light"] {
+[data-theme='light'] {
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-board: #f1f5f9;
@@ -165,7 +165,7 @@
 }
 
 /* Neutral Theme - Balanced Slate/Warm Neutral for Visual Ergonomics */
-[data-theme="neutral"] {
+[data-theme='neutral'] {
   --bg-primary: #1e222b;
   --bg-secondary: #282e3d;
   --bg-board: #1e222b;
@@ -251,7 +251,9 @@ body {
     radial-gradient(circle at 15% 15%, var(--bg-radial-1) 0%, transparent 40%),
     radial-gradient(circle at 85% 85%, var(--bg-radial-2) 0%, transparent 40%);
   background-attachment: fixed;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 /* App Container - Fits in single viewport page */
@@ -302,7 +304,9 @@ body {
   border: 1px solid var(--border-subtle);
   box-shadow: 0 0 16px rgba(129, 140, 248, 0.25);
   flex-shrink: 0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .brand-logo-container:hover {
@@ -427,7 +431,7 @@ body {
   background: rgba(255, 255, 255, 0.05);
 }
 
-[data-theme="light"] .theme-option-btn:hover:not(.active) {
+[data-theme='light'] .theme-option-btn:hover:not(.active) {
   background: rgba(0, 0, 0, 0.04);
 }
 
@@ -439,7 +443,7 @@ body {
   font-weight: 600;
 }
 
-[data-theme="light"] .theme-option-btn.active {
+[data-theme='light'] .theme-option-btn.active {
   color: #0f172a;
   background: #ffffff;
   border-color: rgba(0, 0, 0, 0.12);
@@ -524,7 +528,9 @@ body {
   flex: 0 0 auto;
   position: relative;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .kanban-column:hover {
@@ -569,7 +575,9 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
   line-height: 1;
   opacity: 0.7;
 }
@@ -810,7 +818,9 @@ body {
 .task-card:hover {
   background: var(--bg-card-hover);
   border-color: rgba(99, 102, 241, 0.3);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.32), 0 0 10px rgba(99, 102, 241, 0.1);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.32),
+    0 0 10px rgba(99, 102, 241, 0.1);
   transform: translateY(-2px);
 }
 
@@ -828,7 +838,7 @@ body {
 }
 
 .task-card.task-card-blocked-locked,
-.task-card.task-card-blocked:not([draggable="true"]) {
+.task-card.task-card-blocked:not([draggable='true']) {
   cursor: not-allowed !important;
 }
 
@@ -873,7 +883,9 @@ body {
   padding: 12px 16px;
   border-radius: 8px;
   border-left: 4px solid #ef4444;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.4),
+    0 8px 10px -6px rgba(0, 0, 0, 0.3);
   font-size: 0.875rem;
   line-height: 1.4;
 }
@@ -905,14 +917,24 @@ body {
 
 /* Stagnant Task Styles (Card Parado / Marrom) */
 .task-card.task-card-stagnant:not(.task-card-blocked) {
-  border-left: 4px solid #8B4513 !important;
-  background: linear-gradient(135deg, rgba(139, 69, 19, 0.22) 0%, rgba(101, 50, 14, 0.14) 50%, var(--bg-card) 100%);
+  border-left: 4px solid #8b4513 !important;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 69, 19, 0.22) 0%,
+    rgba(101, 50, 14, 0.14) 50%,
+    var(--bg-card) 100%
+  );
   border-color: rgba(139, 69, 19, 0.4);
   box-shadow: 0 0 10px rgba(139, 69, 19, 0.15);
 }
 
 .task-card.task-card-stagnant:not(.task-card-blocked):hover {
-  background: linear-gradient(135deg, rgba(139, 69, 19, 0.3) 0%, rgba(101, 50, 14, 0.2) 50%, var(--bg-card-hover) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(139, 69, 19, 0.3) 0%,
+    rgba(101, 50, 14, 0.2) 50%,
+    var(--bg-card-hover) 100%
+  );
   border-color: rgba(160, 82, 45, 0.6);
   box-shadow: 0 0 14px rgba(139, 69, 19, 0.25);
 }
@@ -960,11 +982,11 @@ body {
 }
 
 /* Drag and Drop Styles (Feature 003) */
-.task-card[draggable="true"] {
+.task-card[draggable='true'] {
   cursor: grab;
 }
 
-.task-card[draggable="true"]:active,
+.task-card[draggable='true']:active,
 .task-card-dragging {
   cursor: grabbing !important;
   opacity: 0.6;

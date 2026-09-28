@@ -18,7 +18,8 @@ import {
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '../..');
-const readSource = (relativePath: string) => readFileSync(path.join(repoRoot, relativePath), 'utf8');
+const readSource = (relativePath: string) =>
+  readFileSync(path.join(repoRoot, relativePath), 'utf8');
 
 /**
  * Resolve `@import` recursivamente para ler a folha de estilo efetiva.
@@ -58,7 +59,9 @@ function readCustomProperty(css: string, name: string): number | null {
 describe('columnGeometryContract — guarda anti-drift (GC-07, GC-08)', () => {
   describe('custom properties de geometria no CSS', () => {
     it('declares the default width identical to the TypeScript constant (GC-07)', () => {
-      expect(readCustomProperty(appCss, '--metrik-column-width-default')).toBe(DEFAULT_COLUMN_WIDTH);
+      expect(readCustomProperty(appCss, '--metrik-column-width-default')).toBe(
+        DEFAULT_COLUMN_WIDTH,
+      );
     });
 
     it('declares the minimum width identical to the TypeScript constant (GC-07)', () => {
@@ -138,7 +141,9 @@ describe('columnGeometryContract — guarda anti-drift (GC-07, GC-08)', () => {
     });
 
     it('uses the token for the WebKit scrollbar height instead of a literal', () => {
-      expect(appCss).toMatch(/\.kanban-board-grid::-webkit-scrollbar\s*\{[^}]*height:\s*var\(--metrik-scrollbar-lane\)/);
+      expect(appCss).toMatch(
+        /\.kanban-board-grid::-webkit-scrollbar\s*\{[^}]*height:\s*var\(--metrik-scrollbar-lane\)/,
+      );
       expect(appCss).not.toMatch(/\.kanban-board-grid::-webkit-scrollbar\s*\{[^}]*height:\s*\d+px/);
     });
 

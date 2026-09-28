@@ -18,7 +18,7 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     const textarea = screen.getByDisplayValue('Implementar Persistência Local');
@@ -33,7 +33,7 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={handleUpdate}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     const textarea = screen.getByDisplayValue('Implementar Persistência Local');
@@ -57,7 +57,7 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={handleDiscard}
-      />
+      />,
     );
 
     const textarea = screen.getByRole('textbox', { name: /título da tarefa/i });
@@ -74,7 +74,7 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={handleDelete}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     const deleteBtn = screen.getByRole('button', { name: /excluir tarefa/i });
@@ -97,7 +97,7 @@ describe('Task Component (US2 & US4)', () => {
         onMoveRight={handleMoveRight}
         canMoveLeft={true}
         canMoveRight={true}
-      />
+      />,
     );
 
     const prevBtn = screen.getByRole('button', { name: /mover para coluna anterior/i });
@@ -127,7 +127,7 @@ describe('Task Component (US2 & US4)', () => {
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
         onUpdatePriority={handleUpdatePriority}
-      />
+      />,
     );
 
     const badge = screen.getByRole('button', { name: /prioridade: alta/i });
@@ -155,7 +155,7 @@ describe('Task Component (US2 & US4)', () => {
         onDiscardIfEmpty={vi.fn()}
         onAddTag={handleAddTag}
         onRemoveTag={handleRemoveTag}
-      />
+      />,
     );
 
     expect(screen.getByText('Bug')).toBeInTheDocument();
@@ -182,8 +182,8 @@ describe('Task Component (US2 & US4)', () => {
       description: 'Test description',
       subtasks: [
         { id: '1', title: 'Sub 1', completed: true },
-        { id: '2', title: 'Sub 2', completed: false }
-      ]
+        { id: '2', title: 'Sub 2', completed: false },
+      ],
     };
 
     render(
@@ -192,13 +192,15 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     // Descrição e checklist agora aparecem no resumo do detalhe inline (glance)
-    const chips = screen.getAllByRole('generic').filter(el => el.classList.contains('task-detail-chip'));
+    const chips = screen
+      .getAllByRole('generic')
+      .filter((el) => el.classList.contains('task-detail-chip'));
     expect(chips.length).toBe(2);
-    
+
     // Check if the subtasks text is present
     expect(screen.getByText('1/2')).toBeInTheDocument();
   });
@@ -216,16 +218,18 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
-    const badges = screen.getAllByRole('generic').filter(el => el.classList.contains('task-indicator-badge'));
+    const badges = screen
+      .getAllByRole('generic')
+      .filter((el) => el.classList.contains('task-indicator-badge'));
     expect(badges.length).toBe(1);
-    
+
     // Using formatDateShort('2030-10-15') gives '15 Out' or '15/10' depending on locale
     // We just check if it contains '15' which is the day
     expect(screen.getByText(/15/)).toBeInTheDocument();
-    
+
     // Check if it has the correct color class
     expect(badges[0].classList.contains('due-date-normal')).toBe(true);
   });
@@ -239,7 +243,7 @@ describe('Task Component (US2 & US4)', () => {
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
         onClick={handleClick}
-      />
+      />,
     );
 
     const article = screen.getByRole('article');
@@ -261,7 +265,7 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     const article = screen.getByRole('article');
@@ -281,7 +285,7 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     const article = screen.getByRole('article');
@@ -302,7 +306,7 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     const article = screen.getByRole('article');
@@ -327,7 +331,7 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     const article = screen.getByRole('article');
@@ -353,7 +357,7 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText(/Início:/i)).toBeInTheDocument();
@@ -375,7 +379,7 @@ describe('Task Component (US2 & US4)', () => {
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
         onUpdateTask={handleUpdateTask}
-      />
+      />,
     );
 
     // Clica na barra de alternância para expandir a área de formulário de QA
@@ -389,11 +393,15 @@ describe('Task Component (US2 & US4)', () => {
 
     fireEvent.change(acTextarea, { target: { value: 'Novo critério de aceitação' } });
     fireEvent.blur(acTextarea);
-    expect(handleUpdateTask).toHaveBeenCalledWith('task-test-01', { acceptanceCriteria: 'Novo critério de aceitação' });
+    expect(handleUpdateTask).toHaveBeenCalledWith('task-test-01', {
+      acceptanceCriteria: 'Novo critério de aceitação',
+    });
 
     fireEvent.change(tsTextarea, { target: { value: 'Novo cenário de teste' } });
     fireEvent.blur(tsTextarea);
-    expect(handleUpdateTask).toHaveBeenCalledWith('task-test-01', { testScenarios: 'Novo cenário de teste' });
+    expect(handleUpdateTask).toHaveBeenCalledWith('task-test-01', {
+      testScenarios: 'Novo cenário de teste',
+    });
   });
 
   it('allows expanding and collapsing QA section via toggle bar', () => {
@@ -409,7 +417,7 @@ describe('Task Component (US2 & US4)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     // Initial state: not expanded because fields are empty
@@ -428,5 +436,3 @@ describe('Task Component (US2 & US4)', () => {
     expect(screen.queryByLabelText('Critérios de aceitação')).not.toBeInTheDocument();
   });
 });
-
-

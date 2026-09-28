@@ -41,7 +41,7 @@ describe('Task — read-only (guest) não oferece escrita', () => {
         onMoveLeft={vi.fn()}
         onMoveRight={vi.fn()}
         {...baseProps}
-      />
+      />,
     );
     expect(screen.queryByLabelText('Excluir tarefa')).toBeNull();
     expect(screen.queryByLabelText('Mover para coluna anterior')).toBeNull();
@@ -60,7 +60,7 @@ describe('Task — read-only (guest) não oferece escrita', () => {
 
   it('does not offer the subtask composer or subtask toggle writes', () => {
     render(
-      <Task task={task} isReadOnly onUpdateTask={vi.fn()} onAddComment={vi.fn()} {...baseProps} />
+      <Task task={task} isReadOnly onUpdateTask={vi.fn()} onAddComment={vi.fn()} {...baseProps} />,
     );
     fireEvent.click(screen.getByRole('button', { name: /Detalhes/i }));
 
@@ -82,7 +82,7 @@ describe('Task — read-only (guest) não oferece escrita', () => {
         onToggleBlocked={onToggleBlocked}
         onUpdateTask={onUpdateTask}
         {...baseProps}
-      />
+      />,
     );
 
     const badge = screen.getByTestId('task-blocked-badge');

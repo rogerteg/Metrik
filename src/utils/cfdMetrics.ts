@@ -24,7 +24,7 @@ export function calculateHorizontalLeadTime(
   dataPoints: CfdDataPoint[],
   activeIdx: number,
   arrivalKey: 'total' | 'cumulativeStarted' | string,
-  departureKey: 'cumulativeStarted' | 'cumulativeDone' | string
+  departureKey: 'cumulativeStarted' | 'cumulativeDone' | string,
 ): number {
   if (!dataPoints || dataPoints.length === 0 || activeIdx < 0 || activeIdx >= dataPoints.length) {
     return 0;
@@ -70,7 +70,7 @@ export function calculateHorizontalLeadTime(
 export function detectQueueExpansion(
   dataPoints: CfdDataPoint[],
   topKey: string,
-  bottomKey: string
+  bottomKey: string,
 ): boolean {
   if (!dataPoints || dataPoints.length < 4) {
     return false;
@@ -87,7 +87,8 @@ export function detectQueueExpansion(
   };
 
   const avgStart = startPoints.reduce((acc, pt) => acc + getThickness(pt), 0) / startPoints.length;
-  const avgRecent = recentPoints.reduce((acc, pt) => acc + getThickness(pt), 0) / recentPoints.length;
+  const avgRecent =
+    recentPoints.reduce((acc, pt) => acc + getThickness(pt), 0) / recentPoints.length;
 
   // Se a espessura média recente for pelo menos 40% maior e tiver no mínimo 3 itens
   return avgRecent >= 3 && avgRecent >= avgStart * 1.4;

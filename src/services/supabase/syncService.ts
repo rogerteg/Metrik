@@ -68,7 +68,8 @@ export async function testConnection(): Promise<ConnectionTestResult> {
         return {
           ok: false,
           latencyMs,
-          message: 'Conectado ao Supabase, mas a tabela "workspaces" não existe. Execute o script supabase/schema.sql no SQL Editor do Supabase.',
+          message:
+            'Conectado ao Supabase, mas a tabela "workspaces" não existe. Execute o script supabase/schema.sql no SQL Editor do Supabase.',
         };
       }
       return {
@@ -192,9 +193,7 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
         updated_at: b.lastAccessed || new Date().toISOString(),
       }));
 
-      const { error: bError } = await client
-        .from('boards')
-        .upsert(boardRows, { onConflict: 'id' });
+      const { error: bError } = await client.from('boards').upsert(boardRows, { onConflict: 'id' });
 
       if (bError) throw new Error(`Erro ao sincronizar boards: ${bError.message}`);
       boardsCount = boardRows.length;
@@ -204,9 +203,7 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
     let tasksCount = 0;
     const taskRows = flattenTasksForDb(payload.tasksByBoardId);
     if (taskRows.length > 0) {
-      const { error: tError } = await client
-        .from('tasks')
-        .upsert(taskRows, { onConflict: 'id' });
+      const { error: tError } = await client.from('tasks').upsert(taskRows, { onConflict: 'id' });
 
       if (tError) throw new Error(`Erro ao sincronizar tasks: ${tError.message}`);
       tasksCount = taskRows.length;
@@ -214,18 +211,23 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
 
     // 4. Sincronizar AppSettings (se fornecido)
     if (payload.settings) {
-      await client.from('app_settings').upsert({
-        id: 'global_settings',
-        theme: payload.settings.theme,
-        density: payload.settings.density,
-        default_wip_limit: payload.settings.defaultWipLimit,
-        enable_animations: payload.settings.enableAnimations,
-        default_board_id: payload.settings.defaultBoardId || null,
-        updated_at: payload.settings.updatedAt || new Date().toISOString(),
-      }, { onConflict: 'id' });
+      await client.from('app_settings').upsert(
+        {
+          id: 'global_settings',
+          theme: payload.settings.theme,
+          density: payload.settings.density,
+          default_wip_limit: payload.settings.defaultWipLimit,
+          enable_animations: payload.settings.enableAnimations,
+          default_board_id: payload.settings.defaultBoardId || null,
+          updated_at: payload.settings.updatedAt || new Date().toISOString(),
+        },
+        { onConflict: 'id' },
+      );
     }
 
-    console.info(`[Metrik] Push to Supabase successful: ${workspacesCount} workspaces, ${boardsCount} boards, ${tasksCount} tasks.`);
+    console.info(
+      `[Metrik] Push to Supabase successful: ${workspacesCount} workspaces, ${boardsCount} boards, ${tasksCount} tasks.`,
+    );
 
     return {
       ok: true,
@@ -366,7 +368,9 @@ export async function pullFromSupabase(): Promise<SyncPullResult> {
       };
     }
 
-    console.info(`[Metrik] Pull from Supabase successful: ${workspaces.length} workspaces, ${boards.length} boards, ${(tData || []).length} tasks.`);
+    console.info(
+      `[Metrik] Pull from Supabase successful: ${workspaces.length} workspaces, ${boards.length} boards, ${(tData || []).length} tasks.`,
+    );
 
     return {
       ok: true,

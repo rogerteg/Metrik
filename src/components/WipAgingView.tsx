@@ -22,7 +22,9 @@ export const WipAgingView: React.FC<WipAgingViewProps> = ({
 
   // Filtro de colunas visíveis
   const [visibleColumnIds, setVisibleColumnIds] = useState<Set<string>>(() => {
-    return new Set(columns.filter((c) => c.category !== 'done' && c.id !== 'done').map((c) => c.id));
+    return new Set(
+      columns.filter((c) => c.category !== 'done' && c.id !== 'done').map((c) => c.id),
+    );
   });
 
   // Filtro de data inicial
@@ -40,7 +42,9 @@ export const WipAgingView: React.FC<WipAgingViewProps> = ({
     if (!startDateAfter) return tasks;
     const startTimestamp = new Date(startDateAfter).getTime();
     return tasks.filter((t) => {
-      const taskStart = t.startedAt ? new Date(t.startedAt).getTime() : new Date(t.createdAt).getTime();
+      const taskStart = t.startedAt
+        ? new Date(t.startedAt).getTime()
+        : new Date(t.createdAt).getTime();
       return taskStart >= startTimestamp;
     });
   }, [tasks, startDateAfter]);
@@ -83,7 +87,8 @@ export const WipAgingView: React.FC<WipAgingViewProps> = ({
             <span className="top-bar-icon">⏳</span> Envelhecimento do WIP (Aging Work In Progress)
           </h3>
           <p className="top-bar-subtitle">
-            Monitore proativamente a idade dos cartões ativos no fluxo antes da quebra de acordos de nível de serviço (SLE).
+            Monitore proativamente a idade dos cartões ativos no fluxo antes da quebra de acordos de
+            nível de serviço (SLE).
           </p>
         </div>
 
@@ -113,17 +118,21 @@ export const WipAgingView: React.FC<WipAgingViewProps> = ({
 
         {/* Gráfico SVG Central */}
         <div className="wip-aging-canvas-area">
-          {displayColumns.length === 0 || totalActiveWip === 0 && tasks.length === 0 ? (
+          {displayColumns.length === 0 || (totalActiveWip === 0 && tasks.length === 0) ? (
             <div className="wip-aging-guidance-card" data-testid="wip-guidance-card">
               <div className="guidance-icon">💡</div>
               <div className="guidance-content">
                 <h4>Nenhum Trabalho em Andamento</h4>
                 <p>
-                  O Gráfico de Envelhecimento do WIP acompanha cartões que estão atualmente em progresso nas colunas ativas do board.
+                  O Gráfico de Envelhecimento do WIP acompanha cartões que estão atualmente em
+                  progresso nas colunas ativas do board.
                 </p>
                 <ul>
                   <li>Crie ou mova cartões para as colunas do fluxo de trabalho.</li>
-                  <li>Cartões concluídos geram a linha base histórica das faixas de percentil de ritmo (Pace Percentiles).</li>
+                  <li>
+                    Cartões concluídos geram a linha base histórica das faixas de percentil de ritmo
+                    (Pace Percentiles).
+                  </li>
                 </ul>
               </div>
             </div>

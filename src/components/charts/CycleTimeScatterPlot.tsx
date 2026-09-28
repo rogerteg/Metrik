@@ -97,7 +97,7 @@ export const CycleTimeScatterPlot: React.FC<CycleTimeScatterPlotProps> = ({
       calculatedPercentiles.max,
       calculatedPercentiles.p95,
       ...cycleTimes,
-      1
+      1,
     );
     // Margem de 20% no topo para boa legibilidade
     const maxDays = Math.ceil(highestVal * 1.2) || 5;
@@ -193,9 +193,7 @@ export const CycleTimeScatterPlot: React.FC<CycleTimeScatterPlotProps> = ({
           <h3 className="chart-title" style={{ margin: 0 }}>
             {title}
           </h3>
-          <span className="scatter-subtitle">
-            {subtitle}
-          </span>
+          <span className="scatter-subtitle">{subtitle}</span>
         </div>
 
         <div className="scatter-header-actions">
@@ -408,12 +406,7 @@ export const CycleTimeScatterPlot: React.FC<CycleTimeScatterPlotProps> = ({
                   >
                     {/* Glow ring for blocked items */}
                     {isBlockedPoint && (
-                      <circle
-                        cx={cx}
-                        cy={cy}
-                        r="8"
-                        className="scatter-point-blocked-ring"
-                      />
+                      <circle cx={cx} cy={cy} r="8" className="scatter-point-blocked-ring" />
                     )}
 
                     <circle

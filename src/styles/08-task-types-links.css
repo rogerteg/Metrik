@@ -47,7 +47,7 @@
   justify-content: center;
 }
 
-[data-theme="light"] .task-type-btn {
+[data-theme='light'] .task-type-btn {
   background: rgba(0, 0, 0, 0.03);
 }
 
@@ -125,7 +125,7 @@
   overflow: hidden;
 }
 
-[data-theme="light"] .task-initiative-progress__bar {
+[data-theme='light'] .task-initiative-progress__bar {
   background: rgba(0, 0, 0, 0.08);
 }
 

@@ -6,7 +6,7 @@ import { BoardModel } from '../../src/types/kanban';
 describe('BoardSwitcher Component', () => {
   const mockBoards: BoardModel[] = [
     { id: 'b1', name: 'Quadro 1', createdAt: '2026-01-01', lastAccessed: '2026-01-01' },
-    { id: 'b2', name: 'Quadro 2', createdAt: '2026-01-02', lastAccessed: '2026-01-02' }
+    { id: 'b2', name: 'Quadro 2', createdAt: '2026-01-02', lastAccessed: '2026-01-02' },
   ];
 
   it('renders nothing when boards list is empty', () => {
@@ -16,7 +16,7 @@ describe('BoardSwitcher Component', () => {
         activeBoardId={null}
         onSwitchBoard={vi.fn()}
         onManageBoards={vi.fn()}
-      />
+      />,
     );
     expect(container.firstChild).toBeNull();
   });
@@ -29,7 +29,7 @@ describe('BoardSwitcher Component', () => {
         activeBoardId="b1"
         onSwitchBoard={onSwitch}
         onManageBoards={vi.fn()}
-      />
+      />,
     );
 
     const select = screen.getByRole('combobox');
@@ -49,7 +49,7 @@ describe('BoardSwitcher Component', () => {
         activeBoardId="b1"
         onSwitchBoard={vi.fn()}
         onManageBoards={onManage}
-      />
+      />,
     );
 
     const manageBtn = screen.getByRole('button', { name: /gerenciar/i });

@@ -6,7 +6,7 @@ import { BoardModel } from '../../src/types/kanban';
 describe('BoardManagementModal Component', () => {
   const mockBoards: BoardModel[] = [
     { id: 'b1', name: 'Quadro Alfa', createdAt: '2026-01-01', lastAccessed: '2026-01-01' },
-    { id: 'b2', name: 'Quadro Beta', createdAt: '2026-01-02', lastAccessed: '2026-01-02' }
+    { id: 'b2', name: 'Quadro Beta', createdAt: '2026-01-02', lastAccessed: '2026-01-02' },
   ];
 
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('BoardManagementModal Component', () => {
         onRenameBoard={vi.fn()}
         onDeleteBoard={vi.fn()}
         onSwitchBoard={vi.fn()}
-      />
+      />,
     );
     expect(container.firstChild).toBeNull();
   });
@@ -40,7 +40,7 @@ describe('BoardManagementModal Component', () => {
         onRenameBoard={vi.fn()}
         onDeleteBoard={vi.fn()}
         onSwitchBoard={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText('Gerenciar Quadros')).toBeInTheDocument();
@@ -61,7 +61,7 @@ describe('BoardManagementModal Component', () => {
         onRenameBoard={vi.fn()}
         onDeleteBoard={vi.fn()}
         onSwitchBoard={vi.fn()}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText('Nome do novo quadro...');
@@ -85,7 +85,7 @@ describe('BoardManagementModal Component', () => {
         onRenameBoard={vi.fn()}
         onDeleteBoard={vi.fn()}
         onSwitchBoard={onSwitch}
-      />
+      />,
     );
 
     const betaBoard = screen.getByText('Quadro Beta');
@@ -106,7 +106,7 @@ describe('BoardManagementModal Component', () => {
         onRenameBoard={onRename}
         onDeleteBoard={vi.fn()}
         onSwitchBoard={vi.fn()}
-      />
+      />,
     );
 
     const renameButtons = screen.getAllByRole('button', { name: /renomear/i });
@@ -133,7 +133,7 @@ describe('BoardManagementModal Component', () => {
         onRenameBoard={vi.fn()}
         onDeleteBoard={onDelete}
         onSwitchBoard={vi.fn()}
-      />
+      />,
     );
 
     const deleteButtons = screen.getAllByRole('button', { name: /excluir/i });
@@ -154,7 +154,7 @@ describe('BoardManagementModal Component', () => {
         onRenameBoard={vi.fn()}
         onDeleteBoard={vi.fn()}
         onSwitchBoard={vi.fn()}
-      />
+      />,
     );
 
     const deleteBtn = screen.getByRole('button', { name: /excluir/i });

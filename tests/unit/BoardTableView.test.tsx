@@ -6,8 +6,22 @@ import { Team } from '../../src/types/team';
 
 describe('BoardTableView Component (Feature 031 - T016)', () => {
   const mockTeams: Team[] = [
-    { id: 'team-alpha', name: 'Alpha Squad', color: '#6366f1', createdById: 'u1', createdAt: '2026-09-01T00:00:00Z', members: [] },
-    { id: 'team-beta', name: 'Beta Squad', color: '#10b981', createdById: 'u1', createdAt: '2026-09-01T00:00:00Z', members: [] },
+    {
+      id: 'team-alpha',
+      name: 'Alpha Squad',
+      color: '#6366f1',
+      createdById: 'u1',
+      createdAt: '2026-09-01T00:00:00Z',
+      members: [],
+    },
+    {
+      id: 'team-beta',
+      name: 'Beta Squad',
+      color: '#10b981',
+      createdById: 'u1',
+      createdAt: '2026-09-01T00:00:00Z',
+      members: [],
+    },
   ];
 
   const mockBoards: BoardModel[] = [
@@ -36,7 +50,7 @@ describe('BoardTableView Component (Feature 031 - T016)', () => {
         onSelectBoard={vi.fn()}
         onRenameBoard={vi.fn()}
         onRequestDeleteBoard={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByRole('table')).toBeInTheDocument();
@@ -55,7 +69,7 @@ describe('BoardTableView Component (Feature 031 - T016)', () => {
         onSelectBoard={vi.fn()}
         onRenameBoard={vi.fn()}
         onRequestDeleteBoard={vi.fn()}
-      />
+      />,
     );
 
     const activeRows = container.querySelectorAll('.manage-table-row-active');
@@ -72,7 +86,7 @@ describe('BoardTableView Component (Feature 031 - T016)', () => {
         onSelectBoard={vi.fn()}
         onRenameBoard={vi.fn()}
         onRequestDeleteBoard={vi.fn()}
-      />
+      />,
     );
 
     const headerName = screen.getByRole('columnheader', { name: /nome do quadro/i });
@@ -99,7 +113,7 @@ describe('BoardTableView Component (Feature 031 - T016)', () => {
         onSelectBoard={onSelectBoard}
         onRenameBoard={vi.fn()}
         onRequestDeleteBoard={vi.fn()}
-      />
+      />,
     );
 
     const openBtn = screen.getAllByRole('button', { name: /abrir/i })[0];
@@ -118,7 +132,7 @@ describe('BoardTableView Component (Feature 031 - T016)', () => {
         onSelectBoard={vi.fn()}
         onRenameBoard={vi.fn()}
         onRequestDeleteBoard={onRequestDeleteBoard}
-      />
+      />,
     );
 
     const deleteBtns = screen.getAllByRole('button', { name: /excluir/i });

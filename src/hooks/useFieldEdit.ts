@@ -77,67 +77,73 @@ export function useFieldEdit<T = string>({
     }
   }, []);
 
-  const executeSave = useCallback((valToSave: T) => {
-    if (isReadOnlyRef.current) return;
+  const executeSave = useCallback(
+    (valToSave: T) => {
+      if (isReadOnlyRef.current) return;
 
-    clearDebounceTimer();
-    clearDismissTimer();
-    setStatus('saving');
-
-    try {
-      const result = onSaveRef.current(valToSave);
-      if (result && typeof (result as unknown as Promise<void>).then === 'function') {
-        (result as unknown as Promise<void>)
-          .then(() => {
-            setOriginalValue(valToSave);
-            originalValueRef.current = valToSave;
-            setStatus('saved');
-            dismissTimerRef.current = setTimeout(() => {
-              setStatus('idle');
-            }, 2000);
-          })
-          .catch((err) => {
-            console.error('[Metrik] Erro ao persistir campo:', err);
-            setStatus('dirty');
-          });
-      } else {
-        setOriginalValue(valToSave);
-        originalValueRef.current = valToSave;
-        setStatus('saved');
-        dismissTimerRef.current = setTimeout(() => {
-          setStatus('idle');
-        }, 2000);
-      }
-    } catch (err) {
-      console.error('[Metrik] Erro ao persistir campo:', err);
-      setStatus('dirty');
-    }
-  }, [clearDebounceTimer, clearDismissTimer]);
-
-  const setValue = useCallback((nextVal: T) => {
-    if (isReadOnlyRef.current) return;
-
-    clearDismissTimer();
-    setValueState(nextVal);
-    valueRef.current = nextVal;
-
-    const dirty = nextVal !== originalValueRef.current;
-
-    if (dirty) {
-      setStatus('dirty');
-      if (autoSaveRef.current) {
-        clearDebounceTimer();
-        debounceTimerRef.current = setTimeout(() => {
-          executeSave(nextVal);
-        }, debounceMsRef.current);
-      } else {
-        clearDebounceTimer();
-      }
-    } else {
       clearDebounceTimer();
-      setStatus('idle');
-    }
-  }, [clearDebounceTimer, clearDismissTimer, executeSave]);
+      clearDismissTimer();
+      setStatus('saving');
+
+      try {
+        const result = onSaveRef.current(valToSave);
+        if (result && typeof (result as unknown as Promise<void>).then === 'function') {
+          (result as unknown as Promise<void>)
+            .then(() => {
+              setOriginalValue(valToSave);
+              originalValueRef.current = valToSave;
+              setStatus('saved');
+              dismissTimerRef.current = setTimeout(() => {
+                setStatus('idle');
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error('[Metrik] Erro ao persistir campo:', err);
+              setStatus('dirty');
+            });
+        } else {
+          setOriginalValue(valToSave);
+          originalValueRef.current = valToSave;
+          setStatus('saved');
+          dismissTimerRef.current = setTimeout(() => {
+            setStatus('idle');
+          }, 2000);
+        }
+      } catch (err) {
+        console.error('[Metrik] Erro ao persistir campo:', err);
+        setStatus('dirty');
+      }
+    },
+    [clearDebounceTimer, clearDismissTimer],
+  );
+
+  const setValue = useCallback(
+    (nextVal: T) => {
+      if (isReadOnlyRef.current) return;
+
+      clearDismissTimer();
+      setValueState(nextVal);
+      valueRef.current = nextVal;
+
+      const dirty = nextVal !== originalValueRef.current;
+
+      if (dirty) {
+        setStatus('dirty');
+        if (autoSaveRef.current) {
+          clearDebounceTimer();
+          debounceTimerRef.current = setTimeout(() => {
+            executeSave(nextVal);
+          }, debounceMsRef.current);
+        } else {
+          clearDebounceTimer();
+        }
+      } else {
+        clearDebounceTimer();
+        setStatus('idle');
+      }
+    },
+    [clearDebounceTimer, clearDismissTimer, executeSave],
+  );
 
   const saveNow = useCallback(() => {
     if (isReadOnlyRef.current || !isDirtyRef.current) return;
@@ -161,25 +167,28 @@ export function useFieldEdit<T = string>({
     }
   }, [saveNow]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLElement>) => {
-    if (isReadOnlyRef.current) return;
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLElement>) => {
+      if (isReadOnlyRef.current) return;
 
-    // Intercepta Ctrl+S (Windows/Linux) e Cmd+S (macOS)
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-      e.preventDefault();
-      e.stopPropagation();
-      saveNow();
-      return;
-    }
+      // Intercepta Ctrl+S (Windows/Linux) e Cmd+S (macOS)
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        e.stopPropagation();
+        saveNow();
+        return;
+      }
 
-    // Intercepta Escape se houver alterações não salvas
-    if (e.key === 'Escape' && isDirtyRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-      discard();
-      return;
-    }
-  }, [saveNow, discard]);
+      // Intercepta Escape se houver alterações não salvas
+      if (e.key === 'Escape' && isDirtyRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        discard();
+        return;
+      }
+    },
+    [saveNow, discard],
+  );
 
   return {
     value,

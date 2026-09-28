@@ -47,10 +47,14 @@ describe('Feature 033 - Task Comments & Activity Audit Log', () => {
       const initialTask = result.current.addTask('col-todo', 'Tarefa de Teste para Comentários');
 
       act(() => {
-        result.current.addTaskComment(initialTask.id, 'Primeira atualização importante\nCom segunda linha de contexto.', {
-          id: 'usr-rogerio',
-          name: 'Rogerio Teixeira',
-        });
+        result.current.addTaskComment(
+          initialTask.id,
+          'Primeira atualização importante\nCom segunda linha de contexto.',
+          {
+            id: 'usr-rogerio',
+            name: 'Rogerio Teixeira',
+          },
+        );
       });
 
       const updatedTask = Object.values(result.current.board.tasks)
@@ -59,12 +63,16 @@ describe('Feature 033 - Task Comments & Activity Audit Log', () => {
 
       expect(updatedTask).toBeDefined();
       expect(updatedTask?.comments).toHaveLength(1);
-      expect(updatedTask?.comments?.[0].text).toBe('Primeira atualização importante\nCom segunda linha de contexto.');
+      expect(updatedTask?.comments?.[0].text).toBe(
+        'Primeira atualização importante\nCom segunda linha de contexto.',
+      );
       expect(updatedTask?.comments?.[0].userName).toBe('Rogerio Teixeira');
 
       expect(updatedTask?.activityLog).toHaveLength(1);
       expect(updatedTask?.activityLog?.[0].eventType).toBe('comment_added');
-      expect(updatedTask?.activityLog?.[0].description).toContain('Comentário adicionado por Rogerio Teixeira');
+      expect(updatedTask?.activityLog?.[0].description).toContain(
+        'Comentário adicionado por Rogerio Teixeira',
+      );
     });
 
     it('prevents adding empty or whitespace-only comments', () => {
@@ -100,7 +108,10 @@ describe('Feature 033 - Task Comments & Activity Audit Log', () => {
 
       act(() => {
         if (commentId) {
-          result.current.deleteTaskComment(initialTask.id, commentId, { id: 'usr-admin', name: 'Admin Squad' });
+          result.current.deleteTaskComment(initialTask.id, commentId, {
+            id: 'usr-admin',
+            name: 'Admin Squad',
+          });
         }
       });
 
@@ -111,7 +122,9 @@ describe('Feature 033 - Task Comments & Activity Audit Log', () => {
       expect(currentTask?.comments).toHaveLength(0);
       expect(currentTask?.activityLog).toHaveLength(2); // comment_added + comment_deleted
       expect(currentTask?.activityLog?.[1].eventType).toBe('comment_deleted');
-      expect(currentTask?.activityLog?.[1].description).toContain('Comentário removido por Admin Squad');
+      expect(currentTask?.activityLog?.[1].description).toContain(
+        'Comentário removido por Admin Squad',
+      );
     });
   });
 
@@ -182,7 +195,9 @@ describe('Feature 033 - Task Comments & Activity Audit Log', () => {
       expect(updatedTask?.priority).toBe('urgent');
       expect(updatedTask?.tags).toContain('frontend');
 
-      const priorityEvent = updatedTask?.activityLog?.find((e) => e.eventType === 'priority_changed');
+      const priorityEvent = updatedTask?.activityLog?.find(
+        (e) => e.eventType === 'priority_changed',
+      );
       const tagEvent = updatedTask?.activityLog?.find((e) => e.eventType === 'tags_changed');
 
       expect(priorityEvent).toBeDefined();

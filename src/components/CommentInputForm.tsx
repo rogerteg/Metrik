@@ -7,14 +7,34 @@ export interface CommentInputFormProps {
 }
 
 const SendIcon = () => (
-  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width={13}
+    height={13}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <line x1="22" y1="2" x2="11" y2="13" />
     <polygon points="22 2 15 22 11 13 2 9 22 2" />
   </svg>
 );
 
 const AwardIcon = () => (
-  <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width={13}
+    height={13}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <circle cx="12" cy="8" r="7" />
     <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
   </svg>
@@ -114,7 +134,11 @@ export const CommentInputForm: React.FC<CommentInputFormProps> = ({
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
         disabled={disabled}
-        placeholder={disabled ? 'Visualização apenas (perfil Convidado)' : 'Escreva um comentário... (Markdown suportado • Ctrl+Enter para enviar)'}
+        placeholder={
+          disabled
+            ? 'Visualização apenas (perfil Convidado)'
+            : 'Escreva um comentário... (Markdown suportado • Ctrl+Enter para enviar)'
+        }
         rows={3}
         data-testid="comment-input-textarea"
         className="mrf-composer__textarea"

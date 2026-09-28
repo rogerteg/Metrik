@@ -1,7 +1,11 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { CfdDataPoint } from '../../types/analytics';
 import { ColumnModel, getDefaultColumnColor } from '../../types/kanban';
-import { calculateHorizontalLeadTime, detectQueueExpansion, getPointValue } from '../../utils/cfdMetrics';
+import {
+  calculateHorizontalLeadTime,
+  detectQueueExpansion,
+  getPointValue,
+} from '../../utils/cfdMetrics';
 import { CfdFilterDrawer } from './CfdFilterDrawer';
 import { CfdTimelineScrubber } from './CfdTimelineScrubber';
 
@@ -96,13 +100,16 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
 
   // Se colunas foram fornecidas, usamos as etapas completas do board
   const effectiveColumns = activeColumns || columns;
-  const hasDynamicStages = Boolean(effectiveColumns && effectiveColumns.length > 0 && displayedData[0]?.stageCounts);
+  const hasDynamicStages = Boolean(
+    effectiveColumns && effectiveColumns.length > 0 && displayedData[0]?.stageCounts,
+  );
 
   // Mapeamento de coordenadas
   const coords = displayedData.map((d, i) => {
-    const x = pointCount > 1 
-      ? paddingLeft + (i / (pointCount - 1)) * plotWidth
-      : paddingLeft + plotWidth / 2;
+    const x =
+      pointCount > 1
+        ? paddingLeft + (i / (pointCount - 1)) * plotWidth
+        : paddingLeft + plotWidth / 2;
 
     const yDone = yBaseline - (d.cumulativeDone / safeMax) * plotHeight;
     const yStarted = yBaseline - (d.cumulativeStarted / safeMax) * plotHeight;
@@ -121,47 +128,59 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
   });
 
   // Polígonos dinâmicos por etapa (da direita para a esquerda)
-  const stagePolygons = hasDynamicStages && effectiveColumns ? effectiveColumns.map((col, idx) => {
-    const color = getColumnColor(col);
-    const isLastCol = idx === effectiveColumns.length - 1;
-    const nextCol = !isLastCol ? effectiveColumns[idx + 1] : null;
+  const stagePolygons =
+    hasDynamicStages && effectiveColumns
+      ? effectiveColumns.map((col, idx) => {
+          const color = getColumnColor(col);
+          const isLastCol = idx === effectiveColumns.length - 1;
+          const nextCol = !isLastCol ? effectiveColumns[idx + 1] : null;
 
-    const topPoints = coords.map((c) => `${c.x},${c.stageY[col.id]}`);
-    const bottomPoints = [...coords].reverse().map((c) => {
-      const yBottom = nextCol ? c.stageY[nextCol.id] : yBaseline;
-      return `${c.x},${yBottom}`;
-    });
+          const topPoints = coords.map((c) => `${c.x},${c.stageY[col.id]}`);
+          const bottomPoints = [...coords].reverse().map((c) => {
+            const yBottom = nextCol ? c.stageY[nextCol.id] : yBaseline;
+            return `${c.x},${yBottom}`;
+          });
 
-    const points = `${topPoints.join(' ')} ${bottomPoints.join(' ')}`;
-    const strokeLine = topPoints.join(' ');
+          const points = `${topPoints.join(' ')} ${bottomPoints.join(' ')}`;
+          const strokeLine = topPoints.join(' ');
 
-    return {
-      col,
-      color,
-      points,
-      strokeLine,
-      cumValueName: col.id,
-    };
-  }) : null;
+          return {
+            col,
+            color,
+            points,
+            strokeLine,
+            cumValueName: col.id,
+          };
+        })
+      : null;
 
   // Fallback para os 3 estágios padrão
-  const donePoints = coords.length > 0 ? [
-    `${coords[0].x},${yBaseline}`,
-    ...coords.map((c) => `${c.x},${c.yDone}`),
-    `${coords[coords.length - 1].x},${yBaseline}`,
-  ].join(' ') : '';
+  const donePoints =
+    coords.length > 0
+      ? [
+          `${coords[0].x},${yBaseline}`,
+          ...coords.map((c) => `${c.x},${c.yDone}`),
+          `${coords[coords.length - 1].x},${yBaseline}`,
+        ].join(' ')
+      : '';
 
-  const progressPoints = coords.length > 0 ? [
-    `${coords[0].x},${coords[0].yDone}`,
-    ...coords.map((c) => `${c.x},${c.yStarted}`),
-    ...[...coords].reverse().map((c) => `${c.x},${c.yDone}`),
-  ].join(' ') : '';
+  const progressPoints =
+    coords.length > 0
+      ? [
+          `${coords[0].x},${coords[0].yDone}`,
+          ...coords.map((c) => `${c.x},${c.yStarted}`),
+          ...[...coords].reverse().map((c) => `${c.x},${c.yDone}`),
+        ].join(' ')
+      : '';
 
-  const todoPoints = coords.length > 0 ? [
-    `${coords[0].x},${coords[0].yStarted}`,
-    ...coords.map((c) => `${c.x},${c.yTotal}`),
-    ...[...coords].reverse().map((c) => `${c.x},${c.yStarted}`),
-  ].join(' ') : '';
+  const todoPoints =
+    coords.length > 0
+      ? [
+          `${coords[0].x},${coords[0].yStarted}`,
+          ...coords.map((c) => `${c.x},${c.yTotal}`),
+          ...[...coords].reverse().map((c) => `${c.x},${c.yStarted}`),
+        ].join(' ')
+      : '';
 
   const lineTotal = coords.map((c) => `${c.x},${c.yTotal}`).join(' ');
   const lineStarted = coords.map((c) => `${c.x},${c.yStarted}`).join(' ');
@@ -199,8 +218,11 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
 
     if (hasDynamicStages && effectiveColumns && effectiveColumns.length > 1) {
       // Primeira coluna de progresso ou coluna do meio
-      const progressCol = effectiveColumns.find((c) => c.category === 'in_progress') || effectiveColumns[1];
-      const doneCol = effectiveColumns.find((c) => c.category === 'done') || effectiveColumns[effectiveColumns.length - 1];
+      const progressCol =
+        effectiveColumns.find((c) => c.category === 'in_progress') || effectiveColumns[1];
+      const doneCol =
+        effectiveColumns.find((c) => c.category === 'done') ||
+        effectiveColumns[effectiveColumns.length - 1];
 
       if (progressCol && doneCol) {
         topY = activeCoord.stageY[progressCol.id] || topY;
@@ -216,7 +238,7 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
       displayedData,
       hoverIndex,
       arrivalKey,
-      departureKey
+      departureKey,
     );
 
     // X onde a curva de chegada esteve no patamar de saída
@@ -249,14 +271,30 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
       stageTitle,
       isExpanding,
     };
-  }, [activeCoord, hoverIndex, pointCount, displayedData, hasDynamicStages, effectiveColumns, coords]);
+  }, [
+    activeCoord,
+    hoverIndex,
+    pointCount,
+    displayedData,
+    hasDynamicStages,
+    effectiveColumns,
+    coords,
+  ]);
 
   return (
     <div
       className={`chart-container cfd-advanced-container ${isExpanded ? 'is-chart-expanded' : ''}`}
       data-testid="cfd-advanced-container"
     >
-      <div className="chart-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
+      <div
+        className="chart-header-row"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '0.8rem',
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           {/* Botão de Filtros Retrátil à Esquerda */}
           <CfdFilterDrawer
@@ -304,13 +342,30 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
       </div>
 
       {/* Legenda de Etapas */}
-      <div className="cfd-legend-bar" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '0.75rem', fontSize: '0.75rem' }}>
+      <div
+        className="cfd-legend-bar"
+        style={{
+          display: 'flex',
+          gap: '16px',
+          flexWrap: 'wrap',
+          marginBottom: '0.75rem',
+          fontSize: '0.75rem',
+        }}
+      >
         {hasDynamicStages && effectiveColumns ? (
           effectiveColumns.map((col) => {
             const color = getColumnColor(col);
             return (
               <div key={col.id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: color, display: 'inline-block' }} />
+                <span
+                  style={{
+                    width: '10px',
+                    height: '10px',
+                    borderRadius: '2px',
+                    background: color,
+                    display: 'inline-block',
+                  }}
+                />
                 <span>{col.title}</span>
               </div>
             );
@@ -318,15 +373,39 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
         ) : (
           <>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#6366f1', display: 'inline-block' }} />
+              <span
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '2px',
+                  background: '#6366f1',
+                  display: 'inline-block',
+                }}
+              />
               <span>A Fazer (Backlog)</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#f59e0b', display: 'inline-block' }} />
+              <span
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '2px',
+                  background: '#f59e0b',
+                  display: 'inline-block',
+                }}
+              />
               <span>Em Progresso (WIP)</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#10b981', display: 'inline-block' }} />
+              <span
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '2px',
+                  background: '#10b981',
+                  display: 'inline-block',
+                }}
+              />
               <span>Concluído</span>
             </div>
           </>
@@ -359,18 +438,54 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
               <stop offset="100%" stopColor="#10b981" stopOpacity="0.25" />
             </linearGradient>
             {/* Marcadores de setas bidirecionais vermelhas para Lead Time */}
-            <marker id="arrow-left" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <marker
+              id="arrow-left"
+              viewBox="0 0 10 10"
+              refX="5"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
               <path d="M 10 0 L 0 5 L 10 10 z" fill="#ef4444" />
             </marker>
-            <marker id="arrow-right" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <marker
+              id="arrow-right"
+              viewBox="0 0 10 10"
+              refX="5"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto"
+            >
               <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" />
             </marker>
           </defs>
 
           {/* Grid Lines */}
-          <line x1={paddingLeft} y1={paddingTop} x2={viewBoxWidth - paddingRight} y2={paddingTop} stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
-          <line x1={paddingLeft} y1={paddingTop + plotHeight / 2} x2={viewBoxWidth - paddingRight} y2={paddingTop + plotHeight / 2} stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
-          <line x1={paddingLeft} y1={yBaseline} x2={viewBoxWidth - paddingRight} y2={yBaseline} stroke="rgba(255,255,255,0.2)" />
+          <line
+            x1={paddingLeft}
+            y1={paddingTop}
+            x2={viewBoxWidth - paddingRight}
+            y2={paddingTop}
+            stroke="rgba(255,255,255,0.08)"
+            strokeDasharray="3 3"
+          />
+          <line
+            x1={paddingLeft}
+            y1={paddingTop + plotHeight / 2}
+            x2={viewBoxWidth - paddingRight}
+            y2={paddingTop + plotHeight / 2}
+            stroke="rgba(255,255,255,0.08)"
+            strokeDasharray="3 3"
+          />
+          <line
+            x1={paddingLeft}
+            y1={yBaseline}
+            x2={viewBoxWidth - paddingRight}
+            y2={yBaseline}
+            stroke="rgba(255,255,255,0.2)"
+          />
 
           {/* Stacked Areas */}
           {!isEmpty && (
@@ -531,10 +646,16 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
           <div className="grid-line" style={{ bottom: `${(plotHeight / viewBoxHeight) * 100}%` }}>
             <span className="grid-line-label">{maxTotal}</span>
           </div>
-          <div className="grid-line" style={{ bottom: `${((plotHeight / 2) / viewBoxHeight) * 100}%` }}>
+          <div
+            className="grid-line"
+            style={{ bottom: `${(plotHeight / 2 / viewBoxHeight) * 100}%` }}
+          >
             <span className="grid-line-label">{Math.round(maxTotal / 2)}</span>
           </div>
-          <div className="grid-line" style={{ bottom: `${(paddingBottom / viewBoxHeight) * 100}%` }}>
+          <div
+            className="grid-line"
+            style={{ bottom: `${(paddingBottom / viewBoxHeight) * 100}%` }}
+          >
             <span className="grid-line-label">0</span>
           </div>
         </div>
@@ -550,7 +671,7 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
               paddingRight: `${(paddingRight / viewBoxWidth) * 100}%`,
               marginTop: '6px',
               fontSize: '0.75rem',
-              color: 'var(--text-secondary)'
+              color: 'var(--text-secondary)',
             }}
           >
             <span>{displayedData[0].date}</span>
@@ -566,8 +687,14 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
             style={{
               position: 'absolute',
               top: '12px',
-              left: activeCoord.x > viewBoxWidth / 2 ? 'auto' : `${(activeCoord.x / viewBoxWidth) * 100 + 3}%`,
-              right: activeCoord.x > viewBoxWidth / 2 ? `${100 - (activeCoord.x / viewBoxWidth) * 100 + 3}%` : 'auto',
+              left:
+                activeCoord.x > viewBoxWidth / 2
+                  ? 'auto'
+                  : `${(activeCoord.x / viewBoxWidth) * 100 + 3}%`,
+              right:
+                activeCoord.x > viewBoxWidth / 2
+                  ? `${100 - (activeCoord.x / viewBoxWidth) * 100 + 3}%`
+                  : 'auto',
               background: 'rgba(15, 23, 42, 0.95)',
               border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '8px',
@@ -576,10 +703,17 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
               pointerEvents: 'none',
               zIndex: 10,
               boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
-              minWidth: '170px'
+              minWidth: '170px',
             }}
           >
-            <div style={{ fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '4px', marginBottom: '6px' }}>
+            <div
+              style={{
+                fontWeight: 600,
+                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                paddingBottom: '4px',
+                marginBottom: '6px',
+              }}
+            >
               📅 {activeCoord.data.date}
             </div>
 
@@ -588,7 +722,15 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
                 const color = getColumnColor(col);
                 const count = activeCoord.data.stageCounts?.[col.id] || 0;
                 return (
-                  <div key={col.id} style={{ display: 'flex', justifyContent: 'space-between', color, marginBottom: '2px' }}>
+                  <div
+                    key={col.id}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      color,
+                      marginBottom: '2px',
+                    }}
+                  >
                     <span>{col.title}:</span>
                     <strong>{count}</strong>
                   </div>
@@ -596,22 +738,51 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
               })
             ) : (
               <>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#818cf8', marginBottom: '2px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    color: '#818cf8',
+                    marginBottom: '2px',
+                  }}
+                >
                   <span>A Fazer:</span>
                   <strong>{activeCoord.data.todo}</strong>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#fbbf24', marginBottom: '2px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    color: '#fbbf24',
+                    marginBottom: '2px',
+                  }}
+                >
                   <span>Em Progresso:</span>
                   <strong>{activeCoord.data.inProgress}</strong>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#34d399', marginBottom: '4px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    color: '#34d399',
+                    marginBottom: '4px',
+                  }}
+                >
                   <span>Concluído:</span>
                   <strong>{activeCoord.data.done}</strong>
                 </div>
               </>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed rgba(255,255,255,0.2)', paddingTop: '4px', fontWeight: 600 }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                borderTop: '1px dashed rgba(255,255,255,0.2)',
+                paddingTop: '4px',
+                fontWeight: 600,
+              }}
+            >
               <span>Total no Sistema:</span>
               <span>{activeCoord.data.total}</span>
             </div>
@@ -627,7 +798,7 @@ export const CumulativeFlowChart: React.FC<CumulativeFlowChartProps> = ({
               transform: 'translate(-50%, -50%)',
               color: 'var(--text-secondary)',
               fontSize: '0.9rem',
-              pointerEvents: 'none'
+              pointerEvents: 'none',
             }}
           >
             Nenhuma tarefa registrada no período

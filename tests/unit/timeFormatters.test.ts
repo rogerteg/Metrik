@@ -6,7 +6,7 @@ import {
   getDueDateStatus,
   formatDateShort,
   calculateTaskBlockedTimeMs,
-  formatBlockedTime
+  formatBlockedTime,
 } from '../../src/utils/timeFormatters';
 import { TaskModel } from '../../src/types/kanban';
 
@@ -158,4 +158,3 @@ describe('timeFormatters Utility (T003 - Red-Bar First)', () => {
     });
   });
 });
-

@@ -14,7 +14,7 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 export function filterTasksByDatasetConfig(
   tasks: TaskModel[],
   config: DatasetFilterConfig,
-  referenceNowMs: number = Date.now()
+  referenceNowMs: number = Date.now(),
 ): TaskModel[] {
   if (!tasks || tasks.length === 0) return [];
   if (!config) return tasks;

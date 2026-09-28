@@ -20,12 +20,7 @@ describe('GeneralSettingsTab Autosave Switch (US2 - Feature 032)', () => {
   it('renderiza o interruptor com o estado ativo por padrão e texto descritivo', () => {
     const onUpdateSettings = vi.fn();
 
-    render(
-      <GeneralSettingsTab
-        settings={baseSettings}
-        onUpdateSettings={onUpdateSettings}
-      />
-    );
+    render(<GeneralSettingsTab settings={baseSettings} onUpdateSettings={onUpdateSettings} />);
 
     const switchLabel = screen.getByText(/salvar automaticamente comentários e campos de texto/i);
     expect(switchLabel).toBeInTheDocument();
@@ -39,12 +34,7 @@ describe('GeneralSettingsTab Autosave Switch (US2 - Feature 032)', () => {
   it('chama onUpdateSettings com autoSaveComments: false quando o usuário desativa o interruptor', () => {
     const onUpdateSettings = vi.fn();
 
-    render(
-      <GeneralSettingsTab
-        settings={baseSettings}
-        onUpdateSettings={onUpdateSettings}
-      />
-    );
+    render(<GeneralSettingsTab settings={baseSettings} onUpdateSettings={onUpdateSettings} />);
 
     const checkbox = screen.getByRole('checkbox', {
       name: /salvar automaticamente comentários e campos de texto/i,
@@ -64,7 +54,7 @@ describe('GeneralSettingsTab Autosave Switch (US2 - Feature 032)', () => {
       <GeneralSettingsTab
         settings={{ ...baseSettings, autoSaveComments: false }}
         onUpdateSettings={onUpdateSettings}
-      />
+      />,
     );
 
     const checkbox = screen.getByRole('checkbox', {

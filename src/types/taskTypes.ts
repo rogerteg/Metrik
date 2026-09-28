@@ -56,12 +56,12 @@ export const TASK_TYPE_CONFIGS: Record<TaskType, TaskTypeConfig> = {
   },
 };
 
-export type TaskRelationType = 
-  | 'parent'         // Esta tarefa é filha da tarefa alvo (alvo é pai)
-  | 'child'          // Esta tarefa é pai da tarefa alvo (alvo é filha)
-  | 'blocks'         // Esta tarefa bloqueia a tarefa alvo
-  | 'is_blocked_by'  // Esta tarefa é bloqueada pela tarefa alvo
-  | 'relates_to';    // Associação direta / mútua
+export type TaskRelationType =
+  | 'parent' // Esta tarefa é filha da tarefa alvo (alvo é pai)
+  | 'child' // Esta tarefa é pai da tarefa alvo (alvo é filha)
+  | 'blocks' // Esta tarefa bloqueia a tarefa alvo
+  | 'is_blocked_by' // Esta tarefa é bloqueada pela tarefa alvo
+  | 'relates_to'; // Associação direta / mútua
 
 export interface TaskRelationConfig {
   type: TaskRelationType;
@@ -114,11 +114,16 @@ export const TASK_RELATION_CONFIGS: Record<TaskRelationType, TaskRelationConfig>
  */
 export function getReciprocalRelation(relation: TaskRelationType): TaskRelationType {
   switch (relation) {
-    case 'parent': return 'child';
-    case 'child': return 'parent';
-    case 'blocks': return 'is_blocked_by';
-    case 'is_blocked_by': return 'blocks';
-    case 'relates_to': return 'relates_to';
+    case 'parent':
+      return 'child';
+    case 'child':
+      return 'parent';
+    case 'blocks':
+      return 'is_blocked_by';
+    case 'is_blocked_by':
+      return 'blocks';
+    case 'relates_to':
+      return 'relates_to';
   }
 }
 

@@ -6,7 +6,14 @@ import { Team } from '../../src/types/team';
 
 describe('ManageBoardsView Component (Feature 031 - T006)', () => {
   const mockTeams: Team[] = [
-    { id: 'team-design', name: 'Design Squad', color: '#ec4899', createdById: 'u1', createdAt: '2026-09-01T00:00:00Z', members: [] },
+    {
+      id: 'team-design',
+      name: 'Design Squad',
+      color: '#ec4899',
+      createdById: 'u1',
+      createdAt: '2026-09-01T00:00:00Z',
+      members: [],
+    },
   ];
 
   const mockBoards: BoardModel[] = [
@@ -35,7 +42,7 @@ describe('ManageBoardsView Component (Feature 031 - T006)', () => {
         onCreateBoard={vi.fn()}
         onRenameBoard={vi.fn()}
         onDeleteBoard={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByRole('heading', { name: /gerenciar quadros/i })).toBeInTheDocument();
@@ -54,7 +61,7 @@ describe('ManageBoardsView Component (Feature 031 - T006)', () => {
         onCreateBoard={vi.fn()}
         onRenameBoard={vi.fn()}
         onDeleteBoard={vi.fn()}
-      />
+      />,
     );
 
     const openButtons = screen.getAllByRole('button', { name: /abrir/i });
@@ -74,7 +81,7 @@ describe('ManageBoardsView Component (Feature 031 - T006)', () => {
         onCreateBoard={onCreateBoard}
         onRenameBoard={vi.fn()}
         onDeleteBoard={vi.fn()}
-      />
+      />,
     );
 
     const input = screen.getByPlaceholderText(/nome do novo quadro/i);

@@ -66,7 +66,7 @@ describe('CumulativeFlowChart Component (Feature 011)', () => {
       right: 600,
       x: 0,
       y: 0,
-      toJSON: () => {}
+      toJSON: () => {},
     });
 
     fireEvent.mouseMove(svg, { clientX: 50, clientY: 100 });
@@ -80,7 +80,14 @@ describe('CumulativeFlowChart Component (Feature 011)', () => {
 
   it('triggers onToggleExpand when expand button is clicked', () => {
     const handleToggle = vi.fn();
-    render(<CumulativeFlowChart data={mockData} maxTotal={7} onToggleExpand={handleToggle} isExpanded={false} />);
+    render(
+      <CumulativeFlowChart
+        data={mockData}
+        maxTotal={7}
+        onToggleExpand={handleToggle}
+        isExpanded={false}
+      />,
+    );
 
     const expandBtn = screen.getByRole('button', { name: /Expandir gráfico CFD/i });
     expect(expandBtn).toBeInTheDocument();
@@ -91,10 +98,34 @@ describe('CumulativeFlowChart Component (Feature 011)', () => {
 
   it('renders dynamic columns legend and polygons when columns prop is supplied', () => {
     const customColumns = [
-      { id: 'todo', title: 'A Fazer', category: 'todo' as const, wipLimit: null, colorScheme: 'todo' as const },
-      { id: 'dev', title: 'Dev Code', category: 'in_progress' as const, wipLimit: null, colorScheme: 'progress' as const },
-      { id: 'review', title: 'Review', category: 'in_progress' as const, wipLimit: null, colorScheme: 'progress' as const },
-      { id: 'done', title: 'Concluído', category: 'done' as const, wipLimit: null, colorScheme: 'completed' as const },
+      {
+        id: 'todo',
+        title: 'A Fazer',
+        category: 'todo' as const,
+        wipLimit: null,
+        colorScheme: 'todo' as const,
+      },
+      {
+        id: 'dev',
+        title: 'Dev Code',
+        category: 'in_progress' as const,
+        wipLimit: null,
+        colorScheme: 'progress' as const,
+      },
+      {
+        id: 'review',
+        title: 'Review',
+        category: 'in_progress' as const,
+        wipLimit: null,
+        colorScheme: 'progress' as const,
+      },
+      {
+        id: 'done',
+        title: 'Concluído',
+        category: 'done' as const,
+        wipLimit: null,
+        colorScheme: 'completed' as const,
+      },
     ];
 
     const dataWithStages: CfdDataPoint[] = [
@@ -121,9 +152,30 @@ describe('CumulativeFlowChart Component (Feature 011)', () => {
 
   it('dynamically adapts CFD wave polygon and legend colors to column.color chosen in board', () => {
     const columnsWithCustomColors = [
-      { id: 'todo', title: 'To Do', category: 'todo' as const, wipLimit: null, colorScheme: 'todo' as const, color: '#a855f7' },
-      { id: 'wip', title: 'Work In Progress', category: 'in_progress' as const, wipLimit: null, colorScheme: 'progress' as const, color: '#ec4899' },
-      { id: 'done', title: 'Done', category: 'done' as const, wipLimit: null, colorScheme: 'completed' as const, color: '#10b981' },
+      {
+        id: 'todo',
+        title: 'To Do',
+        category: 'todo' as const,
+        wipLimit: null,
+        colorScheme: 'todo' as const,
+        color: '#a855f7',
+      },
+      {
+        id: 'wip',
+        title: 'Work In Progress',
+        category: 'in_progress' as const,
+        wipLimit: null,
+        colorScheme: 'progress' as const,
+        color: '#ec4899',
+      },
+      {
+        id: 'done',
+        title: 'Done',
+        category: 'done' as const,
+        wipLimit: null,
+        colorScheme: 'completed' as const,
+        color: '#10b981',
+      },
     ];
 
     const cfdData: CfdDataPoint[] = [

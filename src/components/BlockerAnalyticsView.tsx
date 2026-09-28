@@ -18,7 +18,7 @@ export const BlockerAnalyticsView: React.FC<BlockerAnalyticsViewProps> = ({
 }) => {
   // Filtrar tarefas que têm histórico de bloqueio
   const blockedTasksList = tasks.filter(
-    (t) => t.blocked || (t.totalBlockedMs && t.totalBlockedMs > 0) || Boolean(t.blockedReason)
+    (t) => t.blocked || (t.totalBlockedMs && t.totalBlockedMs > 0) || Boolean(t.blockedReason),
   );
 
   return (
@@ -49,7 +49,8 @@ export const BlockerAnalyticsView: React.FC<BlockerAnalyticsViewProps> = ({
           <div className="blocker-section-header">
             <h2 className="blocker-section-title">Blocker Clustering (Causas de Impedimento)</h2>
             <p className="blocker-section-subtitle">
-              Agrupamento de ocorrências por causa raiz para identificação de gargalos sistêmicos recorrentes.
+              Agrupamento de ocorrências por causa raiz para identificação de gargalos sistêmicos
+              recorrentes.
             </p>
           </div>
 
@@ -156,7 +157,9 @@ export const BlockerAnalyticsView: React.FC<BlockerAnalyticsViewProps> = ({
                       <tr key={task.id}>
                         <td className="task-title-cell">{task.title}</td>
                         <td>
-                          <span className={`blocker-pill ${task.blocked ? 'is-active-blocked' : 'is-resolved'}`}>
+                          <span
+                            className={`blocker-pill ${task.blocked ? 'is-active-blocked' : 'is-resolved'}`}
+                          >
                             {task.blocked ? '🚫 Bloqueado Agora' : '✓ Resolvido'}
                           </span>
                         </td>

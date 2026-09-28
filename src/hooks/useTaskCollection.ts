@@ -22,12 +22,18 @@ import {
   canDeleteComment,
 } from '../utils/cardComments';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
-import { reorderBoard, isBackwardColumnMove, reorderColumnList, isTaskBlocked, isBlockingTag } from '../utils/taskReorder';
+import {
+  reorderBoard,
+  isBackwardColumnMove,
+  reorderColumnList,
+  isTaskBlocked,
+  isBlockingTag,
+} from '../utils/taskReorder';
 import { ReorderOptions } from '../types/dnd';
 
 export interface UseTaskCollectionReturn {
   board: BoardState;
-  
+
   // Column Methods
   addColumn: (title: string, category: ColumnCategory, wipLimit?: number | null) => void;
   updateColumn: (id: string, updates: Partial<ColumnModel>) => void;
@@ -45,12 +51,43 @@ export interface UseTaskCollectionReturn {
   setTaskPriority: (taskId: string, priority?: PriorityLevel) => void;
   addTaskTag: (taskId: string, tag: string) => void;
   removeTaskTag: (taskId: string, tag: string) => void;
-  addTaskComment: (taskId: string, text: string, userOrDecision?: { id: string; name: string } | boolean, isDecision?: boolean) => void;
-  deleteTaskComment: (taskId: string, commentId: string, user?: { id: string; name: string }) => void;
-  editTaskComment: (taskId: string, commentId: string, text: string, user?: { id: string; name: string }) => void;
-  addSubtaskComment: (taskId: string, subtaskId: string, text: string, user?: { id: string; name: string }) => void;
-  editSubtaskComment: (taskId: string, subtaskId: string, commentId: string, text: string, user?: { id: string; name: string }) => void;
-  deleteSubtaskComment: (taskId: string, subtaskId: string, commentId: string, user?: { id: string; name: string }, isAdmin?: boolean) => void;
+  addTaskComment: (
+    taskId: string,
+    text: string,
+    userOrDecision?: { id: string; name: string } | boolean,
+    isDecision?: boolean,
+  ) => void;
+  deleteTaskComment: (
+    taskId: string,
+    commentId: string,
+    user?: { id: string; name: string },
+  ) => void;
+  editTaskComment: (
+    taskId: string,
+    commentId: string,
+    text: string,
+    user?: { id: string; name: string },
+  ) => void;
+  addSubtaskComment: (
+    taskId: string,
+    subtaskId: string,
+    text: string,
+    user?: { id: string; name: string },
+  ) => void;
+  editSubtaskComment: (
+    taskId: string,
+    subtaskId: string,
+    commentId: string,
+    text: string,
+    user?: { id: string; name: string },
+  ) => void;
+  deleteSubtaskComment: (
+    taskId: string,
+    subtaskId: string,
+    commentId: string,
+    user?: { id: string; name: string },
+    isAdmin?: boolean,
+  ) => void;
   discardIfEmpty: (id: string) => void;
   clearTasks: () => void;
   resetToSeed: () => void;
@@ -80,7 +117,7 @@ const getBoardStateFromStorage = (boardId: string | null): BoardState => {
     }
 
     const parsed = JSON.parse(rawData);
-    
+
     if (isValidBoardState(parsed)) {
       // Ensure all columns defined in board.columns exist in tasks map
       for (const col of parsed.columns) {
@@ -101,7 +138,7 @@ const getBoardStateFromStorage = (boardId: string | null): BoardState => {
 
 export function useTaskCollection(
   activeBoardId: string | null,
-  options: UseTaskCollectionOptions = {}
+  options: UseTaskCollectionOptions = {},
 ): UseTaskCollectionReturn {
   const [board, setBoard] = useState<BoardState>(() => getBoardStateFromStorage(activeBoardId));
   const currentBoardIdRef = useRef<string | null>(activeBoardId);
@@ -111,7 +148,7 @@ export function useTaskCollection(
     (message: string) => {
       onNotify?.(message);
     },
-    [onNotify]
+    [onNotify],
   );
 
   // When active board changes, load its data
@@ -137,44 +174,48 @@ export function useTaskCollection(
   // COLUMN METHODS
   // ============================================================================
 
-  const addColumn = useCallback((title: string, category: ColumnCategory, wipLimit: number | null = null, color?: string) => {
-    setBoard((prev) => {
-      if (prev.columns.length >= MAX_COLUMNS) {
-        console.warn(`[Metrik] Limite máximo de ${MAX_COLUMNS} colunas atingido.`);
-        return prev;
-      }
+  const addColumn = useCallback(
+    (title: string, category: ColumnCategory, wipLimit: number | null = null, color?: string) => {
+      setBoard((prev) => {
+        if (prev.columns.length >= MAX_COLUMNS) {
+          console.warn(`[Metrik] Limite máximo de ${MAX_COLUMNS} colunas atingido.`);
+          return prev;
+        }
 
-      const newColId = uuidv4();
-      
-      let colorScheme: 'todo' | 'progress' | 'blocked' | 'completed' = 'todo';
-      if (category === 'in_progress') colorScheme = 'progress';
-      if (category === 'done') colorScheme = 'completed';
+        const newColId = uuidv4();
 
-      const resolvedColor = color || (category === 'todo' ? '#6366f1' : category === 'done' ? '#10b981' : '#38bdf8');
+        let colorScheme: 'todo' | 'progress' | 'blocked' | 'completed' = 'todo';
+        if (category === 'in_progress') colorScheme = 'progress';
+        if (category === 'done') colorScheme = 'completed';
 
-      const newColumn: ColumnModel = {
-        id: newColId,
-        title,
-        category,
-        wipLimit,
-        colorScheme,
-        color: resolvedColor,
-      };
+        const resolvedColor =
+          color || (category === 'todo' ? '#6366f1' : category === 'done' ? '#10b981' : '#38bdf8');
 
-      return {
-        columns: [...prev.columns, newColumn],
-        tasks: {
-          ...prev.tasks,
-          [newColId]: [],
-        },
-      };
-    });
-  }, []);
+        const newColumn: ColumnModel = {
+          id: newColId,
+          title,
+          category,
+          wipLimit,
+          colorScheme,
+          color: resolvedColor,
+        };
+
+        return {
+          columns: [...prev.columns, newColumn],
+          tasks: {
+            ...prev.tasks,
+            [newColId]: [],
+          },
+        };
+      });
+    },
+    [],
+  );
 
   const updateColumn = useCallback((id: string, updates: Partial<ColumnModel>) => {
     setBoard((prev) => ({
       ...prev,
-      columns: prev.columns.map(col => col.id === id ? { ...col, ...updates } : col),
+      columns: prev.columns.map((col) => (col.id === id ? { ...col, ...updates } : col)),
     }));
   }, []);
 
@@ -184,12 +225,12 @@ export function useTaskCollection(
         console.warn('Cannot delete a column that contains tasks.');
         return prev;
       }
-      
+
       const nextTasks = { ...prev.tasks };
       delete nextTasks[id];
 
       return {
-        columns: prev.columns.filter(col => col.id !== id),
+        columns: prev.columns.filter((col) => col.id !== id),
         tasks: nextTasks,
       };
     });
@@ -203,7 +244,7 @@ export function useTaskCollection(
       }
       return {
         ...prev,
-        columns: newColumns
+        columns: newColumns,
       };
     });
   }, []);
@@ -221,7 +262,7 @@ export function useTaskCollection(
     };
 
     setBoard((prev) => {
-      const targetCol = prev.columns.find(c => c.id === columnId);
+      const targetCol = prev.columns.find((c) => c.id === columnId);
       if (targetCol) {
         if (targetCol.category === 'in_progress') {
           newTask.startedAt = new Date().toISOString();
@@ -236,62 +277,59 @@ export function useTaskCollection(
         tasks: {
           ...prev.tasks,
           [columnId]: [newTask, ...(prev.tasks[columnId] || [])],
-        }
+        },
       };
     });
 
     return newTask;
   }, []);
 
-  const updateTask = useCallback(
-    (id: string, updates: Partial<TaskModel>) => {
-      setBoard((prev) => {
-        const nextTasks: Record<string, TaskModel[]> = {};
-        const now = new Date().toISOString();
+  const updateTask = useCallback((id: string, updates: Partial<TaskModel>) => {
+    setBoard((prev) => {
+      const nextTasks: Record<string, TaskModel[]> = {};
+      const now = new Date().toISOString();
 
-        for (const colId of Object.keys(prev.tasks)) {
-          nextTasks[colId] = prev.tasks[colId].map((task) => {
-            if (task.id !== id) return task;
+      for (const colId of Object.keys(prev.tasks)) {
+        nextTasks[colId] = prev.tasks[colId].map((task) => {
+          if (task.id !== id) return task;
 
-            // Registra auditoria objetiva quando o responsável muda (FR-006).
-            let activityLog = task.activityLog;
-            const assigneeChanged =
-              'assignee' in updates && (updates.assignee ?? '') !== (task.assignee ?? '');
+          // Registra auditoria objetiva quando o responsável muda (FR-006).
+          let activityLog = task.activityLog;
+          const assigneeChanged =
+            'assignee' in updates && (updates.assignee ?? '') !== (task.assignee ?? '');
 
-            if (assigneeChanged) {
-              const nextAssignee = updates.assignee;
-              const auditEvent = createTaskActivityEvent({
-                taskId: task.id,
-                eventType: nextAssignee ? 'assignment' : 'unassignment',
-                description: nextAssignee
-                  ? AuditDescriptions.assigned(nextAssignee, 'Rogerio Teixeira')
-                  : AuditDescriptions.unassigned(task.assignee, 'Rogerio Teixeira'),
-                fromValue: task.assignee,
-                toValue: nextAssignee,
-                user: { id: 'usr_default', name: 'Rogerio Teixeira' },
-              });
-              activityLog = [...(task.activityLog || []), auditEvent];
-            }
+          if (assigneeChanged) {
+            const nextAssignee = updates.assignee;
+            const auditEvent = createTaskActivityEvent({
+              taskId: task.id,
+              eventType: nextAssignee ? 'assignment' : 'unassignment',
+              description: nextAssignee
+                ? AuditDescriptions.assigned(nextAssignee, 'Rogerio Teixeira')
+                : AuditDescriptions.unassigned(task.assignee, 'Rogerio Teixeira'),
+              fromValue: task.assignee,
+              toValue: nextAssignee,
+              user: { id: 'usr_default', name: 'Rogerio Teixeira' },
+            });
+            activityLog = [...(task.activityLog || []), auditEvent];
+          }
 
-            return {
-              ...task,
-              ...updates,
-              activityLog,
-              updatedAt: now,
-            };
-          });
-        }
+          return {
+            ...task,
+            ...updates,
+            activityLog,
+            updatedAt: now,
+          };
+        });
+      }
 
-        return { ...prev, tasks: nextTasks };
-      });
-    },
-    []
-  );
+      return { ...prev, tasks: nextTasks };
+    });
+  }, []);
 
   const deleteTask = useCallback((id: string) => {
     setBoard((prev) => {
       const nextTasks: Record<string, TaskModel[]> = {};
-      
+
       for (const colId of Object.keys(prev.tasks)) {
         nextTasks[colId] = prev.tasks[colId]
           .filter((task) => task.id !== id)
@@ -307,31 +345,153 @@ export function useTaskCollection(
     });
   }, []);
 
-  const moveTask = useCallback((id: string, targetColumnId: string) => {
-    setBoard((prev) => {
-      let targetTask: TaskModel | undefined;
-      let sourceColumnId: string | undefined;
-      const nextTasks: Record<string, TaskModel[]> = {};
+  const moveTask = useCallback(
+    (id: string, targetColumnId: string) => {
+      setBoard((prev) => {
+        let targetTask: TaskModel | undefined;
+        let sourceColumnId: string | undefined;
+        const nextTasks: Record<string, TaskModel[]> = {};
 
-      for (const colId of Object.keys(prev.tasks)) {
-        nextTasks[colId] = prev.tasks[colId].filter((task) => {
-          if (task.id === id) {
-            targetTask = task;
-            sourceColumnId = colId;
-            return false;
+        for (const colId of Object.keys(prev.tasks)) {
+          nextTasks[colId] = prev.tasks[colId].filter((task) => {
+            if (task.id === id) {
+              targetTask = task;
+              sourceColumnId = colId;
+              return false;
+            }
+            return true;
+          });
+        }
+
+        if (targetTask && sourceColumnId) {
+          if (isTaskBlocked(targetTask) && sourceColumnId !== targetColumnId) {
+            notify(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
+            return prev; // Tarefa bloqueada não pode mover de coluna!
           }
-          return true;
-        });
-      }
 
-      if (targetTask && sourceColumnId) {
-        if (isTaskBlocked(targetTask) && sourceColumnId !== targetColumnId) {
+          const isBackward = isBackwardColumnMove(prev.columns, sourceColumnId, targetColumnId);
+          if (isBackward) {
+            if (typeof window !== 'undefined') {
+              if (typeof window.alert === 'function') {
+                try {
+                  window.alert(FLOW_REGRESSION_WARNING_MESSAGE);
+                } catch {
+                  // Ignore alert errors
+                }
+              } else if (typeof window.confirm === 'function') {
+                try {
+                  window.confirm(FLOW_REGRESSION_WARNING_MESSAGE);
+                } catch {
+                  // Ignore confirm errors
+                }
+              }
+            }
+            return prev; // Mantém o card na coluna vigente e bloqueia estritamente o retorno!
+          }
+
+          const targetCol = prev.columns.find((c) => c.id === targetColumnId);
+          const now = new Date().toISOString();
+          let startedAt = targetTask.startedAt;
+          let completedAt = targetTask.completedAt;
+          let totalBlockedMs = targetTask.totalBlockedMs;
+          let blocked = targetTask.blocked;
+          let blockedAt = targetTask.blockedAt;
+          let blockedReason = targetTask.blockedReason;
+
+          if (isBackward) {
+            completedAt = undefined;
+            totalBlockedMs = undefined;
+            blocked = false;
+            blockedAt = undefined;
+            blockedReason = undefined;
+            if (targetCol && targetCol.category === 'in_progress') {
+              startedAt = targetTask.startedAt || now;
+            } else {
+              startedAt = undefined;
+            }
+          } else if (targetCol) {
+            if (
+              (targetCol.category === 'in_progress' || targetCol.category === 'done') &&
+              !startedAt
+            ) {
+              startedAt = now;
+            }
+
+            if (targetCol.category === 'done') {
+              completedAt = now;
+              if (!startedAt) {
+                startedAt = targetTask.createdAt || now;
+              }
+            } else {
+              completedAt = undefined;
+            }
+          }
+
+          const sourceCol = prev.columns.find((c) => c.id === sourceColumnId);
+          const fromColName = sourceCol?.title || sourceColumnId;
+          const toColName = targetCol?.title || targetColumnId;
+
+          const auditEvent = createTaskActivityEvent({
+            taskId: id,
+            eventType: 'moved',
+            description: AuditDescriptions.moved(fromColName, toColName, 'Rogerio Teixeira'),
+            fromValue: fromColName,
+            toValue: toColName,
+            user: { id: 'usr_default', name: 'Rogerio Teixeira' },
+          });
+
+          const updatedTask: TaskModel = {
+            ...targetTask,
+            column: targetColumnId,
+            startedAt,
+            completedAt,
+            totalBlockedMs,
+            blocked,
+            blockedAt,
+            blockedReason,
+            lastMovedAt: now,
+            updatedAt: now,
+            activityLog: [...(targetTask.activityLog || []), auditEvent],
+          };
+
+          if (!nextTasks[targetColumnId]) nextTasks[targetColumnId] = [];
+          nextTasks[targetColumnId] = [updatedTask, ...nextTasks[targetColumnId]];
+        }
+
+        return { ...prev, tasks: nextTasks };
+      });
+    },
+    [notify],
+  );
+
+  const reorderOrMoveTask = useCallback(
+    (options: ReorderOptions) => {
+      setBoard((prev) => {
+        let sourceColumnId: string | undefined;
+        let activeTask: TaskModel | undefined;
+        for (const colId of Object.keys(prev.tasks)) {
+          const found = prev.tasks[colId].find((t) => t.id === options.activeTaskId);
+          if (found) {
+            sourceColumnId = colId;
+            activeTask = found;
+            break;
+          }
+        }
+
+        if (
+          activeTask &&
+          sourceColumnId &&
+          isTaskBlocked(activeTask) &&
+          sourceColumnId !== options.targetColumn
+        ) {
           notify(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
           return prev; // Tarefa bloqueada não pode mover de coluna!
         }
 
-        const isBackward = isBackwardColumnMove(prev.columns, sourceColumnId, targetColumnId);
-        if (isBackward) {
+        if (
+          sourceColumnId &&
+          isBackwardColumnMove(prev.columns, sourceColumnId, options.targetColumn)
+        ) {
           if (typeof window !== 'undefined') {
             if (typeof window.alert === 'function') {
               try {
@@ -350,116 +510,11 @@ export function useTaskCollection(
           return prev; // Mantém o card na coluna vigente e bloqueia estritamente o retorno!
         }
 
-        const targetCol = prev.columns.find(c => c.id === targetColumnId);
-        const now = new Date().toISOString();
-        let startedAt = targetTask.startedAt;
-        let completedAt = targetTask.completedAt;
-        let totalBlockedMs = targetTask.totalBlockedMs;
-        let blocked = targetTask.blocked;
-        let blockedAt = targetTask.blockedAt;
-        let blockedReason = targetTask.blockedReason;
-
-        if (isBackward) {
-          completedAt = undefined;
-          totalBlockedMs = undefined;
-          blocked = false;
-          blockedAt = undefined;
-          blockedReason = undefined;
-          if (targetCol && targetCol.category === 'in_progress') {
-            startedAt = targetTask.startedAt || now;
-          } else {
-            startedAt = undefined;
-          }
-        } else if (targetCol) {
-          if ((targetCol.category === 'in_progress' || targetCol.category === 'done') && !startedAt) {
-            startedAt = now;
-          }
-
-          if (targetCol.category === 'done') {
-            completedAt = now;
-            if (!startedAt) {
-              startedAt = targetTask.createdAt || now;
-            }
-          } else {
-            completedAt = undefined;
-          }
-        }
-
-        const sourceCol = prev.columns.find(c => c.id === sourceColumnId);
-        const fromColName = sourceCol?.title || sourceColumnId;
-        const toColName = targetCol?.title || targetColumnId;
-
-        const auditEvent = createTaskActivityEvent({
-          taskId: id,
-          eventType: 'moved',
-          description: AuditDescriptions.moved(fromColName, toColName, 'Rogerio Teixeira'),
-          fromValue: fromColName,
-          toValue: toColName,
-          user: { id: 'usr_default', name: 'Rogerio Teixeira' },
-        });
-
-        const updatedTask: TaskModel = {
-          ...targetTask,
-          column: targetColumnId,
-          startedAt,
-          completedAt,
-          totalBlockedMs,
-          blocked,
-          blockedAt,
-          blockedReason,
-          lastMovedAt: now,
-          updatedAt: now,
-          activityLog: [...(targetTask.activityLog || []), auditEvent],
-        };
-
-        if (!nextTasks[targetColumnId]) nextTasks[targetColumnId] = [];
-        nextTasks[targetColumnId] = [updatedTask, ...nextTasks[targetColumnId]];
-      }
-
-      return { ...prev, tasks: nextTasks };
-    });
-  }, [notify]);
-
-  const reorderOrMoveTask = useCallback((options: ReorderOptions) => {
-    setBoard((prev) => {
-      let sourceColumnId: string | undefined;
-      let activeTask: TaskModel | undefined;
-      for (const colId of Object.keys(prev.tasks)) {
-        const found = prev.tasks[colId].find((t) => t.id === options.activeTaskId);
-        if (found) {
-          sourceColumnId = colId;
-          activeTask = found;
-          break;
-        }
-      }
-
-      if (activeTask && sourceColumnId && isTaskBlocked(activeTask) && sourceColumnId !== options.targetColumn) {
-        notify(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
-        return prev; // Tarefa bloqueada não pode mover de coluna!
-      }
-
-      if (sourceColumnId && isBackwardColumnMove(prev.columns, sourceColumnId, options.targetColumn)) {
-        if (typeof window !== 'undefined') {
-          if (typeof window.alert === 'function') {
-            try {
-              window.alert(FLOW_REGRESSION_WARNING_MESSAGE);
-            } catch {
-              // Ignore alert errors
-            }
-          } else if (typeof window.confirm === 'function') {
-            try {
-              window.confirm(FLOW_REGRESSION_WARNING_MESSAGE);
-            } catch {
-              // Ignore confirm errors
-            }
-          }
-        }
-        return prev; // Mantém o card na coluna vigente e bloqueia estritamente o retorno!
-      }
-
-      return reorderBoard(prev, options);
-    });
-  }, [notify]);
+        return reorderBoard(prev, options);
+      });
+    },
+    [notify],
+  );
 
   const setTaskPriority = useCallback((taskId: string, priority?: PriorityLevel) => {
     setBoard((prev) => {
@@ -472,7 +527,11 @@ export function useTaskCollection(
             const auditEvent = createTaskActivityEvent({
               taskId,
               eventType: 'priority_changed',
-              description: AuditDescriptions.priorityChanged(task.priority || 'média', priority || 'nenhuma', 'Rogerio Teixeira'),
+              description: AuditDescriptions.priorityChanged(
+                task.priority || 'média',
+                priority || 'nenhuma',
+                'Rogerio Teixeira',
+              ),
               fromValue: task.priority,
               toValue: priority,
               user: { id: 'usr_default', name: 'Rogerio Teixeira' },
@@ -503,9 +562,7 @@ export function useTaskCollection(
         nextTasks[colId] = prev.tasks[colId].map((task) => {
           if (task.id === taskId) {
             const currentTags = task.tags ?? [];
-            const isDuplicate = currentTags.some(
-              (t) => t.toLowerCase() === cleanTag.toLowerCase()
-            );
+            const isDuplicate = currentTags.some((t) => t.toLowerCase() === cleanTag.toLowerCase());
             if (isDuplicate) return task;
 
             const nextTags = [...currentTags, cleanTag];
@@ -514,7 +571,11 @@ export function useTaskCollection(
             const auditEvent = createTaskActivityEvent({
               taskId,
               eventType: 'tags_changed',
-              description: AuditDescriptions.tagsChanged('adicionada', cleanTag, 'Rogerio Teixeira'),
+              description: AuditDescriptions.tagsChanged(
+                'adicionada',
+                cleanTag,
+                'Rogerio Teixeira',
+              ),
               toValue: cleanTag,
               user: { id: 'usr_default', name: 'Rogerio Teixeira' },
             });
@@ -547,7 +608,7 @@ export function useTaskCollection(
 
   const removeTaskTag = useCallback((taskId: string, tag: string) => {
     const targetTag = tag.trim().toLowerCase();
-    
+
     setBoard((prev) => {
       const nextTasks: Record<string, TaskModel[]> = {};
       const now = new Date().toISOString();
@@ -556,9 +617,7 @@ export function useTaskCollection(
         nextTasks[colId] = prev.tasks[colId].map((task) => {
           if (task.id === taskId) {
             const currentTags = task.tags ?? [];
-            const nextTags = currentTags.filter(
-              (t) => t.trim().toLowerCase() !== targetTag
-            );
+            const nextTags = currentTags.filter((t) => t.trim().toLowerCase() !== targetTag);
             const hasRemainingBlockingTag = nextTags.some((t) => isBlockingTag(t));
             const removedIsBlocking = isBlockingTag(targetTag);
 
@@ -600,30 +659,27 @@ export function useTaskCollection(
     });
   }, []);
 
-  const discardIfEmpty = useCallback(
-    (id: string) => {
-      setBoard((prev) => {
-        let shouldDelete = false;
-        for (const colId of Object.keys(prev.tasks)) {
-          const task = prev.tasks[colId].find((t) => t.id === id);
-          if (task && task.title.trim() === '') {
-            shouldDelete = true;
-            break;
-          }
+  const discardIfEmpty = useCallback((id: string) => {
+    setBoard((prev) => {
+      let shouldDelete = false;
+      for (const colId of Object.keys(prev.tasks)) {
+        const task = prev.tasks[colId].find((t) => t.id === id);
+        if (task && task.title.trim() === '') {
+          shouldDelete = true;
+          break;
         }
+      }
 
-        if (!shouldDelete) return prev;
+      if (!shouldDelete) return prev;
 
-        const nextTasks: Record<string, TaskModel[]> = {};
-        for (const colId of Object.keys(prev.tasks)) {
-          nextTasks[colId] = prev.tasks[colId].filter((task) => task.id !== id);
-        }
+      const nextTasks: Record<string, TaskModel[]> = {};
+      for (const colId of Object.keys(prev.tasks)) {
+        nextTasks[colId] = prev.tasks[colId].filter((task) => task.id !== id);
+      }
 
-        return { ...prev, tasks: nextTasks };
-      });
-    },
-    []
-  );
+      return { ...prev, tasks: nextTasks };
+    });
+  }, []);
 
   const toggleTaskBlocked = useCallback((taskId: string, reason?: string) => {
     setBoard((prev) => {
@@ -652,7 +708,7 @@ export function useTaskCollection(
               return {
                 ...task,
                 blocked: true,
-                blockedReason: reason !== undefined ? reason : (task.blockedReason || ''),
+                blockedReason: reason !== undefined ? reason : task.blockedReason || '',
                 blockedAt: now,
                 tags: nextTags,
                 updatedAt: now,
@@ -663,9 +719,7 @@ export function useTaskCollection(
               const elapsed = Math.max(0, Date.now() - startMs);
               const totalBlockedMs = (task.totalBlockedMs || 0) + elapsed;
               const currentTags = task.tags ?? [];
-              const nextTags = currentTags.filter(
-                (t) => !isBlockingTag(t)
-              );
+              const nextTags = currentTags.filter((t) => !isBlockingTag(t));
               return {
                 ...task,
                 blocked: false,
@@ -687,12 +741,19 @@ export function useTaskCollection(
   }, []);
 
   const addTaskComment = useCallback(
-    (taskId: string, text: string, userOrDecision?: { id: string; name: string } | boolean, isDecisionParam: boolean = false) => {
+    (
+      taskId: string,
+      text: string,
+      userOrDecision?: { id: string; name: string } | boolean,
+      isDecisionParam: boolean = false,
+    ) => {
       const cleanText = text.trim();
       if (!cleanText) return;
 
-      const user = typeof userOrDecision === 'object' && userOrDecision !== null ? userOrDecision : undefined;
-      const isDecision = typeof userOrDecision === 'boolean' ? userOrDecision : Boolean(isDecisionParam);
+      const user =
+        typeof userOrDecision === 'object' && userOrDecision !== null ? userOrDecision : undefined;
+      const isDecision =
+        typeof userOrDecision === 'boolean' ? userOrDecision : Boolean(isDecisionParam);
 
       setBoard((prev) => {
         const nextTasks: Record<string, TaskModel[]> = {};
@@ -701,7 +762,9 @@ export function useTaskCollection(
         const authorId = user?.id || 'usr_default';
 
         const newComment: TaskComment = {
-          id: crypto.randomUUID ? crypto.randomUUID() : `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          id: crypto.randomUUID
+            ? crypto.randomUUID()
+            : `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
           taskId,
           userId: authorId,
           userName: authorName,
@@ -710,73 +773,73 @@ export function useTaskCollection(
           createdAt: now,
         };
 
-      const auditEvent = createTaskActivityEvent({
-        taskId,
-        eventType: 'comment_added',
-        description: AuditDescriptions.commentAdded(authorName),
-        user: { id: authorId, name: authorName },
-      });
-
-      for (const colId of Object.keys(prev.tasks)) {
-        nextTasks[colId] = prev.tasks[colId].map((task) => {
-          if (task.id === taskId) {
-            const comments = [...(task.comments || []), newComment];
-            const activityLog = [...(task.activityLog || []), auditEvent];
-            return {
-              ...task,
-              comments,
-              activityLog,
-              updatedAt: now,
-            };
-          }
-          return task;
+        const auditEvent = createTaskActivityEvent({
+          taskId,
+          eventType: 'comment_added',
+          description: AuditDescriptions.commentAdded(authorName),
+          user: { id: authorId, name: authorName },
         });
-      }
-      return { ...prev, tasks: nextTasks };
-    });
-  }, []);
 
-  const deleteTaskComment = useCallback((taskId: string, commentId: string, user?: { id: string; name: string }) => {
-    setBoard((prev) => {
-      const nextTasks: Record<string, TaskModel[]> = {};
-      const now = new Date().toISOString();
-      const actorName = user?.name || 'Rogerio Teixeira';
-      const actorId = user?.id || 'usr_default';
-
-      const auditEvent = createTaskActivityEvent({
-        taskId,
-        eventType: 'comment_deleted',
-        description: AuditDescriptions.commentDeleted(actorName),
-        user: { id: actorId, name: actorName },
+        for (const colId of Object.keys(prev.tasks)) {
+          nextTasks[colId] = prev.tasks[colId].map((task) => {
+            if (task.id === taskId) {
+              const comments = [...(task.comments || []), newComment];
+              const activityLog = [...(task.activityLog || []), auditEvent];
+              return {
+                ...task,
+                comments,
+                activityLog,
+                updatedAt: now,
+              };
+            }
+            return task;
+          });
+        }
+        return { ...prev, tasks: nextTasks };
       });
+    },
+    [],
+  );
 
-      for (const colId of Object.keys(prev.tasks)) {
-        nextTasks[colId] = prev.tasks[colId].map((task) => {
-          if (task.id === taskId) {
-            const comments = (task.comments || []).filter((c) => c.id !== commentId);
-            const activityLog = [...(task.activityLog || []), auditEvent];
-            return {
-              ...task,
-              comments,
-              activityLog,
-              updatedAt: now,
-            };
-          }
-          return task;
+  const deleteTaskComment = useCallback(
+    (taskId: string, commentId: string, user?: { id: string; name: string }) => {
+      setBoard((prev) => {
+        const nextTasks: Record<string, TaskModel[]> = {};
+        const now = new Date().toISOString();
+        const actorName = user?.name || 'Rogerio Teixeira';
+        const actorId = user?.id || 'usr_default';
+
+        const auditEvent = createTaskActivityEvent({
+          taskId,
+          eventType: 'comment_deleted',
+          description: AuditDescriptions.commentDeleted(actorName),
+          user: { id: actorId, name: actorName },
         });
-      }
-      return { ...prev, tasks: nextTasks };
-    });
-  }, []);
+
+        for (const colId of Object.keys(prev.tasks)) {
+          nextTasks[colId] = prev.tasks[colId].map((task) => {
+            if (task.id === taskId) {
+              const comments = (task.comments || []).filter((c) => c.id !== commentId);
+              const activityLog = [...(task.activityLog || []), auditEvent];
+              return {
+                ...task,
+                comments,
+                activityLog,
+                updatedAt: now,
+              };
+            }
+            return task;
+          });
+        }
+        return { ...prev, tasks: nextTasks };
+      });
+    },
+    [],
+  );
 
   // Feature 027 (delta) — edição de comentário do cartão e comentários de subtarefa.
   const editTaskComment = useCallback(
-    (
-      taskId: string,
-      commentId: string,
-      text: string,
-      user?: { id: string; name: string }
-    ) => {
+    (taskId: string, commentId: string, text: string, user?: { id: string; name: string }) => {
       const author = user ?? { id: 'usr_default', name: 'Rogerio Teixeira' };
       setBoard((prev) => {
         const nextTasks: Record<string, TaskModel[]> = {};
@@ -796,7 +859,7 @@ export function useTaskCollection(
         return { ...prev, tasks: nextTasks };
       });
     },
-    []
+    [],
   );
 
   const addSubtaskComment = useCallback(
@@ -823,7 +886,7 @@ export function useTaskCollection(
         return { ...prev, tasks: nextTasks };
       });
     },
-    []
+    [],
   );
 
   const editSubtaskComment = useCallback(
@@ -832,7 +895,7 @@ export function useTaskCollection(
       subtaskId: string,
       commentId: string,
       text: string,
-      user?: { id: string; name: string }
+      user?: { id: string; name: string },
     ) => {
       const author = user ?? { id: 'usr_default', name: 'Rogerio Teixeira' };
       setBoard((prev) => {
@@ -846,7 +909,14 @@ export function useTaskCollection(
             if (!existing || !canEditComment(existing, author.id)) return task;
             return {
               ...task,
-              subtasks: editCommentInSubtask(task.subtasks, subtaskId, commentId, text, author, now),
+              subtasks: editCommentInSubtask(
+                task.subtasks,
+                subtaskId,
+                commentId,
+                text,
+                author,
+                now,
+              ),
               updatedAt: now,
             };
           });
@@ -854,7 +924,7 @@ export function useTaskCollection(
         return { ...prev, tasks: nextTasks };
       });
     },
-    []
+    [],
   );
 
   const deleteSubtaskComment = useCallback(
@@ -863,7 +933,7 @@ export function useTaskCollection(
       subtaskId: string,
       commentId: string,
       user?: { id: string; name: string },
-      isAdmin: boolean = false
+      isAdmin: boolean = false,
     ) => {
       const author = user ?? { id: 'usr_default', name: 'Rogerio Teixeira' };
       setBoard((prev) => {
@@ -877,7 +947,13 @@ export function useTaskCollection(
             if (!existing || !canDeleteComment(existing, author.id, isAdmin)) return task;
             return {
               ...task,
-              subtasks: removeCommentFromSubtask(task.subtasks, subtaskId, commentId, author, isAdmin),
+              subtasks: removeCommentFromSubtask(
+                task.subtasks,
+                subtaskId,
+                commentId,
+                author,
+                isAdmin,
+              ),
               updatedAt: now,
             };
           });
@@ -885,7 +961,7 @@ export function useTaskCollection(
         return { ...prev, tasks: nextTasks };
       });
     },
-    []
+    [],
   );
 
   const updateBlockedReason = useCallback((taskId: string, reason: string) => {
@@ -913,14 +989,14 @@ export function useTaskCollection(
   }, []);
 
   const clearTasks = useCallback(() => {
-    setBoard(prev => {
+    setBoard((prev) => {
       const nextTasks: Record<string, TaskModel[]> = {};
       for (const col of prev.columns) {
         nextTasks[col.id] = [];
       }
       return {
         ...prev,
-        tasks: nextTasks
+        tasks: nextTasks,
       };
     });
   }, []);

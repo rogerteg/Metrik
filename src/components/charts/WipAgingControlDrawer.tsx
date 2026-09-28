@@ -40,7 +40,9 @@ export const WipAgingControlDrawer: React.FC<WipAgingControlDrawerProps> = ({
         type="button"
         className={`wip-drawer-toggle-btn right-toggle ${isOpen ? 'is-active' : ''}`}
         onClick={onToggleOpen}
-        title={isOpen ? 'Ocultar controles do gráfico' : 'Controles do Gráfico (Percentis & Alertas)'}
+        title={
+          isOpen ? 'Ocultar controles do gráfico' : 'Controles do Gráfico (Percentis & Alertas)'
+        }
         aria-expanded={isOpen}
         data-testid="wip-controls-toggle"
       >

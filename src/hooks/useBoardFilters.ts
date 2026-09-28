@@ -44,7 +44,7 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
     filters.searchQuery.trim() !== '' ||
     filters.priorityFilter !== 'all' ||
     filters.selectedTags.length > 0 ||
-    filters.onlyBlocked
+    filters.onlyBlocked,
   );
 
   const availableTags = useMemo(() => {
@@ -59,7 +59,9 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
         });
       });
     });
-    return Array.from(tagsSet).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    return Array.from(tagsSet).sort((a, b) =>
+      a.localeCompare(b, undefined, { sensitivity: 'base' }),
+    );
   }, [board]);
 
   const totalCount = useMemo(() => {
@@ -69,7 +71,7 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
   const blockedCount = useMemo(() => {
     return Object.values(board.tasks).reduce(
       (acc, tasks) => acc + tasks.filter((t) => t.blocked).length,
-      0
+      0,
     );
   }, [board]);
 
@@ -95,7 +97,7 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
         if (filters.selectedTags.length > 0) {
           const taskTags = task.tags ?? [];
           const matchesAnySelected = filters.selectedTags.some((selectedTag) =>
-            taskTags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())
+            taskTags.some((t) => t.toLowerCase() === selectedTag.toLowerCase()),
           );
           if (!matchesAnySelected) {
             return false;

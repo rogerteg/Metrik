@@ -56,7 +56,10 @@ export const ThroughputRunChart: React.FC<ThroughputRunChartProps> = ({
   const labelStep = Math.max(1, Math.floor(n / 6));
 
   return (
-    <div className="throughput-run-chart-wrapper" style={{ position: 'relative', width: '100%', marginTop: '0.5rem' }}>
+    <div
+      className="throughput-run-chart-wrapper"
+      style={{ position: 'relative', width: '100%', marginTop: '0.5rem' }}
+    >
       <svg
         viewBox={`0 0 ${width} ${height}`}
         style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}
@@ -189,7 +192,8 @@ export const ThroughputRunChart: React.FC<ThroughputRunChartProps> = ({
         >
           <div style={{ fontWeight: 600 }}>{tooltip.point.date}</div>
           <div style={{ color: '#38bdf8' }}>
-            {tooltip.point.count} {tooltip.point.count === 1 ? 'tarefa concluída' : 'tarefas concluídas'}
+            {tooltip.point.count}{' '}
+            {tooltip.point.count === 1 ? 'tarefa concluída' : 'tarefas concluídas'}
           </div>
         </div>
       )}

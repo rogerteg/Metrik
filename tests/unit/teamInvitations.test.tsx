@@ -7,8 +7,20 @@ describe('Team Invitations & Guest Read-Only (US4)', () => {
   const mockBoard: BoardState = {
     columns: [
       { id: 'col-1', title: 'A Fazer', category: 'todo', colorScheme: 'todo', wipLimit: null },
-      { id: 'col-2', title: 'Em Progresso', category: 'in_progress', colorScheme: 'progress', wipLimit: 3 },
-      { id: 'col-3', title: 'Concluído', category: 'done', colorScheme: 'completed', wipLimit: null },
+      {
+        id: 'col-2',
+        title: 'Em Progresso',
+        category: 'in_progress',
+        colorScheme: 'progress',
+        wipLimit: 3,
+      },
+      {
+        id: 'col-3',
+        title: 'Concluído',
+        category: 'done',
+        colorScheme: 'completed',
+        wipLimit: null,
+      },
     ],
     tasks: {
       'col-1': [
@@ -34,7 +46,7 @@ describe('Team Invitations & Guest Read-Only (US4)', () => {
         onAddTask={vi.fn()}
         onOpenNewColumnModal={vi.fn()}
         isReadOnly={false}
-      />
+      />,
     );
 
     // Should have add task buttons
@@ -52,7 +64,7 @@ describe('Team Invitations & Guest Read-Only (US4)', () => {
         onAddTask={vi.fn()}
         onOpenNewColumnModal={vi.fn()}
         isReadOnly={true}
-      />
+      />,
     );
 
     // Should NOT have add task buttons

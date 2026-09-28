@@ -22,7 +22,7 @@ describe('DnD Accessibility & Directional Buttons (US4)', () => {
         canMoveRight={true}
         onMoveLeft={vi.fn()}
         onMoveRight={vi.fn()}
-      />
+      />,
     );
 
     const prevBtn = screen.getByRole('button', { name: /Mover para coluna anterior/i });
@@ -48,7 +48,7 @@ describe('DnD Accessibility & Directional Buttons (US4)', () => {
         canMoveRight={true}
         onMoveLeft={handleMoveLeft}
         onMoveRight={handleMoveRight}
-      />
+      />,
     );
 
     const prevBtn = screen.getByRole('button', { name: /Mover para coluna anterior/i });
@@ -72,7 +72,7 @@ describe('DnD Accessibility & Directional Buttons (US4)', () => {
         canMoveRight={true}
         onMoveLeft={vi.fn()}
         onMoveRight={vi.fn()}
-      />
+      />,
     );
 
     const prevBtn = screen.getByRole('button', { name: /Mover para coluna anterior/i });

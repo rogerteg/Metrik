@@ -33,6 +33,7 @@
 
 **Testes:** Vitest 3 + `@testing-library/react` 16 + `jsdom` 26 (`npm run test`); cobertura via `@vitest/coverage-v8` (`npm run test:coverage`, limiares em `vite.config.ts`)
 **Lint:** ESLint 9 (flat config `eslint.config.js`) + `typescript-eslint` + `eslint-plugin-react-hooks` (`npm run lint`; 0 erros, avisos de `any` não bloqueiam)
+**Formatação:** Prettier 3 (`.prettierrc.json`, printWidth 100, singleQuote); `npm run format` / `npm run format:check` (exigido no CI)
 **Build/typecheck:** `npm run build` (`tsc && vite build`)
 **Estilo:** CSS vanilla com design tokens (`src/App.css`); **não há framework CSS instalado**
 
@@ -56,7 +57,7 @@
 - `.specify/memory/` — `constitution.md` e artefatos SDD transversais
 
 **Padrão de imports:** relativos (ex.: `../types/kanban`); sem alias configurado
-**Formatação:** ESLint 9 (flat config) configurado e exigido no CI; Prettier ainda **não** adotado (sem formatação automática obrigatória)
+**Formatação:** Prettier 3 configurado (`.prettierrc.json`) e exigido no CI (`npm run format:check`); ESLint 9 também no CI
 **CSS:** classes sem prefixo global único; componentes do modal usam `td-*`; feed de atividade usa `mrf-*`; usar tokens semânticos (`--text-primary`, `--bg-card`, `--color-progress`, …), nunca cores fixas quando houver token
 
 ---
@@ -100,7 +101,6 @@
 
 - 19 seletores duplicados entre os módulos de `src/styles/` (ex.: `.task-indicators`, `.task-card-header`, `.add-column-card`) — sobreposições que exigem análise de cascata para deduplicar com segurança.
 - Arquivos grandes com múltiplas responsabilidades: `Task.tsx` (~38 KB), `useTaskCollection.ts` (~34 KB), `App.tsx` (~32 KB) — candidatos a decomposição (SRP).
-- Prettier ainda não adotado (formatação automática não obrigatória).
 - Paridade de parâmetros de largura de coluna entre navegadores (T023/T024 da feature 026) pendente de execução manual nos quatro navegadores; harness pronto em `specs/026-.../tools/`.
 - 4 lacunas de qualidade aceitas na feature 027 (quantificação de latência/fluidez e falha de storage) — ver `specs/027-.../checklists/subtasks-and-comments.md`.
 
@@ -117,7 +117,8 @@
 - ✅ Auditoria de acessibilidade automatizada com `jest-axe` (`tests/unit/accessibility.test.tsx`) cobrindo `CommentThread`, cartão somente-leitura, cartão editável e `Column` — 0 violações.
 - ✅ `App.css` fatiado em `src/styles/*.css` (10 módulos por feature) como manifesto de `@import` em ordem preservada; guarda `tests/unit/appCssStructure.test.ts` e contrato de geometria agora resolve imports. Build gerou CSS idêntico (mesmo hash).
 - ✅ Trilhas de comentário consolidadas: `CommentThread` (cartão) agora compõe `CommentItem` (mesmo renderizador do feed de atividade), com `testIdPrefix`; CSS `metrik-comment-*` de item removido.
-- ⏳ Pendentes: deduplicar os 19 seletores duplicados (exige análise de cascata), decompor arquivos grandes (SRP), Prettier.
+- ✅ Prettier 3 adotado (`.prettierrc.json`) com `format`/`format:check` no CI; 196 arquivos reformatados num commit isolado.
+- ⏳ Pendentes: deduplicar os 19 seletores duplicados (exige análise de cascata), decompor arquivos grandes (SRP).
 
 ---
 

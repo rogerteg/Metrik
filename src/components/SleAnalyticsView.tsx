@@ -17,7 +17,7 @@ export const SleAnalyticsView: React.FC<SleAnalyticsViewProps> = ({
   onUpdateTargetDays,
 }) => {
   const [targetInput, setTargetInput] = useState<string>(
-    sle.targetDays ? String(sle.targetDays) : ''
+    sle.targetDays ? String(sle.targetDays) : '',
   );
 
   const handleTargetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,7 +55,8 @@ export const SleAnalyticsView: React.FC<SleAnalyticsViewProps> = ({
         <div className="sle-header-titles">
           <h2 className="sle-view-title">Expectativas de Nível de Serviço (SLEs)</h2>
           <p className="sle-view-subtitle">
-            Monitore o compromisso probabilístico de entrega da equipe com base no percentil 85% e conformidade histórica.
+            Monitore o compromisso probabilístico de entrega da equipe com base no percentil 85% e
+            conformidade histórica.
           </p>
         </div>
       </div>
@@ -143,12 +144,16 @@ export const SleAnalyticsView: React.FC<SleAnalyticsViewProps> = ({
                       <strong>{days}</strong> dias
                     </td>
                     <td>
-                      <span className={`sle-status-badge ${isCompliant ? 'is-compliant' : 'is-breached'}`}>
+                      <span
+                        className={`sle-status-badge ${isCompliant ? 'is-compliant' : 'is-breached'}`}
+                      >
                         {isCompliant ? '✓ Conforme' : '⚠️ Excedeu SLE'}
                       </span>
                     </td>
                     <td className="task-date-cell">
-                      {task.completedAt ? new Date(task.completedAt).toLocaleDateString('pt-BR') : '-'}
+                      {task.completedAt
+                        ? new Date(task.completedAt).toLocaleDateString('pt-BR')
+                        : '-'}
                     </td>
                   </tr>
                 ))}

@@ -26,7 +26,7 @@ describe('UserProfileMenu Component (US1)', () => {
         activeUser={mockUsers[0]}
         onSelectUser={vi.fn()}
         onCreateUser={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText('Alice Silva')).toBeDefined();
@@ -42,7 +42,7 @@ describe('UserProfileMenu Component (US1)', () => {
         activeUser={mockUsers[0]}
         onSelectUser={onSelect}
         onCreateUser={vi.fn()}
-      />
+      />,
     );
 
     const trigger = screen.getByRole('button', { name: /perfil de alice silva/i });
@@ -65,7 +65,7 @@ describe('UserProfileMenu Component (US1)', () => {
         activeUser={mockUsers[0]}
         onSelectUser={vi.fn()}
         onCreateUser={onCreate}
-      />
+      />,
     );
 
     // Open dropdown
@@ -95,7 +95,7 @@ describe('UserProfileMenu Component (US1)', () => {
         activeUser={mockUsers[0]}
         onSelectUser={vi.fn()}
         onCreateUser={vi.fn()}
-      />
+      />,
     );
 
     const trigger = screen.getByRole('button', { name: /perfil de alice silva/i });

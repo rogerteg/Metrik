@@ -61,7 +61,7 @@ describe('SettingsView Component (Feature 029 - US2 Separate Settings)', () => {
         onExportData={vi.fn()}
         onImportData={vi.fn()}
         onClearTasks={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText('Configurações do Sistema')).toBeDefined();
@@ -90,7 +90,7 @@ describe('SettingsView Component (Feature 029 - US2 Separate Settings)', () => {
         onExportData={vi.fn()}
         onImportData={vi.fn()}
         onClearTasks={vi.fn()}
-      />
+      />,
     );
 
     // Initial tab is General & Appearance
@@ -127,13 +127,11 @@ describe('SettingsView Component (Feature 029 - US2 Separate Settings)', () => {
         onExportData={vi.fn()}
         onImportData={vi.fn()}
         onClearTasks={vi.fn()}
-      />
+      />,
     );
 
     const lightThemeBtn = screen.getByRole('button', { name: /claro/i });
     fireEvent.click(lightThemeBtn);
-    expect(onUpdateSettings).toHaveBeenCalledWith(
-      expect.objectContaining({ theme: 'light' })
-    );
+    expect(onUpdateSettings).toHaveBeenCalledWith(expect.objectContaining({ theme: 'light' }));
   });
 });

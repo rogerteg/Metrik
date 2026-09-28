@@ -29,11 +29,7 @@ export const TaskTypeBadge: React.FC<TaskTypeBadgeProps> = ({
       <span className="task-type-badge__icon" aria-hidden="true">
         {config.icon}
       </span>
-      {!compact && (
-        <span className="task-type-badge__label">
-          {config.shortLabel}
-        </span>
-      )}
+      {!compact && <span className="task-type-badge__label">{config.shortLabel}</span>}
     </span>
   );
 };

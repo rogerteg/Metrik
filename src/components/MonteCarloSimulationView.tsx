@@ -19,7 +19,7 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
   initialBacklogCount,
 }) => {
   const [mode, setMode] = useState<MonteCarloMode>('how-many');
-  
+
   // Parâmetros de Simulação
   const [historyDays, setHistoryDays] = useState<number>(30); // 30, 60, 90 ou 0 (tudo)
   const [trials, setTrials] = useState<number>(10000);
@@ -34,7 +34,7 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
 
   // Parâmetros When
   const [itemCount, setItemCount] = useState<number>(
-    initialBacklogCount ?? (openTasksCount > 0 ? openTasksCount : 15)
+    initialBacklogCount ?? (openTasksCount > 0 ? openTasksCount : 15),
   );
 
   // Extrair amostras de Throughput diário com base no filtro de histórico selecionado
@@ -68,10 +68,12 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
       <div className="monte-carlo-header-bar">
         <div className="monte-carlo-title-group">
           <h3 className="monte-carlo-main-title">
-            <span className="monte-carlo-icon">🎲</span> Previsões de Fluxo com Simulação de Monte Carlo
+            <span className="monte-carlo-icon">🎲</span> Previsões de Fluxo com Simulação de Monte
+            Carlo
           </h3>
           <p className="monte-carlo-subtitle">
-            Previsões probabilísticas calibradas por re-amostragem empírica de Throughput (Daniel Vacanti / Padrão NIST).
+            Previsões probabilísticas calibradas por re-amostragem empírica de Throughput (Daniel
+            Vacanti / Padrão NIST).
           </p>
         </div>
 
@@ -105,11 +107,17 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
           <div className="guidance-content">
             <h4>Histórico de Throughput Insuficiente</h4>
             <p>
-              A Simulação de Monte Carlo requer tarefas concluídas registradas no board para extrair o ritmo real de entregas diárias.
+              A Simulação de Monte Carlo requer tarefas concluídas registradas no board para extrair
+              o ritmo real de entregas diárias.
             </p>
             <ul>
-              <li>Mova cartões para a coluna <strong>Concluído</strong> para alimentar o histórico.</li>
-              <li>Dias sem entrega são contabilizados como 0 para garantir previsões sem viés de superestimação.</li>
+              <li>
+                Mova cartões para a coluna <strong>Concluído</strong> para alimentar o histórico.
+              </li>
+              <li>
+                Dias sem entrega são contabilizados como 0 para garantir previsões sem viés de
+                superestimação.
+              </li>
             </ul>
           </div>
         </div>
@@ -137,9 +145,15 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
                     <span className="input-addon">dias</span>
                   </div>
                   <div className="quick-presets">
-                    <button type="button" onClick={() => setTargetDays(14)}>2 semanas</button>
-                    <button type="button" onClick={() => setTargetDays(30)}>1 mês</button>
-                    <button type="button" onClick={() => setTargetDays(90)}>1 trimestre</button>
+                    <button type="button" onClick={() => setTargetDays(14)}>
+                      2 semanas
+                    </button>
+                    <button type="button" onClick={() => setTargetDays(30)}>
+                      1 mês
+                    </button>
+                    <button type="button" onClick={() => setTargetDays(90)}>
+                      1 trimestre
+                    </button>
                   </div>
                 </div>
               ) : (

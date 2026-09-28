@@ -22,7 +22,8 @@ export const BoardPoliciesTab: React.FC<BoardPoliciesTabProps> = ({
       <section className="settings-section">
         <h4 className="settings-section-title">Limites de Trabalho em Progresso (WIP)</h4>
         <p className="settings-section-desc">
-          Controlar a quantidade de itens simultâneos em etapas ativas reduz o tempo de ciclo e elimina gargalos.
+          Controlar a quantidade de itens simultâneos em etapas ativas reduz o tempo de ciclo e
+          elimina gargalos.
         </p>
 
         <div className="policy-rule-card">
@@ -40,7 +41,8 @@ export const BoardPoliciesTab: React.FC<BoardPoliciesTabProps> = ({
             )}
           </div>
           <p className="policy-rule-desc">
-            Quando o número de cartões em uma coluna ultrapassa o limite definido pelo time, a coluna recebe um destaque visual de advertência âmbar/vermelho.
+            Quando o número de cartões em uma coluna ultrapassa o limite definido pelo time, a
+            coluna recebe um destaque visual de advertência âmbar/vermelho.
           </p>
         </div>
       </section>
@@ -51,19 +53,30 @@ export const BoardPoliciesTab: React.FC<BoardPoliciesTabProps> = ({
         <div className="policy-columns-grid">
           <div className="policy-col-item">
             <span className="policy-col-cat cat-todo">A Fazer (Backlog)</span>
-            <p>Itens priorizados aguardando início. Não há limite de WIP estrito, mas deve refletir compromissos do ciclo.</p>
+            <p>
+              Itens priorizados aguardando início. Não há limite de WIP estrito, mas deve refletir
+              compromissos do ciclo.
+            </p>
           </div>
           <div className="policy-col-item">
             <span className="policy-col-cat cat-progress">Em Andamento (WIP)</span>
-            <p>Trabalho ativo. Limite recomendado: máximo de 1 a 2 itens por integrante da squad.</p>
+            <p>
+              Trabalho ativo. Limite recomendado: máximo de 1 a 2 itens por integrante da squad.
+            </p>
           </div>
           <div className="policy-col-item">
             <span className="policy-col-cat cat-review">Revisão / QA</span>
-            <p>Garantia de qualidade e validação de critérios de aceite. Evite acumular itens para não bloquear a entrega.</p>
+            <p>
+              Garantia de qualidade e validação de critérios de aceite. Evite acumular itens para
+              não bloquear a entrega.
+            </p>
           </div>
           <div className="policy-col-item">
             <span className="policy-col-cat cat-done">Concluído (Done)</span>
-            <p>Itens entregues em produção ou com valor real gerado. Base para cálculo de Throughput e Lead Time.</p>
+            <p>
+              Itens entregues em produção ou com valor real gerado. Base para cálculo de Throughput
+              e Lead Time.
+            </p>
           </div>
         </div>
       </section>
@@ -73,13 +86,16 @@ export const BoardPoliciesTab: React.FC<BoardPoliciesTabProps> = ({
         <h4 className="settings-section-title">Princípios Ágeis Embutidos</h4>
         <ul className="settings-principles-list">
           <li>
-            <strong>Puxar em vez de Empurrar:</strong> Integrantes só iniciam uma nova tarefa quando houver capacidade disponível na coluna seguinte.
+            <strong>Puxar em vez de Empurrar:</strong> Integrantes só iniciam uma nova tarefa quando
+            houver capacidade disponível na coluna seguinte.
           </li>
           <li>
-            <strong>Parar para Corrigir:</strong> Tarefas bloqueadas têm prioridade absoluta de desbloqueio para evitar acúmulo de débito de fluxo.
+            <strong>Parar para Corrigir:</strong> Tarefas bloqueadas têm prioridade absoluta de
+            desbloqueio para evitar acúmulo de débito de fluxo.
           </li>
           <li>
-            <strong>Transparência Local:</strong> Todos os dados de fluxo e métricas residem no navegador local, sem dependência de servidores externos.
+            <strong>Transparência Local:</strong> Todos os dados de fluxo e métricas residem no
+            navegador local, sem dependência de servidores externos.
           </li>
         </ul>
       </section>

@@ -5,7 +5,12 @@ import './Modal.css';
 export interface NewColumnModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddColumn: (title: string, category: ColumnCategory, wipLimit: number | null, color?: string) => void;
+  onAddColumn: (
+    title: string,
+    category: ColumnCategory,
+    wipLimit: number | null,
+    color?: string,
+  ) => void;
   currentColumnCount: number;
 }
 
@@ -103,7 +108,11 @@ export const NewColumnModal: React.FC<NewColumnModalProps> = ({
         )}
 
         <form onSubmit={handleSubmit} className="modal-form">
-          {error && <div className="modal-error-message" role="alert">{error}</div>}
+          {error && (
+            <div className="modal-error-message" role="alert">
+              {error}
+            </div>
+          )}
 
           <div className="form-group">
             <label htmlFor="column-title-input" className="form-label">
@@ -160,9 +169,7 @@ export const NewColumnModal: React.FC<NewColumnModalProps> = ({
           </div>
 
           <div className="form-group">
-            <label className="form-label">
-              Cor da Coluna
-            </label>
+            <label className="form-label">Cor da Coluna</label>
             <div className="modal-color-presets-row">
               {PRESET_COLUMN_COLORS.map((preset) => (
                 <button
@@ -192,18 +199,10 @@ export const NewColumnModal: React.FC<NewColumnModalProps> = ({
           </div>
 
           <div className="modal-actions">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-            >
+            <button type="button" className="btn btn-secondary" onClick={onClose}>
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isAtLimit || !title.trim()}
-            >
+            <button type="submit" className="btn btn-primary" disabled={isAtLimit || !title.trim()}>
               Criar Coluna
             </button>
           </div>

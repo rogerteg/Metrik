@@ -13,23 +13,22 @@ describe('ToastNotification component (Feature 025)', () => {
       <ToastNotification
         message="Cartão bloqueado: retire a etiqueta de bloqueado para mover entre colunas."
         onClose={vi.fn()}
-      />
+      />,
     );
 
     const toast = screen.getByTestId('metrik-toast');
     expect(toast).toBeDefined();
     expect(toast.getAttribute('role')).toBe('alert');
-    expect(screen.getByText('Cartão bloqueado: retire a etiqueta de bloqueado para mover entre colunas.')).toBeDefined();
+    expect(
+      screen.getByText(
+        'Cartão bloqueado: retire a etiqueta de bloqueado para mover entre colunas.',
+      ),
+    ).toBeDefined();
   });
 
   it('calls onClose when close button is clicked', () => {
     const onCloseMock = vi.fn();
-    render(
-      <ToastNotification
-        message="Mensagem de teste"
-        onClose={onCloseMock}
-      />
-    );
+    render(<ToastNotification message="Mensagem de teste" onClose={onCloseMock} />);
 
     const closeBtn = screen.getByLabelText('Fechar notificação');
     fireEvent.click(closeBtn);
@@ -41,11 +40,7 @@ describe('ToastNotification component (Feature 025)', () => {
     const onCloseMock = vi.fn();
 
     render(
-      <ToastNotification
-        message="Auto-close toast"
-        onClose={onCloseMock}
-        durationMs={3000}
-      />
+      <ToastNotification message="Auto-close toast" onClose={onCloseMock} durationMs={3000} />,
     );
 
     expect(onCloseMock).not.toHaveBeenCalled();

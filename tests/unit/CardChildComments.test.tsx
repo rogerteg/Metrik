@@ -66,7 +66,10 @@ describe('Card child comments (Feature 027 delta)', () => {
     const created = findTask(result, task.id)!.comments![0];
 
     act(() => {
-      result.current.editTaskComment(task.id, created.id, 'invasão', { id: 'other', name: 'Outro' });
+      result.current.editTaskComment(task.id, created.id, 'invasão', {
+        id: 'other',
+        name: 'Outro',
+      });
     });
 
     expect(findTask(result, task.id)!.comments![0].text).toBe('meu comentário');

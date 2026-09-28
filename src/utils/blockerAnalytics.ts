@@ -21,7 +21,7 @@ export function calculateBlockerClusters(tasks: TaskModel[]): BlockerDynamicsSum
   }
 
   const blockedTasks = tasks.filter(
-    (t) => t.blocked || (t.totalBlockedMs && t.totalBlockedMs > 0) || Boolean(t.blockedReason)
+    (t) => t.blocked || (t.totalBlockedMs && t.totalBlockedMs > 0) || Boolean(t.blockedReason),
   );
 
   if (blockedTasks.length === 0) {
@@ -57,13 +57,9 @@ export function calculateBlockerClusters(tasks: TaskModel[]): BlockerDynamicsSum
   const clusters: BlockerClusterItem[] = [];
   for (const [reason, stats] of reasonMap.entries()) {
     const percentage =
-      totalOccurrences > 0
-        ? Number(((stats.count / totalOccurrences) * 100).toFixed(1))
-        : 0;
+      totalOccurrences > 0 ? Number(((stats.count / totalOccurrences) * 100).toFixed(1)) : 0;
     const avgDurationDays =
-      stats.count > 0
-        ? Number((stats.totalDurationMs / stats.count / MS_PER_DAY).toFixed(1))
-        : 0;
+      stats.count > 0 ? Number((stats.totalDurationMs / stats.count / MS_PER_DAY).toFixed(1)) : 0;
 
     clusters.push({
       reason,

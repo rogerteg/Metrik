@@ -12,7 +12,7 @@ export function isBlockingTag(tag: string | undefined | null): boolean {
   const clean = tag.trim().toLowerCase();
   if (clean === '') return false;
   return (BLOCKED_TAG_KEYWORDS as readonly string[]).some(
-    (kw) => clean === kw || clean.startsWith(kw)
+    (kw) => clean === kw || clean.startsWith(kw),
   );
 }
 
@@ -39,7 +39,7 @@ export function isTaskBlocked(task: TaskModel | undefined | null): boolean {
 export function canMoveColumn(
   columnsCount: number,
   sourceIndex: number,
-  targetIndex: number
+  targetIndex: number,
 ): boolean {
   if (columnsCount <= 1) {
     return false;
@@ -64,7 +64,7 @@ export function canMoveColumn(
 export function reorderColumnList(
   columns: ColumnModel[],
   sourceIndex: number,
-  targetIndex: number
+  targetIndex: number,
 ): ColumnModel[] {
   if (!canMoveColumn(columns.length, sourceIndex, targetIndex)) {
     return columns;
@@ -81,7 +81,7 @@ export function reorderColumnList(
 export function isBackwardColumnMove(
   columns: { id: string }[],
   sourceColumnId: string,
-  targetColumnId: string
+  targetColumnId: string,
 ): boolean {
   const sourceIdx = columns.findIndex((c) => c.id === sourceColumnId);
   const targetIdx = columns.findIndex((c) => c.id === targetColumnId);
@@ -95,7 +95,7 @@ export function isBackwardColumnMove(
 export function reorderBoard(
   board: BoardState,
   options: ReorderOptions,
-  nowIso: string = new Date().toISOString()
+  nowIso: string = new Date().toISOString(),
 ): BoardState {
   const { activeTaskId, targetColumn, targetTaskId, position = 'before' } = options;
 
@@ -132,7 +132,7 @@ export function reorderBoard(
     nextTasks[colId] = board.tasks[colId].filter((t) => t.id !== activeTaskId);
   }
 
-  const targetColModel = board.columns.find(c => c.id === targetColumn);
+  const targetColModel = board.columns.find((c) => c.id === targetColumn);
   const isBackwardMove = isBackwardColumnMove(board.columns, sourceColumn, targetColumn);
 
   let startedAt = activeTask.startedAt;
@@ -165,7 +165,7 @@ export function reorderBoard(
       }
     } else {
       // If moving out of done, clear completedAt
-      const sourceColModel = board.columns.find(c => c.id === sourceColumn);
+      const sourceColModel = board.columns.find((c) => c.id === sourceColumn);
       if (sourceColModel && sourceColModel.category === 'done') {
         completedAt = undefined;
       }

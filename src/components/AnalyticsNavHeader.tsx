@@ -141,7 +141,9 @@ export const AnalyticsNavHeader: React.FC<AnalyticsNavHeaderProps> = ({
                 data-testid="mode-scatter-plot"
               >
                 <span className="dropdown-item-title">Scatter Plot (Dispersão)</span>
-                <span className="dropdown-item-desc">Percentis P50, P85, P95 e itens concluídos</span>
+                <span className="dropdown-item-desc">
+                  Percentis P50, P85, P95 e itens concluídos
+                </span>
               </button>
               <button
                 type="button"
@@ -151,7 +153,9 @@ export const AnalyticsNavHeader: React.FC<AnalyticsNavHeaderProps> = ({
                 data-testid="mode-histogram"
               >
                 <span className="dropdown-item-title">Histograma de Frequência</span>
-                <span className="dropdown-item-desc">Distribuição de tempos e cauda de variabilidade</span>
+                <span className="dropdown-item-desc">
+                  Distribuição de tempos e cauda de variabilidade
+                </span>
               </button>
             </div>
           )}
@@ -230,7 +234,9 @@ export const AnalyticsNavHeader: React.FC<AnalyticsNavHeaderProps> = ({
                 data-testid="mode-clustering"
               >
                 <span className="dropdown-item-title">Blocker Clustering</span>
-                <span className="dropdown-item-desc">Agrupamento e frequência por motivo de bloqueio</span>
+                <span className="dropdown-item-desc">
+                  Agrupamento e frequência por motivo de bloqueio
+                </span>
               </button>
               <button
                 type="button"
@@ -240,7 +246,9 @@ export const AnalyticsNavHeader: React.FC<AnalyticsNavHeaderProps> = ({
                 data-testid="mode-dynamics"
               >
                 <span className="dropdown-item-title">Blocker Dynamics</span>
-                <span className="dropdown-item-desc">Retenção temporal acumulada e impacto no Lead Time</span>
+                <span className="dropdown-item-desc">
+                  Retenção temporal acumulada e impacto no Lead Time
+                </span>
               </button>
             </div>
           )}
@@ -283,7 +291,11 @@ export const AnalyticsNavHeader: React.FC<AnalyticsNavHeaderProps> = ({
             <span className="analytics-action-icon">🎛️</span>
             <span className="analytics-action-text">Dados</span>
             {hasActiveDatasetFilters && (
-              <span className="dataset-filter-indicator" data-testid="dataset-filter-indicator" title="Filtros ativos" />
+              <span
+                className="dataset-filter-indicator"
+                data-testid="dataset-filter-indicator"
+                title="Filtros ativos"
+              />
             )}
           </button>
         </div>

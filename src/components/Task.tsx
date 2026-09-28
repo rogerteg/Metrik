@@ -12,7 +12,7 @@ import {
   calculateCycleTimeMs,
   formatDuration,
   getDueDateStatus,
-  formatDateShort
+  formatDateShort,
 } from '../utils/timeFormatters';
 import { useFieldEdit } from '../hooks/useFieldEdit';
 import { TaskFieldActionToolbar } from './TaskFieldActionToolbar';
@@ -21,20 +21,50 @@ import { subtaskHasComments } from '../utils/cardComments';
 
 /* Ícones compactos do detalhe inline (12px, herdam currentColor) */
 const DetailIcon: React.FC = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M4 6h16M4 12h16M4 18h10" />
   </svg>
 );
 
 const ChecklistIcon: React.FC = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <polyline points="9 11 12 14 22 4" />
     <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
   </svg>
 );
 
 const DescriptionIcon: React.FC = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <line x1="21" y1="6" x2="3" y2="6" />
     <line x1="21" y1="12" x2="3" y2="12" />
     <line x1="21" y1="18" x2="3" y2="18" />
@@ -42,7 +72,17 @@ const DescriptionIcon: React.FC = () => (
 );
 
 const CriteriaIcon: React.FC = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
     <polyline points="14 2 14 8 20 8" />
     <polyline points="8 13 11 16 16 10" />
@@ -50,7 +90,17 @@ const CriteriaIcon: React.FC = () => (
 );
 
 const TestIcon: React.FC = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M9 3h6M10 3v6.5L5.5 17a2 2 0 0 0 1.7 3h9.6a2 2 0 0 0 1.7-3L14 9.5V3" />
   </svg>
 );
@@ -85,7 +135,12 @@ export interface TaskProps {
   onDeleteComment?: (taskId: string, commentId: string) => void;
   /** Comentários da subtarefa (Feature 027 delta) */
   onAddSubtaskComment?: (taskId: string, subtaskId: string, text: string) => void;
-  onEditSubtaskComment?: (taskId: string, subtaskId: string, commentId: string, text: string) => void;
+  onEditSubtaskComment?: (
+    taskId: string,
+    subtaskId: string,
+    commentId: string,
+    text: string,
+  ) => void;
   onDeleteSubtaskComment?: (taskId: string, subtaskId: string, commentId: string) => void;
   /** Perfil ativo, usado para autoria e permissões de comentário */
   currentUser?: { id: string; name: string };
@@ -227,14 +282,15 @@ export const Task: React.FC<TaskProps> = ({
   const leadTimeStr = formatDuration(leadTimeMs);
   const cycleTimeStr = formatDuration(cycleTimeMs);
 
-  const dropClass = dropIndicator === 'before'
-    ? 'task-card-drop-before'
-    : dropIndicator === 'after'
-    ? 'task-card-drop-after'
-    : '';
+  const dropClass =
+    dropIndicator === 'before'
+      ? 'task-card-drop-before'
+      : dropIndicator === 'after'
+        ? 'task-card-drop-after'
+        : '';
 
   const subtasks = task.subtasks || [];
-  const completedSubtasks = subtasks.filter(st => st.completed).length;
+  const completedSubtasks = subtasks.filter((st) => st.completed).length;
   const hasSubtasks = subtasks.length > 0;
   const comments = task.comments || [];
   const hasComments = comments.length > 0;
@@ -284,7 +340,7 @@ export const Task: React.FC<TaskProps> = ({
   const handleToggleSubtask = (subtaskId: string) => {
     if (!onUpdateTask) return;
     const nextSubtasks = subtasks.map((st) =>
-      st.id === subtaskId ? { ...st, completed: !st.completed } : st
+      st.id === subtaskId ? { ...st, completed: !st.completed } : st,
     );
     onUpdateTask(task.id, { subtasks: nextSubtasks });
   };
@@ -359,10 +415,7 @@ export const Task: React.FC<TaskProps> = ({
         }
       }}
     >
-      <div
-        className="task-card-header"
-        onPointerDown={(e) => e.stopPropagation()}
-      >
+      <div className="task-card-header" onPointerDown={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
           <TaskTypeBadge type={task.type} />
           <PriorityBadge
@@ -384,7 +437,11 @@ export const Task: React.FC<TaskProps> = ({
           {isBlocked && (
             <span
               className={`task-blocked-badge ${isReadOnly ? '' : 'task-card-blocked-badge-clickable'}`}
-              title={task.blockedReason ? `Bloqueado: ${task.blockedReason}` : 'Cartão bloqueado: clique para retirar a etiqueta de bloqueio'}
+              title={
+                task.blockedReason
+                  ? `Bloqueado: ${task.blockedReason}`
+                  : 'Cartão bloqueado: clique para retirar a etiqueta de bloqueio'
+              }
               data-testid="task-blocked-badge"
               role={isReadOnly ? undefined : 'button'}
               tabIndex={isReadOnly ? undefined : 0}
@@ -454,8 +511,20 @@ export const Task: React.FC<TaskProps> = ({
               <DetailIcon />
               Detalhes
             </span>
-            <span className={`task-qa-toggle-icon ${isQaExpanded ? 'expanded' : ''}`} aria-hidden="true">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <span
+              className={`task-qa-toggle-icon ${isQaExpanded ? 'expanded' : ''}`}
+              aria-hidden="true"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             </span>
@@ -480,7 +549,10 @@ export const Task: React.FC<TaskProps> = ({
                 </span>
               )}
               {hasAcceptanceCriteria && (
-                <span className="task-detail-chip" title="Esta tarefa possui critérios de aceitação">
+                <span
+                  className="task-detail-chip"
+                  title="Esta tarefa possui critérios de aceitação"
+                >
                   <CriteriaIcon />
                   Critérios
                 </span>
@@ -664,7 +736,10 @@ export const Task: React.FC<TaskProps> = ({
                               type="button"
                               className="task-detail-checklist-comments-toggle"
                               onClick={() =>
-                                setOpenSubtaskComments((prev) => ({ ...prev, [st.id]: !prev[st.id] }))
+                                setOpenSubtaskComments((prev) => ({
+                                  ...prev,
+                                  [st.id]: !prev[st.id],
+                                }))
                               }
                               aria-expanded={!!openSubtaskComments[st.id]}
                               aria-label={`Comentários da subtarefa: ${st.title}`}
@@ -681,7 +756,16 @@ export const Task: React.FC<TaskProps> = ({
                                 aria-label={`Excluir subtarefa: ${st.title}`}
                                 title="Excluir subtarefa"
                               >
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <svg
+                                  width="11"
+                                  height="11"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
                                   <line x1="18" y1="6" x2="6" y2="18" />
                                   <line x1="6" y1="6" x2="18" y2="18" />
                                 </svg>
@@ -699,8 +783,12 @@ export const Task: React.FC<TaskProps> = ({
                               emptyLabel="Sem comentários nesta subtarefa."
                               testIdPrefix={`subtask-comment-${st.id}`}
                               onAdd={(text) => onAddSubtaskComment?.(task.id, st.id, text)}
-                              onEdit={(commentId, text) => onEditSubtaskComment?.(task.id, st.id, commentId, text)}
-                              onDelete={(commentId) => onDeleteSubtaskComment?.(task.id, st.id, commentId)}
+                              onEdit={(commentId, text) =>
+                                onEditSubtaskComment?.(task.id, st.id, commentId, text)
+                              }
+                              onDelete={(commentId) =>
+                                onDeleteSubtaskComment?.(task.id, st.id, commentId)
+                              }
                             />
                           )}
                         </li>
@@ -725,7 +813,16 @@ export const Task: React.FC<TaskProps> = ({
                         aria-label="Adicionar subtarefa"
                         title="Adicionar subtarefa"
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <line x1="12" y1="5" x2="12" y2="19" />
                           <line x1="5" y1="12" x2="19" y2="12" />
                         </svg>
@@ -766,7 +863,16 @@ export const Task: React.FC<TaskProps> = ({
                   }}
                 >
                   Abrir detalhes completos
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <line x1="7" y1="17" x2="17" y2="7" />
                     <polyline points="7 7 17 7 17 17" />
                   </svg>
@@ -784,7 +890,17 @@ export const Task: React.FC<TaskProps> = ({
                 className="task-indicator-badge date-start-badge"
                 title={`Início da tarefa: ${formatDateShort(task.startDate)}`}
               >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '3px' }}>
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ marginRight: '3px' }}
+                >
                   <circle cx="12" cy="12" r="10"></circle>
                   <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
@@ -796,7 +912,17 @@ export const Task: React.FC<TaskProps> = ({
                 className="task-indicator-badge date-end-badge"
                 title={`Fim da tarefa: ${formatDateShort(task.endDate)}`}
               >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '3px' }}>
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ marginRight: '3px' }}
+                >
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                   <line x1="16" y1="2" x2="16" y2="6"></line>
                   <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -806,11 +932,21 @@ export const Task: React.FC<TaskProps> = ({
               </span>
             )}
             {hasDueDate && (
-              <span 
-                className={`task-indicator-badge due-date-${dueDateStatus}`} 
+              <span
+                className={`task-indicator-badge due-date-${dueDateStatus}`}
                 title={`Data de entrega: ${formatDateShort(task.dueDate!)}`}
               >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '3px' }}>
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ marginRight: '3px' }}
+                >
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                   <line x1="16" y1="2" x2="16" y2="6"></line>
                   <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -826,7 +962,10 @@ export const Task: React.FC<TaskProps> = ({
           <div className="task-initiative-progress" data-testid="task-initiative-progress">
             <div className="task-initiative-progress__label">
               <span>Progresso</span>
-              <span>{initiativeProgress.completed}/{initiativeProgress.total} ({initiativeProgress.percentage}%)</span>
+              <span>
+                {initiativeProgress.completed}/{initiativeProgress.total} (
+                {initiativeProgress.percentage}%)
+              </span>
             </div>
             <div className="task-initiative-progress__bar">
               <div
@@ -845,8 +984,11 @@ export const Task: React.FC<TaskProps> = ({
             >
               🔗 {task.links.length} {task.links.length === 1 ? 'vínculo' : 'vínculos'}
             </span>
-            {task.links.some(l => l.targetTeamId && l.targetTeamId !== '') && (
-              <span className="task-cross-squad-chip" title="Possui dependência com outra squad/time">
+            {task.links.some((l) => l.targetTeamId && l.targetTeamId !== '') && (
+              <span
+                className="task-cross-squad-chip"
+                title="Possui dependência com outra squad/time"
+              >
                 🏢 Cross-Squad
               </span>
             )}
@@ -856,7 +998,8 @@ export const Task: React.FC<TaskProps> = ({
                 title={`${pendingBlockersCount} ${pendingBlockersCount === 1 ? 'dependência pendente' : 'dependências pendentes'}`}
                 data-testid="task-pending-blocker-chip"
               >
-                🔒 {pendingBlockersCount} {pendingBlockersCount === 1 ? 'bloqueador pendente' : 'bloqueadores pendentes'}
+                🔒 {pendingBlockersCount}{' '}
+                {pendingBlockersCount === 1 ? 'bloqueador pendente' : 'bloqueadores pendentes'}
               </span>
             )}
           </div>
@@ -880,10 +1023,7 @@ export const Task: React.FC<TaskProps> = ({
         )}
       </div>
 
-      <footer
-        className="task-card-footer"
-        onPointerDown={(e) => e.stopPropagation()}
-      >
+      <footer className="task-card-footer" onPointerDown={(e) => e.stopPropagation()}>
         <div className="task-nav-buttons">
           {!readOnly && canMoveLeft && onMoveLeft && (
             <button

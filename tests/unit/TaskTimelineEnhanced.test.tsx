@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { renderFormattedText } from '../../src/utils/simpleMarkdown';
-import { createTaskActivityEvent, groupTimelineItems, AuditDescriptions } from '../../src/utils/taskActivityLogger';
+import {
+  createTaskActivityEvent,
+  groupTimelineItems,
+  AuditDescriptions,
+} from '../../src/utils/taskActivityLogger';
 import { TimelineItem } from '../../src/types/taskActivity';
 
 describe('Feature 034 - Enterprise Task Timeline Redesign Unit Tests', () => {
@@ -148,13 +152,7 @@ describe('Feature 034 - Enterprise Task Timeline Redesign Unit Tests', () => {
         },
       ];
 
-      render(
-        <TaskTimeline
-          taskId="t1"
-          comments={mockComments}
-          activityLog={mockActivity}
-        />
-      );
+      render(<TaskTimeline taskId="t1" comments={mockComments} activityLog={mockActivity} />);
 
       // Verify stats header renders total comments and decision count
       expect(screen.getByText('Histórico e Comentários da Tarefa')).toBeDefined();

@@ -7,10 +7,28 @@ import { ColumnModel } from '../../src/types/kanban';
 describe('Column Reorder Rules (First Column "To Do" Protection Only)', () => {
   const sampleColumns: ColumnModel[] = [
     { id: 'todo', title: 'To Do', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-    { id: 'dev', title: 'Development', category: 'in_progress', wipLimit: 3, colorScheme: 'progress' },
-    { id: 'review', title: 'Code Review', category: 'in_progress', wipLimit: 2, colorScheme: 'progress' },
+    {
+      id: 'dev',
+      title: 'Development',
+      category: 'in_progress',
+      wipLimit: 3,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'review',
+      title: 'Code Review',
+      category: 'in_progress',
+      wipLimit: 2,
+      colorScheme: 'progress',
+    },
     { id: 'qa', title: 'QA Testing', category: 'in_progress', wipLimit: 2, colorScheme: 'blocked' },
-    { id: 'completed', title: 'Completed', category: 'done', wipLimit: null, colorScheme: 'completed' },
+    {
+      id: 'completed',
+      title: 'Completed',
+      category: 'done',
+      wipLimit: null,
+      colorScheme: 'completed',
+    },
   ];
 
   describe('canMoveColumn Validator', () => {
@@ -88,7 +106,7 @@ describe('Column Reorder Rules (First Column "To Do" Protection Only)', () => {
           columnIndex={0}
           totalColumns={5}
           onMoveColumn={vi.fn()}
-        />
+        />,
       );
 
       expect(screen.getByLabelText('Coluna fixa')).toBeInTheDocument();
@@ -105,7 +123,7 @@ describe('Column Reorder Rules (First Column "To Do" Protection Only)', () => {
           columnIndex={4}
           totalColumns={5}
           onMoveColumn={mockMove}
-        />
+        />,
       );
 
       // Lock should not be present
@@ -115,11 +133,15 @@ describe('Column Reorder Rules (First Column "To Do" Protection Only)', () => {
       expect(screen.getByLabelText(/Reordenar coluna Completed/i)).toBeInTheDocument();
 
       // Left button enabled (can move to index 3)
-      const leftBtn = screen.getByRole('button', { name: /Mover coluna Completed para a esquerda/i });
+      const leftBtn = screen.getByRole('button', {
+        name: /Mover coluna Completed para a esquerda/i,
+      });
       expect(leftBtn).toBeEnabled();
 
       // Right button disabled (already at the end)
-      const rightBtn = screen.getByRole('button', { name: /Mover coluna Completed para a direita/i });
+      const rightBtn = screen.getByRole('button', {
+        name: /Mover coluna Completed para a direita/i,
+      });
       expect(rightBtn).toBeDisabled();
 
       fireEvent.click(leftBtn);
@@ -135,18 +157,22 @@ describe('Column Reorder Rules (First Column "To Do" Protection Only)', () => {
           columnIndex={1}
           totalColumns={5}
           onMoveColumn={mockMove}
-        />
+        />,
       );
 
       // Drag handle exists
       expect(screen.getByLabelText(/Reordenar coluna Development/i)).toBeInTheDocument();
 
       // Left button should be disabled because moving left would invade index 0 (To Do)
-      const leftBtn = screen.getByRole('button', { name: /Mover coluna Development para a esquerda/i });
+      const leftBtn = screen.getByRole('button', {
+        name: /Mover coluna Development para a esquerda/i,
+      });
       expect(leftBtn).toBeDisabled();
 
       // Right button should be enabled (moving to index 2 is allowed)
-      const rightBtn = screen.getByRole('button', { name: /Mover coluna Development para a direita/i });
+      const rightBtn = screen.getByRole('button', {
+        name: /Mover coluna Development para a direita/i,
+      });
       expect(rightBtn).toBeEnabled();
 
       fireEvent.click(rightBtn);
@@ -162,11 +188,15 @@ describe('Column Reorder Rules (First Column "To Do" Protection Only)', () => {
           columnIndex={3}
           totalColumns={5}
           onMoveColumn={mockMove}
-        />
+        />,
       );
 
-      const leftBtn = screen.getByRole('button', { name: /Mover coluna QA Testing para a esquerda/i });
-      const rightBtn = screen.getByRole('button', { name: /Mover coluna QA Testing para a direita/i });
+      const leftBtn = screen.getByRole('button', {
+        name: /Mover coluna QA Testing para a esquerda/i,
+      });
+      const rightBtn = screen.getByRole('button', {
+        name: /Mover coluna QA Testing para a direita/i,
+      });
 
       expect(leftBtn).toBeEnabled();
       expect(rightBtn).toBeEnabled(); // Now can move right into index 4!
@@ -184,7 +214,7 @@ describe('Column Reorder Rules (First Column "To Do" Protection Only)', () => {
           columnIndex={2}
           totalColumns={5}
           onMoveColumn={mockMove}
-        />
+        />,
       );
 
       const columnRegion = screen.getByRole('region', { name: /Coluna Code Review/i });

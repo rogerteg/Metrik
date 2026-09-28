@@ -35,7 +35,7 @@ describe('TaskDetailsModal Autosave & Close Guard (US1 - Feature 032)', () => {
         onClose={onClose}
         onUpdateTask={onUpdateTask}
         autoSaveComments={false}
-      />
+      />,
     );
 
     const descTextarea = screen.getByPlaceholderText(/adicione uma descrição detalhada/i);
@@ -77,7 +77,7 @@ describe('TaskDetailsModal Autosave & Close Guard (US1 - Feature 032)', () => {
         onClose={onClose}
         onUpdateTask={onUpdateTask}
         autoSaveComments={false}
-      />
+      />,
     );
 
     const descTextarea = screen.getByPlaceholderText(/adicione uma descrição detalhada/i);
@@ -121,7 +121,7 @@ describe('TaskDetailsModal Autosave & Close Guard (US1 - Feature 032)', () => {
         onClose={onClose}
         onUpdateTask={onUpdateTask}
         autoSaveComments={false}
-      />
+      />,
     );
 
     const descTextarea = screen.getByPlaceholderText(/adicione uma descrição detalhada/i);

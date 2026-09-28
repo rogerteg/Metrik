@@ -52,7 +52,11 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
 
   const handlePushToCloud = async () => {
     if (!configStatus.isConfigured) {
-      if (onShowToast) onShowToast('Configure as credenciais do Supabase no .env antes de sincronizar.', 'warning');
+      if (onShowToast)
+        onShowToast(
+          'Configure as credenciais do Supabase no .env antes de sincronizar.',
+          'warning',
+        );
       return;
     }
 
@@ -91,11 +95,19 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
 
   const handlePullFromCloud = async () => {
     if (!configStatus.isConfigured) {
-      if (onShowToast) onShowToast('Configure as credenciais do Supabase no .env antes de sincronizar.', 'warning');
+      if (onShowToast)
+        onShowToast(
+          'Configure as credenciais do Supabase no .env antes de sincronizar.',
+          'warning',
+        );
       return;
     }
 
-    if (!window.confirm('Baixar os dados da nuvem atualizará seu armazenamento local com os dados remotos. Deseja continuar?')) {
+    if (
+      !window.confirm(
+        'Baixar os dados da nuvem atualizará seu armazenamento local com os dados remotos. Deseja continuar?',
+      )
+    ) {
       return;
     }
 
@@ -105,7 +117,11 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
     setIsPulling(false);
 
     if (result.ok && result.data) {
-      const { workspaces: remoteWs, boards: remoteBoards, tasksByBoardId: remoteTasks } = result.data;
+      const {
+        workspaces: remoteWs,
+        boards: remoteBoards,
+        tasksByBoardId: remoteTasks,
+      } = result.data;
 
       // Salvar no localStorage
       try {
@@ -142,7 +158,11 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
   };
 
   return (
-    <div className="settings-tab-content cloud-sync-tab" role="tabpanel" aria-label="Nuvem & Supabase">
+    <div
+      className="settings-tab-content cloud-sync-tab"
+      role="tabpanel"
+      aria-label="Nuvem & Supabase"
+    >
       {/* Banner de Status */}
       <div className="cloud-status-card">
         <div className="cloud-status-header">
@@ -153,8 +173,8 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
                   ? testResult?.ok
                     ? 'status-connected'
                     : testResult
-                    ? 'status-error'
-                    : 'status-configured'
+                      ? 'status-error'
+                      : 'status-configured'
                   : 'status-unconfigured'
               }`}
             />
@@ -164,8 +184,8 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
                   ? testResult?.ok
                     ? 'Conectado ao Supabase'
                     : testResult
-                    ? 'Falha de Conexão'
-                    : 'Configurado (Pronto para Testar)'
+                      ? 'Falha de Conexão'
+                      : 'Configurado (Pronto para Testar)'
                   : 'Modo Local-First Ativo (Sem Nuvem)'}
               </h3>
               <p className="cloud-status-subtitle">
@@ -197,9 +217,7 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
         )}
 
         {lastSyncTime && (
-          <div className="last-sync-tag">
-            Última sincronização realizada às {lastSyncTime}
-          </div>
+          <div className="last-sync-tag">Última sincronização realizada às {lastSyncTime}</div>
         )}
       </div>
 
@@ -207,7 +225,8 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
       <div className="cloud-sync-section">
         <h4 className="cloud-section-heading">Sincronização de Dados</h4>
         <p className="cloud-section-description">
-          Envie o estado completo dos seus espaços, quadros e cartões locais para a nuvem ou recupere o estado salvo no Supabase.
+          Envie o estado completo dos seus espaços, quadros e cartões locais para a nuvem ou
+          recupere o estado salvo no Supabase.
         </p>
 
         <div className="cloud-action-cards-grid">
@@ -216,7 +235,10 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
               <div className="cloud-action-icon push-icon">☁️ ⬆️</div>
               <div>
                 <h5>Enviar para o Supabase (Push)</h5>
-                <p>Salva espaços, quadros e todas as tarefas locais no banco de dados PostgreSQL remoto.</p>
+                <p>
+                  Salva espaços, quadros e todas as tarefas locais no banco de dados PostgreSQL
+                  remoto.
+                </p>
               </div>
             </div>
             <button
@@ -235,7 +257,9 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
               <div className="cloud-action-icon pull-icon">☁️ ⬇️</div>
               <div>
                 <h5>Baixar do Supabase (Pull)</h5>
-                <p>Recupera os dados remotos da nuvem e substitui o estado do seu navegador local.</p>
+                <p>
+                  Recupera os dados remotos da nuvem e substitui o estado do seu navegador local.
+                </p>
               </div>
             </div>
             <button
@@ -263,18 +287,22 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
             e crie um novo projeto.
           </li>
           <li>
-            <strong>2. Crie as tabelas com o script SQL:</strong> No painel do seu projeto no Supabase, abra o <em>SQL Editor</em> e execute o conteúdo do arquivo{' '}
+            <strong>2. Crie as tabelas com o script SQL:</strong> No painel do seu projeto no
+            Supabase, abra o <em>SQL Editor</em> e execute o conteúdo do arquivo{' '}
             <code>supabase/schema.sql</code> gerado no repositório.
           </li>
           <li>
-            <strong>3. Configure suas variáveis de ambiente:</strong> Crie um arquivo <code>.env</code> na raiz do projeto com as chaves encontradas em <em>Project Settings &gt; API</em>:
+            <strong>3. Configure suas variáveis de ambiente:</strong> Crie um arquivo{' '}
+            <code>.env</code> na raiz do projeto com as chaves encontradas em{' '}
+            <em>Project Settings &gt; API</em>:
             <pre className="env-code-block">
-{`VITE_SUPABASE_URL=https://seu-id.supabase.co
+              {`VITE_SUPABASE_URL=https://seu-id.supabase.co
 VITE_SUPABASE_ANON_KEY=sua-chave-publica-anon`}
             </pre>
           </li>
           <li>
-            <strong>4. Reinicie o servidor local:</strong> Execute <code>npm run dev</code> para que o Vite carregue as novas variáveis e clique em <em>Testar Conexão</em> acima.
+            <strong>4. Reinicie o servidor local:</strong> Execute <code>npm run dev</code> para que
+            o Vite carregue as novas variáveis e clique em <em>Testar Conexão</em> acima.
           </li>
         </ol>
       </div>

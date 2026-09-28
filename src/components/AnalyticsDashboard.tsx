@@ -61,7 +61,9 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
   // Determinar tarefas concluídas com base na categoria 'done' das colunas do board (ou fallback column === 'done')
   const completedTasks = useMemo(() => {
     if (board && board.columns.length > 0) {
-      const doneColIds = new Set(board.columns.filter((c) => c.category === 'done').map((c) => c.id));
+      const doneColIds = new Set(
+        board.columns.filter((c) => c.category === 'done').map((c) => c.id),
+      );
       return filteredTasks.filter((t) => doneColIds.has(t.column) || Boolean(t.completedAt));
     }
     return filteredTasks.filter((t) => t.column === 'done' || Boolean(t.completedAt));
@@ -84,7 +86,9 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
   const { throughput, scatter, maxThroughput, maxLeadTime } = useAnalyticsData(completedTasks);
 
   // Estado de intervalo customizado do CFD (Requested after / Finished before)
-  const [cfdCustomDates, setCfdCustomDates] = useState<{ startDate?: string; endDate?: string } | undefined>(undefined);
+  const [cfdCustomDates, setCfdCustomDates] = useState<
+    { startDate?: string; endDate?: string } | undefined
+  >(undefined);
 
   // CFD calculando o fluxo completo com base em todas as colunas do board e filtro customizado
   const cfd = useCfdData(filteredTasks, 14, board?.columns, cfdCustomDates);
@@ -110,10 +114,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
       {/* Visão 1: Cycle Time focado */}
       {activeCategory === 'cycle-time' && (
         <div className="dashboard-focused-view" data-testid="focused-cycle-time-view">
-          <CycleTimeScatterPlot
-            tasks={completedTasks}
-            isExpanded={false}
-          />
+          <CycleTimeScatterPlot tasks={completedTasks} isExpanded={false} />
         </div>
       )}
 
@@ -183,7 +184,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
                 filteredTasks.filter(
                   (t) =>
                     t.column === 'in_progress' ||
-                    board?.columns.find((c) => c.id === t.column)?.category === 'in_progress'
+                    board?.columns.find((c) => c.id === t.column)?.category === 'in_progress',
                 ).length
               }
               recentThroughput={metrics.throughput}
@@ -244,10 +245,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
           aria-modal="true"
           aria-label="Visualização ampliada do gráfico"
         >
-          <div
-            className="chart-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="chart-modal-content" onClick={(e) => e.stopPropagation()}>
             {expandedChart === 'cfd' && (
               <CumulativeFlowChart
                 data={cfd.points}

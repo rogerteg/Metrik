@@ -132,7 +132,11 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
                     <span className="user-item-name">{u.name}</span>
                     <span className="user-item-email">{u.email}</span>
                   </div>
-                  {isActive && <span className="user-active-indicator" title="Ativo">✓</span>}
+                  {isActive && (
+                    <span className="user-active-indicator" title="Ativo">
+                      ✓
+                    </span>
+                  )}
                 </button>
               );
             })}

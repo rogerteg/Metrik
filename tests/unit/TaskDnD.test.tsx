@@ -18,7 +18,7 @@ describe('Task Drag and Drop (US1 & US2)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     const card = screen.getByRole('article', { name: /Testar Drag and Drop/i });
@@ -32,7 +32,7 @@ describe('Task Drag and Drop (US1 & US2)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     const card = screen.getByRole('article', { name: /Testar Drag and Drop/i });
@@ -56,7 +56,7 @@ describe('Task Drag and Drop (US1 & US2)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     const card = screen.getByRole('article', { name: /Testar Drag and Drop/i });
@@ -81,7 +81,7 @@ describe('Task Drag and Drop (US1 & US2)', () => {
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
         onDropTask={handleDrop}
-      />
+      />,
     );
 
     const card = screen.getByRole('article', { name: /Testar Drag and Drop/i });

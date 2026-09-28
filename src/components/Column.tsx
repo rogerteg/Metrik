@@ -1,5 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ColumnModel, TaskModel, PRESET_COLUMN_COLORS, getDefaultColumnColor } from '../types/kanban';
+import {
+  ColumnModel,
+  TaskModel,
+  PRESET_COLUMN_COLORS,
+  getDefaultColumnColor,
+} from '../types/kanban';
 import { clampColumnWidth, resolveColumnWidth } from '../utils/columnGeometry';
 import { isTaskBlocked } from '../utils/taskReorder';
 import { WipLimitBadge } from './WipLimitBadge';
@@ -25,21 +30,31 @@ export interface ColumnProps {
 
 const getBadgeClass = (colorScheme: string): string => {
   switch (colorScheme) {
-    case 'todo': return 'badge-todo';
-    case 'progress': return 'badge-progress';
-    case 'blocked': return 'badge-blocked';
-    case 'completed': return 'badge-completed';
-    default: return 'badge-todo';
+    case 'todo':
+      return 'badge-todo';
+    case 'progress':
+      return 'badge-progress';
+    case 'blocked':
+      return 'badge-blocked';
+    case 'completed':
+      return 'badge-completed';
+    default:
+      return 'badge-todo';
   }
 };
 
 const getColumnModifierClass = (colorScheme: string): string => {
   switch (colorScheme) {
-    case 'todo': return 'kanban-column-todo';
-    case 'progress': return 'kanban-column-progress';
-    case 'blocked': return 'kanban-column-blocked';
-    case 'completed': return 'kanban-column-completed';
-    default: return '';
+    case 'todo':
+      return 'kanban-column-todo';
+    case 'progress':
+      return 'kanban-column-progress';
+    case 'blocked':
+      return 'kanban-column-blocked';
+    case 'completed':
+      return 'kanban-column-completed';
+    default:
+      return '';
   }
 };
 
@@ -71,7 +86,11 @@ export const Column: React.FC<ColumnProps> = ({
   const isFixed = columnIndex === 0;
 
   const canMoveLeft = !isFixed && typeof columnIndex === 'number' && columnIndex > 1;
-  const canMoveRight = !isFixed && typeof columnIndex === 'number' && totalColumns > 0 && columnIndex < totalColumns - 1;
+  const canMoveRight =
+    !isFixed &&
+    typeof columnIndex === 'number' &&
+    totalColumns > 0 &&
+    columnIndex < totalColumns - 1;
 
   const [isDropTarget, setIsDropTarget] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -97,7 +116,6 @@ export const Column: React.FC<ColumnProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isColorPickerOpen]);
-
 
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -134,7 +152,8 @@ export const Column: React.FC<ColumnProps> = ({
 
   const handleDragOver = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
-    const isColumnDrag = e.dataTransfer && Array.from(e.dataTransfer.types).includes('application/x-metrik-column');
+    const isColumnDrag =
+      e.dataTransfer && Array.from(e.dataTransfer.types).includes('application/x-metrik-column');
 
     if (isColumnDrag) {
       if (e.dataTransfer) {
@@ -176,7 +195,9 @@ export const Column: React.FC<ColumnProps> = ({
     setColumnDropIndicator(null);
 
     // 1. Drop de Coluna
-    const sourceColIndexStr = e.dataTransfer ? e.dataTransfer.getData('application/x-metrik-column') : '';
+    const sourceColIndexStr = e.dataTransfer
+      ? e.dataTransfer.getData('application/x-metrik-column')
+      : '';
     if (sourceColIndexStr !== '' && onMoveColumn && typeof columnIndex === 'number') {
       const sourceColIdx = parseInt(sourceColIndexStr, 10);
       if (!Number.isNaN(sourceColIdx) && !isFixed) {
@@ -227,10 +248,15 @@ export const Column: React.FC<ColumnProps> = ({
 
   const handleDelete = () => {
     if (count > 0) {
-      alert('Não é possível excluir uma coluna que contém tarefas. Mova ou exclua as tarefas primeiro.');
+      alert(
+        'Não é possível excluir uma coluna que contém tarefas. Mova ou exclua as tarefas primeiro.',
+      );
       return;
     }
-    if (onDeleteColumn && window.confirm(`Tem certeza que deseja excluir a coluna "${column.title}"?`)) {
+    if (
+      onDeleteColumn &&
+      window.confirm(`Tem certeza que deseja excluir a coluna "${column.title}"?`)
+    ) {
       onDeleteColumn(column.id);
     }
   };
@@ -327,7 +353,11 @@ export const Column: React.FC<ColumnProps> = ({
               />
 
               {isColorPickerOpen && (
-                <div className="column-color-palette-popover" role="dialog" aria-label="Paleta de cores da coluna">
+                <div
+                  className="column-color-palette-popover"
+                  role="dialog"
+                  aria-label="Paleta de cores da coluna"
+                >
                   <div className="column-color-palette-title">Cor da Coluna</div>
                   <div className="column-color-presets-grid">
                     {PRESET_COLUMN_COLORS.map((preset) => (
@@ -346,7 +376,12 @@ export const Column: React.FC<ColumnProps> = ({
                     ))}
                   </div>
                   <div className="column-custom-color-row">
-                    <label htmlFor={`color-input-${column.id}`} className="column-custom-color-label">Personalizada:</label>
+                    <label
+                      htmlFor={`color-input-${column.id}`}
+                      className="column-custom-color-label"
+                    >
+                      Personalizada:
+                    </label>
                     <input
                       id={`color-input-${column.id}`}
                       type="color"
@@ -371,7 +406,11 @@ export const Column: React.FC<ColumnProps> = ({
                 className="btn-move-column"
                 onClick={() => canMoveLeft && onMoveColumn(columnIndex, columnIndex - 1)}
                 disabled={!canMoveLeft}
-                title={canMoveLeft ? 'Mover coluna para a esquerda' : 'Não pode mover para a primeira coluna'}
+                title={
+                  canMoveLeft
+                    ? 'Mover coluna para a esquerda'
+                    : 'Não pode mover para a primeira coluna'
+                }
                 aria-label={`Mover coluna ${column.title} para a esquerda`}
               >
                 ←
@@ -415,7 +454,10 @@ export const Column: React.FC<ColumnProps> = ({
 
       <div className="tasks-list">
         {count === 0 ? (
-          <div className="empty-column-drop-zone" aria-label="Coluna vazia. Arraste um cartão aqui.">
+          <div
+            className="empty-column-drop-zone"
+            aria-label="Coluna vazia. Arraste um cartão aqui."
+          >
             Arraste um cartão aqui
           </div>
         ) : (

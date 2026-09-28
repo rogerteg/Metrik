@@ -128,7 +128,9 @@ describe('useWorkspaces Hook (Feature 029)', () => {
       result.current.addBoardToWorkspace(customId, 'board-temp-1');
     });
 
-    expect(result.current.workspaces.find((w) => w.id === customId)?.boardIds).toContain('board-temp-1');
+    expect(result.current.workspaces.find((w) => w.id === customId)?.boardIds).toContain(
+      'board-temp-1',
+    );
 
     act(() => {
       result.current.deleteWorkspace(customId);

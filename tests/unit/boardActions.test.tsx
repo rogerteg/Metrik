@@ -18,11 +18,13 @@ describe('Global Board Actions (US5)', () => {
     fireEvent.click(clearBtn);
 
     expect(window.confirm).toHaveBeenCalledWith(
-      'Tem certeza de que deseja limpar todas as tarefas do quadro? Esta ação não pode ser desfeita.'
+      'Tem certeza de que deseja limpar todas as tarefas do quadro? Esta ação não pode ser desfeita.',
     );
 
     // Initial seed tasks should still be present
-    expect(screen.getByText('Definir métricas essenciais do ciclo ágil (Lead Time e Cycle Time)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Definir métricas essenciais do ciclo ágil (Lead Time e Cycle Time)'),
+    ).toBeInTheDocument();
   });
 
   it('clears all tasks when user confirms dialog', () => {
@@ -60,6 +62,8 @@ describe('Global Board Actions (US5)', () => {
     const resetBtn = screen.getByRole('button', { name: /restaurar demo/i });
     fireEvent.click(resetBtn);
 
-    expect(screen.getByText('Definir métricas essenciais do ciclo ágil (Lead Time e Cycle Time)')).toBeInTheDocument();
+    expect(
+      screen.getByText('Definir métricas essenciais do ciclo ágil (Lead Time e Cycle Time)'),
+    ).toBeInTheDocument();
   });
 });

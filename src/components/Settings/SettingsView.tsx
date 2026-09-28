@@ -61,7 +61,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             onClick={onBackToBoard}
             aria-label="Voltar ao Quadro"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
@@ -90,7 +99,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               className={`settings-tab-btn ${activeTab === 'general' ? 'active' : ''}`}
               onClick={() => setActiveTab('general')}
             >
-              <span className="tab-icon" aria-hidden="true">⚙️</span>
+              <span className="tab-icon" aria-hidden="true">
+                ⚙️
+              </span>
               <span className="tab-text">Geral & Aparência</span>
             </button>
 
@@ -103,7 +114,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               className={`settings-tab-btn ${activeTab === 'workspaces' ? 'active' : ''}`}
               onClick={() => setActiveTab('workspaces')}
             >
-              <span className="tab-icon" aria-hidden="true">🏢</span>
+              <span className="tab-icon" aria-hidden="true">
+                🏢
+              </span>
               <span className="tab-text">Espaços & Squads</span>
             </button>
 
@@ -116,7 +129,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               className={`settings-tab-btn ${activeTab === 'policies' ? 'active' : ''}`}
               onClick={() => setActiveTab('policies')}
             >
-              <span className="tab-icon" aria-hidden="true">📊</span>
+              <span className="tab-icon" aria-hidden="true">
+                📊
+              </span>
               <span className="tab-text">Políticas de Fluxo</span>
             </button>
 
@@ -129,7 +144,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               className={`settings-tab-btn ${activeTab === 'data' ? 'active' : ''}`}
               onClick={() => setActiveTab('data')}
             >
-              <span className="tab-icon" aria-hidden="true">💾</span>
+              <span className="tab-icon" aria-hidden="true">
+                💾
+              </span>
               <span className="tab-text">Portabilidade & Dados</span>
             </button>
 
@@ -142,7 +159,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               className={`settings-tab-btn ${activeTab === 'cloud' ? 'active' : ''}`}
               onClick={() => setActiveTab('cloud')}
             >
-              <span className="tab-icon" aria-hidden="true">☁️</span>
+              <span className="tab-icon" aria-hidden="true">
+                ☁️
+              </span>
               <span className="tab-text">Nuvem & Supabase</span>
             </button>
           </nav>
@@ -151,10 +170,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         {/* Coluna Direita: Conteúdo da Aba Ativa */}
         <main className="settings-content-column">
           {activeTab === 'general' && (
-            <GeneralSettingsTab
-              settings={settings}
-              onUpdateSettings={onUpdateSettings}
-            />
+            <GeneralSettingsTab settings={settings} onUpdateSettings={onUpdateSettings} />
           )}
 
           {activeTab === 'workspaces' && (
@@ -170,9 +186,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           {activeTab === 'policies' && (
             <BoardPoliciesTab
               showWipLimits={settings.showWipLimits}
-              onToggleWipLimits={(enabled) =>
-                onUpdateSettings({ showWipLimits: enabled })
-              }
+              onToggleWipLimits={(enabled) => onUpdateSettings({ showWipLimits: enabled })}
             />
           )}
 

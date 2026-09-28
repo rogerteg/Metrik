@@ -95,12 +95,20 @@ export const BoardTableView: React.FC<BoardTableViewProps> = ({
       <table className="manage-boards-table">
         <thead>
           <tr>
-            <th scope="col" className="col-status">Status</th>
+            <th scope="col" className="col-status">
+              Status
+            </th>
             <th
               scope="col"
               className="col-name sortable"
               onClick={() => handleSort('name')}
-              aria-sort={sortField === 'name' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              aria-sort={
+                sortField === 'name'
+                  ? sortDirection === 'asc'
+                    ? 'ascending'
+                    : 'descending'
+                  : 'none'
+              }
             >
               Nome do Quadro {sortField === 'name' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
             </th>
@@ -108,7 +116,13 @@ export const BoardTableView: React.FC<BoardTableViewProps> = ({
               scope="col"
               className="col-squad sortable"
               onClick={() => handleSort('squad')}
-              aria-sort={sortField === 'squad' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              aria-sort={
+                sortField === 'squad'
+                  ? sortDirection === 'asc'
+                    ? 'ascending'
+                    : 'descending'
+                  : 'none'
+              }
             >
               Squad / Time {sortField === 'squad' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
             </th>
@@ -116,7 +130,13 @@ export const BoardTableView: React.FC<BoardTableViewProps> = ({
               scope="col"
               className="col-num sortable"
               onClick={() => handleSort('columns')}
-              aria-sort={sortField === 'columns' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              aria-sort={
+                sortField === 'columns'
+                  ? sortDirection === 'asc'
+                    ? 'ascending'
+                    : 'descending'
+                  : 'none'
+              }
             >
               Colunas {sortField === 'columns' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
             </th>
@@ -124,7 +144,13 @@ export const BoardTableView: React.FC<BoardTableViewProps> = ({
               scope="col"
               className="col-num sortable"
               onClick={() => handleSort('tasks')}
-              aria-sort={sortField === 'tasks' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              aria-sort={
+                sortField === 'tasks'
+                  ? sortDirection === 'asc'
+                    ? 'ascending'
+                    : 'descending'
+                  : 'none'
+              }
             >
               Tarefas {sortField === 'tasks' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
             </th>
@@ -132,7 +158,13 @@ export const BoardTableView: React.FC<BoardTableViewProps> = ({
               scope="col"
               className="col-num sortable"
               onClick={() => handleSort('wip')}
-              aria-sort={sortField === 'wip' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              aria-sort={
+                sortField === 'wip'
+                  ? sortDirection === 'asc'
+                    ? 'ascending'
+                    : 'descending'
+                  : 'none'
+              }
             >
               WIP {sortField === 'wip' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
             </th>
@@ -140,11 +172,19 @@ export const BoardTableView: React.FC<BoardTableViewProps> = ({
               scope="col"
               className="col-num sortable"
               onClick={() => handleSort('done')}
-              aria-sort={sortField === 'done' ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
+              aria-sort={
+                sortField === 'done'
+                  ? sortDirection === 'asc'
+                    ? 'ascending'
+                    : 'descending'
+                  : 'none'
+              }
             >
               Concluídas {sortField === 'done' ? (sortDirection === 'asc' ? '▲' : '▼') : ''}
             </th>
-            <th scope="col" className="col-actions">Ações</th>
+            <th scope="col" className="col-actions">
+              Ações
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -157,7 +197,11 @@ export const BoardTableView: React.FC<BoardTableViewProps> = ({
               >
                 <td className="col-status">
                   {metrics.isActive ? (
-                    <span className="table-active-dot" title="Quadro Ativo" aria-label="Quadro Ativo">
+                    <span
+                      className="table-active-dot"
+                      title="Quadro Ativo"
+                      aria-label="Quadro Ativo"
+                    >
                       ●
                     </span>
                   ) : (

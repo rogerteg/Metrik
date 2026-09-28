@@ -75,8 +75,20 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
     const testBoard: BoardState = {
       columns: [
         { id: 'todo', title: 'A Fazer', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-        { id: 'in_progress', title: 'Em Progresso', category: 'in_progress', wipLimit: 3, colorScheme: 'progress' },
-        { id: 'done', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
+        {
+          id: 'in_progress',
+          title: 'Em Progresso',
+          category: 'in_progress',
+          wipLimit: 3,
+          colorScheme: 'progress',
+        },
+        {
+          id: 'done',
+          title: 'Concluído',
+          category: 'done',
+          wipLimit: null,
+          colorScheme: 'completed',
+        },
       ],
       tasks: {
         todo: [],
@@ -138,7 +150,9 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
       expect(alertSpy).toHaveBeenCalledWith(FLOW_REGRESSION_WARNING_MESSAGE);
 
       // Task must remain in current column ('in-progress') and NOT move to 'todo'
-      expect(result.current.board.tasks[inProgressColId].some((t) => t.id === createdTaskId)).toBe(true);
+      expect(result.current.board.tasks[inProgressColId].some((t) => t.id === createdTaskId)).toBe(
+        true,
+      );
       expect(result.current.board.tasks[todoColId].some((t) => t.id === createdTaskId)).toBe(false);
     });
 
@@ -167,7 +181,9 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
       expect(alertSpy).toHaveBeenCalledWith(FLOW_REGRESSION_WARNING_MESSAGE);
 
       // Task must strictly remain in completedColId
-      expect(result.current.board.tasks[completedColId].some((t) => t.id === createdTaskId)).toBe(true);
+      expect(result.current.board.tasks[completedColId].some((t) => t.id === createdTaskId)).toBe(
+        true,
+      );
       expect(result.current.board.tasks[todoColId].some((t) => t.id === createdTaskId)).toBe(false);
     });
 
@@ -190,7 +206,9 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
       });
 
       expect(confirmSpy).not.toHaveBeenCalled();
-      expect(result.current.board.tasks[inProgressColId].some((t) => t.id === createdTaskId)).toBe(true);
+      expect(result.current.board.tasks[inProgressColId].some((t) => t.id === createdTaskId)).toBe(
+        true,
+      );
     });
   });
 
@@ -211,13 +229,7 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
         tasks: {},
       };
 
-      render(
-        <Board
-          board={twelveColsBoard}
-          onAddTask={vi.fn()}
-          onOpenNewColumnModal={vi.fn()}
-        />
-      );
+      render(<Board board={twelveColsBoard} onAddTask={vi.fn()} onOpenNewColumnModal={vi.fn()} />);
 
       expect(screen.getByText('Excesso de colunas, cuidado.')).toBeInTheDocument();
       expect(screen.getByRole('alert')).toBeInTheDocument();
@@ -234,18 +246,18 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
       const fourColsBoard: BoardState = {
         columns: [
           { id: 'c1', title: 'A Fazer', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-          { id: 'c2', title: 'Em Progresso', category: 'in_progress', wipLimit: 3, colorScheme: 'progress' },
+          {
+            id: 'c2',
+            title: 'Em Progresso',
+            category: 'in_progress',
+            wipLimit: 3,
+            colorScheme: 'progress',
+          },
         ],
         tasks: {},
       };
 
-      render(
-        <Board
-          board={fourColsBoard}
-          onAddTask={vi.fn()}
-          onOpenNewColumnModal={vi.fn()}
-        />
-      );
+      render(<Board board={fourColsBoard} onAddTask={vi.fn()} onOpenNewColumnModal={vi.fn()} />);
 
       expect(screen.queryByText(/excesso de colunas, cuidado/i)).toBeNull();
       const addColBtn = screen.getByRole('button', { name: /adicionar nova coluna/i });
@@ -267,7 +279,7 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
           onClose={handleClose}
           onAddColumn={handleAddColumn}
           currentColumnCount={4}
-        />
+        />,
       );
 
       const titleInput = screen.getByLabelText(/título da coluna/i);
@@ -292,7 +304,7 @@ describe('Feature 014: Column Limit & Unidirectional Flow Guard', () => {
           onClose={vi.fn()}
           onAddColumn={vi.fn()}
           currentColumnCount={12}
-        />
+        />,
       );
 
       expect(screen.getByText('Excesso de colunas, cuidado.')).toBeInTheDocument();

@@ -4,16 +4,14 @@ import { BoardState } from '../../src/types/kanban';
 
 describe('taskReorderRelative (Vertical Reordering in Same Column)', () => {
   const threeTaskBoard: BoardState = {
-    columns: [
-      { id: 'todo', title: 'Todo', category: 'todo', wipLimit: null, colorScheme: 'todo' }
-    ],
+    columns: [{ id: 'todo', title: 'Todo', category: 'todo', wipLimit: null, colorScheme: 'todo' }],
     tasks: {
-      'todo': [
+      todo: [
         { id: 'task-A', title: 'Task A', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
         { id: 'task-B', title: 'Task B', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
         { id: 'task-C', title: 'Task C', column: 'todo', createdAt: '2026-09-08T10:00:00Z' },
       ],
-    }
+    },
   };
 
   it('moves task C before task A', () => {

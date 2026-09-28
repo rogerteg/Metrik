@@ -17,7 +17,7 @@ describe('DatasetConfigurationDrawer component (Feature 030)', () => {
         config={defaultConfig}
         onUpdateConfig={vi.fn()}
         onResetToDefaults={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText('Configuração do Conjunto de Dados')).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe('DatasetConfigurationDrawer component (Feature 030)', () => {
         config={defaultConfig}
         onUpdateConfig={vi.fn()}
         onResetToDefaults={vi.fn()}
-      />
+      />,
     );
 
     expect(container.querySelector('.dataset-drawer-backdrop')).not.toBeInTheDocument();
@@ -51,7 +51,7 @@ describe('DatasetConfigurationDrawer component (Feature 030)', () => {
         config={defaultConfig}
         onUpdateConfig={handleUpdate}
         onResetToDefaults={vi.fn()}
-      />
+      />,
     );
 
     const btn14 = screen.getByTestId('window-btn-14');
@@ -69,7 +69,7 @@ describe('DatasetConfigurationDrawer component (Feature 030)', () => {
         config={defaultConfig}
         onUpdateConfig={vi.fn()}
         onResetToDefaults={handleReset}
-      />
+      />,
     );
 
     const resetBtn = screen.getByRole('button', { name: /Redefinir aos Padrões/i });

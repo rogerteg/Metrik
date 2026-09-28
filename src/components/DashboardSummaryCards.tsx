@@ -31,7 +31,10 @@ export const DashboardSummaryCards: React.FC<DashboardSummaryCardsProps> = ({
   onNavigateToBlockers,
 }) => {
   return (
-    <div className="dashboard-summary-cards-grid" aria-label="Cartões de Síntese Executiva de Fluxo">
+    <div
+      className="dashboard-summary-cards-grid"
+      aria-label="Cartões de Síntese Executiva de Fluxo"
+    >
       {/* 1. Card de Expectativa de Nível de Serviço (SLE) */}
       <div
         className="summary-kpi-card is-clickable"

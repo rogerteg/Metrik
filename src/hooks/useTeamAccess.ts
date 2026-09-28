@@ -172,7 +172,7 @@ export function useTeamAccess() {
       safeSetStorage(USERS_STORAGE_KEY, updated);
       return newUser;
     },
-    [users]
+    [users],
   );
 
   const createTeam = useCallback(
@@ -211,7 +211,7 @@ export function useTeamAccess() {
 
       return newTeam;
     },
-    [activeUserId, activeUser, teams, teamMembers]
+    [activeUserId, activeUser, teams, teamMembers],
   );
 
   const updateTeam = useCallback(
@@ -221,14 +221,15 @@ export function useTeamAccess() {
         return {
           ...t,
           name: updates.name !== undefined ? updates.name.trim() : t.name,
-          description: updates.description !== undefined ? updates.description.trim() : t.description,
+          description:
+            updates.description !== undefined ? updates.description.trim() : t.description,
         };
       });
 
       setTeams(updatedTeams);
       safeSetStorage(TEAMS_STORAGE_KEY, updatedTeams);
     },
-    [teams]
+    [teams],
   );
 
   const getUserRoleInTeam = useCallback(
@@ -239,13 +240,13 @@ export function useTeamAccess() {
       const member = teamMembers.find((m) => m.teamId === teamId && m.userId === targetUserId);
       return member ? member.role : null;
     },
-    [activeUser, teamMembers]
+    [activeUser, teamMembers],
   );
 
   const myTeams = useMemo(() => {
     if (!activeUser) return [];
     const myTeamIds = new Set(
-      teamMembers.filter((m) => m.userId === activeUser.id).map((m) => m.teamId)
+      teamMembers.filter((m) => m.userId === activeUser.id).map((m) => m.teamId),
     );
     return teams.filter((t) => myTeamIds.has(t.id));
   }, [teams, teamMembers, activeUser]);
@@ -258,7 +259,7 @@ export function useTeamAccess() {
         user: users.find((u) => u.id === m.userId),
       }));
     },
-    [teamMembers, users]
+    [teamMembers, users],
   );
 
   const addMember = useCallback(
@@ -281,7 +282,7 @@ export function useTeamAccess() {
       safeSetStorage(TEAM_MEMBERS_STORAGE_KEY, updated);
       return newMember;
     },
-    [teamMembers]
+    [teamMembers],
   );
 
   const removeMember = useCallback(
@@ -302,7 +303,7 @@ export function useTeamAccess() {
       setTeamMembers(updated);
       safeSetStorage(TEAM_MEMBERS_STORAGE_KEY, updated);
     },
-    [teamMembers]
+    [teamMembers],
   );
 
   const updateMemberRole = useCallback(
@@ -329,7 +330,7 @@ export function useTeamAccess() {
       setTeamMembers(updated);
       safeSetStorage(TEAM_MEMBERS_STORAGE_KEY, updated);
     },
-    [teamMembers]
+    [teamMembers],
   );
 
   const createInvitation = useCallback(
@@ -362,13 +363,15 @@ export function useTeamAccess() {
       safeSetStorage(TEAM_INVITATIONS_STORAGE_KEY, updated);
       return newInvite;
     },
-    [activeUser, invitations]
+    [activeUser, invitations],
   );
 
   const acceptInvitation = useCallback(
     (code: string, userId?: string) => {
       const cleanCode = code.trim().toUpperCase();
-      const invite = invitations.find((inv) => inv.code.toUpperCase() === cleanCode && inv.status === 'pending');
+      const invite = invitations.find(
+        (inv) => inv.code.toUpperCase() === cleanCode && inv.status === 'pending',
+      );
 
       if (!invite) {
         throw new Error('Convite inválido ou já utilizado.');
@@ -397,7 +400,7 @@ export function useTeamAccess() {
       setInvitations(updatedInvites);
       safeSetStorage(TEAM_INVITATIONS_STORAGE_KEY, updatedInvites);
     },
-    [invitations, activeUser, addMember]
+    [invitations, activeUser, addMember],
   );
 
   const revokeInvitation = useCallback(
@@ -411,7 +414,7 @@ export function useTeamAccess() {
       setInvitations(updated);
       safeSetStorage(TEAM_INVITATIONS_STORAGE_KEY, updated);
     },
-    [invitations]
+    [invitations],
   );
 
   const getPendingInvitationsForUser = useCallback(
@@ -419,10 +422,10 @@ export function useTeamAccess() {
       const targetEmail = email || (activeUser ? activeUser.email : '');
       if (!targetEmail) return [];
       return invitations.filter(
-        (inv) => inv.email.toLowerCase() === targetEmail.toLowerCase() && inv.status === 'pending'
+        (inv) => inv.email.toLowerCase() === targetEmail.toLowerCase() && inv.status === 'pending',
       );
     },
-    [activeUser, invitations]
+    [activeUser, invitations],
   );
 
   const isBoardAccessible = useCallback(
@@ -433,12 +436,12 @@ export function useTeamAccess() {
       if (!targetUserId) return false;
 
       const member = teamMembers.find(
-        (m) => m.teamId === effectiveTeamId && m.userId === targetUserId
+        (m) => m.teamId === effectiveTeamId && m.userId === targetUserId,
       );
 
       return !!member;
     },
-    [activeUser, teamMembers]
+    [activeUser, teamMembers],
   );
 
   return {

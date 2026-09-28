@@ -33,9 +33,12 @@ export const BoardManagementModal: React.FC<BoardManagementModalProps> = ({
   const [editName, setEditName] = useState('');
 
   // Teams where user is member
-  const myTeams = teams && activeUserId
-    ? teams.filter((t) => Array.isArray(t.members) && t.members.some((m: any) => m.userId === activeUserId))
-    : [];
+  const myTeams =
+    teams && activeUserId
+      ? teams.filter(
+          (t) => Array.isArray(t.members) && t.members.some((m: any) => m.userId === activeUserId),
+        )
+      : [];
 
   const [selectedTeamId, setSelectedTeamId] = useState<string>(myTeams[0]?.id || '');
 
@@ -77,7 +80,7 @@ export const BoardManagementModal: React.FC<BoardManagementModalProps> = ({
       return;
     }
     const confirmed = window.confirm(
-      'Tem certeza de que deseja deletar este quadro? Todas as tarefas dele serão perdidas permanentemente.'
+      'Tem certeza de que deseja deletar este quadro? Todas as tarefas dele serão perdidas permanentemente.',
     );
     if (confirmed) {
       onDeleteBoard(id);
@@ -86,7 +89,11 @@ export const BoardManagementModal: React.FC<BoardManagementModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '540px' }}>
+      <div
+        className="modal-content"
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: '540px' }}
+      >
         <div className="modal-header">
           <h2>Gerenciar Quadros</h2>
           <button type="button" className="btn-close" onClick={onClose} aria-label="Fechar">
@@ -94,8 +101,14 @@ export const BoardManagementModal: React.FC<BoardManagementModalProps> = ({
           </button>
         </div>
 
-        <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div
+          className="modal-body"
+          style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
+        >
+          <form
+            onSubmit={handleCreate}
+            style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
+          >
             <div style={{ display: 'flex', gap: '8px' }}>
               <input
                 type="text"
@@ -112,7 +125,9 @@ export const BoardManagementModal: React.FC<BoardManagementModalProps> = ({
 
             {myTeams.length > 0 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Squad do Quadro:</label>
+                <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  Squad do Quadro:
+                </label>
                 <select
                   data-testid="board-team-select"
                   value={selectedTeamId}
@@ -130,7 +145,10 @@ export const BoardManagementModal: React.FC<BoardManagementModalProps> = ({
             )}
           </form>
 
-          <div className="boards-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div
+            className="boards-list"
+            style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
+          >
             <h3 style={{ fontSize: '1rem', marginBottom: '8px' }}>Meus Quadros</h3>
             {boards.map((board) => {
               const boardTeam = teams?.find((t) => t.id === board.teamId);
@@ -142,8 +160,12 @@ export const BoardManagementModal: React.FC<BoardManagementModalProps> = ({
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '12px',
-                    background: board.id === activeBoardId ? 'var(--column-bg)' : 'var(--bg-elevated)',
-                    border: board.id === activeBoardId ? '1px solid var(--accent-color, #6366f1)' : '1px solid var(--border-color)',
+                    background:
+                      board.id === activeBoardId ? 'var(--column-bg)' : 'var(--bg-elevated)',
+                    border:
+                      board.id === activeBoardId
+                        ? '1px solid var(--accent-color, #6366f1)'
+                        : '1px solid var(--border-color)',
                     borderRadius: '8px',
                   }}
                 >
@@ -188,7 +210,13 @@ export const BoardManagementModal: React.FC<BoardManagementModalProps> = ({
                         </span>
                       )}
                       {board.id === activeBoardId && (
-                        <span style={{ fontSize: '0.8rem', color: 'var(--accent-color, #6366f1)', marginLeft: '8px' }}>
+                        <span
+                          style={{
+                            fontSize: '0.8rem',
+                            color: 'var(--accent-color, #6366f1)',
+                            marginLeft: '8px',
+                          }}
+                        >
                           (Ativo)
                         </span>
                       )}

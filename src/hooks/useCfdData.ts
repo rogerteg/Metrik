@@ -56,7 +56,7 @@ export const calculateCfd = (
   tasks: TaskModel[],
   daysCount = 14,
   columns?: ColumnModel[],
-  customDateRange?: { startDate?: string; endDate?: string }
+  customDateRange?: { startDate?: string; endDate?: string },
 ): CfdData => {
   let days: string[];
   if (customDateRange?.startDate && customDateRange?.endDate) {
@@ -115,9 +115,7 @@ export const calculateCfd = (
 
       const isCreated = createdDay !== '' && createdDay <= date;
       const isCompleted = isCreated && completedDay !== '' && completedDay <= date;
-      const isStarted = isCreated && (
-        (startedDay !== '' && startedDay <= date) || isCompleted
-      );
+      const isStarted = isCreated && ((startedDay !== '' && startedDay <= date) || isCompleted);
 
       if (isCreated) createdCount++;
       if (isStarted) startedCount++;
@@ -138,7 +136,8 @@ export const calculateCfd = (
             stageCounts[currentCol.id] = (stageCounts[currentCol.id] || 0) + 1;
           } else {
             // Fallback para a primeira coluna em progresso
-            const firstProgress = columns.find((c) => c.category === 'in_progress') || columns[1] || columns[0];
+            const firstProgress =
+              columns.find((c) => c.category === 'in_progress') || columns[1] || columns[0];
             if (firstProgress) {
               stageCounts[firstProgress.id] = (stageCounts[firstProgress.id] || 0) + 1;
             }
@@ -201,10 +200,10 @@ export const useCfdData = (
   tasks: TaskModel[],
   daysCount = 14,
   columns?: ColumnModel[],
-  customDateRange?: { startDate?: string; endDate?: string }
+  customDateRange?: { startDate?: string; endDate?: string },
 ): CfdData => {
   return useMemo(
     () => calculateCfd(tasks, daysCount, columns, customDateRange),
-    [tasks, daysCount, columns, customDateRange?.startDate, customDateRange?.endDate]
+    [tasks, daysCount, columns, customDateRange?.startDate, customDateRange?.endDate],
   );
 };

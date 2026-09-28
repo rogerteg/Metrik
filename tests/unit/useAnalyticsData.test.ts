@@ -16,14 +16,14 @@ describe('useAnalyticsData Hook', () => {
 
   it('generates a 14-day window filled with zeros for empty tasks', () => {
     const { result } = renderHook(() => useAnalyticsData([]));
-    
+
     expect(result.current.throughput).toHaveLength(14);
-    
+
     // Day 0 should be 13 days ago: Aug 28 (31 days in Aug) -> 28, 29, 30, 31, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
     expect(result.current.throughput[0].date).toBe('2026-08-28');
     expect(result.current.throughput[13].date).toBe('2026-09-10');
-    
-    result.current.throughput.forEach(tp => {
+
+    result.current.throughput.forEach((tp) => {
       expect(tp.count).toBe(0);
     });
 
@@ -61,28 +61,28 @@ describe('useAnalyticsData Hook', () => {
         column: 'done',
         createdAt: '2026-01-01T10:00:00Z',
         completedAt: '2026-01-05T10:00:00Z',
-      }
+      },
     ];
 
     const { result } = renderHook(() => useAnalyticsData(completedTasks));
 
     // Throughput assertions
-    const sep5 = result.current.throughput.find(t => t.date === '2026-09-05');
-    const sep9 = result.current.throughput.find(t => t.date === '2026-09-09');
-    
+    const sep5 = result.current.throughput.find((t) => t.date === '2026-09-05');
+    const sep9 = result.current.throughput.find((t) => t.date === '2026-09-09');
+
     expect(sep5?.count).toBe(2);
     expect(sep9?.count).toBe(1);
-    
+
     // Scatter assertions
     expect(result.current.scatter).toHaveLength(3); // Task 4 is ignored
-    
-    const scatterTask1 = result.current.scatter.find(s => s.id === '1');
+
+    const scatterTask1 = result.current.scatter.find((s) => s.id === '1');
     expect(scatterTask1?.completedAt).toBe('2026-09-05');
     expect(scatterTask1?.leadTimeDays).toBeGreaterThan(4);
     expect(scatterTask1?.leadTimeDays).toBeLessThan(5);
 
     // Max values
     expect(result.current.maxThroughput).toBe(2);
-    expect(result.current.maxLeadTime).toBe(scatterTask1?.leadTimeDays); 
+    expect(result.current.maxLeadTime).toBe(scatterTask1?.leadTimeDays);
   });
 });

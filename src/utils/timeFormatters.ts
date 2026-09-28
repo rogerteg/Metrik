@@ -102,11 +102,13 @@ export const getDueDateStatus = (dueDateStr: string, isTaskCompleted: boolean): 
 export const formatDateShort = (dateStr: string): string => {
   const [year, month, day] = dateStr.split('-');
   const date = new Date(Number(year), Number(month) - 1, Number(day));
-  
-  return date.toLocaleDateString('pt-BR', {
-    day: 'numeric',
-    month: 'short'
-  }).replace('.', ''); // some browsers add a dot to short months
+
+  return date
+    .toLocaleDateString('pt-BR', {
+      day: 'numeric',
+      month: 'short',
+    })
+    .replace('.', ''); // some browsers add a dot to short months
 };
 
 /**
@@ -132,4 +134,3 @@ export function calculateTaskBlockedTimeMs(task: TaskModel, nowMs: number = Date
 export function formatBlockedTime(ms: number): string {
   return formatDuration(ms);
 }
-

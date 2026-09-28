@@ -59,12 +59,7 @@ export const CfdTimelineScrubber: React.FC<CfdTimelineScrubberProps> = ({
         >
           {/* Miniatura do CFD */}
           <polygon points={areaPolygon} fill="rgba(56, 189, 248, 0.25)" />
-          <polyline
-            points={pointsString}
-            fill="none"
-            stroke="#38bdf8"
-            strokeWidth="1.5"
-          />
+          <polyline points={pointsString} fill="none" stroke="#38bdf8" strokeWidth="1.5" />
 
           {/* Janela de Seleção / Overlay */}
           <rect

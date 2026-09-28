@@ -9,7 +9,9 @@ import { Board } from './components/Board';
 import { Task } from './components/Task';
 import { TaskDetailsModal } from './components/TaskDetailsModal';
 const AnalyticsDashboard = React.lazy(() =>
-  import('./components/AnalyticsDashboard').then((module) => ({ default: module.AnalyticsDashboard }))
+  import('./components/AnalyticsDashboard').then((module) => ({
+    default: module.AnalyticsDashboard,
+  })),
 );
 import { useBoards } from './hooks/useBoards';
 import { BoardSwitcher } from './components/BoardSwitcher';
@@ -19,7 +21,11 @@ import { useColumnWidths } from './hooks/useColumnWidths';
 import { useTheme } from './hooks/useTheme';
 import { ThemeSelector } from './components/ThemeSelector';
 import { ToastNotification } from './components/ToastNotification';
-import { getDefaultColumnColor, TaskModel, BLOCKED_TASK_MOVE_WARNING_MESSAGE } from './types/kanban';
+import {
+  getDefaultColumnColor,
+  TaskModel,
+  BLOCKED_TASK_MOVE_WARNING_MESSAGE,
+} from './types/kanban';
 import { isTaskBlocked } from './utils/taskReorder';
 import { ReorderOptions } from './types/dnd';
 import { useTeamAccess } from './hooks/useTeamAccess';
@@ -63,14 +69,7 @@ export const App: React.FC = () => {
   } = useTeamAccess();
 
   const [isTeamModalOpen, setIsTeamModalOpen] = React.useState(false);
-  const {
-    boards,
-    activeBoardId,
-    createBoard,
-    switchBoard,
-    renameBoard,
-    deleteBoard
-  } = useBoards();
+  const { boards, activeBoardId, createBoard, switchBoard, renameBoard, deleteBoard } = useBoards();
 
   const activeBoard = boards.find((b) => b.id === activeBoardId);
   const isAuthorized = activeBoard ? isBoardAccessible(activeBoard.teamId) : true;
@@ -81,7 +80,7 @@ export const App: React.FC = () => {
   const isAdmin = activeBoardUserRole === 'admin';
   const currentUser = React.useMemo(
     () => ({ id: activeUser?.id ?? activeUserId, name: activeUser?.name ?? 'Rogerio Teixeira' }),
-    [activeUser, activeUserId]
+    [activeUser, activeUserId],
   );
 
   // Auto-switch to first accessible board if active board is not accessible (e.g. on profile switch)
@@ -147,7 +146,9 @@ export const App: React.FC = () => {
 
   const { settings, updateSettings } = useAppSettings();
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = React.useState(false);
-  const [view, setView] = React.useState<'workspaces' | 'board' | 'analytics' | 'manage' | 'settings'>('board');
+  const [view, setView] = React.useState<
+    'workspaces' | 'board' | 'analytics' | 'manage' | 'settings'
+  >('board');
 
   const handleUpdateSettings = (patch: Partial<typeof settings>) => {
     updateSettings(patch);
@@ -168,12 +169,12 @@ export const App: React.FC = () => {
       .filter((col) => col.category === 'done')
       .flatMap((col) => board.tasks[col.id] || []);
   }, [board.columns, board.tasks]);
-  
+
   const flowMetrics = useFlowMetrics(completedTasks, allBoardTasks);
 
   const handleClearBoard = () => {
     const confirmed = window.confirm(
-      'Tem certeza de que deseja limpar todas as tarefas do quadro? Esta ação não pode ser desfeita.'
+      'Tem certeza de que deseja limpar todas as tarefas do quadro? Esta ação não pode ser desfeita.',
     );
     if (confirmed) {
       clearTasks();
@@ -181,7 +182,12 @@ export const App: React.FC = () => {
   };
 
   const handleAddLink = React.useCallback(
-    (targetTaskId: string, relationType: TaskRelationType, targetBoardId: string, targetTeamId: string) => {
+    (
+      targetTaskId: string,
+      relationType: TaskRelationType,
+      targetBoardId: string,
+      targetTeamId: string,
+    ) => {
       if (!selectedTaskId || !activeBoardId) return;
 
       const sourceTask = allBoardTasks.find((t) => t.id === selectedTaskId);
@@ -235,7 +241,7 @@ export const App: React.FC = () => {
 
               for (const colId of Object.keys(parsed.tasks)) {
                 parsed.tasks[colId] = (parsed.tasks[colId] as TaskModel[]).map((t) =>
-                  t.id === targetTaskId ? updatedTarget : t
+                  t.id === targetTaskId ? updatedTarget : t,
                 );
               }
               localStorage.setItem(storageKey, JSON.stringify(parsed));
@@ -246,7 +252,7 @@ export const App: React.FC = () => {
         }
       }
     },
-    [selectedTaskId, activeBoardId, allBoardTasks, effectiveTeamId, updateTask]
+    [selectedTaskId, activeBoardId, allBoardTasks, effectiveTeamId, updateTask],
   );
 
   const handleRemoveLink = React.useCallback(
@@ -300,7 +306,7 @@ export const App: React.FC = () => {
         }
       }
     },
-    [selectedTaskId, activeBoardId, allBoardTasks, updateTask]
+    [selectedTaskId, activeBoardId, allBoardTasks, updateTask],
   );
 
   const [softBlockState, setSoftBlockState] = React.useState<{
@@ -337,7 +343,7 @@ export const App: React.FC = () => {
 
       moveTask(taskId, targetColumnId);
     },
-    [allBoardTasks, board.columns, moveTask]
+    [allBoardTasks, board.columns, moveTask],
   );
 
   const handleGuardedDropTask = React.useCallback(
@@ -368,7 +374,7 @@ export const App: React.FC = () => {
 
       reorderOrMoveTask(options);
     },
-    [allBoardTasks, board.columns, reorderOrMoveTask]
+    [allBoardTasks, board.columns, reorderOrMoveTask],
   );
 
   const handleAddTask = (columnId: string) => {
@@ -390,7 +396,7 @@ export const App: React.FC = () => {
     if (!file) return;
 
     const confirmed = window.confirm(
-      'A importação irá substituir completamente o seu quadro atual. Deseja continuar?'
+      'A importação irá substituir completamente o seu quadro atual. Deseja continuar?',
     );
 
     if (confirmed) {
@@ -403,7 +409,7 @@ export const App: React.FC = () => {
         (errorMsg) => {
           alert(errorMsg);
           if (fileInputRef.current) fileInputRef.current.value = '';
-        }
+        },
       );
     } else {
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -415,14 +421,18 @@ export const App: React.FC = () => {
       <header className="app-header">
         <div className="brand-section" style={{ display: 'flex', alignItems: 'center' }}>
           <div className="brand-logo-container" aria-label="Logotipo Metrik">
-            <img src={metrikLogo} alt="Metrik — Métricas para Gestão Ágil" className="brand-logo-img" />
+            <img
+              src={metrikLogo}
+              alt="Metrik — Métricas para Gestão Ágil"
+              className="brand-logo-img"
+            />
           </div>
           <div>
             <h1 className="brand-title">Metrik</h1>
             <p className="brand-subtitle">Métricas para Gestão Ágil</p>
           </div>
-          
-          <BoardSwitcher 
+
+          <BoardSwitcher
             boards={boards}
             activeBoardId={activeBoardId}
             onSwitchBoard={switchBoard}
@@ -482,7 +492,17 @@ export const App: React.FC = () => {
               aria-label="Configurações do Sistema"
               title="Abrir Configurações do Sistema"
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 6 }}>
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ marginRight: 6 }}
+              >
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
               </svg>
@@ -655,18 +675,21 @@ export const App: React.FC = () => {
             onOpenNewColumnModal={() => setIsNewColumnModalOpen(true)}
             isReadOnly={isGuest}
             renderTask={(task, columnId) => {
-              const currentIndex = board.columns.findIndex(c => c.id === columnId);
+              const currentIndex = board.columns.findIndex((c) => c.id === columnId);
               const currentColumn = board.columns[currentIndex];
               const isBlocked = isTaskBlocked(task);
               const canMoveLeft = !isGuest && currentIndex > 0 && !isBlocked;
-              const canMoveRight = !isGuest && currentIndex < board.columns.length - 1 && !isBlocked;
+              const canMoveRight =
+                !isGuest && currentIndex < board.columns.length - 1 && !isBlocked;
               const colColor = getDefaultColumnColor(currentColumn);
-              const initiativeProgress = task.type === 'initiative'
-                ? calculateInitiativeProgress(task, allBoardTasks, board.columns)
-                : undefined;
-              const pendingBlockers = task.links && task.links.length > 0
-                ? getPendingBlockers(task, allBoardTasks, board.columns)
-                : [];
+              const initiativeProgress =
+                task.type === 'initiative'
+                  ? calculateInitiativeProgress(task, allBoardTasks, board.columns)
+                  : undefined;
+              const pendingBlockers =
+                task.links && task.links.length > 0
+                  ? getPendingBlockers(task, allBoardTasks, board.columns)
+                  : [];
 
               return (
                 <Task
@@ -693,12 +716,40 @@ export const App: React.FC = () => {
                   autoSaveDebounceMs={settings.autoSaveDebounceMs ?? 800}
                   currentUser={currentUser}
                   isAdmin={isAdmin}
-                  onAddComment={isGuest ? undefined : (taskId, text) => addTaskComment(taskId, text, currentUser)}
-                  onEditComment={isGuest ? undefined : (taskId, commentId, text) => editTaskComment(taskId, commentId, text, currentUser)}
-                  onDeleteComment={isGuest ? undefined : (taskId, commentId) => deleteTaskComment(taskId, commentId, currentUser)}
-                  onAddSubtaskComment={isGuest ? undefined : (taskId, subtaskId, text) => addSubtaskComment(taskId, subtaskId, text, currentUser)}
-                  onEditSubtaskComment={isGuest ? undefined : (taskId, subtaskId, commentId, text) => editSubtaskComment(taskId, subtaskId, commentId, text, currentUser)}
-                  onDeleteSubtaskComment={isGuest ? undefined : (taskId, subtaskId, commentId) => deleteSubtaskComment(taskId, subtaskId, commentId, currentUser, isAdmin)}
+                  onAddComment={
+                    isGuest
+                      ? undefined
+                      : (taskId, text) => addTaskComment(taskId, text, currentUser)
+                  }
+                  onEditComment={
+                    isGuest
+                      ? undefined
+                      : (taskId, commentId, text) =>
+                          editTaskComment(taskId, commentId, text, currentUser)
+                  }
+                  onDeleteComment={
+                    isGuest
+                      ? undefined
+                      : (taskId, commentId) => deleteTaskComment(taskId, commentId, currentUser)
+                  }
+                  onAddSubtaskComment={
+                    isGuest
+                      ? undefined
+                      : (taskId, subtaskId, text) =>
+                          addSubtaskComment(taskId, subtaskId, text, currentUser)
+                  }
+                  onEditSubtaskComment={
+                    isGuest
+                      ? undefined
+                      : (taskId, subtaskId, commentId, text) =>
+                          editSubtaskComment(taskId, subtaskId, commentId, text, currentUser)
+                  }
+                  onDeleteSubtaskComment={
+                    isGuest
+                      ? undefined
+                      : (taskId, subtaskId, commentId) =>
+                          deleteSubtaskComment(taskId, subtaskId, commentId, currentUser, isAdmin)
+                  }
                   onMoveLeft={() => {
                     if (canMoveLeft) {
                       handleGuardedMoveTask(task.id, board.columns[currentIndex - 1].id);
@@ -722,23 +773,26 @@ export const App: React.FC = () => {
             </div>
           }
         >
-          <AnalyticsDashboard
-            board={board}
-            tasks={Object.values(board.tasks).flat()}
-          />
+          <AnalyticsDashboard board={board} tasks={Object.values(board.tasks).flat()} />
         </React.Suspense>
       )}
 
       {selectedTaskId && (
         <TaskDetailsModal
-          task={Object.values(board.tasks).flat().find(t => t.id === selectedTaskId)!}
+          task={Object.values(board.tasks)
+            .flat()
+            .find((t) => t.id === selectedTaskId)!}
           isOpen={!!selectedTaskId}
           onClose={() => setSelectedTaskId(null)}
           onUpdateTask={updateTask}
           onToggleBlocked={toggleTaskBlocked}
           onAddComment={addTaskComment}
           onDeleteComment={deleteTaskComment}
-          onEditComment={isGuest ? undefined : (taskId, commentId, text) => editTaskComment(taskId, commentId, text, currentUser)}
+          onEditComment={
+            isGuest
+              ? undefined
+              : (taskId, commentId, text) => editTaskComment(taskId, commentId, text, currentUser)
+          }
           currentUserId={currentUser.id}
           boardTasks={allBoardTasks}
           columns={board.columns}
@@ -769,7 +823,7 @@ export const App: React.FC = () => {
         />
       )}
 
-      <BoardManagementModal 
+      <BoardManagementModal
         isOpen={isBoardModalOpen}
         onClose={() => setIsBoardModalOpen(false)}
         boards={boards}
@@ -812,10 +866,7 @@ export const App: React.FC = () => {
         }}
       />
 
-      <ToastNotification
-        message={toastMessage}
-        onClose={() => setToastMessage(null)}
-      />
+      <ToastNotification message={toastMessage} onClose={() => setToastMessage(null)} />
     </div>
   );
 };

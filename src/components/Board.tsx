@@ -57,20 +57,30 @@ export const Board: React.FC<BoardProps> = ({
     <div className="board-container">
       {isReadOnly && (
         <div className="guest-read-only-banner" role="status">
-          <span className="warning-banner-icon" aria-hidden="true">👁️</span>
+          <span className="warning-banner-icon" aria-hidden="true">
+            👁️
+          </span>
           <div className="warning-banner-content">
             <strong>Modo Somente Leitura (Convidado)</strong>
-            <span>Você tem permissão de visualização para acompanhar o fluxo desta squad. Ações de edição estão desabilitadas.</span>
+            <span>
+              Você tem permissão de visualização para acompanhar o fluxo desta squad. Ações de
+              edição estão desabilitadas.
+            </span>
           </div>
         </div>
       )}
 
       {isAtColumnLimit && !isReadOnly && (
         <div className="column-limit-warning-banner" role="alert">
-          <span className="warning-banner-icon" aria-hidden="true">⚠️</span>
+          <span className="warning-banner-icon" aria-hidden="true">
+            ⚠️
+          </span>
           <div className="warning-banner-content">
             <strong>Excesso de colunas, cuidado.</strong>
-            <span>O quadro atingiu o limite máximo de {MAX_COLUMNS} colunas. Mantenha o fluxo simples e focado.</span>
+            <span>
+              O quadro atingiu o limite máximo de {MAX_COLUMNS} colunas. Mantenha o fluxo simples e
+              focado.
+            </span>
           </div>
         </div>
       )}
@@ -79,7 +89,8 @@ export const Board: React.FC<BoardProps> = ({
         {columns.map((col, idx) => {
           const visibleTasks = board.tasks[col.id] || [];
           const rawTasks = rawBoard ? rawBoard.tasks[col.id] || [] : visibleTasks;
-          const isFilteredEmpty = hasActiveFilters && rawTasks.length > 0 && visibleTasks.length === 0;
+          const isFilteredEmpty =
+            hasActiveFilters && rawTasks.length > 0 && visibleTasks.length === 0;
 
           return (
             <Column
@@ -119,13 +130,21 @@ export const Board: React.FC<BoardProps> = ({
               className="btn-add-column"
               onClick={onOpenNewColumnModal}
               disabled={isAtColumnLimit}
-              title={isAtColumnLimit ? `Limite máximo de ${MAX_COLUMNS} colunas atingido` : 'Adicionar nova coluna'}
+              title={
+                isAtColumnLimit
+                  ? `Limite máximo de ${MAX_COLUMNS} colunas atingido`
+                  : 'Adicionar nova coluna'
+              }
               aria-label="Adicionar nova coluna"
             >
-              <span className="add-column-icon" aria-hidden="true">+</span>
+              <span className="add-column-icon" aria-hidden="true">
+                +
+              </span>
               <span className="add-column-text">Nova Coluna</span>
               {isAtColumnLimit && (
-                <span className="add-column-badge">{columns.length}/{MAX_COLUMNS}</span>
+                <span className="add-column-badge">
+                  {columns.length}/{MAX_COLUMNS}
+                </span>
               )}
             </button>
           </div>

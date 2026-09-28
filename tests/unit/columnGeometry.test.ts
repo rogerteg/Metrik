@@ -98,7 +98,7 @@ describe('columnGeometry — fonte única de geometria (Feature 026)', () => {
     it('keeps valid entries and drops invalid ones', () => {
       const map = resolvePersistedWidthMap(
         { a: 300, b: 'nope', c: 5000, d: MIN_COLUMN_WIDTH, e: null },
-        () => {}
+        () => {},
       );
       expect(map).toEqual({ a: 300, d: MIN_COLUMN_WIDTH });
     });
@@ -113,7 +113,7 @@ describe('columnGeometry — fonte única de geometria (Feature 026)', () => {
     it('reports one divergence per discarded entry with the reason', () => {
       const reports: Array<{ columnId: string; reason: string | null }> = [];
       resolvePersistedWidthMap({ a: 300, b: 'nope', c: 5000 }, (r) =>
-        reports.push({ columnId: r.columnId, reason: r.reason })
+        reports.push({ columnId: r.columnId, reason: r.reason }),
       );
       expect(reports).toEqual([
         { columnId: 'b', reason: 'invalid' },

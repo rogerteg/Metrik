@@ -293,8 +293,15 @@ export const MonteCarloHistogramChart: React.FC<MonteCarloHistogramChartProps> =
             <strong>{(hoveredBin.relativeFrequency * 100).toFixed(1)}%</strong>
           </div>
           <div className="tooltip-row">
-            <span>{isAscending ? 'Probabilidade de Concluir até este valor' : 'Probabilidade de Entregar pelo menos este valor'}:</span>
-            <strong className="tooltip-prob">{(hoveredBin.cumulativeProbability * 100).toFixed(1)}%</strong>
+            <span>
+              {isAscending
+                ? 'Probabilidade de Concluir até este valor'
+                : 'Probabilidade de Entregar pelo menos este valor'}
+              :
+            </span>
+            <strong className="tooltip-prob">
+              {(hoveredBin.cumulativeProbability * 100).toFixed(1)}%
+            </strong>
           </div>
         </div>
       )}

@@ -387,8 +387,14 @@
 }
 
 @keyframes tdFadeIn {
-  from { opacity: 0; transform: scale(0.97); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* ==========================================================================
@@ -633,10 +639,26 @@
   background: var(--btn-secondary-bg);
 }
 
-.td-metric-card__icon--lead { color: var(--color-progress); border-color: var(--color-progress-border); background: var(--color-progress-bg); }
-.td-metric-card__icon--cycle { color: var(--color-completed); border-color: var(--color-completed-border); background: var(--color-completed-bg); }
-.td-metric-card__icon--blocked { color: #fb7185; border-color: var(--color-blocked-border); background: var(--color-blocked-bg); }
-.td-metric-card__icon--age { color: #a78bfa; border-color: rgba(168, 85, 247, 0.35); background: rgba(168, 85, 247, 0.12); }
+.td-metric-card__icon--lead {
+  color: var(--color-progress);
+  border-color: var(--color-progress-border);
+  background: var(--color-progress-bg);
+}
+.td-metric-card__icon--cycle {
+  color: var(--color-completed);
+  border-color: var(--color-completed-border);
+  background: var(--color-completed-bg);
+}
+.td-metric-card__icon--blocked {
+  color: #fb7185;
+  border-color: var(--color-blocked-border);
+  background: var(--color-blocked-bg);
+}
+.td-metric-card__icon--age {
+  color: #a78bfa;
+  border-color: rgba(168, 85, 247, 0.35);
+  background: rgba(168, 85, 247, 0.12);
+}
 
 .td-metric-card__body {
   display: flex;

@@ -23,15 +23,25 @@ export const LeadTimeScatter: React.FC<LeadTimeScatterProps> = ({
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const windowEnd = today.getTime();
-  
+
   const windowStart = new Date(today);
   windowStart.setDate(today.getDate() - 13);
   const startMs = windowStart.getTime();
 
   return (
     <div className={`chart-container ${isExpanded ? 'is-chart-expanded' : ''}`}>
-      <div className="chart-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h3 className="chart-title" style={{ margin: 0 }}>Lead Time (Dias)</h3>
+      <div
+        className="chart-header-row"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1.5rem',
+        }}
+      >
+        <h3 className="chart-title" style={{ margin: 0 }}>
+          Lead Time (Dias)
+        </h3>
         {onToggleExpand && (
           <button
             type="button"
@@ -48,9 +58,9 @@ export const LeadTimeScatter: React.FC<LeadTimeScatterProps> = ({
 
       <div className="scatter-chart-area">
         {/* SVG requires specific aspect ratio handling */}
-        <svg 
-          viewBox={`0 0 ${chartWidth} ${chartHeight}`} 
-          preserveAspectRatio="none" 
+        <svg
+          viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+          preserveAspectRatio="none"
           className="scatter-svg"
         >
           {/* Background grid */}
@@ -59,7 +69,7 @@ export const LeadTimeScatter: React.FC<LeadTimeScatterProps> = ({
           <line x1="0" y1="100" x2="100" y2="100" className="svg-grid-line" />
 
           {/* Plot points */}
-          {data.map(point => {
+          {data.map((point) => {
             const ptDate = new Date(point.completedAt).getTime();
             // X position: percentage of time passed between start and end of 14-day window
             // Protect against division by zero if window is 0 somehow (it's 13 days)
@@ -69,7 +79,7 @@ export const LeadTimeScatter: React.FC<LeadTimeScatterProps> = ({
 
             // Y position: percentage of maxLeadTime
             // In SVG, Y=0 is top, Y=100 is bottom. So we invert it.
-            let yPercent = 100 - ((point.leadTimeDays / maxLeadTime) * 100);
+            let yPercent = 100 - (point.leadTimeDays / maxLeadTime) * 100;
             // Clamp between 5 and 95 so dots don't overflow the top/bottom edges
             yPercent = Math.max(5, Math.min(95, yPercent));
 

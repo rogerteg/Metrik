@@ -95,9 +95,7 @@ export const GeneralSettingsTab: React.FC<GeneralSettingsTabProps> = ({
       {/* Seção 3: Visualização Padrão */}
       <section className="settings-section">
         <h4 className="settings-section-title">Visualização Padrão</h4>
-        <p className="settings-section-desc">
-          Tela inicial carregada ao abrir o Metrik.
-        </p>
+        <p className="settings-section-desc">Tela inicial carregada ao abrir o Metrik.</p>
         <div className="settings-toggle-group">
           <button
             type="button"
@@ -171,7 +169,10 @@ export const GeneralSettingsTab: React.FC<GeneralSettingsTabProps> = ({
             />
             <span className="switch-text">
               <strong>Salvar automaticamente comentários e campos de texto</strong>
-              <small>Grava edições após breve pausa de digitação ou ao sair do campo (desative para exigir clique no botão Salvar ou atalho Ctrl+S)</small>
+              <small>
+                Grava edições após breve pausa de digitação ou ao sair do campo (desative para
+                exigir clique no botão Salvar ou atalho Ctrl+S)
+              </small>
             </span>
           </label>
         </div>

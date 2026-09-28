@@ -25,7 +25,10 @@ export const ThroughputHistogramChart: React.FC<ThroughputHistogramChartProps> =
 
   if (!bins || bins.length === 0) {
     return (
-      <div className="throughput-chart-empty" style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div
+        className="throughput-chart-empty"
+        style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
         <p className="empty-text">Sem dados suficientes para construir o histograma de vazão.</p>
       </div>
     );
@@ -65,7 +68,15 @@ export const ThroughputHistogramChart: React.FC<ThroughputHistogramChartProps> =
 
   return (
     <div className="throughput-histogram-wrapper" style={{ position: 'relative', width: '100%' }}>
-      <div className="chart-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem' }}>
+      <div
+        className="chart-header-row"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '0.25rem',
+        }}
+      >
         <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 600, color: 'var(--color-text)' }}>
           Throughput Histogram
         </h4>

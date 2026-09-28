@@ -12,7 +12,7 @@ describe('DeleteBoardModal Component (Feature 031 - T011)', () => {
         isSoleBoard={false}
         onClose={vi.fn()}
         onConfirm={vi.fn()}
-      />
+      />,
     );
 
     expect(container.firstChild).toBeNull();
@@ -27,7 +27,7 @@ describe('DeleteBoardModal Component (Feature 031 - T011)', () => {
         isSoleBoard={false}
         onClose={vi.fn()}
         onConfirm={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText(/excluir quadro/i)).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe('DeleteBoardModal Component (Feature 031 - T011)', () => {
         isSoleBoard={true}
         onClose={vi.fn()}
         onConfirm={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText(/operação bloqueada/i)).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe('DeleteBoardModal Component (Feature 031 - T011)', () => {
         isSoleBoard={false}
         onClose={onClose}
         onConfirm={vi.fn()}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByRole('button', { name: /cancelar/i }));
@@ -84,7 +84,7 @@ describe('DeleteBoardModal Component (Feature 031 - T011)', () => {
         isSoleBoard={false}
         onClose={vi.fn()}
         onConfirm={onConfirm}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByRole('button', { name: /confirmar exclusão/i }));

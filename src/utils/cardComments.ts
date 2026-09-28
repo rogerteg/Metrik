@@ -17,7 +17,9 @@ export interface CommentAuthor {
 const DEFAULT_AUTHOR: CommentAuthor = { id: 'usr_default', name: 'Rogerio Teixeira' };
 
 const makeId = (): string =>
-  typeof globalThis !== 'undefined' && globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function'
+  typeof globalThis !== 'undefined' &&
+  globalThis.crypto &&
+  typeof globalThis.crypto.randomUUID === 'function'
     ? globalThis.crypto.randomUUID()
     : `cmt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
@@ -56,7 +58,7 @@ export function createComment(params: {
 export function sortComments(comments: TaskComment[] | undefined): TaskComment[] {
   if (!comments || comments.length === 0) return [];
   return [...comments].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
   );
 }
 
@@ -79,7 +81,7 @@ export function editCommentInList(
   commentId: string,
   text: string,
   author: CommentAuthor,
-  now: string = new Date().toISOString()
+  now: string = new Date().toISOString(),
 ): TaskComment[] {
   const list = comments ?? [];
   const clean = normalizeCommentText(text);
@@ -103,7 +105,7 @@ export function removeCommentFromList(
   comments: TaskComment[] | undefined,
   commentId: string,
   author: CommentAuthor,
-  isAdmin = false
+  isAdmin = false,
 ): TaskComment[] {
   const list = comments ?? [];
   const target = list.find((comment) => comment.id === commentId);
@@ -120,12 +122,12 @@ export function subtaskHasComments(subtask: SubtaskModel | undefined | null): bo
 export function addCommentToSubtask(
   subtasks: SubtaskModel[] | undefined,
   subtaskId: string,
-  comment: TaskComment
+  comment: TaskComment,
 ): SubtaskModel[] {
   return (subtasks ?? []).map((subtask) =>
     subtask.id === subtaskId
       ? { ...subtask, comments: [...(subtask.comments ?? []), comment] }
-      : subtask
+      : subtask,
   );
 }
 
@@ -136,12 +138,12 @@ export function editCommentInSubtask(
   commentId: string,
   text: string,
   author: CommentAuthor,
-  now: string = new Date().toISOString()
+  now: string = new Date().toISOString(),
 ): SubtaskModel[] {
   return (subtasks ?? []).map((subtask) =>
     subtask.id === subtaskId
       ? { ...subtask, comments: editCommentInList(subtask.comments, commentId, text, author, now) }
-      : subtask
+      : subtask,
   );
 }
 
@@ -151,11 +153,14 @@ export function removeCommentFromSubtask(
   subtaskId: string,
   commentId: string,
   author: CommentAuthor,
-  isAdmin = false
+  isAdmin = false,
 ): SubtaskModel[] {
   return (subtasks ?? []).map((subtask) =>
     subtask.id === subtaskId
-      ? { ...subtask, comments: removeCommentFromList(subtask.comments, commentId, author, isAdmin) }
-      : subtask
+      ? {
+          ...subtask,
+          comments: removeCommentFromList(subtask.comments, commentId, author, isAdmin),
+        }
+      : subtask,
   );
 }

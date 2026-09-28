@@ -36,11 +36,11 @@ describe('ThroughputAnalyticsView Component (Feature 021)', () => {
 
   it('renders histogram, run chart and summary cards when tasks exist', () => {
     render(<ThroughputAnalyticsView tasks={mockTasks} />);
-    
+
     expect(screen.getByTestId('throughput-analytics-view')).toBeInTheDocument();
     expect(screen.getByTestId('throughput-histogram-svg')).toBeInTheDocument();
     expect(screen.getByTestId('throughput-run-chart-svg')).toBeInTheDocument();
-    
+
     // Resumo executivo presente
     expect(screen.getByText(/Total Concluído/i)).toBeInTheDocument();
     expect(screen.getByText(/Média Diária/i)).toBeInTheDocument();
@@ -50,10 +50,10 @@ describe('ThroughputAnalyticsView Component (Feature 021)', () => {
 
   it('updates time window when user clicks a different period button', () => {
     render(<ThroughputAnalyticsView tasks={mockTasks} />);
-    
+
     const btn60D = screen.getByRole('button', { name: '60D' });
     expect(btn60D).toBeInTheDocument();
-    
+
     fireEvent.click(btn60D);
     expect(btn60D).toHaveClass('active');
   });

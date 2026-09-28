@@ -6,8 +6,22 @@ import { Team } from '../../src/types/team';
 
 describe('BoardCardGrid Component (Feature 031 - T005)', () => {
   const mockTeams: Team[] = [
-    { id: 'team-alpha', name: 'Alpha Squad', color: '#6366f1', createdById: 'u1', createdAt: '2026-09-01T00:00:00Z', members: [] },
-    { id: 'team-beta', name: 'Beta Squad', color: '#10b981', createdById: 'u1', createdAt: '2026-09-01T00:00:00Z', members: [] },
+    {
+      id: 'team-alpha',
+      name: 'Alpha Squad',
+      color: '#6366f1',
+      createdById: 'u1',
+      createdAt: '2026-09-01T00:00:00Z',
+      members: [],
+    },
+    {
+      id: 'team-beta',
+      name: 'Beta Squad',
+      color: '#10b981',
+      createdById: 'u1',
+      createdAt: '2026-09-01T00:00:00Z',
+      members: [],
+    },
   ];
 
   const mockBoards: BoardModel[] = [
@@ -36,7 +50,7 @@ describe('BoardCardGrid Component (Feature 031 - T005)', () => {
         onSelectBoard={vi.fn()}
         onRenameBoard={vi.fn()}
         onRequestDeleteBoard={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText('Quadro 1 - Core')).toBeInTheDocument();
@@ -52,7 +66,7 @@ describe('BoardCardGrid Component (Feature 031 - T005)', () => {
         onSelectBoard={vi.fn()}
         onRenameBoard={vi.fn()}
         onRequestDeleteBoard={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText('Quadro Ativo')).toBeInTheDocument();
@@ -70,7 +84,7 @@ describe('BoardCardGrid Component (Feature 031 - T005)', () => {
         onSelectBoard={vi.fn()}
         onRenameBoard={vi.fn()}
         onRequestDeleteBoard={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText('Alpha Squad')).toBeInTheDocument();
@@ -87,7 +101,7 @@ describe('BoardCardGrid Component (Feature 031 - T005)', () => {
         onSelectBoard={onSelectBoard}
         onRenameBoard={vi.fn()}
         onRequestDeleteBoard={vi.fn()}
-      />
+      />,
     );
 
     const openButtons = screen.getAllByRole('button', { name: /abrir/i });
@@ -106,7 +120,7 @@ describe('BoardCardGrid Component (Feature 031 - T005)', () => {
         onSelectBoard={vi.fn()}
         onRenameBoard={vi.fn()}
         onRequestDeleteBoard={onRequestDeleteBoard}
-      />
+      />,
     );
 
     const deleteButtons = screen.getAllByRole('button', { name: /excluir/i });

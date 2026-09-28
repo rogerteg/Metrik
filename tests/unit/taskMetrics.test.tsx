@@ -21,7 +21,7 @@ describe('Task Metrics Rendering (T013)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     // Lead time: 45m, Cycle time: 30m
@@ -45,7 +45,7 @@ describe('Task Metrics Rendering (T013)', () => {
         onUpdateTitle={vi.fn()}
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.queryByText(/Lead:/)).not.toBeInTheDocument();

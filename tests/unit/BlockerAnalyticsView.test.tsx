@@ -58,7 +58,7 @@ describe('BlockerAnalyticsView component (Feature 030)', () => {
         summary={mockSummary}
         mode="clustering"
         onSelectMode={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByRole('button', { name: /Blocker Clustering/i })).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe('BlockerAnalyticsView component (Feature 030)', () => {
         summary={mockSummary}
         mode="dynamics"
         onSelectMode={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByRole('button', { name: /Blocker Dynamics/i })).toBeInTheDocument();
@@ -91,7 +91,7 @@ describe('BlockerAnalyticsView component (Feature 030)', () => {
         summary={mockSummary}
         mode="clustering"
         onSelectMode={handleSelectMode}
-      />
+      />,
     );
 
     const dynamicsTab = screen.getByRole('button', { name: /Blocker Dynamics/i });

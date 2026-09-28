@@ -41,20 +41,20 @@ const getLast14Days = (): string[] => {
 export const useAnalyticsData = (completedTasks: TaskModel[]): AnalyticsData => {
   return useMemo(() => {
     const last14Days = getLast14Days();
-    
+
     // Inicializa o throughput com zero para os últimos 14 dias
     const throughputMap = new Map<string, number>();
-    last14Days.forEach(day => throughputMap.set(day, 0));
+    last14Days.forEach((day) => throughputMap.set(day, 0));
 
     const scatter: ScatterDataPoint[] = [];
 
     // Filter tasks that actually have completedAt and are within the 14 day window
-    const validTasks = completedTasks.filter(t => t.completedAt);
-    
+    const validTasks = completedTasks.filter((t) => t.completedAt);
+
     // Para simplificar a lógica de comparação, pegamos a data de início da janela
     const windowStart = new Date(last14Days[0]).getTime();
 
-    validTasks.forEach(task => {
+    validTasks.forEach((task) => {
       const completedAtDate = new Date(task.completedAt!);
       // Fix timezone offsets by getting the local date string portion (rough approx) or just ISO date
       // If we use ISO date, a task completed at 23:00 UTC might be next day local.
@@ -82,12 +82,12 @@ export const useAnalyticsData = (completedTasks: TaskModel[]): AnalyticsData => 
     });
 
     const throughput: ThroughputDataPoint[] = Array.from(throughputMap.entries()).map(
-      ([date, count]) => ({ date, count })
+      ([date, count]) => ({ date, count }),
     );
 
     // Encontrar máximos para os eixos do gráfico
-    const maxThroughput = Math.max(1, ...throughput.map(t => t.count));
-    const maxLeadTime = Math.max(1, ...scatter.map(s => s.leadTimeDays));
+    const maxThroughput = Math.max(1, ...throughput.map((t) => t.count));
+    const maxLeadTime = Math.max(1, ...scatter.map((s) => s.leadTimeDays));
 
     return {
       throughput,

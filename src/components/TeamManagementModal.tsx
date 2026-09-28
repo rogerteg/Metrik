@@ -36,7 +36,7 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
   teamMembers,
 }) => {
   const [tab, setTab] = useState<'my-squads' | 'create-squad' | 'members' | 'invite' | 'join-code'>(
-    initialTab
+    initialTab,
   );
 
   const safeTeams = Array.isArray(teams) ? teams : [];
@@ -62,7 +62,7 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
 
   // Currently focused team for members and invitations
   const [currentTeamId, setCurrentTeamId] = useState<string>(
-    selectedTeamId || myTeams[0]?.id || safeTeams[0]?.id || ''
+    selectedTeamId || myTeams[0]?.id || safeTeams[0]?.id || '',
   );
 
   // Form states
@@ -72,7 +72,10 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
   const [inviteRole, setInviteRole] = useState<TeamRole>('member');
   const [joinCode, setJoinCode] = useState('');
   const [lastGeneratedCode, setLastGeneratedCode] = useState<string | null>(null);
-  const [feedbackMessage, setFeedbackMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [feedbackMessage, setFeedbackMessage] = useState<{
+    text: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
   useEffect(() => {
     if (initialTab) setTab(initialTab);
@@ -90,7 +93,9 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
 
   const activeTeam = safeTeams.find((t) => t.id === currentTeamId);
   const activeTeamMembers = getTeamMembers(activeTeam);
-  const activeUserRoleInCurrentTeam = activeTeamMembers.find((m: any) => m.userId === activeUserId)?.role;
+  const activeUserRoleInCurrentTeam = activeTeamMembers.find(
+    (m: any) => m.userId === activeUserId,
+  )?.role;
   const isAdmin = activeUserRoleInCurrentTeam === 'admin';
 
   const handleCreateTeamSubmit = (e: React.FormEvent) => {
@@ -155,7 +160,10 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
       setFeedbackMessage({ text: 'Você entrou na squad com sucesso!', type: 'success' });
       setTab('my-squads');
     } catch (err: any) {
-      setFeedbackMessage({ text: err.message || 'Código de convite inválido ou expirado.', type: 'error' });
+      setFeedbackMessage({
+        text: err.message || 'Código de convite inválido ou expirado.',
+        type: 'error',
+      });
     }
   };
 
@@ -183,14 +191,24 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
   };
 
   // Pending invitations for current team
-  const teamInvitations = safeInvitations.filter((i) => i.teamId === currentTeamId && i.status === 'pending');
+  const teamInvitations = safeInvitations.filter(
+    (i) => i.teamId === currentTeamId && i.status === 'pending',
+  );
 
   return (
-    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Gestão de Times e Squads">
+    <div
+      className="modal-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Gestão de Times e Squads"
+    >
       <div className="modal-content team-modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Gestão de Times e Squads</h2>
-          <button className="btn-close" onClick={onClose} aria-label="Fechar modal">×</button>
+          <button className="btn-close" onClick={onClose} aria-label="Fechar modal">
+            ×
+          </button>
         </div>
 
         {/* Modal Navigation Tabs */}
@@ -198,7 +216,10 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
           <button
             type="button"
             className={`team-tab-btn ${tab === 'my-squads' ? 'active' : ''}`}
-            onClick={() => { setTab('my-squads'); setFeedbackMessage(null); }}
+            onClick={() => {
+              setTab('my-squads');
+              setFeedbackMessage(null);
+            }}
             role="tab"
             aria-selected={tab === 'my-squads'}
           >
@@ -207,7 +228,10 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
           <button
             type="button"
             className={`team-tab-btn ${tab === 'create-squad' ? 'active' : ''}`}
-            onClick={() => { setTab('create-squad'); setFeedbackMessage(null); }}
+            onClick={() => {
+              setTab('create-squad');
+              setFeedbackMessage(null);
+            }}
             role="tab"
             aria-selected={tab === 'create-squad'}
           >
@@ -216,7 +240,10 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
           <button
             type="button"
             className={`team-tab-btn ${tab === 'members' ? 'active' : ''}`}
-            onClick={() => { setTab('members'); setFeedbackMessage(null); }}
+            onClick={() => {
+              setTab('members');
+              setFeedbackMessage(null);
+            }}
             role="tab"
             aria-selected={tab === 'members'}
           >
@@ -225,7 +252,10 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
           <button
             type="button"
             className={`team-tab-btn ${tab === 'invite' ? 'active' : ''}`}
-            onClick={() => { setTab('invite'); setFeedbackMessage(null); }}
+            onClick={() => {
+              setTab('invite');
+              setFeedbackMessage(null);
+            }}
             role="tab"
             aria-selected={tab === 'invite'}
           >
@@ -234,7 +264,10 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
           <button
             type="button"
             className={`team-tab-btn ${tab === 'join-code' ? 'active' : ''}`}
-            onClick={() => { setTab('join-code'); setFeedbackMessage(null); }}
+            onClick={() => {
+              setTab('join-code');
+              setFeedbackMessage(null);
+            }}
             role="tab"
             aria-selected={tab === 'join-code'}
           >
@@ -274,7 +307,11 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
                         <div className="team-card-header">
                           <h3 className="team-card-title">{t.name}</h3>
                           <span className={`team-role-badge badge-${role}`}>
-                            {role === 'admin' ? '👑 Admin' : role === 'guest' ? '👁️ Convidado' : '⚡ Membro'}
+                            {role === 'admin'
+                              ? '👑 Admin'
+                              : role === 'guest'
+                                ? '👁️ Convidado'
+                                : '⚡ Membro'}
                           </span>
                         </div>
                         {t.description && <p className="team-card-desc">{t.description}</p>}
@@ -399,7 +436,9 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
                               className="form-select select-role-input"
                               data-testid={`member-role-select-${member.userId}`}
                               value={member.role}
-                              onChange={(e) => handleRoleChange(member.userId, e.target.value as TeamRole)}
+                              onChange={(e) =>
+                                handleRoleChange(member.userId, e.target.value as TeamRole)
+                              }
                             >
                               <option value="admin">Administrador</option>
                               <option value="member">Membro Padrão</option>
@@ -407,7 +446,11 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
                             </select>
                           ) : (
                             <span className={`team-role-badge badge-${member.role}`}>
-                              {member.role === 'admin' ? 'Admin' : member.role === 'guest' ? 'Convidado' : 'Membro'}
+                              {member.role === 'admin'
+                                ? 'Admin'
+                                : member.role === 'guest'
+                                  ? 'Convidado'
+                                  : 'Membro'}
                             </span>
                           )}
                         </div>
@@ -471,7 +514,9 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
                     onChange={(e) => setInviteRole(e.target.value as TeamRole)}
                   >
                     <option value="member">Membro (Pode criar, editar e movimentar cartões)</option>
-                    <option value="guest">Convidado (Acesso somente-leitura aos quadros da squad)</option>
+                    <option value="guest">
+                      Convidado (Acesso somente-leitura aos quadros da squad)
+                    </option>
                     <option value="admin">Administrador (Controle total da squad e membros)</option>
                   </select>
                 </div>
@@ -510,9 +555,7 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
                       <div key={inv.id} className="pending-invite-item">
                         <div className="invite-item-info">
                           <strong>{inv.inviteeEmail}</strong>
-                          <span className={`team-role-badge badge-${inv.role}`}>
-                            {inv.role}
-                          </span>
+                          <span className={`team-role-badge badge-${inv.role}`}>{inv.role}</span>
                         </div>
                         <span className="invite-item-code">Código: {inv.code}</span>
                       </div>
@@ -527,7 +570,8 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
           {tab === 'join-code' && (
             <form onSubmit={handleJoinCodeSubmit} className="team-form">
               <p className="team-form-hint">
-                Se você recebeu um código de convite para uma squad específica, insira-o abaixo para ter acesso imediato aos quadros do time:
+                Se você recebeu um código de convite para uma squad específica, insira-o abaixo para
+                ter acesso imediato aos quadros do time:
               </p>
               <div className="form-group">
                 <label className="form-label">Código do Convite *</label>

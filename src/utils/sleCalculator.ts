@@ -16,7 +16,7 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 export function calculateSleMetrics(
   completedTasks: TaskModel[],
   targetPercentile: number = 85,
-  targetDays?: number | null
+  targetDays?: number | null,
 ): ServiceLevelExpectation {
   const calculatedAt = new Date().toISOString();
 

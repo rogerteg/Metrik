@@ -62,7 +62,7 @@ describe('Acessibilidade (WCAG 2.1 AA) — Feature 027 / núcleo', () => {
         onAdd={() => {}}
         onEdit={() => {}}
         onDelete={() => {}}
-      />
+      />,
     );
     expect(await runAxe(container)).toHaveNoViolations();
   });
@@ -75,7 +75,7 @@ describe('Acessibilidade (WCAG 2.1 AA) — Feature 027 / núcleo', () => {
         onUpdateTitle={() => {}}
         onDelete={() => {}}
         onDiscardIfEmpty={() => {}}
-      />
+      />,
     );
     expect(await runAxe(container)).toHaveNoViolations();
   });
@@ -84,7 +84,7 @@ describe('Acessibilidade (WCAG 2.1 AA) — Feature 027 / núcleo', () => {
     const { container } = render(
       <Column column={column} count={1}>
         <div />
-      </Column>
+      </Column>,
     );
     expect(await runAxe(container)).toHaveNoViolations();
   });
@@ -103,7 +103,7 @@ describe('Acessibilidade (WCAG 2.1 AA) — Feature 027 / núcleo', () => {
         onAddSubtaskComment={() => {}}
         onEditSubtaskComment={() => {}}
         onDeleteSubtaskComment={() => {}}
-      />
+      />,
     );
     fireEvent.click(screen.getByRole('button', { name: /Detalhes/i }));
     expect(await runAxe(container)).toHaveNoViolations();

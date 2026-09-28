@@ -27,7 +27,7 @@ describe('Task — subtarefas inline (US1 / T005)', () => {
         onDelete={vi.fn()}
         onDiscardIfEmpty={vi.fn()}
         onUpdateTask={onUpdateTask}
-      />
+      />,
     );
     fireEvent.click(screen.getByRole('button', { name: /Detalhes/i }));
     return { ...utils, onUpdateTask };

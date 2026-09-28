@@ -13,9 +13,27 @@ describe('computeBoardSummaryMetrics utility (Feature 031 - T003)', () => {
 
   const mockColumns: ColumnModel[] = [
     { id: 'col-todo', title: 'A Fazer', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-    { id: 'col-doing', title: 'Em Progresso', category: 'in_progress', wipLimit: 3, colorScheme: 'progress' },
-    { id: 'col-review', title: 'Revisão', category: 'in_progress', wipLimit: 2, colorScheme: 'progress' },
-    { id: 'col-done', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
+    {
+      id: 'col-doing',
+      title: 'Em Progresso',
+      category: 'in_progress',
+      wipLimit: 3,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'col-review',
+      title: 'Revisão',
+      category: 'in_progress',
+      wipLimit: 2,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'col-done',
+      title: 'Concluído',
+      category: 'done',
+      wipLimit: null,
+      colorScheme: 'completed',
+    },
   ];
 
   const createTask = (id: string, colId: string): TaskModel => ({
@@ -29,7 +47,11 @@ describe('computeBoardSummaryMetrics utility (Feature 031 - T003)', () => {
     'col-todo': [createTask('t1', 'col-todo'), createTask('t2', 'col-todo')],
     'col-doing': [createTask('t3', 'col-doing'), createTask('t4', 'col-doing')],
     'col-review': [createTask('t5', 'col-review')],
-    'col-done': [createTask('t6', 'col-done'), createTask('t7', 'col-done'), createTask('t8', 'col-done')],
+    'col-done': [
+      createTask('t6', 'col-done'),
+      createTask('t7', 'col-done'),
+      createTask('t8', 'col-done'),
+    ],
   };
 
   beforeEach(() => {
@@ -125,7 +147,13 @@ describe('computeBoardSummaryMetrics utility (Feature 031 - T003)', () => {
   it('allows optional injected state to override localStorage or board properties', () => {
     const injectedState: BoardState = {
       columns: [
-        { id: 'done-col', title: 'Finalizado', category: 'done', wipLimit: null, colorScheme: 'completed' },
+        {
+          id: 'done-col',
+          title: 'Finalizado',
+          category: 'done',
+          wipLimit: null,
+          colorScheme: 'completed',
+        },
       ],
       tasks: {
         'done-col': [createTask('t-done-1', 'done-col')],

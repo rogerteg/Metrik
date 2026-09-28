@@ -63,7 +63,7 @@
   transition: transform 0.2s ease;
 }
 
-.user-profile-trigger-btn[aria-expanded="true"] .user-menu-chevron {
+.user-profile-trigger-btn[aria-expanded='true'] .user-menu-chevron {
   transform: rotate(180deg);
 }
 
@@ -139,7 +139,7 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-[data-theme="light"] .user-profile-item:hover {
+[data-theme='light'] .user-profile-item:hover {
   background: rgba(0, 0, 0, 0.04);
 }
 
@@ -232,7 +232,7 @@
   color: var(--accent-primary, #6366f1);
 }
 
-[data-theme="light"] .btn-dropdown-action:hover {
+[data-theme='light'] .btn-dropdown-action:hover {
   background: rgba(0, 0, 0, 0.04);
 }
 
@@ -271,7 +271,7 @@
   transition: border-color 0.15s ease;
 }
 
-[data-theme="light"] .form-mini-input {
+[data-theme='light'] .form-mini-input {
   background: #f8fafc;
 }
 

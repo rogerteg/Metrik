@@ -9,23 +9,37 @@ import {
 } from '../../src/utils/columnGeometry';
 
 describe('Column Component (US1)', () => {
-  const todoCol: ColumnModel = { id: 'todo', title: 'Todo', category: 'todo', wipLimit: null, colorScheme: 'todo' };
-  const inProgressCol: ColumnModel = { id: 'in_progress', title: 'In Progress', category: 'in_progress', wipLimit: null, colorScheme: 'progress' };
-  const blockedCol: ColumnModel = { id: 'blocked', title: 'Blocked', category: 'in_progress', wipLimit: null, colorScheme: 'blocked' };
+  const todoCol: ColumnModel = {
+    id: 'todo',
+    title: 'Todo',
+    category: 'todo',
+    wipLimit: null,
+    colorScheme: 'todo',
+  };
+  const inProgressCol: ColumnModel = {
+    id: 'in_progress',
+    title: 'In Progress',
+    category: 'in_progress',
+    wipLimit: null,
+    colorScheme: 'progress',
+  };
+  const blockedCol: ColumnModel = {
+    id: 'blocked',
+    title: 'Blocked',
+    category: 'in_progress',
+    wipLimit: null,
+    colorScheme: 'blocked',
+  };
 
   it('renders column title and badge correctly for Todo', () => {
-    render(
-      <Column column={todoCol} count={3} />
-    );
+    render(<Column column={todoCol} count={3} />);
 
     expect(screen.getByText('Todo')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
   });
 
   it('renders blocked column with alert styling badge', () => {
-    const { container } = render(
-      <Column column={blockedCol} count={1} />
-    );
+    const { container } = render(<Column column={blockedCol} count={1} />);
 
     expect(screen.getByText('Blocked')).toBeInTheDocument();
     expect(container.querySelector('.badge-blocked')).toBeInTheDocument();
@@ -33,9 +47,7 @@ describe('Column Component (US1)', () => {
 
   it('triggers onAddTask when the + button is clicked', () => {
     const mockOnAddTask = vi.fn();
-    render(
-      <Column column={inProgressCol} count={0} onAddTask={mockOnAddTask} />
-    );
+    render(<Column column={inProgressCol} count={0} onAddTask={mockOnAddTask} />);
 
     const addButton = screen.getByRole('button', { name: /Adicionar tarefa em/i });
     fireEvent.click(addButton);
@@ -44,9 +56,7 @@ describe('Column Component (US1)', () => {
   });
 
   it('renders an empty drop zone when count is 0', () => {
-    render(
-      <Column column={todoCol} count={0} />
-    );
+    render(<Column column={todoCol} count={0} />);
 
     expect(screen.getByText('Arraste um cartão aqui')).toBeInTheDocument();
   });
@@ -55,7 +65,7 @@ describe('Column Component (US1)', () => {
     render(
       <Column column={todoCol} count={1}>
         <div data-testid="mock-task">Mock Task</div>
-      </Column>
+      </Column>,
     );
 
     expect(screen.getByTestId('mock-task')).toBeInTheDocument();
@@ -69,7 +79,7 @@ describe('Column Component (US1)', () => {
         column={{ ...inProgressCol, color: '#38bdf8' }}
         count={2}
         onUpdateColumn={handleUpdateColumn}
-      />
+      />,
     );
 
     const colorButton = screen.getByRole('button', { name: /Alterar cor da coluna/i });
@@ -169,7 +179,7 @@ describe('Column — geometria explícita e interações de largura (US1/US2)', 
         count={0}
         onResetWidth={onResetWidth}
         onResizeWidth={onResizeWidth}
-      />
+      />,
     );
 
     fireEvent.doubleClick(screen.getByRole('separator'));

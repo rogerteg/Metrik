@@ -61,11 +61,7 @@ export const WorkspacesSettingsTab: React.FC<WorkspacesSettingsTabProps> = ({
             </p>
           </div>
           {onCreateWorkspace && (
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={onCreateWorkspace}
-            >
+            <button type="button" className="btn btn-primary" onClick={onCreateWorkspace}>
               + Novo Espaço
             </button>
           )}
@@ -163,7 +159,8 @@ export const WorkspacesSettingsTab: React.FC<WorkspacesSettingsTabProps> = ({
                       {ws.description || 'Sem descrição definida.'}
                     </p>
                     <span className="workspace-boards-badge">
-                      {ws.boardIds.length} {ws.boardIds.length === 1 ? 'quadro vinculado' : 'quadros vinculados'}
+                      {ws.boardIds.length}{' '}
+                      {ws.boardIds.length === 1 ? 'quadro vinculado' : 'quadros vinculados'}
                     </span>
                   </div>
                 )}

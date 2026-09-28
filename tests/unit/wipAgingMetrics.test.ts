@@ -12,8 +12,20 @@ describe('Feature 020: WIP Aging Metrics', () => {
 
   const mockColumns: ColumnModel[] = [
     { id: 'todo', title: 'A Fazer', category: 'todo', wipLimit: 10, colorScheme: 'todo' },
-    { id: 'dev', title: 'Desenvolvimento', category: 'in_progress', wipLimit: 5, colorScheme: 'progress' },
-    { id: 'review', title: 'Revisão', category: 'in_progress', wipLimit: 3, colorScheme: 'progress' },
+    {
+      id: 'dev',
+      title: 'Desenvolvimento',
+      category: 'in_progress',
+      wipLimit: 5,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'review',
+      title: 'Revisão',
+      category: 'in_progress',
+      wipLimit: 3,
+      colorScheme: 'progress',
+    },
     { id: 'done', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
   ];
 

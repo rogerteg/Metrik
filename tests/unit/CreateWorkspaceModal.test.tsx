@@ -4,13 +4,7 @@ import { CreateWorkspaceModal } from '../../src/components/WorkspaceHub/CreateWo
 
 describe('CreateWorkspaceModal Component', () => {
   it('does not render when isOpen is false', () => {
-    render(
-      <CreateWorkspaceModal
-        isOpen={false}
-        onClose={vi.fn()}
-        onCreateWorkspace={vi.fn()}
-      />
-    );
+    render(<CreateWorkspaceModal isOpen={false} onClose={vi.fn()} onCreateWorkspace={vi.fn()} />);
 
     expect(screen.queryByText('Novo Espaço de Trabalho')).toBeNull();
   });
@@ -24,7 +18,7 @@ describe('CreateWorkspaceModal Component', () => {
         isOpen={true}
         onClose={onClose}
         onCreateWorkspace={onCreateWorkspace}
-      />
+      />,
     );
 
     expect(screen.getByText('Novo Espaço de Trabalho')).toBeDefined();
@@ -41,7 +35,7 @@ describe('CreateWorkspaceModal Component', () => {
     expect(onCreateWorkspace).toHaveBeenCalledWith(
       'Inovação & Labs',
       expect.any(String),
-      'Squad de inovação aberta'
+      'Squad de inovação aberta',
     );
     expect(onClose).toHaveBeenCalled();
   });

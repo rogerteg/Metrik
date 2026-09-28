@@ -24,12 +24,14 @@ export interface CreateActivityEventParams {
  */
 export function createTaskActivityEvent(params: CreateActivityEventParams): TaskActivityLog {
   const { taskId, eventType, description, fromValue, toValue, user } = params;
-  
+
   const userId = user?.id || 'system';
   const userName = user?.name || 'Usuário do Sistema';
 
   return {
-    id: crypto.randomUUID ? crypto.randomUUID() : `act_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+    id: crypto.randomUUID
+      ? crypto.randomUUID()
+      : `act_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
     taskId,
     userId,
     userName,
@@ -85,7 +87,7 @@ export function filterTimelineItems(
   comments: TaskComment[],
   activityLog: TaskActivityLog[],
   filter: TimelineFilter,
-  searchQuery: string
+  searchQuery: string,
 ): TimelineItem[] {
   const items: TimelineItem[] = [];
 
@@ -134,7 +136,10 @@ export function filterTimelineItems(
  * - "Esta Semana"
  * - "Anteriores"
  */
-export function groupTimelineItems(items: TimelineItem[], nowMs: number = Date.now()): TimelineGroup[] {
+export function groupTimelineItems(
+  items: TimelineItem[],
+  nowMs: number = Date.now(),
+): TimelineGroup[] {
   const todayStart = new Date(nowMs);
   todayStart.setHours(0, 0, 0, 0);
 

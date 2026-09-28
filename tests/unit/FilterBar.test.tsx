@@ -23,7 +23,7 @@ describe('FilterBar Component (US3, US4 & Feature 013)', () => {
         availableTags={['Backend', 'Frontend', 'DevOps']}
         visibleCount={10}
         totalCount={10}
-      />
+      />,
     );
 
     expect(screen.getByPlaceholderText(/buscar tarefas/i)).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe('FilterBar Component (US3, US4 & Feature 013)', () => {
         availableTags={[]}
         visibleCount={5}
         totalCount={10}
-      />
+      />,
     );
 
     const searchInput = screen.getByPlaceholderText(/buscar tarefas/i);
@@ -69,7 +69,7 @@ describe('FilterBar Component (US3, US4 & Feature 013)', () => {
         availableTags={[]}
         visibleCount={10}
         totalCount={10}
-      />
+      />,
     );
 
     const urgentBtn = screen.getByRole('button', { name: /urgente/i });
@@ -91,7 +91,7 @@ describe('FilterBar Component (US3, US4 & Feature 013)', () => {
         availableTags={['API', 'Bug']}
         visibleCount={10}
         totalCount={10}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByText('API'));
@@ -118,7 +118,7 @@ describe('FilterBar Component (US3, US4 & Feature 013)', () => {
         availableTags={['Backend']}
         visibleCount={2}
         totalCount={10}
-      />
+      />,
     );
 
     const clearBtn = screen.getByRole('button', { name: /limpar filtros/i });
@@ -143,7 +143,7 @@ describe('FilterBar Component (US3, US4 & Feature 013)', () => {
         visibleCount={3}
         totalCount={10}
         blockedCount={2}
-      />
+      />,
     );
 
     const blockedBtn = screen.getByRole('button', { name: /apenas bloqueados/i });

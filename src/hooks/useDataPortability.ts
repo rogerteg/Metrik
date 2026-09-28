@@ -8,14 +8,14 @@ export function useDataPortability() {
       const dataStr = JSON.stringify(board, null, 2);
       const blob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      
+
       const a = document.createElement('a');
       a.href = url;
       const fileNameSuffix = boardId ? `-${boardId}` : '';
       a.download = `metrik-board${fileNameSuffix}-export-${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(a);
       a.click();
-      
+
       // Cleanup
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
@@ -36,11 +36,13 @@ export function useDataPortability() {
           }
 
           const parsed = JSON.parse(content);
-          
+
           if (isValidBoardState(parsed)) {
             onSuccess(parsed);
           } else {
-            onError('Formato de arquivo inválido. O JSON não corresponde ao esquema esperado (Metrik V2).');
+            onError(
+              'Formato de arquivo inválido. O JSON não corresponde ao esquema esperado (Metrik V2).',
+            );
           }
         } catch (err) {
           console.error('JSON Parse Error:', err);
@@ -54,7 +56,7 @@ export function useDataPortability() {
 
       reader.readAsText(file);
     },
-    []
+    [],
   );
 
   return {

@@ -27,7 +27,7 @@ describe('sleCalculator utility (Feature 030)', () => {
   it('calculates observed SLE days for target percentile (85th percentile)', () => {
     // 10 tasks with cycle times: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 days
     const tasks: TaskModel[] = Array.from({ length: 10 }, (_, i) =>
-      createMockTask(`t-${i + 1}`, i + 1)
+      createMockTask(`t-${i + 1}`, i + 1),
     );
 
     const result = calculateSleMetrics(tasks, 85);
@@ -41,7 +41,7 @@ describe('sleCalculator utility (Feature 030)', () => {
   it('calculates compliance rate against targetDays when provided', () => {
     // Tasks: 2, 4, 6, 8, 10 days
     const tasks: TaskModel[] = [2, 4, 6, 8, 10].map((days, idx) =>
-      createMockTask(`t-${idx}`, days)
+      createMockTask(`t-${idx}`, days),
     );
 
     // If target is 6 days, tasks with 2, 4, 6 are compliant (3/5 = 60%)

@@ -24,7 +24,16 @@ export const FavoriteBoardsSection: React.FC<FavoriteBoardsSectionProps> = ({
       <div className="favorite-boards-header">
         <div className="favorite-title-group">
           <span className="favorite-section-icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="#ef4444"
+              stroke="#ef4444"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
           </span>
@@ -36,7 +45,8 @@ export const FavoriteBoardsSection: React.FC<FavoriteBoardsSectionProps> = ({
       {favoriteBoards.length === 0 ? (
         <div className="favorite-empty-state">
           <p className="favorite-empty-text">
-            Nenhum quadro favorito ainda. Clique no ícone de coração em qualquer quadro para fixá-lo aqui como atalho rápido!
+            Nenhum quadro favorito ainda. Clique no ícone de coração em qualquer quadro para fixá-lo
+            aqui como atalho rápido!
           </p>
         </div>
       ) : (
@@ -85,7 +95,16 @@ export const FavoriteBoardsSection: React.FC<FavoriteBoardsSectionProps> = ({
                       aria-label="Desfavoritar quadro"
                       title="Remover dos favoritos"
                     >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="#ef4444"
+                        stroke="#ef4444"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                       </svg>
                     </button>
@@ -106,11 +125,22 @@ export const FavoriteBoardsSection: React.FC<FavoriteBoardsSectionProps> = ({
 
                 <div className="favorite-card-footer">
                   <div className="favorite-card-deadline" title="Fluxo e tarefas ativas">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <circle cx="12" cy="12" r="10"></circle>
                       <polyline points="12 6 12 12 16 14"></polyline>
                     </svg>
-                    <span>{tasksCount} {tasksCount === 1 ? 'tarefa' : 'tarefas'}</span>
+                    <span>
+                      {tasksCount} {tasksCount === 1 ? 'tarefa' : 'tarefas'}
+                    </span>
                   </div>
                 </div>
               </div>

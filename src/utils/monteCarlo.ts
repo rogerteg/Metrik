@@ -49,7 +49,7 @@ export interface MonteCarloWhenResult {
 /**
  * Extrai a série de Throughput diário (quantidade de itens concluídos por dia).
  * O preenchimento com valor 0 em dias sem entregas é obrigatório para evitar viés de superestimação.
- * 
+ *
  * @param tasks Lista de tarefas do board
  * @param daysWindow Quantidade de dias da janela histórica (ex: 30, 60, 90 ou 0 para todo o histórico)
  * @param referenceDate Data de término da janela (padrão: hoje)
@@ -57,10 +57,10 @@ export interface MonteCarloWhenResult {
 export function extractDailyThroughput(
   tasks: TaskModel[],
   daysWindow: number = 30,
-  referenceDate: Date = new Date()
+  referenceDate: Date = new Date(),
 ): DailyThroughputSample[] {
   const completedTasks = tasks.filter((t) => Boolean(t.completedAt));
-  
+
   if (completedTasks.length === 0 && daysWindow <= 0) {
     return [];
   }
@@ -117,7 +117,7 @@ export function extractDailyThroughput(
 export function buildHistogramBins(
   values: number[],
   totalTrials: number,
-  isAscendingProbability: boolean = true
+  isAscendingProbability: boolean = true,
 ): MonteCarloHistogramBin[] {
   if (values.length === 0 || totalTrials <= 0) {
     return [];
@@ -135,7 +135,7 @@ export function buildHistogramBins(
     const freq = freqMap.get(val) || 0;
     accumulatedCount += freq;
     const relativeFrequency = Number((freq / totalTrials).toFixed(4));
-    
+
     // CDF normal (crescente: P(X <= x)) para prazos
     // CDF invertida (decrescente: P(X >= x)) para quantidade de itens
     const cumulativeProbability = isAscendingProbability
@@ -164,7 +164,7 @@ export function addDaysToDate(baseDate: Date | string, days: number): string {
 
 /**
  * Simulação Monte Carlo - "How Many" (Quantos itens conseguiremos entregar em targetDays dias?)
- * 
+ *
  * Sorteia com reposição targetDays amostras do histórico de Throughput em cada ensaio.
  * Ordena os totais obtidos para derivar os percentis onde a entrega atingiu ou superou o quantitativo.
  */
@@ -172,7 +172,7 @@ export function runMonteCarloHowMany(
   throughputHistory: number[],
   targetDays: number,
   trials: number = 10000,
-  rng: () => number = Math.random
+  rng: () => number = Math.random,
 ): MonteCarloHowManyResult {
   if (!throughputHistory || throughputHistory.length === 0 || targetDays <= 0 || trials <= 0) {
     return {
@@ -208,7 +208,7 @@ export function runMonteCarloHowMany(
   // 95% dos ensaios entregam pelo menos trialResults[floor(0.95 * trials)]
   const sortedDesc = [...trialResults].sort((a, b) => b - a);
 
-  const idxP50 = Math.min(Math.floor(0.50 * trials), trials - 1);
+  const idxP50 = Math.min(Math.floor(0.5 * trials), trials - 1);
   const idxP85 = Math.min(Math.floor(0.85 * trials), trials - 1);
   const idxP95 = Math.min(Math.floor(0.95 * trials), trials - 1);
 
@@ -237,7 +237,7 @@ export function runMonteCarloHowMany(
 
 /**
  * Simulação Monte Carlo - "When" (Quando entregaremos itemCount itens?)
- * 
+ *
  * Para cada ensaio, sorteia amostras diárias de throughput até acumular itemCount.
  * Ordena os dias decorridos em ordem ascendente (menos dias = mais otimista).
  */
@@ -246,7 +246,7 @@ export function runMonteCarloWhen(
   itemCount: number,
   startDate: Date = new Date(),
   trials: number = 10000,
-  rng: () => number = Math.random
+  rng: () => number = Math.random,
 ): MonteCarloWhenResult {
   const emptyResult: MonteCarloWhenResult = {
     p50: { days: 0, projectedDate: addDaysToDate(startDate, 0) },
@@ -292,7 +292,7 @@ export function runMonteCarloWhen(
   // Ordenar em ordem crescente de dias (P(X <= x))
   const sortedAsc = [...trialDays].sort((a, b) => a - b);
 
-  const idxP50 = Math.min(Math.floor(0.50 * trials), trials - 1);
+  const idxP50 = Math.min(Math.floor(0.5 * trials), trials - 1);
   const idxP85 = Math.min(Math.floor(0.85 * trials), trials - 1);
   const idxP95 = Math.min(Math.floor(0.95 * trials), trials - 1);
 

@@ -1,0 +1,11 @@
+dist
+coverage
+node_modules
+venv
+venv/
+__pycache__
+books
+scratch
+specs
+package-lock.json
+*.md

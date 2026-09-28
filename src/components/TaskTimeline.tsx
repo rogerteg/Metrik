@@ -22,7 +22,17 @@ export interface TaskTimelineProps {
 }
 
 const HistoryIcon = () => (
-  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width={16}
+    height={16}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
     <path d="M3 3v5h5" />
     <path d="M12 7v5l4 2" />
@@ -30,7 +40,17 @@ const HistoryIcon = () => (
 );
 
 const AwardIcon = () => (
-  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width={14}
+    height={14}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <circle cx="12" cy="8" r="7" />
     <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
   </svg>
@@ -72,7 +92,7 @@ export const TaskTimeline: React.FC<TaskTimelineProps> = ({
   // Combined, filtered, and sorted items (pure function — performance-tested in T026)
   const timelineItems = useMemo<TimelineItem[]>(
     () => filterTimelineItems(comments, activityLog, filter, searchQuery),
-    [comments, activityLog, filter, searchQuery]
+    [comments, activityLog, filter, searchQuery],
   );
 
   // Grouped by time buckets
@@ -90,9 +110,13 @@ export const TaskTimeline: React.FC<TaskTimelineProps> = ({
     const decisionComments = comments.filter((c) => {
       if (!c.isDecision) return false;
       if (!cleanSearch) return true;
-      return c.text.toLowerCase().includes(cleanSearch) || c.userName.toLowerCase().includes(cleanSearch);
+      return (
+        c.text.toLowerCase().includes(cleanSearch) || c.userName.toLowerCase().includes(cleanSearch)
+      );
     });
-    return decisionComments.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+    return decisionComments.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )[0];
   }, [comments, searchQuery]);
 
   return (
@@ -161,7 +185,9 @@ export const TaskTimeline: React.FC<TaskTimelineProps> = ({
                 <div className="mrf-group__rule" />
               </div>
 
-              <div className={`mrf-group__items ${densityMode === 'compact' ? '' : 'mrf-group__items--detailed'}`}>
+              <div
+                className={`mrf-group__items ${densityMode === 'compact' ? '' : 'mrf-group__items--detailed'}`}
+              >
                 {group.items.map((item) => {
                   if (item.type === 'comment') {
                     return (

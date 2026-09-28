@@ -38,7 +38,7 @@ export const DEFAULT_COLUMNS: ColumnModel[] = [
 export const INITIAL_SEED_TASKS: BoardState = {
   columns: DEFAULT_COLUMNS,
   tasks: {
-    'todo': [
+    todo: [
       {
         id: 'task-seed-01',
         title: 'Definir métricas essenciais do ciclo ágil (Lead Time e Cycle Time)',
@@ -61,7 +61,7 @@ export const INITIAL_SEED_TASKS: BoardState = {
         startedAt: '2026-09-08T11:00:00.000Z',
       },
     ],
-    'blocked': [
+    blocked: [
       {
         id: 'task-seed-04',
         title: 'Aguardando validação do contrato de schema de dados',
@@ -70,7 +70,7 @@ export const INITIAL_SEED_TASKS: BoardState = {
         startedAt: '2026-09-08T11:15:00.000Z',
       },
     ],
-    'completed': [
+    completed: [
       {
         id: 'task-seed-05',
         title: 'Especificar e aprovar a feature 001-core-kanban-board com SpecKit',
@@ -106,7 +106,7 @@ export function isValidBoardState(data: unknown): data is BoardState {
   if (!data || typeof data !== 'object') return false;
 
   const candidate = data as Record<string, unknown>;
-  
+
   if (!Array.isArray(candidate.columns)) return false;
   if (!candidate.tasks || typeof candidate.tasks !== 'object') return false;
 

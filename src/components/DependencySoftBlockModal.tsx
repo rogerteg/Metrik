@@ -21,9 +21,15 @@ export const DependencySoftBlockModal: React.FC<DependencySoftBlockModalProps> =
 
   return (
     <Modal isOpen={isOpen} onClose={onCancel} title="Atenção: Dependência Pendente 🔒">
-      <div className="soft-block-modal-content" style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '6px 0' }}>
-        <p style={{ margin: 0, fontSize: '0.92rem', color: 'var(--text-primary)', lineHeight: 1.5 }}>
-          A tarefa <strong>"{taskTitle}"</strong> possui dependências que ainda não foram concluídas:
+      <div
+        className="soft-block-modal-content"
+        style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '6px 0' }}
+      >
+        <p
+          style={{ margin: 0, fontSize: '0.92rem', color: 'var(--text-primary)', lineHeight: 1.5 }}
+        >
+          A tarefa <strong>"{taskTitle}"</strong> possui dependências que ainda não foram
+          concluídas:
         </p>
 
         <div
@@ -57,7 +63,9 @@ export const DependencySoftBlockModal: React.FC<DependencySoftBlockModalProps> =
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
                 <span aria-hidden="true">🔒</span>
-                <span style={{ fontWeight: 600, fontSize: '0.84rem', color: 'var(--text-primary)' }}>
+                <span
+                  style={{ fontWeight: 600, fontSize: '0.84rem', color: 'var(--text-primary)' }}
+                >
                   {bt.taskTitle}
                 </span>
                 {bt.teamName && (
@@ -92,7 +100,14 @@ export const DependencySoftBlockModal: React.FC<DependencySoftBlockModalProps> =
           ))}
         </div>
 
-        <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+        <p
+          style={{
+            margin: 0,
+            fontSize: '0.86rem',
+            color: 'var(--text-secondary)',
+            lineHeight: 1.4,
+          }}
+        >
           Deseja marcar esta tarefa como concluída mesmo com itens bloqueadores em aberto?
         </p>
 

@@ -14,7 +14,7 @@ let envOverrideForTesting: { url: string | null; anonKey: string | null } | null
  * Permite fixar o ambiente nos testes independentemente de arquivos .env locais.
  */
 export function _setSupabaseEnvForTesting(
-  override: { url: string | null; anonKey: string | null } | null
+  override: { url: string | null; anonKey: string | null } | null,
 ): void {
   envOverrideForTesting = override;
   cachedClient = null;
@@ -84,7 +84,9 @@ export function getSupabaseClient(): SupabaseClient | null {
   if (!url || !anonKey) {
     if (!clientInitAttempted) {
       // Log estruturado conforme Princípio IV da Constituição
-      console.info('[Metrik] Supabase credentials not provided. Operating in Local-First autonomous mode.');
+      console.info(
+        '[Metrik] Supabase credentials not provided. Operating in Local-First autonomous mode.',
+      );
       clientInitAttempted = true;
     }
     return null;

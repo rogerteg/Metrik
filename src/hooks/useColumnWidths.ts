@@ -32,14 +32,16 @@ const readPersistedWidths = (boardId: string | null): Record<string, number> => 
     return resolved;
   } catch {
     // Falha defensiva de leitura: o quadro segue íntegro com as larguras padrão.
-    console.warn('[Metrik Guard] Column width preferences could not be read; falling back to defaults.');
+    console.warn(
+      '[Metrik Guard] Column width preferences could not be read; falling back to defaults.',
+    );
     return {};
   }
 };
 
 export function useColumnWidths(activeBoardId: string | null): UseColumnWidthsReturn {
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>(() =>
-    readPersistedWidths(activeBoardId)
+    readPersistedWidths(activeBoardId),
   );
 
   // Recarrega apenas quando o quadro ativo muda: o mount já foi resolvido no initializer,
@@ -61,7 +63,7 @@ export function useColumnWidths(activeBoardId: string | null): UseColumnWidthsRe
         // Persistência é melhor esforço: a geometria da sessão já está correta em memória.
       }
     },
-    [activeBoardId]
+    [activeBoardId],
   );
 
   const setColumnWidth = useCallback(
@@ -72,7 +74,7 @@ export function useColumnWidths(activeBoardId: string | null): UseColumnWidthsRe
         return next;
       });
     },
-    [persist]
+    [persist],
   );
 
   const resetColumnWidth = useCallback(
@@ -85,7 +87,7 @@ export function useColumnWidths(activeBoardId: string | null): UseColumnWidthsRe
         return next;
       });
     },
-    [persist]
+    [persist],
   );
 
   return {

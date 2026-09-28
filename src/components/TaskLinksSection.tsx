@@ -1,10 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { TaskModel, BoardModel, BoardState } from '../types/kanban';
 import { Team } from '../types/team';
-import {
-  TaskRelationType,
-  TASK_RELATION_CONFIGS,
-} from '../types/taskTypes';
+import { TaskRelationType, TASK_RELATION_CONFIGS } from '../types/taskTypes';
 
 export interface TaskLinksSectionProps {
   currentTask: TaskModel;
@@ -18,7 +15,7 @@ export interface TaskLinksSectionProps {
     targetTaskId: string,
     relationType: TaskRelationType,
     targetBoardId: string,
-    targetTeamId: string
+    targetTeamId: string,
   ) => void;
   onRemoveLink: (targetTaskId: string) => void;
   onNavigateToBoard?: (boardId: string) => void;
@@ -40,7 +37,7 @@ export const TaskLinksSection: React.FC<TaskLinksSectionProps> = ({
   const [linkScope, setLinkScope] = useState<'local' | 'cross_squad'>('local');
   const [selectedRelation, setSelectedRelation] = useState<TaskRelationType>('relates_to');
   const [selectedTaskId, setSelectedTaskId] = useState('');
-  
+
   // Cross-Squad state
   const [selectedTeamId, setSelectedTeamId] = useState('');
   const [selectedBoardId, setSelectedBoardId] = useState('');
@@ -77,10 +74,14 @@ export const TaskLinksSection: React.FC<TaskLinksSectionProps> = ({
   }, [selectedBoardId, currentTask]);
 
   // Helper to resolve linked task metadata (title, squad, board)
-  const resolveLinkMetadata = (link: { targetTaskId: string; targetBoardId: string; targetTeamId: string }) => {
+  const resolveLinkMetadata = (link: {
+    targetTaskId: string;
+    targetBoardId: string;
+    targetTeamId: string;
+  }) => {
     const team = teams.find((t) => t.id === link.targetTeamId);
     const board = allBoards.find((b) => b.id === link.targetBoardId);
-    
+
     // Check local tasks first
     let taskTitle = 'Tarefa #' + link.targetTaskId.slice(0, 8);
     const local = boardTasks.find((t) => t.id === link.targetTaskId);
@@ -142,11 +143,7 @@ export const TaskLinksSection: React.FC<TaskLinksSectionProps> = ({
           Vínculos & Dependências ({links.length})
         </label>
         {!isReadOnly && !isAdding && (
-          <button
-            type="button"
-            className="btn-add-link-trigger"
-            onClick={() => setIsAdding(true)}
-          >
+          <button type="button" className="btn-add-link-trigger" onClick={() => setIsAdding(true)}>
             + Adicionar Vínculo
           </button>
         )}
@@ -162,7 +159,11 @@ export const TaskLinksSection: React.FC<TaskLinksSectionProps> = ({
             const meta = resolveLinkMetadata(link);
 
             return (
-              <div key={link.id} className="task-link-item" data-testid={`task-link-${link.targetTaskId}`}>
+              <div
+                key={link.id}
+                className="task-link-item"
+                data-testid={`task-link-${link.targetTaskId}`}
+              >
                 <div className="task-link-item__left">
                   <span
                     className={`task-link-relation-badge task-link-relation-badge--${link.relationType}`}
@@ -177,7 +178,10 @@ export const TaskLinksSection: React.FC<TaskLinksSectionProps> = ({
                   </span>
 
                   {meta.isExternal && (
-                    <span className="task-link-squad-chip" title={`Squad: ${meta.teamName} • Quadro: ${meta.boardName}`}>
+                    <span
+                      className="task-link-squad-chip"
+                      title={`Squad: ${meta.teamName} • Quadro: ${meta.boardName}`}
+                    >
                       🏢 {meta.teamName}
                     </span>
                   )}
@@ -359,18 +363,10 @@ export const TaskLinksSection: React.FC<TaskLinksSectionProps> = ({
           </div>
 
           <div className="task-add-link-actions">
-            <button
-              type="button"
-              className="btn-mini-cancel"
-              onClick={handleResetForm}
-            >
+            <button type="button" className="btn-mini-cancel" onClick={handleResetForm}>
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="btn-mini-submit"
-              disabled={!selectedTaskId}
-            >
+            <button type="submit" className="btn-mini-submit" disabled={!selectedTaskId}>
               Confirmar Vínculo
             </button>
           </div>

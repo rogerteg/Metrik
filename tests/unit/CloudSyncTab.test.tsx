@@ -18,25 +18,17 @@ describe('CloudSyncTab Component', () => {
   });
 
   it('renders the status card indicating Local-First mode when not configured', () => {
-    render(
-      <CloudSyncTab
-        workspaces={[]}
-        boards={[]}
-      />
-    );
+    render(<CloudSyncTab workspaces={[]} boards={[]} />);
 
     expect(screen.getByText('Modo Local-First Ativo (Sem Nuvem)')).toBeInTheDocument();
-    expect(screen.getByText(/Seus dados estão seguros e salvos exclusivamente no armazenamento local/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Seus dados estão seguros e salvos exclusivamente no armazenamento local/i),
+    ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Testar Conexão/i })).toBeInTheDocument();
   });
 
   it('disables sync and test buttons when not configured', () => {
-    render(
-      <CloudSyncTab
-        workspaces={[]}
-        boards={[]}
-      />
-    );
+    render(<CloudSyncTab workspaces={[]} boards={[]} />);
 
     const testBtn = screen.getByRole('button', { name: /Testar Conexão/i });
     const pushBtn = screen.getByRole('button', { name: /Enviar Dados Locais/i });
@@ -48,12 +40,7 @@ describe('CloudSyncTab Component', () => {
   });
 
   it('renders the setup guide with instructions for .env and schema.sql', () => {
-    render(
-      <CloudSyncTab
-        workspaces={[]}
-        boards={[]}
-      />
-    );
+    render(<CloudSyncTab workspaces={[]} boards={[]} />);
 
     expect(screen.getByText(/Como Conectar seu Projeto Supabase/i)).toBeInTheDocument();
     expect(screen.getByText(/supabase\/schema.sql/i)).toBeInTheDocument();

@@ -29,11 +29,7 @@ const THEME_OPTIONS: ThemeOption[] = [
 
 export const ThemeSelector: React.FC<ThemeSelectorProps> = ({ currentTheme, onSelectTheme }) => {
   return (
-    <div
-      className="theme-selector"
-      role="group"
-      aria-label="Selecionar tema"
-    >
+    <div className="theme-selector" role="group" aria-label="Selecionar tema">
       {THEME_OPTIONS.map((option) => {
         const isActive = currentTheme === option.id;
         return (

@@ -20,7 +20,7 @@ describe('DashboardSummaryCards component (Feature 030)', () => {
         totalWip={12}
         recentThroughput={7}
         blockedRatePercentage={15}
-      />
+      />,
     );
 
     // SLE Card
@@ -57,7 +57,7 @@ describe('DashboardSummaryCards component (Feature 030)', () => {
         onNavigateToWip={handleNavigateToWip}
         onNavigateToThroughput={handleNavigateToThroughput}
         onNavigateToBlockers={handleNavigateToBlockers}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByTestId('card-sle'));

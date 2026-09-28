@@ -61,7 +61,7 @@ describe('WorkspaceHub Component (Feature 029 - US1 MVP)', () => {
         favoriteBoardIds={['b-prod-1']}
         onToggleFavorite={vi.fn()}
         onSelectBoard={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText('Todos os espaços de trabalho')).toBeDefined();
@@ -81,7 +81,7 @@ describe('WorkspaceHub Component (Feature 029 - US1 MVP)', () => {
         favoriteBoardIds={['b-prod-1']}
         onToggleFavorite={vi.fn()}
         onSelectBoard={onSelectBoard}
-      />
+      />,
     );
 
     expect(screen.getByText('Quadros favoritos')).toBeDefined();
@@ -103,7 +103,7 @@ describe('WorkspaceHub Component (Feature 029 - US1 MVP)', () => {
         favoriteBoardIds={[]}
         onToggleFavorite={onToggleFavorite}
         onSelectBoard={vi.fn()}
-      />
+      />,
     );
 
     // Board b-prod-1 heart button in the grid
@@ -124,7 +124,7 @@ describe('WorkspaceHub Component (Feature 029 - US1 MVP)', () => {
         favoriteBoardIds={[]}
         onToggleFavorite={vi.fn()}
         onSelectBoard={vi.fn()}
-      />
+      />,
     );
 
     const searchInput = screen.getByPlaceholderText(/filtrar/i);

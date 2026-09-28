@@ -15,7 +15,13 @@ describe('Board Isolation & Guarding (US3)', () => {
       createdAt: '2026-01-01T00:00:00.000Z',
       createdById: 'u1',
       members: [
-        { id: 'm1', teamId: 'team-alfa', userId: 'u1', role: 'admin', joinedAt: '2026-01-01T00:00:00.000Z' },
+        {
+          id: 'm1',
+          teamId: 'team-alfa',
+          userId: 'u1',
+          role: 'admin',
+          joinedAt: '2026-01-01T00:00:00.000Z',
+        },
       ],
     },
     {
@@ -25,7 +31,13 @@ describe('Board Isolation & Guarding (US3)', () => {
       createdAt: '2026-01-02T00:00:00.000Z',
       createdById: 'u2',
       members: [
-        { id: 'm2', teamId: 'team-beta', userId: 'u2', role: 'admin', joinedAt: '2026-01-02T00:00:00.000Z' },
+        {
+          id: 'm2',
+          teamId: 'team-beta',
+          userId: 'u2',
+          role: 'admin',
+          joinedAt: '2026-01-02T00:00:00.000Z',
+        },
       ],
     },
   ];
@@ -57,7 +69,7 @@ describe('Board Isolation & Guarding (US3)', () => {
         onManageBoards={vi.fn()}
         teams={mockTeams}
         activeUserId="u1"
-      />
+      />,
     );
 
     // Should display Quadro Alfa Frontend
@@ -75,7 +87,7 @@ describe('Board Isolation & Guarding (US3)', () => {
         onManageBoards={vi.fn()}
         teams={mockTeams}
         activeUserId="u1"
-      />
+      />,
     );
 
     const optgroup = document.querySelector('optgroup[label="Squad Alfa"]');
@@ -96,7 +108,7 @@ describe('Board Isolation & Guarding (US3)', () => {
         onSwitchBoard={vi.fn()}
         teams={mockTeams}
         activeUserId="u1"
-      />
+      />,
     );
 
     const nameInput = screen.getByPlaceholderText(/nome do novo quadro/i);
@@ -119,7 +131,7 @@ describe('Board Isolation & Guarding (US3)', () => {
         teamName="Squad Confidencial"
         onRedirectDefault={onRedirect}
         onOpenJoinCode={onOpenJoin}
-      />
+      />,
     );
 
     expect(screen.getByText(/acesso restrito/i)).toBeDefined();

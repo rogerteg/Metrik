@@ -15,11 +15,9 @@ describe('useTaskCollection Hook (Feature 010 Multi-Board)', () => {
   it('initializes with seed data when localStorage is empty', () => {
     const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
 
-    expect(result.current.board.tasks['todo'].length).toBe(
-      INITIAL_SEED_TASKS.tasks['todo'].length
-    );
+    expect(result.current.board.tasks['todo'].length).toBe(INITIAL_SEED_TASKS.tasks['todo'].length);
     expect(result.current.board.tasks['in-progress'].length).toBe(
-      INITIAL_SEED_TASKS.tasks['in-progress'].length
+      INITIAL_SEED_TASKS.tasks['in-progress'].length,
     );
 
     const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
@@ -48,22 +46,33 @@ describe('useTaskCollection Hook (Feature 010 Multi-Board)', () => {
   it('switches board data when activeBoardId changes', () => {
     // Setup board 1
     const board1Key = 'metrik-tasks-b1';
-    window.localStorage.setItem(board1Key, JSON.stringify({
-      columns: INITIAL_SEED_TASKS.columns,
-      tasks: { ...INITIAL_SEED_TASKS.tasks, todo: [{ id: 'b1-task', title: 'Task 1', column: 'todo' }] }
-    }));
+    window.localStorage.setItem(
+      board1Key,
+      JSON.stringify({
+        columns: INITIAL_SEED_TASKS.columns,
+        tasks: {
+          ...INITIAL_SEED_TASKS.tasks,
+          todo: [{ id: 'b1-task', title: 'Task 1', column: 'todo' }],
+        },
+      }),
+    );
 
     // Setup board 2
     const board2Key = 'metrik-tasks-b2';
-    window.localStorage.setItem(board2Key, JSON.stringify({
-      columns: INITIAL_SEED_TASKS.columns,
-      tasks: { ...INITIAL_SEED_TASKS.tasks, todo: [{ id: 'b2-task', title: 'Task 2', column: 'todo' }] }
-    }));
-
-    const { result, rerender } = renderHook(
-      ({ id }) => useTaskCollection(id),
-      { initialProps: { id: 'b1' } }
+    window.localStorage.setItem(
+      board2Key,
+      JSON.stringify({
+        columns: INITIAL_SEED_TASKS.columns,
+        tasks: {
+          ...INITIAL_SEED_TASKS.tasks,
+          todo: [{ id: 'b2-task', title: 'Task 2', column: 'todo' }],
+        },
+      }),
     );
+
+    const { result, rerender } = renderHook(({ id }) => useTaskCollection(id), {
+      initialProps: { id: 'b1' },
+    });
 
     expect(result.current.board.tasks['todo'][0].title).toBe('Task 1');
 
@@ -79,7 +88,7 @@ describe('useTaskCollection Hook (Feature 010 Multi-Board)', () => {
       result.current.addColumn('New Phase', 'in_progress', 5);
     });
 
-    const newCol = result.current.board.columns.find(c => c.title === 'New Phase');
+    const newCol = result.current.board.columns.find((c) => c.title === 'New Phase');
     expect(newCol).toBeDefined();
     expect(newCol?.category).toBe('in_progress');
     expect(newCol?.wipLimit).toBe(5);
@@ -88,18 +97,18 @@ describe('useTaskCollection Hook (Feature 010 Multi-Board)', () => {
 
   it('deletes an empty column correctly', () => {
     const { result } = renderHook(() => useTaskCollection(TEST_BOARD_ID));
-    
+
     act(() => {
       result.current.addColumn('To Delete', 'todo', null);
     });
-    
-    const newCol = result.current.board.columns.find(c => c.title === 'To Delete');
-    
+
+    const newCol = result.current.board.columns.find((c) => c.title === 'To Delete');
+
     act(() => {
       result.current.deleteColumn(newCol!.id);
     });
-    
-    const found = result.current.board.columns.find(c => c.id === newCol!.id);
+
+    const found = result.current.board.columns.find((c) => c.id === newCol!.id);
     expect(found).toBeUndefined();
     expect(result.current.board.tasks[newCol!.id]).toBeUndefined();
   });
@@ -203,13 +212,24 @@ describe('useTaskCollection Hook (Feature 010 Multi-Board)', () => {
 
     const newBoard = {
       columns: [
-        { id: 'custom-col', title: 'Custom', category: 'todo' as const, wipLimit: null, colorScheme: 'todo' as const }
+        {
+          id: 'custom-col',
+          title: 'Custom',
+          category: 'todo' as const,
+          wipLimit: null,
+          colorScheme: 'todo' as const,
+        },
       ],
       tasks: {
         'custom-col': [
-          { id: 'c-1', title: 'Imported Task', column: 'custom-col', createdAt: new Date().toISOString() }
-        ]
-      }
+          {
+            id: 'c-1',
+            title: 'Imported Task',
+            column: 'custom-col',
+            createdAt: new Date().toISOString(),
+          },
+        ],
+      },
     };
 
     act(() => {

@@ -124,17 +124,60 @@ describe('useCfdData & calculateCfd (Feature 011)', () => {
     const targetDay = days[13];
 
     const columns = [
-      { id: 'c-todo', title: 'To Do', category: 'todo' as const, wipLimit: null, colorScheme: 'todo' as const },
-      { id: 'c-dev', title: 'Development', category: 'in_progress' as const, wipLimit: null, colorScheme: 'progress' as const },
-      { id: 'c-qa', title: 'QA Review', category: 'in_progress' as const, wipLimit: null, colorScheme: 'blocked' as const },
-      { id: 'c-done', title: 'Concluído', category: 'done' as const, wipLimit: null, colorScheme: 'completed' as const },
+      {
+        id: 'c-todo',
+        title: 'To Do',
+        category: 'todo' as const,
+        wipLimit: null,
+        colorScheme: 'todo' as const,
+      },
+      {
+        id: 'c-dev',
+        title: 'Development',
+        category: 'in_progress' as const,
+        wipLimit: null,
+        colorScheme: 'progress' as const,
+      },
+      {
+        id: 'c-qa',
+        title: 'QA Review',
+        category: 'in_progress' as const,
+        wipLimit: null,
+        colorScheme: 'blocked' as const,
+      },
+      {
+        id: 'c-done',
+        title: 'Concluído',
+        category: 'done' as const,
+        wipLimit: null,
+        colorScheme: 'completed' as const,
+      },
     ];
 
     const tasks: TaskModel[] = [
       { id: 't1', title: 'Task 1', column: 'c-todo', createdAt: `${targetDay}T08:00:00Z` },
-      { id: 't2', title: 'Task 2', column: 'c-dev', createdAt: `${targetDay}T08:00:00Z`, startedAt: `${targetDay}T09:00:00Z` },
-      { id: 't3', title: 'Task 3', column: 'c-qa', createdAt: `${targetDay}T08:00:00Z`, startedAt: `${targetDay}T09:30:00Z` },
-      { id: 't4', title: 'Task 4', column: 'c-done', createdAt: `${targetDay}T08:00:00Z`, startedAt: `${targetDay}T09:00:00Z`, completedAt: `${targetDay}T10:00:00Z` },
+      {
+        id: 't2',
+        title: 'Task 2',
+        column: 'c-dev',
+        createdAt: `${targetDay}T08:00:00Z`,
+        startedAt: `${targetDay}T09:00:00Z`,
+      },
+      {
+        id: 't3',
+        title: 'Task 3',
+        column: 'c-qa',
+        createdAt: `${targetDay}T08:00:00Z`,
+        startedAt: `${targetDay}T09:30:00Z`,
+      },
+      {
+        id: 't4',
+        title: 'Task 4',
+        column: 'c-done',
+        createdAt: `${targetDay}T08:00:00Z`,
+        startedAt: `${targetDay}T09:00:00Z`,
+        completedAt: `${targetDay}T10:00:00Z`,
+      },
     ];
 
     const data = calculateCfd(tasks, 14, columns);
@@ -156,7 +199,13 @@ describe('useCfdData & calculateCfd (Feature 011)', () => {
 
   it('calculates CFD points with custom date range (startDate & endDate)', () => {
     const tasks: TaskModel[] = [
-      { id: 't1', title: 'Task 1', column: 'done', createdAt: '2026-09-01T08:00:00Z', completedAt: '2026-09-03T10:00:00Z' },
+      {
+        id: 't1',
+        title: 'Task 1',
+        column: 'done',
+        createdAt: '2026-09-01T08:00:00Z',
+        completedAt: '2026-09-03T10:00:00Z',
+      },
     ];
 
     const data = calculateCfd(tasks, 14, undefined, {

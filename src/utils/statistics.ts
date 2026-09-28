@@ -4,7 +4,7 @@
 
 /**
  * Calcula percentis para um conjunto numérico usando interpolação linear padrão (NIST / R-6).
- * 
+ *
  * @param values Array de valores numéricos (ex: tempos de ciclo em dias)
  * @param percentile Número entre 0 e 100 representando o percentil desejado (ex: 50, 85, 95)
  * @returns O valor correspondente ao percentil calculado, arredondado para 1 casa decimal

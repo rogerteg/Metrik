@@ -67,14 +67,38 @@ describe('useFlowMetrics Hook (Feature 013 - Flow Efficiency)', () => {
 
   it('counts active blocked tasks from allBoardTasks parameter', () => {
     const completedTasks: TaskModel[] = [
-      { id: 'c1', title: 'Done 1', column: 'done', createdAt: '2026-09-01T00:00:00Z', completedAt: '2026-09-02T00:00:00Z' }
+      {
+        id: 'c1',
+        title: 'Done 1',
+        column: 'done',
+        createdAt: '2026-09-01T00:00:00Z',
+        completedAt: '2026-09-02T00:00:00Z',
+      },
     ];
 
     const allTasks: TaskModel[] = [
       ...completedTasks,
-      { id: 'b1', title: 'In Progress Blocked', column: 'in_progress', createdAt: '2026-09-01T00:00:00Z', blocked: true },
-      { id: 'b2', title: 'Todo Blocked', column: 'todo', createdAt: '2026-09-01T00:00:00Z', blocked: true },
-      { id: 'ok', title: 'Todo Normal', column: 'todo', createdAt: '2026-09-01T00:00:00Z', blocked: false },
+      {
+        id: 'b1',
+        title: 'In Progress Blocked',
+        column: 'in_progress',
+        createdAt: '2026-09-01T00:00:00Z',
+        blocked: true,
+      },
+      {
+        id: 'b2',
+        title: 'Todo Blocked',
+        column: 'todo',
+        createdAt: '2026-09-01T00:00:00Z',
+        blocked: true,
+      },
+      {
+        id: 'ok',
+        title: 'Todo Normal',
+        column: 'todo',
+        createdAt: '2026-09-01T00:00:00Z',
+        blocked: false,
+      },
     ];
 
     const { result } = renderHook(() => useFlowMetrics(completedTasks, allTasks));

@@ -25,7 +25,7 @@ describe('AnalyticsDashboard Component (Feature 011 & 030 Integration)', () => {
       title: 'Task Gamma',
       column: 'todo',
       createdAt: '2026-09-03T09:00:00Z',
-    }
+    },
   ];
 
   it('renders summary metrics bar and all three analytics charts on default dashboard', () => {

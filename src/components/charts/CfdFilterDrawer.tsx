@@ -146,11 +146,7 @@ export const CfdFilterDrawer: React.FC<CfdFilterDrawerProps> = ({
 
           {/* Botões de Ação */}
           <div className="cfd-filter-actions">
-            <button
-              type="submit"
-              className="btn-cfd-load"
-              data-testid="btn-cfd-load"
-            >
+            <button type="submit" className="btn-cfd-load" data-testid="btn-cfd-load">
               LOAD / Aplicar
             </button>
             <button

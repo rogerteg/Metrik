@@ -4,12 +4,7 @@ import { AnalyticsNavHeader } from '../../src/components/AnalyticsNavHeader';
 
 describe('AnalyticsNavHeader component (Feature 030)', () => {
   it('renders all 8 categorized tabs', () => {
-    render(
-      <AnalyticsNavHeader
-        activeCategory="dashboard"
-        onSelectCategory={vi.fn()}
-      />
-    );
+    render(<AnalyticsNavHeader activeCategory="dashboard" onSelectCategory={vi.fn()} />);
 
     expect(screen.getByTestId('tab-dashboard')).toBeInTheDocument();
     expect(screen.getByTestId('tab-cycle-time')).toBeInTheDocument();
@@ -24,10 +19,7 @@ describe('AnalyticsNavHeader component (Feature 030)', () => {
   it('triggers onSelectCategory when a category tab is clicked', () => {
     const handleSelectCategory = vi.fn();
     render(
-      <AnalyticsNavHeader
-        activeCategory="dashboard"
-        onSelectCategory={handleSelectCategory}
-      />
+      <AnalyticsNavHeader activeCategory="dashboard" onSelectCategory={handleSelectCategory} />,
     );
 
     fireEvent.click(screen.getByTestId('tab-flow'));
@@ -47,7 +39,7 @@ describe('AnalyticsNavHeader component (Feature 030)', () => {
         onSelectCategory={handleSelectCategory}
         cycleTimeMode="scatter"
         onSelectCycleTimeMode={handleSelectMode}
-      />
+      />,
     );
 
     const trigger = screen.getByTestId('cycle-time-dropdown-trigger');
@@ -70,7 +62,7 @@ describe('AnalyticsNavHeader component (Feature 030)', () => {
         onSelectCategory={handleSelectCategory}
         blockerMode="clustering"
         onSelectBlockerMode={handleSelectMode}
-      />
+      />,
     );
 
     const trigger = screen.getByTestId('blockers-dropdown-trigger');
@@ -92,7 +84,7 @@ describe('AnalyticsNavHeader component (Feature 030)', () => {
         onSelectCategory={vi.fn()}
         onToggleDatasetDrawer={handleToggleDrawer}
         hasActiveDatasetFilters={true}
-      />
+      />,
     );
 
     const drawerBtn = screen.getByTestId('dataset-drawer-trigger');

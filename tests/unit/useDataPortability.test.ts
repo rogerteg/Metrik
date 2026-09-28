@@ -27,7 +27,7 @@ describe('useDataPortability Hook', () => {
 
     // Verify Blob creation
     expect(createObjectURLMock).toHaveBeenCalled();
-    
+
     // Verify interaction
     expect(appendChildSpy).toHaveBeenCalled();
     expect(clickSpy).toHaveBeenCalled();
@@ -37,18 +37,18 @@ describe('useDataPortability Hook', () => {
 
   it('imports valid JSON and calls onSuccess', async () => {
     const { result } = renderHook(() => useDataPortability());
-    
+
     const validJson = JSON.stringify(INITIAL_SEED_TASKS);
     const mockFile = new File([validJson], 'backup.json', { type: 'application/json' });
-    
+
     const onSuccess = vi.fn();
     const onError = vi.fn();
 
     // Mock FileReader to be synchronous for tests
     const fileReaderMock = {
-      readAsText: function(this: any, _file: Blob) {
+      readAsText: function (this: any, _file: Blob) {
         this.onload({ target: { result: validJson } } as any);
-      }
+      },
     };
     vi.spyOn(window, 'FileReader').mockImplementation(() => fileReaderMock as any);
 
@@ -60,45 +60,49 @@ describe('useDataPortability Hook', () => {
 
   it('calls onError for invalid JSON syntax', async () => {
     const { result } = renderHook(() => useDataPortability());
-    
+
     const invalidJson = '{ corrupted JSON, ';
     const mockFile = new File([invalidJson], 'backup.json', { type: 'application/json' });
-    
+
     const onSuccess = vi.fn();
     const onError = vi.fn();
 
     const fileReaderMock = {
-      readAsText: function(this: any, _file: Blob) {
+      readAsText: function (this: any, _file: Blob) {
         this.onload({ target: { result: invalidJson } } as any);
-      }
+      },
     };
     vi.spyOn(window, 'FileReader').mockImplementation(() => fileReaderMock as any);
 
     result.current.importData(mockFile, onSuccess, onError);
 
     expect(onSuccess).not.toHaveBeenCalled();
-    expect(onError).toHaveBeenCalledWith('Erro ao ler o arquivo. Certifique-se de que é um JSON válido.');
+    expect(onError).toHaveBeenCalledWith(
+      'Erro ao ler o arquivo. Certifique-se de que é um JSON válido.',
+    );
   });
 
   it('calls onError for valid JSON but invalid schema', async () => {
     const { result } = renderHook(() => useDataPortability());
-    
+
     const invalidSchema = JSON.stringify({ wrongProp: true });
     const mockFile = new File([invalidSchema], 'backup.json', { type: 'application/json' });
-    
+
     const onSuccess = vi.fn();
     const onError = vi.fn();
 
     const fileReaderMock = {
-      readAsText: function(this: any, _file: Blob) {
+      readAsText: function (this: any, _file: Blob) {
         this.onload({ target: { result: invalidSchema } } as any);
-      }
+      },
     };
     vi.spyOn(window, 'FileReader').mockImplementation(() => fileReaderMock as any);
 
     result.current.importData(mockFile, onSuccess, onError);
 
     expect(onSuccess).not.toHaveBeenCalled();
-    expect(onError).toHaveBeenCalledWith('Formato de arquivo inválido. O JSON não corresponde ao esquema esperado (Metrik V2).');
+    expect(onError).toHaveBeenCalledWith(
+      'Formato de arquivo inválido. O JSON não corresponde ao esquema esperado (Metrik V2).',
+    );
   });
 });

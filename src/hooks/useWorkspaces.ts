@@ -171,7 +171,7 @@ export function useWorkspaces() {
     (boardId: string) => {
       return favoriteBoardIds.includes(boardId);
     },
-    [favoriteBoardIds]
+    [favoriteBoardIds],
   );
 
   const createWorkspace = useCallback(
@@ -191,11 +191,14 @@ export function useWorkspaces() {
       setWorkspaces((prev) => [...prev, newWs]);
       return newWs;
     },
-    []
+    [],
   );
 
   const updateWorkspace = useCallback(
-    (workspaceId: string, updates: Partial<Pick<Workspace, 'name' | 'color' | 'description' | 'boardIds' | 'teamId'>>) => {
+    (
+      workspaceId: string,
+      updates: Partial<Pick<Workspace, 'name' | 'color' | 'description' | 'boardIds' | 'teamId'>>,
+    ) => {
       setWorkspaces((prev) =>
         prev.map((w) => {
           if (w.id !== workspaceId) return w;
@@ -204,10 +207,10 @@ export function useWorkspaces() {
             ...updates,
             updatedAt: new Date().toISOString(),
           };
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const deleteWorkspace = useCallback((workspaceId: string) => {
@@ -250,7 +253,7 @@ export function useWorkspaces() {
           boardIds: [...w.boardIds, boardId],
           updatedAt: new Date().toISOString(),
         };
-      })
+      }),
     );
   }, []);
 
@@ -263,7 +266,7 @@ export function useWorkspaces() {
           boardIds: w.boardIds.filter((id) => id !== boardId),
           updatedAt: new Date().toISOString(),
         };
-      })
+      }),
     );
   }, []);
 

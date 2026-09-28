@@ -61,7 +61,7 @@ describe('datasetFilter utility (Feature 030)', () => {
     const result = filterTasksByDatasetConfig(
       tasks,
       { timeWindow: 'all', selectedTypes: ['card'] },
-      refTime
+      refTime,
     );
     expect(result.map((t) => t.id)).toEqual(['t-recent', 't-old']);
   });
@@ -77,7 +77,7 @@ describe('datasetFilter utility (Feature 030)', () => {
         customStartDate: customStart,
         customEndDate: customEnd,
       },
-      refTime
+      refTime,
     );
 
     // Only t-mid (completed 20d ago) falls between 25d and 15d ago

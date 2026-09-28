@@ -54,7 +54,10 @@ export const BoardSwitcher: React.FC<BoardSwitcherProps> = ({
   }
 
   return (
-    <div className="board-switcher" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '24px' }}>
+    <div
+      className="board-switcher"
+      style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '24px' }}
+    >
       <select
         value={activeBoardId || ''}
         onChange={(e) => onSwitchBoard(e.target.value)}

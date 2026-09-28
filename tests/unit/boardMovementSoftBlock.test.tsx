@@ -29,7 +29,7 @@ describe('Feature 024 - User Story 4: DependencySoftBlockModal Component', () =>
         blockingTasks={blockingTasks}
         onConfirm={vi.fn()}
         onCancel={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText(/Dependência Pendente/i)).toBeInTheDocument();
@@ -47,7 +47,7 @@ describe('Feature 024 - User Story 4: DependencySoftBlockModal Component', () =>
         blockingTasks={blockingTasks}
         onConfirm={vi.fn()}
         onCancel={onCancel}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByRole('button', { name: /Cancelar/i }));
@@ -63,7 +63,7 @@ describe('Feature 024 - User Story 4: DependencySoftBlockModal Component', () =>
         blockingTasks={blockingTasks}
         onConfirm={onConfirm}
         onCancel={vi.fn()}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByRole('button', { name: /Confirmar Conclusão/i }));
@@ -78,7 +78,7 @@ describe('Feature 024 - User Story 4: DependencySoftBlockModal Component', () =>
         blockingTasks={blockingTasks}
         onConfirm={vi.fn()}
         onCancel={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.queryByText(/Dependência Pendente/i)).not.toBeInTheDocument();
@@ -164,7 +164,7 @@ describe('Feature 024 - User Story 4: Soft Block & Initiative Progress Flow', ()
         onDiscardIfEmpty={vi.fn()}
         initiativeProgress={{ total: 4, completed: 3, percentage: 75 }}
         pendingBlockersCount={1}
-      />
+      />,
     );
 
     expect(screen.getByTestId('task-initiative-progress')).toBeInTheDocument();
@@ -173,4 +173,3 @@ describe('Feature 024 - User Story 4: Soft Block & Initiative Progress Flow', ()
     expect(screen.getByText(/1 bloqueador pendente/i)).toBeInTheDocument();
   });
 });
-

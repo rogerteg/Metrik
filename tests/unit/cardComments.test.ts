@@ -101,7 +101,7 @@ describe('cardComments — domínio puro (Feature 027 delta)', () => {
         'c1',
         '  texto revisado ',
         author,
-        '2026-09-28T13:00:00.000Z'
+        '2026-09-28T13:00:00.000Z',
       );
 
       expect(next[0].text).toBe('texto revisado');
@@ -140,7 +140,12 @@ describe('cardComments — domínio puro (Feature 027 delta)', () => {
   describe('subtask comments (FR-007a, cascade)', () => {
     const subtasks: SubtaskModel[] = [
       { id: 's1', title: 'Passo 1', completed: false },
-      { id: 's2', title: 'Passo 2', completed: true, comments: [comment({ id: 'child', taskId: 'task-1' })] },
+      {
+        id: 's2',
+        title: 'Passo 2',
+        completed: true,
+        comments: [comment({ id: 'child', taskId: 'task-1' })],
+      },
     ];
 
     it('detects whether a subtask has comments', () => {
@@ -165,7 +170,7 @@ describe('cardComments — domínio puro (Feature 027 delta)', () => {
         'child',
         'revisado',
         author,
-        '2026-09-28T14:00:00.000Z'
+        '2026-09-28T14:00:00.000Z',
       );
       expect(edited[1].comments![0].text).toBe('revisado');
       expect(edited[1].comments![0].updatedAt).toBe('2026-09-28T14:00:00.000Z');

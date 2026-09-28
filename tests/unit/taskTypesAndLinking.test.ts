@@ -12,11 +12,28 @@ import {
 describe('Feature 024: Task Relations & Work Item Types Utilities', () => {
   const dummyColumns: ColumnModel[] = [
     { id: 'col-todo', title: 'A Fazer', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-    { id: 'col-doing', title: 'Em Progresso', category: 'in_progress', wipLimit: 3, colorScheme: 'progress' },
-    { id: 'col-done', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
+    {
+      id: 'col-doing',
+      title: 'Em Progresso',
+      category: 'in_progress',
+      wipLimit: 3,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'col-done',
+      title: 'Concluído',
+      category: 'done',
+      wipLimit: null,
+      colorScheme: 'completed',
+    },
   ];
 
-  const createTask = (id: string, title: string, column = 'col-todo', type: 'card' | 'subtask' | 'initiative' = 'card'): TaskModel => ({
+  const createTask = (
+    id: string,
+    title: string,
+    column = 'col-todo',
+    type: 'card' | 'subtask' | 'initiative' = 'card',
+  ): TaskModel => ({
     id,
     title,
     column,
@@ -152,8 +169,11 @@ describe('Feature 024: Task Relations & Work Item Types Utilities', () => {
       });
 
       // Now delete task-2 (taskB). Remaining tasks are taskA and taskC
-      const cleaned = cleanupOrphanedLinks([linkedAB.updatedSource, linkedBC.updatedTarget], 'task-2');
-      
+      const cleaned = cleanupOrphanedLinks(
+        [linkedAB.updatedSource, linkedBC.updatedTarget],
+        'task-2',
+      );
+
       expect(cleaned[0].links).toHaveLength(0);
       expect(cleaned[1].links).toHaveLength(0);
     });
@@ -175,10 +195,38 @@ describe('Feature 024: Task Relations & Work Item Types Utilities', () => {
 
       // Link children to initiative (initiative is parent, so relation on initiative is 'child')
       initiative.links = [
-        { id: 'l1', targetTaskId: 'card-1', relationType: 'child', targetBoardId: 'b1', targetTeamId: 't1', createdAt: '' },
-        { id: 'l2', targetTaskId: 'card-2', relationType: 'child', targetBoardId: 'b1', targetTeamId: 't1', createdAt: '' },
-        { id: 'l3', targetTaskId: 'card-3', relationType: 'child', targetBoardId: 'b1', targetTeamId: 't1', createdAt: '' },
-        { id: 'l4', targetTaskId: 'card-4', relationType: 'child', targetBoardId: 'b1', targetTeamId: 't1', createdAt: '' },
+        {
+          id: 'l1',
+          targetTaskId: 'card-1',
+          relationType: 'child',
+          targetBoardId: 'b1',
+          targetTeamId: 't1',
+          createdAt: '',
+        },
+        {
+          id: 'l2',
+          targetTaskId: 'card-2',
+          relationType: 'child',
+          targetBoardId: 'b1',
+          targetTeamId: 't1',
+          createdAt: '',
+        },
+        {
+          id: 'l3',
+          targetTaskId: 'card-3',
+          relationType: 'child',
+          targetBoardId: 'b1',
+          targetTeamId: 't1',
+          createdAt: '',
+        },
+        {
+          id: 'l4',
+          targetTaskId: 'card-4',
+          relationType: 'child',
+          targetBoardId: 'b1',
+          targetTeamId: 't1',
+          createdAt: '',
+        },
       ];
 
       const allTasks = [initiative, child1, child2, child3, child4];
@@ -197,8 +245,22 @@ describe('Feature 024: Task Relations & Work Item Types Utilities', () => {
       const blocker2 = createTask('blocker-2', 'Bloqueador 2 (Concluído)', 'col-done', 'card');
 
       currentTask.links = [
-        { id: 'l1', targetTaskId: 'blocker-1', relationType: 'is_blocked_by', targetBoardId: 'b1', targetTeamId: 't1', createdAt: '' },
-        { id: 'l2', targetTaskId: 'blocker-2', relationType: 'is_blocked_by', targetBoardId: 'b1', targetTeamId: 't1', createdAt: '' },
+        {
+          id: 'l1',
+          targetTaskId: 'blocker-1',
+          relationType: 'is_blocked_by',
+          targetBoardId: 'b1',
+          targetTeamId: 't1',
+          createdAt: '',
+        },
+        {
+          id: 'l2',
+          targetTaskId: 'blocker-2',
+          relationType: 'is_blocked_by',
+          targetBoardId: 'b1',
+          targetTeamId: 't1',
+          createdAt: '',
+        },
       ];
 
       const allTasks = [currentTask, blocker1, blocker2];

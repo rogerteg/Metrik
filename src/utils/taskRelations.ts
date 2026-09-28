@@ -42,8 +42,12 @@ export function addBidirectionalLink({
   const now = new Date().toISOString();
 
   // Filtra links prévios com a mesma tarefa alvo para evitar duplicações
-  const existingSourceLinks = (sourceTask.links ?? []).filter(l => l.targetTaskId !== targetTask.id);
-  const existingTargetLinks = (targetTask.links ?? []).filter(l => l.targetTaskId !== sourceTask.id);
+  const existingSourceLinks = (sourceTask.links ?? []).filter(
+    (l) => l.targetTaskId !== targetTask.id,
+  );
+  const existingTargetLinks = (targetTask.links ?? []).filter(
+    (l) => l.targetTaskId !== sourceTask.id,
+  );
 
   const newSourceLink: TaskLinkModel = {
     id: crypto.randomUUID(),
@@ -80,10 +84,14 @@ export function addBidirectionalLink({
  */
 export function removeBidirectionalLink(
   sourceTask: TaskModel,
-  targetTask: TaskModel
+  targetTask: TaskModel,
 ): { updatedSource: TaskModel; updatedTarget: TaskModel } {
-  const updatedSourceLinks = (sourceTask.links ?? []).filter(l => l.targetTaskId !== targetTask.id);
-  const updatedTargetLinks = (targetTask.links ?? []).filter(l => l.targetTaskId !== sourceTask.id);
+  const updatedSourceLinks = (sourceTask.links ?? []).filter(
+    (l) => l.targetTaskId !== targetTask.id,
+  );
+  const updatedTargetLinks = (targetTask.links ?? []).filter(
+    (l) => l.targetTaskId !== sourceTask.id,
+  );
 
   return {
     updatedSource: {
@@ -101,9 +109,9 @@ export function removeBidirectionalLink(
  * Purga links órfãos apontando para uma tarefa recém-excluída.
  */
 export function cleanupOrphanedLinks(tasks: TaskModel[], deletedTaskId: string): TaskModel[] {
-  return tasks.map(task => {
+  return tasks.map((task) => {
     if (!task.links || task.links.length === 0) return task;
-    const filtered = task.links.filter(l => l.targetTaskId !== deletedTaskId);
+    const filtered = task.links.filter((l) => l.targetTaskId !== deletedTaskId);
     if (filtered.length === task.links.length) return task;
     return {
       ...task,
@@ -119,22 +127,20 @@ export function cleanupOrphanedLinks(tasks: TaskModel[], deletedTaskId: string):
 export function calculateInitiativeProgress(
   initiativeTask: TaskModel,
   allTasks: TaskModel[],
-  columns: ColumnModel[]
+  columns: ColumnModel[],
 ): { total: number; completed: number; percentage: number } {
-  const childLinks = (initiativeTask.links ?? []).filter(l => l.relationType === 'child');
+  const childLinks = (initiativeTask.links ?? []).filter((l) => l.relationType === 'child');
   if (childLinks.length === 0) {
     return { total: 0, completed: 0, percentage: 0 };
   }
 
-  const doneColumnIds = new Set(
-    columns.filter(c => c.category === 'done').map(c => c.id)
-  );
+  const doneColumnIds = new Set(columns.filter((c) => c.category === 'done').map((c) => c.id));
 
   let completedCount = 0;
   let validChildrenCount = 0;
 
   for (const link of childLinks) {
-    const childTask = allTasks.find(t => t.id === link.targetTaskId);
+    const childTask = allTasks.find((t) => t.id === link.targetTaskId);
     if (childTask) {
       validChildrenCount++;
       if (doneColumnIds.has(childTask.column)) {
@@ -159,21 +165,19 @@ export function calculateInitiativeProgress(
 export function getPendingBlockers(
   task: TaskModel,
   allTasks: TaskModel[],
-  columns: ColumnModel[]
+  columns: ColumnModel[],
 ): CrossSquadTaskSummary[] {
-  const blockingLinks = (task.links ?? []).filter(l => l.relationType === 'is_blocked_by');
+  const blockingLinks = (task.links ?? []).filter((l) => l.relationType === 'is_blocked_by');
   if (blockingLinks.length === 0) return [];
 
-  const doneColumnIds = new Set(
-    columns.filter(c => c.category === 'done').map(c => c.id)
-  );
+  const doneColumnIds = new Set(columns.filter((c) => c.category === 'done').map((c) => c.id));
 
   const pending: CrossSquadTaskSummary[] = [];
 
   for (const link of blockingLinks) {
-    const targetTask = allTasks.find(t => t.id === link.targetTaskId);
+    const targetTask = allTasks.find((t) => t.id === link.targetTaskId);
     if (targetTask) {
-      const col = columns.find(c => c.id === targetTask.column);
+      const col = columns.find((c) => c.id === targetTask.column);
       const isDone = doneColumnIds.has(targetTask.column);
       if (!isDone) {
         pending.push({
@@ -198,13 +202,15 @@ export function getPendingBlockers(
         if (raw) {
           const parsed = JSON.parse(raw);
           const boardCols: ColumnModel[] = parsed.columns || [];
-          const doneIds = new Set(boardCols.filter(c => c.category === 'done').map(c => c.id));
+          const doneIds = new Set(boardCols.filter((c) => c.category === 'done').map((c) => c.id));
           for (const colId of Object.keys(parsed.tasks || {})) {
-            const found = (parsed.tasks[colId] as TaskModel[]).find(t => t.id === link.targetTaskId);
+            const found = (parsed.tasks[colId] as TaskModel[]).find(
+              (t) => t.id === link.targetTaskId,
+            );
             if (found) {
               const isDone = doneIds.has(found.column);
               if (!isDone) {
-                const col = boardCols.find(c => c.id === found.column);
+                const col = boardCols.find((c) => c.id === found.column);
                 pending.push({
                   taskId: found.id,
                   taskTitle: found.title || 'Tarefa externa',

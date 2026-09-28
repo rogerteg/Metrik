@@ -5,12 +5,7 @@ import { TaskFieldActionToolbar } from '../../src/components/TaskFieldActionTool
 describe('TaskFieldActionToolbar Component (TDD - Feature 032)', () => {
   it('não renderiza nada ou permanece oculto quando status é idle e não há dirty', () => {
     const { container } = render(
-      <TaskFieldActionToolbar
-        status="idle"
-        isDirty={false}
-        onSave={vi.fn()}
-        onDiscard={vi.fn()}
-      />
+      <TaskFieldActionToolbar status="idle" isDirty={false} onSave={vi.fn()} onDiscard={vi.fn()} />,
     );
 
     expect(container.querySelector('.task-field-action-toolbar')).toBeNull();
@@ -27,7 +22,7 @@ describe('TaskFieldActionToolbar Component (TDD - Feature 032)', () => {
         onSave={onSave}
         onDiscard={onDiscard}
         ariaLabelPrefix="da descrição"
-      />
+      />,
     );
 
     const toolbar = screen.getByRole('toolbar', { name: /ações de edição da descrição/i });
@@ -60,7 +55,7 @@ describe('TaskFieldActionToolbar Component (TDD - Feature 032)', () => {
         isDirty={true}
         onSave={onSave}
         onDiscard={onDiscard}
-      />
+      />,
     );
 
     expect(screen.getByText(/salvando\.\.\./i)).toBeInTheDocument();
@@ -79,7 +74,7 @@ describe('TaskFieldActionToolbar Component (TDD - Feature 032)', () => {
         isDirty={false}
         onSave={vi.fn()}
         onDiscard={vi.fn()}
-      />
+      />,
     );
 
     const savedBadge = screen.getByText(/✓ salvo/i);
@@ -95,7 +90,7 @@ describe('TaskFieldActionToolbar Component (TDD - Feature 032)', () => {
         onSave={vi.fn()}
         onDiscard={vi.fn()}
         isReadOnly={true}
-      />
+      />,
     );
 
     expect(screen.queryByRole('button', { name: /salvar/i })).toBeNull();
@@ -110,7 +105,7 @@ describe('TaskFieldActionToolbar Component (TDD - Feature 032)', () => {
         onSave={vi.fn()}
         onDiscard={vi.fn()}
         compact={true}
-      />
+      />,
     );
 
     const toolbar = screen.getByRole('toolbar');

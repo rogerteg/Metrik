@@ -272,7 +272,10 @@ export const WipAgingChart: React.FC<WipAgingChartProps> = ({
               )}
 
               {/* Badge de WIP no Topo da Coluna */}
-              <g className="wip-top-badge" transform={`translate(${colX + colWidth / 2}, ${paddingTop - 18})`}>
+              <g
+                className="wip-top-badge"
+                transform={`translate(${colX + colWidth / 2}, ${paddingTop - 18})`}
+              >
                 <rect
                   x="-28"
                   y="-12"
@@ -373,7 +376,9 @@ export const WipAgingChart: React.FC<WipAgingChartProps> = ({
         >
           <div className="tooltip-header">
             <span className="tooltip-task-id">{hoveredItem.item.id}</span>
-            {hoveredItem.item.isBlocked && <span className="tooltip-badge-blocked">🚫 Bloqueado</span>}
+            {hoveredItem.item.isBlocked && (
+              <span className="tooltip-badge-blocked">🚫 Bloqueado</span>
+            )}
           </div>
           <div className="tooltip-task-title">{hoveredItem.item.title}</div>
           <div className="tooltip-meta-grid">

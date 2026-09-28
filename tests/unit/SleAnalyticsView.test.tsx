@@ -32,12 +32,7 @@ describe('SleAnalyticsView component (Feature 030)', () => {
   };
 
   it('renders SLE headline indicators and compliance metrics', () => {
-    render(
-      <SleAnalyticsView
-        tasks={mockTasks}
-        sle={mockSle}
-      />
-    );
+    render(<SleAnalyticsView tasks={mockTasks} sle={mockSle} />);
 
     expect(screen.getByText(/Expectativas de Nível de Serviço \(SLEs\)/i)).toBeInTheDocument();
     expect(screen.getByTestId('sle-observed-metric')).toHaveTextContent('9.7d');
@@ -48,11 +43,7 @@ describe('SleAnalyticsView component (Feature 030)', () => {
   it('allows updating target days via input', () => {
     const handleUpdateTarget = vi.fn();
     render(
-      <SleAnalyticsView
-        tasks={mockTasks}
-        sle={mockSle}
-        onUpdateTargetDays={handleUpdateTarget}
-      />
+      <SleAnalyticsView tasks={mockTasks} sle={mockSle} onUpdateTargetDays={handleUpdateTarget} />,
     );
 
     const input = screen.getByTestId('target-days-input');

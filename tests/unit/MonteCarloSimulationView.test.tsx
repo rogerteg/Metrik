@@ -63,7 +63,7 @@ describe('Feature 019: MonteCarloSimulationView UI', () => {
 
   it('renders How Many mode controls and percentile summary cards', () => {
     render(<MonteCarloSimulationView tasks={mockTasksWithHistory} />);
-    
+
     expect(screen.getByTestId('mode-how-many-btn')).toHaveClass('is-active');
     expect(screen.getByTestId('target-days-input')).toBeInTheDocument();
     expect(screen.getByTestId('how-many-cards')).toBeInTheDocument();

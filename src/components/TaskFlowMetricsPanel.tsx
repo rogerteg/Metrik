@@ -21,27 +21,67 @@ export interface TaskFlowMetricsPanelProps {
 }
 
 const ClockIcon = () => (
-  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width={15}
+    height={15}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <circle cx="12" cy="12" r="10" />
     <polyline points="12 6 12 12 16 14" />
   </svg>
 );
 
 const CycleIcon = () => (
-  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width={15}
+    height={15}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M21 12a9 9 0 1 1-9-9" />
     <polyline points="21 3 21 9 15 9" />
   </svg>
 );
 
 const ShieldIcon = () => (
-  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width={15}
+    height={15}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
   </svg>
 );
 
 const HourglassIcon = () => (
-  <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width={15}
+    height={15}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M6 2h12M6 22h12M6 2c0 5 6 6 6 10 0-4 6-5 6-10M6 22c0-5 6-6 6-10 0 4 6 5 6 10" />
   </svg>
 );
@@ -80,9 +120,7 @@ export const TaskFlowMetricsPanel: React.FC<TaskFlowMetricsPanelProps> = ({
 
     const isCompleted = Boolean(task.completedAt);
     const isOverdue =
-      !isCompleted &&
-      Boolean(task.dueDate) &&
-      new Date(`${task.dueDate}T23:59:59`).getTime() < now;
+      !isCompleted && Boolean(task.dueDate) && new Date(`${task.dueDate}T23:59:59`).getTime() < now;
 
     return {
       ageMs,
@@ -98,20 +136,21 @@ export const TaskFlowMetricsPanel: React.FC<TaskFlowMetricsPanelProps> = ({
         cycleTimeMs !== null
           ? formatDuration(cycleTimeMs)
           : runningCycleMs !== null
-          ? formatDuration(runningCycleMs)
-          : '—',
+            ? formatDuration(runningCycleMs)
+            : '—',
       cycleCaption:
         cycleTimeMs !== null
           ? 'início → conclusão'
           : runningCycleMs !== null
-          ? 'em execução'
-          : 'ainda não iniciado',
+            ? 'em execução'
+            : 'ainda não iniciado',
     };
   }, [task]);
 
   const subtasks = task.subtasks || [];
   const completedSubtasks = subtasks.filter((st) => st.completed).length;
-  const subtaskProgress = subtasks.length > 0 ? Math.round((completedSubtasks / subtasks.length) * 100) : 0;
+  const subtaskProgress =
+    subtasks.length > 0 ? Math.round((completedSubtasks / subtasks.length) * 100) : 0;
 
   const commentsCount = (task.comments || []).length;
   const decisionsCount = (task.comments || []).filter((c) => c.isDecision).length;
@@ -141,7 +180,9 @@ export const TaskFlowMetricsPanel: React.FC<TaskFlowMetricsPanelProps> = ({
         </div>
 
         <div className={`td-metric-card ${metrics.blockedMs > 0 ? 'td-metric-card--alert' : ''}`}>
-          <span className="td-metric-card__icon td-metric-card__icon--blocked">{<ShieldIcon />}</span>
+          <span className="td-metric-card__icon td-metric-card__icon--blocked">
+            {<ShieldIcon />}
+          </span>
           <div className="td-metric-card__body">
             <span className="td-metric-card__label">Tempo Bloqueado</span>
             <span className="td-metric-card__value">
@@ -154,7 +195,9 @@ export const TaskFlowMetricsPanel: React.FC<TaskFlowMetricsPanelProps> = ({
         </div>
 
         <div className="td-metric-card">
-          <span className="td-metric-card__icon td-metric-card__icon--age">{<HourglassIcon />}</span>
+          <span className="td-metric-card__icon td-metric-card__icon--age">
+            {<HourglassIcon />}
+          </span>
           <div className="td-metric-card__body">
             <span className="td-metric-card__label">Idade do Cartão</span>
             <span className="td-metric-card__value">{formatDuration(metrics.ageMs)}</span>
@@ -187,7 +230,9 @@ export const TaskFlowMetricsPanel: React.FC<TaskFlowMetricsPanelProps> = ({
           </li>
           <li className="td-metrics__date">
             <span className="td-metrics__date-label">Data de Entrega</span>
-            <span className={`td-metrics__date-value ${metrics.isOverdue ? 'is-overdue' : task.dueDate ? '' : 'is-muted'}`}>
+            <span
+              className={`td-metrics__date-value ${metrics.isOverdue ? 'is-overdue' : task.dueDate ? '' : 'is-muted'}`}
+            >
               {task.dueDate ? formatDateTime(`${task.dueDate}T12:00:00`) : '—'}
               {metrics.isOverdue && <span className="td-metrics__overdue-tag">atrasada</span>}
             </span>
@@ -216,7 +261,8 @@ export const TaskFlowMetricsPanel: React.FC<TaskFlowMetricsPanelProps> = ({
           <div className="td-metrics__heading-row">
             <h4 className="td-metrics__heading">Progresso da Iniciativa</h4>
             <span className="td-metrics__counter">
-              {initiativeProgress.completed}/{initiativeProgress.total} · {initiativeProgress.percentage}%
+              {initiativeProgress.completed}/{initiativeProgress.total} ·{' '}
+              {initiativeProgress.percentage}%
             </span>
           </div>
           <div className="td-metrics__progress-track">

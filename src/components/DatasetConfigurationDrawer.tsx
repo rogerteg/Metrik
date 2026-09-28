@@ -177,18 +177,10 @@ export const DatasetConfigurationDrawer: React.FC<DatasetConfigurationDrawerProp
 
         {/* Rodapé de Ações */}
         <div className="dataset-drawer-footer">
-          <button
-            type="button"
-            className="drawer-btn-reset"
-            onClick={onResetToDefaults}
-          >
+          <button type="button" className="drawer-btn-reset" onClick={onResetToDefaults}>
             Redefinir aos Padrões
           </button>
-          <button
-            type="button"
-            className="drawer-btn-apply"
-            onClick={onClose}
-          >
+          <button type="button" className="drawer-btn-apply" onClick={onClose}>
             Concluir e Aplicar
           </button>
         </div>
