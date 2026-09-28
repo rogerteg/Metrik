@@ -70,10 +70,12 @@ Salve em `specs/026-cross-browser-column-layout/parity-samples/<navegador>.json`
 
 ```bash
 node specs/026-cross-browser-column-layout/tools/parity-compare.mjs \
-  specs/026-cross-browser-column-layout/parity-samples/*.json \
+  specs/026-cross-browser-column-layout/parity-samples \
   --reference Edge \
   --markdown specs/026-cross-browser-column-layout/parity-samples/report.md
 ```
+
+Aceita também arquivos individuais (`... edge.json chrome.json`) — e, com uma pasta, lê todos os `.json` (ignora o `report.md`).
 
 O script verifica, por cenário: quantidade/ordem de colunas (GP-01), Δlargura ≤ 1 px (GP-02), Δposição ≤ 1 px (GP-03), ausência de corte/sobreposição (GP-04) e registra a **pista da barra horizontal** (FR-004/T028). Exit code `0` = paridade OK; `1` = divergência.
 

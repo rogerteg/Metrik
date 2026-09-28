@@ -19,7 +19,8 @@
  *
  * Saída: relatório em texto + (opcional) tabela markdown. Exit code 1 se falhar.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, statSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 
 const args = process.argv.slice(2);
 const files = [];
@@ -35,8 +36,26 @@ for (let i = 0; i < args.length; i++) {
   else files.push(arg);
 }
 
+// Expande diretórios: aceita uma pasta com as amostras .json de cada navegador.
+const expanded = [];
+for (const entry of files) {
+  try {
+    if (statSync(entry).isDirectory()) {
+      for (const name of readdirSync(entry)) {
+        if (name.toLowerCase().endsWith('.json')) expanded.push(join(entry, name));
+      }
+    } else {
+      expanded.push(entry);
+    }
+  } catch {
+    expanded.push(entry);
+  }
+}
+files.length = 0;
+files.push(...expanded);
+
 if (files.length === 0) {
-  console.error('Uso: node tools/parity-compare.mjs <arquivos.json...> [--reference Edge] [--tolerance 1] [--markdown saida.md]');
+  console.error('Uso: node tools/parity-compare.mjs <arquivos.json|pasta> [...] [--reference Edge] [--tolerance 1] [--markdown saida.md]');
   process.exit(2);
 }
 
