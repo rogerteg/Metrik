@@ -12,6 +12,15 @@ import {
   BLOCKED_TASK_MOVE_WARNING_MESSAGE,
 } from '../types/kanban';
 import { createTaskActivityEvent, AuditDescriptions } from '../utils/taskActivityLogger';
+import {
+  createComment,
+  editCommentInList,
+  addCommentToSubtask,
+  editCommentInSubtask,
+  removeCommentFromSubtask,
+  canEditComment,
+  canDeleteComment,
+} from '../utils/cardComments';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
 import { reorderBoard, isBackwardColumnMove, reorderColumnList, isTaskBlocked, isBlockingTag } from '../utils/taskReorder';
 import { ReorderOptions } from '../types/dnd';
@@ -38,6 +47,10 @@ export interface UseTaskCollectionReturn {
   removeTaskTag: (taskId: string, tag: string) => void;
   addTaskComment: (taskId: string, text: string, userOrDecision?: { id: string; name: string } | boolean, isDecision?: boolean) => void;
   deleteTaskComment: (taskId: string, commentId: string, user?: { id: string; name: string }) => void;
+  editTaskComment: (taskId: string, commentId: string, text: string, user?: { id: string; name: string }) => void;
+  addSubtaskComment: (taskId: string, subtaskId: string, text: string, user?: { id: string; name: string }) => void;
+  editSubtaskComment: (taskId: string, subtaskId: string, commentId: string, text: string, user?: { id: string; name: string }) => void;
+  deleteSubtaskComment: (taskId: string, subtaskId: string, commentId: string, user?: { id: string; name: string }, isAdmin?: boolean) => void;
   discardIfEmpty: (id: string) => void;
   clearTasks: () => void;
   resetToSeed: () => void;
@@ -755,6 +768,125 @@ export function useTaskCollection(
     });
   }, []);
 
+  // Feature 027 (delta) — edição de comentário do cartão e comentários de subtarefa.
+  const editTaskComment = useCallback(
+    (
+      taskId: string,
+      commentId: string,
+      text: string,
+      user?: { id: string; name: string }
+    ) => {
+      const author = user ?? { id: 'usr_default', name: 'Rogerio Teixeira' };
+      setBoard((prev) => {
+        const nextTasks: Record<string, TaskModel[]> = {};
+        const now = new Date().toISOString();
+        for (const colId of Object.keys(prev.tasks)) {
+          nextTasks[colId] = prev.tasks[colId].map((task) => {
+            if (task.id !== taskId) return task;
+            const existing = task.comments?.find((c) => c.id === commentId);
+            if (!existing || !canEditComment(existing, author.id)) return task;
+            return {
+              ...task,
+              comments: editCommentInList(task.comments, commentId, text, author, now),
+              updatedAt: now,
+            };
+          });
+        }
+        return { ...prev, tasks: nextTasks };
+      });
+    },
+    []
+  );
+
+  const addSubtaskComment = useCallback(
+    (taskId: string, subtaskId: string, text: string, user?: { id: string; name: string }) => {
+      const author = user ?? { id: 'usr_default', name: 'Rogerio Teixeira' };
+      const created = createComment({ taskId, text, author });
+      if (!created) return;
+
+      setBoard((prev) => {
+        const nextTasks: Record<string, TaskModel[]> = {};
+        const now = new Date().toISOString();
+        for (const colId of Object.keys(prev.tasks)) {
+          nextTasks[colId] = prev.tasks[colId].map((task) => {
+            if (task.id !== taskId) return task;
+            const hasSubtask = (task.subtasks ?? []).some((s) => s.id === subtaskId);
+            if (!hasSubtask) return task;
+            return {
+              ...task,
+              subtasks: addCommentToSubtask(task.subtasks, subtaskId, created),
+              updatedAt: now,
+            };
+          });
+        }
+        return { ...prev, tasks: nextTasks };
+      });
+    },
+    []
+  );
+
+  const editSubtaskComment = useCallback(
+    (
+      taskId: string,
+      subtaskId: string,
+      commentId: string,
+      text: string,
+      user?: { id: string; name: string }
+    ) => {
+      const author = user ?? { id: 'usr_default', name: 'Rogerio Teixeira' };
+      setBoard((prev) => {
+        const nextTasks: Record<string, TaskModel[]> = {};
+        const now = new Date().toISOString();
+        for (const colId of Object.keys(prev.tasks)) {
+          nextTasks[colId] = prev.tasks[colId].map((task) => {
+            if (task.id !== taskId) return task;
+            const subtask = (task.subtasks ?? []).find((s) => s.id === subtaskId);
+            const existing = subtask?.comments?.find((c) => c.id === commentId);
+            if (!existing || !canEditComment(existing, author.id)) return task;
+            return {
+              ...task,
+              subtasks: editCommentInSubtask(task.subtasks, subtaskId, commentId, text, author, now),
+              updatedAt: now,
+            };
+          });
+        }
+        return { ...prev, tasks: nextTasks };
+      });
+    },
+    []
+  );
+
+  const deleteSubtaskComment = useCallback(
+    (
+      taskId: string,
+      subtaskId: string,
+      commentId: string,
+      user?: { id: string; name: string },
+      isAdmin: boolean = false
+    ) => {
+      const author = user ?? { id: 'usr_default', name: 'Rogerio Teixeira' };
+      setBoard((prev) => {
+        const nextTasks: Record<string, TaskModel[]> = {};
+        const now = new Date().toISOString();
+        for (const colId of Object.keys(prev.tasks)) {
+          nextTasks[colId] = prev.tasks[colId].map((task) => {
+            if (task.id !== taskId) return task;
+            const subtask = (task.subtasks ?? []).find((s) => s.id === subtaskId);
+            const existing = subtask?.comments?.find((c) => c.id === commentId);
+            if (!existing || !canDeleteComment(existing, author.id, isAdmin)) return task;
+            return {
+              ...task,
+              subtasks: removeCommentFromSubtask(task.subtasks, subtaskId, commentId, author, isAdmin),
+              updatedAt: now,
+            };
+          });
+        }
+        return { ...prev, tasks: nextTasks };
+      });
+    },
+    []
+  );
+
   const updateBlockedReason = useCallback((taskId: string, reason: string) => {
     setBoard((prev) => {
       const nextTasks: Record<string, TaskModel[]> = {};
@@ -818,6 +950,10 @@ export function useTaskCollection(
     removeTaskTag,
     addTaskComment,
     deleteTaskComment,
+    editTaskComment,
+    addSubtaskComment,
+    editSubtaskComment,
+    deleteSubtaskComment,
     discardIfEmpty,
     clearTasks,
     resetToSeed,

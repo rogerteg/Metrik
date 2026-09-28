@@ -63,6 +63,9 @@ export interface SubtaskModel {
   id: string;
   title: string;
   completed: boolean;
+
+  /** Comentários próprios da subtarefa (Feature 027) */
+  comments?: TaskComment[];
 }
 
 export interface TaskModel {

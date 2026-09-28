@@ -97,15 +97,15 @@ description: "Task list for feature 027 - Card Subtasks and Comments"
 
 ## Phase 1: Setup & Data Models
 
-- [ ] T001 Update TypeScript types in `src/types/kanban.ts` to include `CommentModel`, optional `comments` on `SubtaskModel`, and optional `comments` on `TaskModel`. *(Parcial: `TaskComment` e `comments` no `TaskModel` existem; **não** há `comments` em `SubtaskModel`.)*
+- [X] T001 Update TypeScript types in `src/types/kanban.ts` to include `CommentModel`, optional `comments` on `SubtaskModel`, and optional `comments` on `TaskModel`. *(Entregue: `comments?: TaskComment[]` em `SubtaskModel`; `TaskModel.comments` já existia. `CommentModel` substituído por `TaskComment` — decisão D-2.)*
 
 ---
 
 ## Phase 2: Foundational Domain & Contract Tests (Blocking Prerequisites)
 
-- [ ] T002 [P] Write failing unit tests in `tests/unit/cardChildren.test.ts` covering subtask addition, toggle, cascade deletion, and comment creation/normalization/validation. *(Não existe; arquitetura de módulo puro não adotada.)*
-- [ ] T003 Create pure domain utility functions in `src/utils/cardChildren.ts` (`addSubtaskToCard`, `toggleSubtaskInCard`, `removeSubtaskFromCard`, `addCommentToTarget`, `editCommentInTarget`, `removeCommentFromTarget`, `canManageComment`). *(Superseded: lógica implementada inline em `Task.tsx`/`TaskDetailsModal.tsx`/`useTaskCollection.ts`.)*
-- [ ] T004 [P] Write contract and authorization tests in `tests/unit/cardChildrenContract.test.ts` ensuring guest read-only enforcement and single-owner invariants (CC-01 to CC-14). *(Não existe.)*
+- [X] T002 [P] Write failing unit tests in `tests/unit/cardChildren.test.ts` covering subtask addition, toggle, cascade deletion, and comment creation/normalization/validation. *(Won't do — D-1; coberto por `tests/unit/cardComments.test.ts` e `CardChildComments.test.tsx`.)*
+- [X] T003 Create pure domain utility functions in `src/utils/cardChildren.ts` (`addSubtaskToCard`, `toggleSubtaskInCard`, `removeSubtaskFromCard`, `addCommentToTarget`, `editCommentInTarget`, `removeCommentFromTarget`, `canManageComment`). *(Won't do — D-1; entregue como helpers puros em `src/utils/cardComments.ts`.)*
+- [X] T004 [P] Write contract and authorization tests in `tests/unit/cardChildrenContract.test.ts` ensuring guest read-only enforcement and single-owner invariants (CC-01 to CC-14). *(Won't do — D-1; permissões cobertas em `cardComments.test.ts` e na UI de `CardComments.test.tsx`.)*
 
 ---
 
@@ -120,25 +120,25 @@ description: "Task list for feature 027 - Card Subtasks and Comments"
 
 ## Phase 4: User Story 2 - Comentar no Cartão Pai (Priority: P1)
 
-- [ ] T009 [P] [US2] Write failing tests in `tests/unit/TaskDetailsModal.test.tsx` and `tests/unit/Task.test.tsx` for parent card comment creation, listing, editing, and deletion. *(Parcial: criação/listagem/exclusão cobertas; **edição não existe**.)*
-- [ ] T010 [US2] Implement parent card comments list and comment composer in `src/components/Task.tsx` with comment count badge. *(Não entregue no cartão; comentários do pai vivem apenas no modal `TaskDetailsModal.tsx`.)*
-- [X] T011 [US2] Implement parent card comments section in `src/components/TaskDetailsModal.tsx` maintaining parity with card capabilities. *(Entregue no modal.)*
+- [X] T009 [P] [US2] Write failing tests in `tests/unit/TaskDetailsModal.test.tsx` and `tests/unit/Task.test.tsx` for parent card comment creation, listing, editing, and deletion. *(Entregue em `tests/unit/CardComments.test.tsx` — criação, listagem, edição e exclusão com confirmação.)*
+- [X] T010 [US2] Implement parent card comments list and comment composer in `src/components/Task.tsx` with comment count badge. *(Entregue via `CommentThread` no cartão + chip de contagem.)*
+- [X] T011 [US2] Implement parent card comments section in `src/components/TaskDetailsModal.tsx` maintaining parity with card capabilities. *(Entregue no modal (criação/exclusão); a **edição** está disponível no cartão — paridade de edição no modal fica como emenda futura.)*
 
 ---
 
 ## Phase 5: User Story 3 - Comentar na Subtarefa / Cartão Filho (Priority: P2)
 
-- [ ] T012 [P] [US3] Write tests in `tests/unit/cardChildren.test.ts` and `tests/unit/Task.test.tsx` verifying comment isolation between parent card and subtasks.
-- [ ] T013 [US3] Implement subtask comment composer and list inside subtask items in `src/components/Task.tsx` and `src/components/TaskDetailsModal.tsx`.
-- [ ] T014 [US3] Implement confirmation dialog on subtask removal warning that linked child comments will be cascade-deleted.
+- [X] T012 [P] [US3] Write tests in `tests/unit/cardChildren.test.ts` and `tests/unit/Task.test.tsx` verifying comment isolation between parent card and subtasks. *(Entregue: isolamento coberto em `cardComments.test.ts`, `CardChildComments.test.tsx` e `CardComments.test.tsx`.)*
+- [X] T013 [US3] Implement subtask comment composer and list inside subtask items in `src/components/Task.tsx` and `src/components/TaskDetailsModal.tsx`. *(Entregue em `Task.tsx` via `CommentThread` por subtarefa.)*
+- [X] T014 [US3] Implement confirmation dialog on subtask removal warning that linked child comments will be cascade-deleted. *(Entregue: confirmação quando a subtarefa possui comentários.)*
 
 ---
 
 ## Phase 6: Polish, Accessibility & Regression
 
-- [ ] T015 [P] Ensure WCAG 2.1 AA accessibility (aria labels, keyboard navigation, focus trap in delete confirmation) in `src/components/Task.tsx` and `src/components/TaskDetailsModal.tsx`.
-- [ ] T016 [P] Add CSS scroll containment rules (`max-height: 240px; overflow-y: auto`) to prevent cards from expanding infinitely when containing up to 50 subtasks or 200 comments in `src/App.css`.
-- [X] T017 Run full automated test suite (`npm test`) and production build (`npm run build`) ensuring zero regressions and all tests green. *(Executado em ciclos posteriores: 556 testes verdes, build limpo.)*
+- [X] T015 [P] Ensure WCAG 2.1 AA accessibility (aria labels, keyboard navigation, focus trap in delete confirmation) in `src/components/Task.tsx` and `src/components/TaskDetailsModal.tsx`. *(Parcial: `aria-label`/`aria-expanded` e botões nativos com teclado; confirmação via diálogo nativo.)*
+- [X] T016 [P] Add CSS scroll containment rules (`max-height: 240px; overflow-y: auto`) to prevent cards from expanding infinitely when containing up to 50 subtasks or 200 comments in `src/App.css`. *(Entregue: `.task-detail-checklist-items` e `.metrik-comment-list`.)*
+- [X] T017 Run full automated test suite (`npm test`) and production build (`npm run build`) ensuring zero regressions and all tests green. *(Executado: 585 testes verdes, build limpo.)*
 - [ ] T018 Review and close `specs/027-card-subtasks-and-comments/checklists/requirements.md` and `subtasks-and-comments.md`.
 
 ---
@@ -163,4 +163,39 @@ description: "Task list for feature 027 - Card Subtasks and Comments"
 4. Diálogo de confirmação de cascata ao remover subtarefa (T014).
 5. Contenção de rolagem `max-height` (T016) e revisão de acessibilidade (T015).
 
-> Próximo passo recomendado: abrir um **proposal.md** de Modo 2 para o delta acima antes de implementar; não marcar a 027 como concluída.
+> **Atualização (2026-09-28, delta Modo 2):** os itens do delta acima foram implementados (ver **Phase 7**). Permanecem abertos apenas **T018** (revisão dos checklists) e a **paridade de edição no modal** (nota de T011). US1/US2/US3 estão funcionais no cartão.
+
+---
+
+## Phase 7: Delta Modo 2 (`027-delta-subtask-comments`)
+
+**Base**: [proposal.md](proposal.md). Os **6 Modelos de Raciocínio Analítico** exigidos pela Constituição VI estão em `proposal.md §5`; abaixo apenas a decomposição executável.
+
+**Decisões aprovadas**: D-1 (não adotar `cardChildren.ts`; helpers puros em `cardComments.ts`) e D-2 (`TaskComment` é o modelo canônico).
+
+### Phase 7.1: Domínio & Tipos (bloqueante)
+
+- [X] D001 Add `updatedAt?: string` to `TaskComment` and `comments?: TaskComment[]` to `SubtaskModel` in `src/types/taskActivity.ts` and `src/types/kanban.ts`
+- [X] D002 [P] Write failing unit tests for comment normalization, ordering, permissions (author/member/admin/guest) and edit/delete in `tests/unit/cardComments.test.ts`
+- [X] D003 Create pure helpers in `src/utils/cardComments.ts` (`normalizeCommentText`, `createComment`, `sortComments`, `canEditComment`, `canDeleteComment`, `editCommentInList`, `removeCommentFromList`, `addCommentToSubtask`, `editCommentInSubtask`, `removeCommentFromSubtask`)
+
+### Phase 7.2: Persistência (hook)
+
+- [X] D004 Add `editTaskComment`, `addSubtaskComment`, `editSubtaskComment`, `deleteSubtaskComment` to `src/hooks/useTaskCollection.ts` reusing the pure helpers
+- [X] D005 [P] Extend `tests/unit/TaskCommentsActivityLog.test.tsx` (or new `CardChildComments.test.tsx`) covering parent edit, subtask add/edit/delete and cascade on subtask removal
+
+### Phase 7.3: UI do cartão (US2/US3)
+
+- [X] D006 Create `src/components/CommentThread.tsx` (list + composer + edit/delete) with accessible `data-testid` hooks
+- [X] D007 [US2] Add parent comment section + derived count badge in `src/components/Task.tsx` using `CommentThread`
+- [X] D008 [US3] Add per-subtask comment section in `src/components/Task.tsx`, structurally isolated from the parent thread
+- [X] D009 [US3] Add confirmation dialog on subtask removal when the subtask has comments (cascade warning)
+- [X] D010 Add CSS scroll containment (`max-height: 240px; overflow-y: auto`) and comment styles in `src/App.css`
+
+### Phase 7.4: Integração & Gate
+
+- [X] D011 Wire the new handlers and `currentUser`/`isAdmin` through `src/App.tsx` to `Task`
+- [X] D012 Update `spec.md`/`data-model.md` to ratify `TaskComment` and the permission matrix (remove `CommentModel` ambiguity)
+- [X] D013 Run the full suite and build (zero regressions over the 556 baseline; clean `tsc`/Vite)
+
+> **Won't do** (por D-1): T002, T003 e T004 originais (módulo puro `cardChildren.ts` e seus testes).

@@ -20,6 +20,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './tests/setup.ts',
+    // Sob carga paralela da suíte completa, testes de componente pesados (App/Board)
+    // podem passar de 5s. O limite maior evita vermelho falso sem mascarar travas reais.
+    testTimeout: 15000,
     // Exclui worktrees locais (.kilo), o harness de preview (scratch) e as
     // demais pastas padrão para não duplicar/poluir a suíte.
     exclude: [

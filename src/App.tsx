@@ -78,6 +78,11 @@ export const App: React.FC = () => {
   const activeBoardTeam = teams.find((t) => t.id === effectiveTeamId);
   const activeBoardUserRole = getUserRoleInTeam(effectiveTeamId, activeUserId);
   const isGuest = activeBoardUserRole === 'guest';
+  const isAdmin = activeBoardUserRole === 'admin';
+  const currentUser = React.useMemo(
+    () => ({ id: activeUser?.id ?? activeUserId, name: activeUser?.name ?? 'Rogerio Teixeira' }),
+    [activeUser, activeUserId]
+  );
 
   // Auto-switch to first accessible board if active board is not accessible (e.g. on profile switch)
   React.useEffect(() => {
@@ -115,6 +120,10 @@ export const App: React.FC = () => {
     removeTaskTag,
     addTaskComment,
     deleteTaskComment,
+    editTaskComment,
+    addSubtaskComment,
+    editSubtaskComment,
+    deleteSubtaskComment,
     discardIfEmpty,
     clearTasks,
     resetToSeed,
@@ -681,6 +690,14 @@ export const App: React.FC = () => {
                   pendingBlockersCount={pendingBlockers.length}
                   autoSaveComments={settings.autoSaveComments ?? true}
                   autoSaveDebounceMs={settings.autoSaveDebounceMs ?? 800}
+                  currentUser={currentUser}
+                  isAdmin={isAdmin}
+                  onAddComment={isGuest ? undefined : (taskId, text) => addTaskComment(taskId, text, currentUser)}
+                  onEditComment={isGuest ? undefined : (taskId, commentId, text) => editTaskComment(taskId, commentId, text, currentUser)}
+                  onDeleteComment={isGuest ? undefined : (taskId, commentId) => deleteTaskComment(taskId, commentId, currentUser)}
+                  onAddSubtaskComment={isGuest ? undefined : (taskId, subtaskId, text) => addSubtaskComment(taskId, subtaskId, text, currentUser)}
+                  onEditSubtaskComment={isGuest ? undefined : (taskId, subtaskId, commentId, text) => editSubtaskComment(taskId, subtaskId, commentId, text, currentUser)}
+                  onDeleteSubtaskComment={isGuest ? undefined : (taskId, subtaskId, commentId) => deleteSubtaskComment(taskId, subtaskId, commentId, currentUser, isAdmin)}
                   onMoveLeft={() => {
                     if (canMoveLeft) {
                       handleGuardedMoveTask(task.id, board.columns[currentIndex - 1].id);

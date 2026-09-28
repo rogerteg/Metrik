@@ -9,32 +9,26 @@
 
 ## 1. Entidades
 
-### 1.1 Comentário (nova)
+> **Ratificação (2026-09-28, delta Modo 2 — D-2 do `proposal.md`)**: o modelo canônico de comentário é **`TaskComment`** (`src/types/taskActivity.ts`), já usado por timeline, `syncService` e `useTaskCollection`. O `CommentModel` abaixo é mantido apenas como referência histórica da especificação original e **não** deve ser criado. O vínculo estrutural (invariante 1) permanece: comentário de subtarefa vive em `SubtaskModel.comments`, comentário do pai em `TaskModel.comments`.
+
+### 1.1 Comentário (modelo canônico: `TaskComment`)
 
 ```typescript
 /** Comentário publicado em um cartão ou em uma subtarefa (Feature 027). */
-export interface CommentModel {
-  /** Identificador único do comentário. */
+export interface TaskComment {
   id: string;
-
-  /** Texto do comentário, já normalizado (sem espaços nas extremidades). */
-  body: string;
-
-  /** Identificador do autor (perfil ativo no momento do registro). */
-  authorId: string;
-
-  /** Nome do autor no momento do registro, para exibição estável. */
-  authorName: string;
-
-  /** Timestamp ISO 8601 de criação. */
+  taskId: string;        // id do cartão pai (mesmo para comentários de subtarefa)
+  userId: string;        // autor
+  userName: string;      // nome copiado no momento do registro
+  text: string;          // conteúdo normalizado
+  isDecision?: boolean;
+  pinned?: boolean;
   createdAt: string;
-
-  /** Timestamp ISO 8601 da última edição, quando houver. */
-  updatedAt?: string;
+  updatedAt?: string;    // presente apenas após edição (delta Modo 2)
 }
 ```
 
-**Nota de autoria**: `authorName` é copiado no momento da criação para que a exibição não dependa de o perfil continuar existindo na sessão (item `CHK027` do checklist) — o comentário preserva quem o escreveu.
+**Nota de autoria**: `userName` é copiado no momento da criação para que a exibição não dependa de o perfil continuar existindo na sessão (item `CHK027` do checklist) — o comentário preserva quem o escreveu.
 
 ### 1.2 Subtarefa (estendida)
 
@@ -46,7 +40,7 @@ export interface SubtaskModel {
   completed: boolean;
 
   /** Comentários próprios da subtarefa (Feature 027). */
-  comments?: CommentModel[];
+  comments?: TaskComment[];
 }
 ```
 
@@ -56,7 +50,7 @@ export interface SubtaskModel {
 
 ```typescript
 /** Comentários do cartão pai (Feature 027). */
-comments?: CommentModel[];
+comments?: TaskComment[];
 ```
 
 O campo `subtasks` permanece como já existe. Ambos os campos são **opcionais**: quadros existentes continuam válidos, sem migração.
@@ -66,9 +60,9 @@ O campo `subtasks` permanece como já existe. Ambos os campos são **opcionais**
 ```text
 Quadro (Board)
 └── Cartão (TaskModel)                  ← dona de comentários e subtarefas
-    ├── comments: CommentModel[]         (comentários do cartão pai)
+    ├── comments: TaskComment[]           (comentários do cartão pai)
     └── subtasks: SubtaskModel[]         (cartões filhos)
-        └── comments: CommentModel[]     (comentários do filho)
+        └── comments: TaskComment[]      (comentários do filho)
 ```
 
 Cada comentário tem **exatamente uma** dona: ou um cartão, ou uma subtarefa. O vínculo é estrutural (posição na árvore), não um campo discriminante.

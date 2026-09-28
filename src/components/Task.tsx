@@ -16,6 +16,8 @@ import {
 } from '../utils/timeFormatters';
 import { useFieldEdit } from '../hooks/useFieldEdit';
 import { TaskFieldActionToolbar } from './TaskFieldActionToolbar';
+import { CommentThread } from './CommentThread';
+import { subtaskHasComments } from '../utils/cardComments';
 
 /* Ícones compactos do detalhe inline (12px, herdam currentColor) */
 const DetailIcon: React.FC = () => (
@@ -77,6 +79,17 @@ export interface TaskProps {
   autoSaveComments?: boolean;
   /** Intervalo de debounce em ms (padrão: 800ms) */
   autoSaveDebounceMs?: number;
+  /** Comentários do cartão pai (Feature 027 delta) */
+  onAddComment?: (taskId: string, text: string) => void;
+  onEditComment?: (taskId: string, commentId: string, text: string) => void;
+  onDeleteComment?: (taskId: string, commentId: string) => void;
+  /** Comentários da subtarefa (Feature 027 delta) */
+  onAddSubtaskComment?: (taskId: string, subtaskId: string, text: string) => void;
+  onEditSubtaskComment?: (taskId: string, subtaskId: string, commentId: string, text: string) => void;
+  onDeleteSubtaskComment?: (taskId: string, subtaskId: string, commentId: string) => void;
+  /** Perfil ativo, usado para autoria e permissões de comentário */
+  currentUser?: { id: string; name: string };
+  isAdmin?: boolean;
 }
 
 export const Task: React.FC<TaskProps> = ({
@@ -101,6 +114,14 @@ export const Task: React.FC<TaskProps> = ({
   pendingBlockersCount,
   autoSaveComments = true,
   autoSaveDebounceMs = 800,
+  onAddComment,
+  onEditComment,
+  onDeleteComment,
+  onAddSubtaskComment,
+  onEditSubtaskComment,
+  onDeleteSubtaskComment,
+  currentUser = { id: 'usr_default', name: 'Rogerio Teixeira' },
+  isAdmin = false,
 }) => {
   const [isDragging, setIsDragging] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
@@ -210,6 +231,8 @@ export const Task: React.FC<TaskProps> = ({
   const subtasks = task.subtasks || [];
   const completedSubtasks = subtasks.filter(st => st.completed).length;
   const hasSubtasks = subtasks.length > 0;
+  const comments = task.comments || [];
+  const hasComments = comments.length > 0;
   const hasDueDate = !!task.dueDate;
   const dueDateStatus = hasDueDate ? getDueDateStatus(task.dueDate!, isCompleted) : null;
 
@@ -244,9 +267,11 @@ export const Task: React.FC<TaskProps> = ({
   const hasTestScenarios = !!(tsEdit.value && tsEdit.value.trim().length > 0);
   const hasInlineDescription = !!(descEdit.value && descEdit.value.trim().length > 0);
   const hasAnyInlineContent =
-    hasInlineDescription || hasSubtasks || hasAcceptanceCriteria || hasTestScenarios;
+    hasInlineDescription || hasSubtasks || hasAcceptanceCriteria || hasTestScenarios || hasComments;
 
   const canEditSubtasks = !isBlocked && !!onUpdateTask;
+  // A ausência de handler de comentário indica modo somente leitura (perfil convidado).
+  const canCommentOnCard = !isBlocked && !!onAddComment;
 
   const subtaskProgress =
     subtasks.length > 0 ? Math.round((completedSubtasks / subtasks.length) * 100) : 0;
@@ -261,6 +286,14 @@ export const Task: React.FC<TaskProps> = ({
 
   const handleDeleteSubtask = (subtaskId: string) => {
     if (!onUpdateTask) return;
+    const target = subtasks.find((st) => st.id === subtaskId);
+    if (subtaskHasComments(target)) {
+      const confirmed =
+        typeof window === 'undefined' || typeof window.confirm !== 'function'
+          ? true
+          : window.confirm('Excluir esta subtarefa? Os comentários dela serão removidos.');
+      if (!confirmed) return;
+    }
     onUpdateTask(task.id, { subtasks: subtasks.filter((st) => st.id !== subtaskId) });
   };
 
@@ -279,6 +312,7 @@ export const Task: React.FC<TaskProps> = ({
   const [isEditingAC, setIsEditingAC] = React.useState(false);
   const [isEditingTS, setIsEditingTS] = React.useState(false);
   const [newSubtaskTitle, setNewSubtaskTitle] = React.useState('');
+  const [openSubtaskComments, setOpenSubtaskComments] = React.useState<Record<string, boolean>>({});
 
   return (
     <article
@@ -441,6 +475,15 @@ export const Task: React.FC<TaskProps> = ({
                   Testes
                 </span>
               )}
+              {hasComments && (
+                <span
+                  className="task-detail-chip"
+                  title={`${comments.length} comentário(s) no cartão`}
+                  data-testid="task-comments-chip"
+                >
+                  💬 {comments.length}
+                </span>
+              )}
             </div>
           )}
 
@@ -589,30 +632,60 @@ export const Task: React.FC<TaskProps> = ({
                           key={st.id}
                           className={`task-detail-checklist-item ${st.completed ? 'is-done' : ''}`}
                         >
-                          <label className="task-detail-checklist-label">
-                            <input
-                              type="checkbox"
-                              className="task-detail-checkbox"
-                              checked={st.completed}
-                              onChange={() => handleToggleSubtask(st.id)}
-                              disabled={!canEditSubtasks}
-                              aria-label={`Alternar subtarefa: ${st.title}`}
-                            />
-                            <span className="task-detail-checklist-text">{st.title}</span>
-                          </label>
-                          {canEditSubtasks && (
+                          <div className="task-detail-checklist-row">
+                            <label className="task-detail-checklist-label">
+                              <input
+                                type="checkbox"
+                                className="task-detail-checkbox"
+                                checked={st.completed}
+                                onChange={() => handleToggleSubtask(st.id)}
+                                disabled={!canEditSubtasks}
+                                aria-label={`Alternar subtarefa: ${st.title}`}
+                              />
+                              <span className="task-detail-checklist-text">{st.title}</span>
+                            </label>
                             <button
                               type="button"
-                              className="task-detail-checklist-delete"
-                              onClick={() => handleDeleteSubtask(st.id)}
-                              aria-label={`Excluir subtarefa: ${st.title}`}
-                              title="Excluir subtarefa"
+                              className="task-detail-checklist-comments-toggle"
+                              onClick={() =>
+                                setOpenSubtaskComments((prev) => ({ ...prev, [st.id]: !prev[st.id] }))
+                              }
+                              aria-expanded={!!openSubtaskComments[st.id]}
+                              aria-label={`Comentários da subtarefa: ${st.title}`}
+                              title="Comentários da subtarefa"
+                              data-testid={`subtask-comments-toggle-${st.id}`}
                             >
-                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18" />
-                                <line x1="6" y1="6" x2="18" y2="18" />
-                              </svg>
+                              💬 {(st.comments ?? []).length}
                             </button>
+                            {canEditSubtasks && (
+                              <button
+                                type="button"
+                                className="task-detail-checklist-delete"
+                                onClick={() => handleDeleteSubtask(st.id)}
+                                aria-label={`Excluir subtarefa: ${st.title}`}
+                                title="Excluir subtarefa"
+                              >
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <line x1="18" y1="6" x2="6" y2="18" />
+                                  <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                              </button>
+                            )}
+                          </div>
+
+                          {openSubtaskComments[st.id] && (
+                            <CommentThread
+                              comments={st.comments}
+                              currentUser={currentUser}
+                              isReadOnly={!onAddSubtaskComment}
+                              isAdmin={isAdmin}
+                              label="Comentários da subtarefa"
+                              emptyLabel="Sem comentários nesta subtarefa."
+                              testIdPrefix={`subtask-comment-${st.id}`}
+                              onAdd={(text) => onAddSubtaskComment?.(task.id, st.id, text)}
+                              onEdit={(commentId, text) => onEditSubtaskComment?.(task.id, st.id, commentId, text)}
+                              onDelete={(commentId) => onDeleteSubtaskComment?.(task.id, st.id, commentId)}
+                            />
                           )}
                         </li>
                       ))}
@@ -643,6 +716,27 @@ export const Task: React.FC<TaskProps> = ({
                       </button>
                     </form>
                   )}
+                </div>
+              )}
+
+              {/* Comentários do cartão pai (Feature 027 delta) */}
+              {(hasComments || canCommentOnCard) && (
+                <div
+                  className="task-field-box task-detail-comments"
+                  data-testid="card-comments-section"
+                >
+                  <CommentThread
+                    comments={task.comments}
+                    currentUser={currentUser}
+                    isReadOnly={!onAddComment}
+                    isAdmin={isAdmin}
+                    label="Comentários"
+                    emptyLabel="Nenhum comentário ainda."
+                    testIdPrefix="card-comment"
+                    onAdd={(text) => onAddComment?.(task.id, text)}
+                    onEdit={(commentId, text) => onEditComment?.(task.id, commentId, text)}
+                    onDelete={(commentId) => onDeleteComment?.(task.id, commentId)}
+                  />
                 </div>
               )}
 

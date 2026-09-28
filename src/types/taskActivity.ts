@@ -36,6 +36,9 @@ export interface TaskComment {
 
   /** Creation timestamp in ISO 8601 format */
   createdAt: string;
+
+  /** Last edit timestamp in ISO 8601 format; present only after an edit (Feature 027) */
+  updatedAt?: string;
 }
 
 export interface TaskActivityLog {

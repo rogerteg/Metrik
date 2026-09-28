@@ -13,6 +13,7 @@
 - **2026-09-25 | Verificação sem navegador** | Gerar preview estático renderizando os componentes em jsdom, serializando o HTML e injetando o CSS de produção (`dist/assets/*.css`) permitiu validar visualmente sem browser conectado. | Fluxo aplicado em `scratch/preview/*.preview.test.tsx`.
 - **2026-09-25 | Transparência por dados existentes** | Derivar métricas de fluxo apenas de campos já persistidos (`createdAt`, `startedAt`, `completedAt`, `totalBlockedMs`, `subtasks`, `comments`, `activityLog`, `links`) entregou valor sem alterar o modelo de dados. | Respeita o Princípio V (YAGNI).
 - **2026-09-28 | Canal de notificação não-obstrutivo** | Injetar `onNotify` opcional em `useTaskCollection` e plugá-lo no `ToastNotification` do `App` removeu `window.alert` dos guards de bloqueio sem acoplar o hook à UI; testes passam a injetar um espião e a provar que nenhum alerta é disparado. | Mantém o domínio testável e sem trava de thread (research Decisão 5 / Constituição III).
+- **2026-09-28 | Comentários reutilizáveis (027 delta)** | Extrair a UI de comentários para `CommentThread` e as regras para helpers puros em `cardComments.ts` permitiu entregar cartão pai **e** subtarefa com um único componente e permissões testáveis, sem reescrever o modal. | Um componente + um módulo puro cobrem várias superfícies com risco baixo.
 
 ## 10.2 ❌ Anti-Padrões — Não Repetir
 
@@ -37,6 +38,8 @@
 - **2026-09-25 | Isolamento por squad** | Restrição de acesso é aplicada em `useBoards`, `useTeamAccess`, `BoardSwitcher` e `RestrictedBoardFallback`. | — | Verificar os 4 pontos ao alterar fluxos de acesso (Princípio VIII).
 
 ## 10.6 🧪 Lições de Testes
+
+- **2026-09-28 | Estabilidade** | Com 97 arquivos rodando em paralelo, testes pesados de App/Board estouravam o `testTimeout` padrão de 5s e geravam vermelho falso (passavam isolados em ~1s). | **Solução:** `testTimeout: 15000` no `vite.config.ts`.
 
 - **2026-09-25 | Contratos de UI** | Testes que travam posição/estrutura de badges (`task-indicator-badge`, `getAllByRole('checkbox')[0]`) quebram com redesign inofensivo. | Ordem de checkboxes era sensível à presença do compositor no DOM. | **Alternativa:** consultar por `data-testid`/`aria-label` estáveis e, ao mudar a intenção visual, atualizar o teste de design (sem afrouxar o comportamento).
 - **2026-09-25 | Markdown** | `ActivityFeedRedesign.test.tsx` exige a classe `font-mono` no elemento `<code>` (herança de utilitário). | — | Mantida a classe e definido `.font-mono` no CSS vanilla para não depender de framework.
