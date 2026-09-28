@@ -1,0 +1,280 @@
+/* Metrik — sprint planning (Feature 038)
+   Indicador da sprint ativa e gerenciador de sprints. */
+
+.sprint-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 6px 12px;
+  margin-bottom: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+}
+
+.sprint-bar__info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sprint-bar__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.sprint-bar__name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sprint-bar__dates {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.sprint-bar__overdue {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 6px;
+  padding: 1px 6px;
+  text-transform: uppercase;
+}
+
+.sprint-bar__empty {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.sprint-bar__progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 220px;
+}
+
+.sprint-bar__track {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+[data-theme='light'] .sprint-bar__track {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.sprint-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #38bdf8);
+  transition: width 0.25s ease;
+}
+
+.sprint-bar__numbers,
+.sprint-bar__velocity {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.sprint-bar__manage {
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sprint-bar__manage:hover {
+  border-color: var(--accent-primary, #6366f1);
+  color: var(--accent-primary, #6366f1);
+}
+
+.sprint-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sprint-manager__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.sprint-manager__item {
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme='light'] .sprint-manager__item {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.sprint-manager__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sprint-manager__name {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sprint-manager__status {
+  font-size: 0.66rem;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 1px 6px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.sprint-manager__status--planned {
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.sprint-manager__status--active {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.sprint-manager__status--completed {
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.sprint-manager__goal {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 4px 0 0;
+}
+
+.sprint-manager__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.sprint-manager__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.sprint-manager__actions button {
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sprint-manager__actions button:hover {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.sprint-manager__delete {
+  color: #ef4444 !important;
+}
+
+.sprint-manager__create {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px dashed var(--border-subtle);
+  padding-top: 12px;
+}
+
+.sprint-manager__create-title {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.sprint-manager__dates {
+  display: flex;
+  gap: 8px;
+}
+
+.sprint-manager__input {
+  flex: 1;
+  min-width: 0;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  padding: 6px 8px;
+  outline: none;
+}
+
+.sprint-manager__input:focus {
+  border-color: var(--accent-primary, #6366f1);
+}
+
+.sprint-manager__submit {
+  align-self: flex-start;
+  background: var(--accent-primary, #6366f1);
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+.sprint-manager__submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sprint-manager__empty,
+.sprint-manager__active-note {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0;
+}

@@ -6,12 +6,14 @@ import {
   ColumnModel,
   PriorityLevel,
   TaskModel,
+  SprintModel,
   MAX_COLUMNS,
   FLOW_REGRESSION_WARNING_MESSAGE,
   BLOCKED_TASK_MOVE_WARNING_MESSAGE,
 } from '../types/kanban';
 import { createTaskActivityEvent, AuditDescriptions } from '../utils/taskActivityLogger';
 import { useTaskComments } from './useTaskComments';
+import { useSprints } from './useSprints';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
 import {
   reorderBoard,
@@ -79,6 +81,16 @@ export interface UseTaskCollectionReturn {
     user?: { id: string; name: string },
     isAdmin?: boolean,
   ) => void;
+  // Sprints (Feature 038)
+  addSprint: (input: { name: string; goal?: string; startDate?: string; endDate?: string }) => void;
+  updateSprint: (
+    id: string,
+    updates: Partial<Pick<SprintModel, 'name' | 'goal' | 'startDate' | 'endDate'>>,
+  ) => void;
+  deleteSprint: (id: string) => void;
+  startSprint: (id: string) => void;
+  completeSprint: (id: string) => void;
+  setTaskSprint: (taskId: string, sprintId: string | null) => void;
   discardIfEmpty: (id: string) => void;
   clearTasks: () => void;
   resetToSeed: () => void;
@@ -741,6 +753,10 @@ export function useTaskCollection(
     deleteSubtaskComment,
   } = useTaskComments(setBoard);
 
+  // Sprints extraídas para hook dedicado (P3 — SRP / Feature 038).
+  const { addSprint, updateSprint, deleteSprint, startSprint, completeSprint, setTaskSprint } =
+    useSprints(setBoard);
+
   const updateBlockedReason = useCallback((taskId: string, reason: string) => {
     setBoard((prev) => {
       const nextTasks: Record<string, TaskModel[]> = {};
@@ -808,6 +824,12 @@ export function useTaskCollection(
     addSubtaskComment,
     editSubtaskComment,
     deleteSubtaskComment,
+    addSprint,
+    updateSprint,
+    deleteSprint,
+    startSprint,
+    completeSprint,
+    setTaskSprint,
     discardIfEmpty,
     clearTasks,
     resetToSeed,

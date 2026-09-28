@@ -5,6 +5,7 @@ import {
   SubtaskModel,
   BoardModel,
   ColumnModel,
+  SprintModel,
   getDefaultColumnColor,
 } from '../types/kanban';
 import { TaskRelationType } from '../types/taskTypes';
@@ -33,6 +34,10 @@ interface TaskDetailsModalProps {
   onDeleteComment?: (taskId: string, commentId: string) => void;
   onEditComment?: (taskId: string, commentId: string, text: string) => void;
   currentUserId?: string;
+  /** Sprints do quadro (Feature 038) */
+  sprints?: SprintModel[];
+  /** Atribui/remove a tarefa de uma sprint (Feature 038) */
+  onSetTaskSprint?: (taskId: string, sprintId: string | null) => void;
   boardTasks?: TaskModel[];
   columns?: ColumnModel[];
   currentBoardId?: string;
@@ -65,6 +70,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   onDeleteComment,
   onEditComment,
   currentUserId,
+  sprints,
+  onSetTaskSprint,
   boardTasks = [],
   columns = [],
   currentBoardId = '',
@@ -674,6 +681,8 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             task={task}
             columns={columns}
             users={users}
+            sprints={sprints}
+            onSetSprint={onSetTaskSprint}
             isReadOnly={isReadOnly}
             onUpdateTask={onUpdateTask}
             onToggleBlocked={onToggleBlocked}

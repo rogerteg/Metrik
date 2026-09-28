@@ -12,7 +12,7 @@
 **Domínio:** Gestão Ágil / Kanban e Analytics de Fluxo (Lean/Agile)
 **Propósito:** Quadro Kanban local-first com métricas de fluxo (Lead Time, Cycle Time, CFD, Monte Carlo, WIP Aging, Throughput), governança visual, multi-board e colaboração por squads.
 **Fase atual:** [ ] Greenfield  [x] Crescimento  [ ] Maturidade  [ ] Legado
-**Versão do pacote:** `0.1.0` (37 features especificadas em `specs/`).
+**Versão do pacote:** `0.1.0` (38 features especificadas em `specs/`).
 
 ---
 
@@ -84,6 +84,7 @@
 | `TaskComment` | `id`, `taskId`, `userId`, `userName`, `text`, `isDecision`, `pinned`, `createdAt` | pertence à tarefa | Suporta Markdown simples |
 | `TaskActivityLog` | `id`, `taskId`, `userId`, `userName`, `eventType`, `description`, `fromValue`, `toValue`, `timestamp` | trilha de auditoria da tarefa | Imutável |
 | `TaskLinkModel` | `id`, `targetTaskId`, `relationType`, `targetBoardId`, `targetTeamId`, `createdAt` | relação entre tarefas | Relações: `parent`/`child`/`blocks`/`is_blocked_by`/`relates_to` |
+| `SprintModel` | `id`, `name`, `goal?`, `status` (`planned`/`active`/`completed`), `startDate?`, `endDate?`, `createdAt`, `completedAt?` | pertence ao `BoardState`; tarefa referencia via `TaskModel.sprintId` | Feature 038; no máximo uma ativa por quadro |
 | `User` / `Team` / `TeamMember` / `TeamInvitation` | papéis e membership | squads e acesso | |
 
 ---

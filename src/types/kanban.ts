@@ -118,6 +118,10 @@ export interface TaskModel {
 
   /** Subtarefas / checklist (Feature 007) */
   subtasks?: SubtaskModel[];
+
+  /** Sprint à qual a tarefa pertence (Feature 038) */
+  sprintId?: string | null;
+
   dueDate?: string; // ISO 8601 string, e.g., '2026-10-15'
 
   /** Data de Início da Tarefa (planejada ou de execução) */
@@ -190,9 +194,33 @@ export interface BoardModel {
 
 export type Board = BoardModel & Partial<BoardState>;
 
+/** Status do ciclo de vida de uma sprint (Feature 038). */
+export type SprintStatus = 'planned' | 'active' | 'completed';
+
+/** Sprint (iteração) de um quadro (Feature 038). */
+export interface SprintModel {
+  id: string;
+  /** Nome normalizado (não vazio). */
+  name: string;
+  /** Objetivo/meta da iteração (opcional). */
+  goal?: string;
+  status: SprintStatus;
+  /** Janela opcional (ISO 8601). */
+  startDate?: string;
+  endDate?: string;
+  createdAt: string;
+  completedAt?: string;
+}
+
 export interface BoardState {
   columns: ColumnModel[];
   tasks: Record<string, TaskModel[]>; // key is column.id
+
+  /** Sprints do quadro (Feature 038). Opcional: sem migração. */
+  sprints?: SprintModel[];
+
+  /** Identificador da sprint ativa (no máximo uma) ou null (Feature 038). */
+  activeSprintId?: string | null;
 }
 
 /** Estrutura sumarizada das métricas de fluxo do quadro */

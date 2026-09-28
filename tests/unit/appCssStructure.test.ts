@@ -28,6 +28,7 @@ const EXPECTED_ORDER = [
   './styles/08-task-types-links.css',
   './styles/09-task-links-cross-squad.css',
   './styles/10-comments-containment.css',
+  './styles/11-sprint.css',
 ];
 
 describe('App.css structure guard (P3 split)', () => {

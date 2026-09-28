@@ -1,5 +1,11 @@
 import React from 'react';
-import { BoardState, TaskModel, PriorityLevel, getDefaultColumnColor } from '../types/kanban';
+import {
+  BoardState,
+  TaskModel,
+  PriorityLevel,
+  SprintModel,
+  getDefaultColumnColor,
+} from '../types/kanban';
 import { ReorderOptions } from '../types/dnd';
 import { isTaskBlocked } from '../utils/taskReorder';
 import { calculateInitiativeProgress, getPendingBlockers } from '../utils/taskRelations';
@@ -15,6 +21,8 @@ export interface BoardTaskProps {
   currentUser: { id: string; name: string };
   autoSaveComments: boolean;
   autoSaveDebounceMs: number;
+  /** Sprints do quadro (Feature 038) */
+  sprints?: SprintModel[];
   onSelect: (taskId: string) => void;
   onUpdateTask: (id: string, updates: Partial<TaskModel>) => void;
   onDelete: (id: string) => void;
@@ -74,6 +82,7 @@ export const BoardTask: React.FC<BoardTaskProps> = ({
   currentUser,
   autoSaveComments,
   autoSaveDebounceMs,
+  sprints,
   onSelect,
   onUpdateTask,
   onDelete,
@@ -105,6 +114,9 @@ export const BoardTask: React.FC<BoardTaskProps> = ({
     task.links && task.links.length > 0
       ? getPendingBlockers(task, allBoardTasks, board.columns)
       : [];
+  const sprintName = task.sprintId
+    ? (sprints ?? []).find((s) => s.id === task.sprintId)?.name
+    : undefined;
 
   return (
     <Task
@@ -129,6 +141,7 @@ export const BoardTask: React.FC<BoardTaskProps> = ({
       pendingBlockersCount={pendingBlockers.length}
       autoSaveComments={autoSaveComments}
       autoSaveDebounceMs={autoSaveDebounceMs}
+      sprintName={sprintName}
       currentUser={currentUser}
       isAdmin={isAdmin}
       onAddComment={

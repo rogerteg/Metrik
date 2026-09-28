@@ -147,6 +147,8 @@ export interface TaskProps {
   isAdmin?: boolean;
   /** Quadro somente leitura (perfil convidado): nenhuma escrita é oferecida (FR-016) */
   isReadOnly?: boolean;
+  /** Nome da sprint à qual a tarefa pertence (Feature 038) */
+  sprintName?: string;
 }
 
 export const Task: React.FC<TaskProps> = ({
@@ -180,6 +182,7 @@ export const Task: React.FC<TaskProps> = ({
   currentUser = { id: 'usr_default', name: 'Rogerio Teixeira' },
   isAdmin = false,
   isReadOnly = false,
+  sprintName,
 }) => {
   const [isDragging, setIsDragging] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
@@ -328,7 +331,12 @@ export const Task: React.FC<TaskProps> = ({
   const hasTestScenarios = !!(tsEdit.value && tsEdit.value.trim().length > 0);
   const hasInlineDescription = !!(descEdit.value && descEdit.value.trim().length > 0);
   const hasAnyInlineContent =
-    hasInlineDescription || hasSubtasks || hasAcceptanceCriteria || hasTestScenarios || hasComments;
+    hasInlineDescription ||
+    hasSubtasks ||
+    hasAcceptanceCriteria ||
+    hasTestScenarios ||
+    hasComments ||
+    !!sprintName;
 
   const canEditSubtasks = !readOnly && !!onUpdateTask;
   // A ausência de handler de comentário indica modo somente leitura (perfil convidado).
@@ -554,6 +562,15 @@ export const Task: React.FC<TaskProps> = ({
                   data-testid="task-comments-chip"
                 >
                   💬 {comments.length}
+                </span>
+              )}
+              {sprintName && (
+                <span
+                  className="task-detail-chip"
+                  title={`Sprint: ${sprintName}`}
+                  data-testid="task-sprint-chip"
+                >
+                  🏃 {sprintName}
                 </span>
               )}
             </div>

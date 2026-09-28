@@ -1,8 +1,9 @@
 import React from 'react';
-import { TaskModel, ColumnModel } from '../types/kanban';
+import { TaskModel, ColumnModel, SprintModel } from '../types/kanban';
 import { TaskType, TASK_TYPE_CONFIGS } from '../types/taskTypes';
 import { User } from '../types/team';
 import { calculateTaskBlockedTimeMs, formatBlockedTime } from '../utils/timeFormatters';
+import { orderSprints } from '../utils/sprintMetrics';
 
 interface TaskMetadataSidebarProps {
   task: TaskModel;
@@ -21,6 +22,10 @@ interface TaskMetadataSidebarProps {
   handleDueDateBlur: () => void;
   /** Lista de usuários para seleção de responsável (opcional) */
   users?: User[];
+  /** Sprints do quadro (Feature 038) */
+  sprints?: SprintModel[];
+  /** Atribui/remove a tarefa de uma sprint (Feature 038) */
+  onSetSprint?: (taskId: string, sprintId: string | null) => void;
 }
 
 const PRIORITY_LABELS: Record<string, string> = {
@@ -45,9 +50,13 @@ export const TaskMetadataSidebar: React.FC<TaskMetadataSidebarProps> = ({
   setLocalDueDate,
   handleDueDateBlur,
   users = [],
+  sprints,
+  onSetSprint,
 }) => {
   const priority = task.priority || 'medium';
   const priorityLabel = PRIORITY_LABELS[priority] || PRIORITY_LABELS.medium;
+  const orderedSprints = React.useMemo(() => orderSprints(sprints), [sprints]);
+  const currentSprintName = (sprints ?? []).find((s) => s.id === task.sprintId)?.name;
 
   const blockedTimeMs = calculateTaskBlockedTimeMs(task);
   const formattedBlockedTime = formatBlockedTime(blockedTimeMs);
@@ -127,6 +136,46 @@ export const TaskMetadataSidebar: React.FC<TaskMetadataSidebarProps> = ({
             value={task.assignee || ''}
             onChange={(e) => onUpdateTask(task.id, { assignee: e.target.value || undefined })}
           />
+        )}
+      </div>
+
+      {/* Sprint (Feature 038) */}
+      <div className="td-sidebar-field">
+        <label className="td-sidebar-field-label" htmlFor="td-sprint">
+          <svg width={16} height={16} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"
+            />
+          </svg>
+          Sprint
+        </label>
+        {isReadOnly || !onSetSprint ? (
+          <span
+            className="td-input"
+            style={{ display: 'inline-block' }}
+            data-testid="td-sprint-readonly"
+          >
+            {currentSprintName || 'Sem sprint'}
+          </span>
+        ) : (
+          <select
+            id="td-sprint"
+            className="td-select"
+            value={task.sprintId || ''}
+            onChange={(e) => onSetSprint(task.id, e.target.value || null)}
+            data-testid="td-sprint-select"
+          >
+            <option value="">Sem sprint</option>
+            {orderedSprints.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+                {s.status === 'active' ? ' (ativa)' : ''}
+              </option>
+            ))}
+          </select>
         )}
       </div>
 

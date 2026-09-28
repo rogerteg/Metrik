@@ -5,6 +5,8 @@ import type { AxeResults } from 'axe-core';
 import { Task } from '../../src/components/Task';
 import { CommentThread } from '../../src/components/CommentThread';
 import { Column } from '../../src/components/Column';
+import { SprintBar } from '../../src/components/SprintBar';
+import { SprintManagerModal } from '../../src/components/SprintManagerModal';
 import { TaskModel, ColumnModel } from '../../src/types/kanban';
 import { TaskComment } from '../../src/types/taskActivity';
 
@@ -106,6 +108,40 @@ describe('Acessibilidade (WCAG 2.1 AA) — Feature 027 / núcleo', () => {
       />,
     );
     fireEvent.click(screen.getByRole('button', { name: /Detalhes/i }));
+    expect(await runAxe(container)).toHaveNoViolations();
+  });
+
+  it('SprintBar has no violations', async () => {
+    const { container } = render(
+      <SprintBar
+        sprints={[
+          { id: 'sp1', name: 'Sprint 1', status: 'active', createdAt: '2026-09-01T00:00:00.000Z' },
+        ]}
+        activeSprintId="sp1"
+        tasks={[]}
+        onOpenManager={() => {}}
+      />,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
+  });
+
+  it('SprintManagerModal has no violations', async () => {
+    const { container } = render(
+      <SprintManagerModal
+        isOpen
+        onClose={() => {}}
+        sprints={[
+          { id: 'sp1', name: 'Sprint 1', status: 'active', createdAt: '2026-09-01T00:00:00.000Z' },
+        ]}
+        activeSprintId="sp1"
+        tasks={[]}
+        onAdd={() => {}}
+        onUpdate={() => {}}
+        onDelete={() => {}}
+        onStart={() => {}}
+        onComplete={() => {}}
+      />,
+    );
     expect(await runAxe(container)).toHaveNoViolations();
   });
 });

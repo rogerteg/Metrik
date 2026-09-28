@@ -4,6 +4,8 @@ import { useFlowMetrics } from './hooks/useFlowMetrics';
 import { useBoardFilters } from './hooks/useBoardFilters';
 import { useDataPortability } from './hooks/useDataPortability';
 import { MetricsBar } from './components/MetricsBar';
+import { SprintBar } from './components/SprintBar';
+import { SprintManagerModal } from './components/SprintManagerModal';
 import { FilterBar } from './components/FilterBar';
 import { Board } from './components/Board';
 import { BoardTask } from './components/BoardTask';
@@ -90,6 +92,7 @@ export const App: React.FC = () => {
 
   const [isBoardModalOpen, setIsBoardModalOpen] = React.useState(false);
   const [isNewColumnModalOpen, setIsNewColumnModalOpen] = React.useState(false);
+  const [isSprintManagerOpen, setIsSprintManagerOpen] = React.useState(false);
 
   const { theme, setTheme } = useTheme();
 
@@ -118,6 +121,12 @@ export const App: React.FC = () => {
     addSubtaskComment,
     editSubtaskComment,
     deleteSubtaskComment,
+    addSprint,
+    updateSprint,
+    deleteSprint,
+    startSprint,
+    completeSprint,
+    setTaskSprint,
     discardIfEmpty,
     clearTasks,
     resetToSeed,
@@ -639,6 +648,14 @@ export const App: React.FC = () => {
         />
       ) : view === 'board' ? (
         <>
+          <SprintBar
+            sprints={board.sprints}
+            activeSprintId={board.activeSprintId}
+            tasks={allBoardTasks}
+            isReadOnly={isGuest}
+            onOpenManager={() => setIsSprintManagerOpen(true)}
+          />
+
           <MetricsBar metrics={flowMetrics} />
 
           <FilterBar
@@ -681,6 +698,7 @@ export const App: React.FC = () => {
                 currentUser={currentUser}
                 autoSaveComments={settings.autoSaveComments ?? true}
                 autoSaveDebounceMs={settings.autoSaveDebounceMs ?? 800}
+                sprints={board.sprints}
                 onSelect={setSelectedTaskId}
                 onUpdateTask={updateTask}
                 onDelete={deleteTask}
@@ -737,6 +755,8 @@ export const App: React.FC = () => {
           allBoards={boards}
           teams={teams}
           users={users}
+          sprints={board.sprints}
+          onSetTaskSprint={isGuest ? undefined : setTaskSprint}
           isReadOnly={isGuest}
           autoSaveComments={settings.autoSaveComments ?? true}
           autoSaveDebounceMs={settings.autoSaveDebounceMs ?? 800}
@@ -792,6 +812,20 @@ export const App: React.FC = () => {
         onClose={() => setIsNewColumnModalOpen(false)}
         onAddColumn={addColumn}
         currentColumnCount={board.columns.length}
+      />
+
+      <SprintManagerModal
+        isOpen={isSprintManagerOpen}
+        onClose={() => setIsSprintManagerOpen(false)}
+        sprints={board.sprints}
+        activeSprintId={board.activeSprintId}
+        tasks={allBoardTasks}
+        isReadOnly={isGuest}
+        onAdd={addSprint}
+        onUpdate={updateSprint}
+        onDelete={deleteSprint}
+        onStart={startSprint}
+        onComplete={completeSprint}
       />
 
       <CreateWorkspaceModal
