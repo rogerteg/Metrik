@@ -36,6 +36,7 @@ import {
   removeBidirectionalLink,
   getPendingBlockers,
 } from './utils/taskRelations';
+import { buildTasksCsv, buildSprintsCsv } from './utils/csvExport';
 import { DependencySoftBlockModal } from './components/DependencySoftBlockModal';
 import { useWorkspaces } from './hooks/useWorkspaces';
 import { useAppSettings } from './hooks/useAppSettings';
@@ -133,7 +134,7 @@ export const App: React.FC = () => {
     overwriteBoard,
   } = useTaskCollection(activeBoardId, { onNotify: setToastMessage });
 
-  const { exportData, importData } = useDataPortability();
+  const { exportData, importData, exportCsv } = useDataPortability();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
@@ -391,6 +392,16 @@ export const App: React.FC = () => {
     exportData(board, activeBoardId);
   };
 
+  const csvStamp = () => new Date().toISOString().slice(0, 10);
+
+  const handleExportTasksCsv = () => {
+    exportCsv(`metrik-tarefas-${csvStamp()}.csv`, buildTasksCsv(board));
+  };
+
+  const handleExportSprintsCsv = () => {
+    exportCsv(`metrik-sprints-${csvStamp()}.csv`, buildSprintsCsv(board.sprints, allBoardTasks));
+  };
+
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
@@ -609,6 +620,8 @@ export const App: React.FC = () => {
           onExportData={handleExport}
           onImportData={handleImportClick}
           onClearTasks={handleClearBoard}
+          onExportTasksCsv={handleExportTasksCsv}
+          onExportSprintsCsv={handleExportSprintsCsv}
           onShowToast={(msg) => setToastMessage(msg)}
         />
       ) : view === 'manage' ? (

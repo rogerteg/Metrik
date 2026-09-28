@@ -12,7 +12,7 @@
 **Domínio:** Gestão Ágil / Kanban e Analytics de Fluxo (Lean/Agile)
 **Propósito:** Quadro Kanban local-first com métricas de fluxo (Lead Time, Cycle Time, CFD, Monte Carlo, WIP Aging, Throughput), governança visual, multi-board e colaboração por squads.
 **Fase atual:** [ ] Greenfield  [x] Crescimento  [ ] Maturidade  [ ] Legado
-**Versão do pacote:** `0.1.0` (40 features especificadas em `specs/`).
+**Versão do pacote:** `0.1.0` (41 features especificadas em `specs/`).
 
 ---
 

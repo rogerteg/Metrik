@@ -3,26 +3,46 @@ import { BoardState } from '../types/kanban';
 import { isValidBoardState } from '../utils/seedData';
 
 export function useDataPortability() {
-  const exportData = useCallback((board: BoardState, boardId?: string | null) => {
-    try {
-      const dataStr = JSON.stringify(board, null, 2);
-      const blob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement('a');
-      a.href = url;
-      const fileNameSuffix = boardId ? `-${boardId}` : '';
-      a.download = `metrik-board${fileNameSuffix}-export-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-
-      // Cleanup
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Failed to export data:', err);
-    }
+  const download = useCallback((blob: Blob, fileName: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }, []);
+
+  const exportData = useCallback(
+    (board: BoardState, boardId?: string | null) => {
+      try {
+        const dataStr = JSON.stringify(board, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const fileNameSuffix = boardId ? `-${boardId}` : '';
+        download(
+          blob,
+          `metrik-board${fileNameSuffix}-export-${new Date().toISOString().slice(0, 10)}.json`,
+        );
+      } catch (err) {
+        console.error('[Metrik] Failed to export data:', err);
+      }
+    },
+    [download],
+  );
+
+  /** Exporta conteúdo CSV (Feature 041). */
+  const exportCsv = useCallback(
+    (fileName: string, content: string) => {
+      try {
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8' });
+        download(blob, fileName);
+      } catch (err) {
+        console.error('[Metrik] Failed to export CSV:', err);
+      }
+    },
+    [download],
+  );
 
   const importData = useCallback(
     (file: File, onSuccess: (board: BoardState) => void, onError: (err: string) => void) => {
@@ -62,5 +82,6 @@ export function useDataPortability() {
   return {
     exportData,
     importData,
+    exportCsv,
   };
 }

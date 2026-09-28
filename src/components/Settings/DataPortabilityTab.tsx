@@ -4,12 +4,17 @@ interface DataPortabilityTabProps {
   onExportData: () => void;
   onImportData: () => void;
   onClearTasks: () => void;
+  /** Exportação CSV (Feature 041). */
+  onExportTasksCsv?: () => void;
+  onExportSprintsCsv?: () => void;
 }
 
 export const DataPortabilityTab: React.FC<DataPortabilityTabProps> = ({
   onExportData,
   onImportData,
   onClearTasks,
+  onExportTasksCsv,
+  onExportSprintsCsv,
 }) => {
   return (
     <div className="settings-tab-panel" role="tabpanel" aria-label="Portabilidade & Dados">
@@ -19,7 +24,6 @@ export const DataPortabilityTab: React.FC<DataPortabilityTabProps> = ({
           Controle total dos seus dados. Exportação e restauração local no formato JSON aberto.
         </p>
       </div>
-
       {/* Seção 1: Backup e Exportação */}
       <section className="settings-section">
         <h4 className="settings-section-title">Exportar Backup JSON</h4>
@@ -46,8 +50,38 @@ export const DataPortabilityTab: React.FC<DataPortabilityTabProps> = ({
           Exportar Arquivo de Backup
         </button>
       </section>
-
-      {/* Seção 2: Importação e Restauração */}
+      {/* Seção 1b: Relatórios CSV (Feature 041) */}
+      {(onExportTasksCsv || onExportSprintsCsv) && (
+        <section className="settings-section">
+          <h4 className="settings-section-title">Relatórios CSV</h4>
+          <p className="settings-section-desc">
+            Exporte tarefas e sprints em planilha (CSV) para análise externa.
+          </p>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {onExportTasksCsv && (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onExportTasksCsv}
+                data-testid="export-tasks-csv"
+              >
+                Exportar tarefas (CSV)
+              </button>
+            )}
+            {onExportSprintsCsv && (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onExportSprintsCsv}
+                data-testid="export-sprints-csv"
+              >
+                Exportar sprints (CSV)
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+      {/* Seção 2: Importação e Restauração */}{' '}
       <section className="settings-section">
         <h4 className="settings-section-title">Importar Arquivo de Backup</h4>
         <p className="settings-section-desc">
@@ -73,7 +107,6 @@ export const DataPortabilityTab: React.FC<DataPortabilityTabProps> = ({
           Selecionar Arquivo JSON
         </button>
       </section>
-
       {/* Seção 3: Zona de Perigo / Limpeza */}
       <section className="settings-section danger-zone">
         <h4 className="settings-section-title text-danger">Zona Crítica</h4>

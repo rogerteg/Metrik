@@ -24,6 +24,9 @@ export interface SettingsViewProps {
   onExportData: () => void;
   onImportData: () => void;
   onClearTasks: () => void;
+  /** Relatórios CSV (Feature 041). */
+  onExportTasksCsv?: () => void;
+  onExportSprintsCsv?: () => void;
   onShowToast?: (message: string, type: 'success' | 'warning' | 'error') => void;
   onApplyRemoteData?: (payload: {
     workspaces: Workspace[];
@@ -45,6 +48,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onExportData,
   onImportData,
   onClearTasks,
+  onExportTasksCsv,
+  onExportSprintsCsv,
   onShowToast,
   onApplyRemoteData,
 }) => {
@@ -195,6 +200,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               onExportData={onExportData}
               onImportData={onImportData}
               onClearTasks={onClearTasks}
+              onExportTasksCsv={onExportTasksCsv}
+              onExportSprintsCsv={onExportSprintsCsv}
             />
           )}
 
