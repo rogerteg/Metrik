@@ -40,6 +40,8 @@
 
 ## 10.6 🧪 Lições de Testes
 
+- **2026-09-28 | Cobertura & CI** | Linha de base medida: **85,7% stmts · 79,5% branches · 59,9% functions**. Limiares fixados com folga (~1,5 pp abaixo) em `vite.config.ts` e gate no GitHub Actions (`tsc` + `test:coverage` + `build`). | A cobertura de funções é naturalmente menor por causa de handlers de UI não exercitados; o limiar protege contra regressão sem travar o presente.
+
 - **2026-09-28 | Estabilidade** | Com 97 arquivos rodando em paralelo, testes pesados de App/Board estouravam o `testTimeout` padrão de 5s e geravam vermelho falso (passavam isolados em ~1s). | **Solução:** `testTimeout: 15000` no `vite.config.ts`.
 
 - **2026-09-25 | Contratos de UI** | Testes que travam posição/estrutura de badges (`task-indicator-badge`, `getAllByRole('checkbox')[0]`) quebram com redesign inofensivo. | Ordem de checkboxes era sensível à presença do compositor no DOM. | **Alternativa:** consultar por `data-testid`/`aria-label` estáveis e, ao mudar a intenção visual, atualizar o teste de design (sem afrouxar o comportamento).

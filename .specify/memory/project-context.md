@@ -28,10 +28,10 @@
 **Fila de mensagens:** Não se aplica
 **Autenticação:** Sessão local por usuário/squad (`useTeamAccess`); sem servidor de auth dedicado
 **Infra/Cloud:** Opcional (Supabase), estritamente opt-in e fault-tolerant
-**CI/CD:** Não configurado (sem pipeline no repositório)
+**CI/CD:** GitHub Actions — `.github/workflows/ci.yml` (`tsc --noEmit` + `vitest --coverage` + `vite build`)
 **Monitoramento:** Logs estruturados via prefixo `[Metrik]` no console
 
-**Testes:** Vitest 3 + `@testing-library/react` 16 + `jsdom` 26 (`npm run test`)
+**Testes:** Vitest 3 + `@testing-library/react` 16 + `jsdom` 26 (`npm run test`); cobertura via `@vitest/coverage-v8` (`npm run test:coverage`, limiares em `vite.config.ts`)
 **Build/typecheck:** `npm run build` (`tsc && vite build`)
 **Estilo:** CSS vanilla com design tokens (`src/App.css`); **não há framework CSS instalado**
 

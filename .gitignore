@@ -13,6 +13,7 @@ __pycache__/
 # Build & Output
 dist/
 build/
+coverage/
 
 # Spec Kit machine-local state
 .specify/integrations/.cache/
