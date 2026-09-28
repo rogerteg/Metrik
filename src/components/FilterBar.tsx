@@ -1,8 +1,9 @@
 import React from 'react';
 import { FilterState } from '../types/filter';
-import { PriorityLevel } from '../types/kanban';
+import { PriorityLevel, SprintModel } from '../types/kanban';
 import { PRIORITY_CONFIG } from '../utils/priorityConfig';
 import { getTagTheme } from '../utils/tagColors';
+import { orderSprints } from '../utils/sprintMetrics';
 
 export interface FilterBarProps {
   filters: FilterState;
@@ -16,6 +17,10 @@ export interface FilterBarProps {
   visibleCount: number;
   totalCount: number;
   blockedCount?: number;
+  /** Sprints do quadro (Feature 038) */
+  sprints?: SprintModel[];
+  activeSprintId?: string | null;
+  onSprintChange?: (sprintFilter: string) => void;
 }
 
 const PRIORITY_OPTIONS: { level: PriorityLevel | 'all'; label: string; color?: string }[] = [
@@ -38,7 +43,12 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   visibleCount,
   totalCount,
   blockedCount,
+  sprints,
+  activeSprintId,
+  onSprintChange,
 }) => {
+  const sprintOptions = React.useMemo(() => orderSprints(sprints), [sprints]);
+
   return (
     <section className="filter-bar" aria-label="Barra de filtros e busca">
       <div className="filter-bar__top">
@@ -88,6 +98,32 @@ export const FilterBar: React.FC<FilterBarProps> = ({
       </div>
 
       <div className="filter-bar__controls">
+        {/* Filtro por Sprint (Feature 038) */}
+        {onSprintChange && (
+          <div className="filter-group filter-group--sprint" aria-label="Filtrar por sprint">
+            <label className="filter-group__label" htmlFor="filter-sprint">
+              Sprint:
+            </label>
+            <select
+              id="filter-sprint"
+              className="filter-select"
+              value={filters.sprintFilter}
+              onChange={(e) => onSprintChange(e.target.value)}
+              data-testid="filter-sprint-select"
+            >
+              <option value="all">Todas as sprints</option>
+              <option value="active">Sprint ativa</option>
+              <option value="none">Sem sprint</option>
+              {sprintOptions.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                  {s.id === activeSprintId ? ' (ativa)' : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* Seletor de Prioridade */}
         <div
           className="filter-group filter-group--priority"

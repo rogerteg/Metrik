@@ -330,3 +330,24 @@
   font-style: italic;
   margin: 6px 0 0;
 }
+
+/* Filtro por sprint (Feature 038) */
+.filter-group--sprint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-select {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  padding: 4px 8px;
+  outline: none;
+}
+
+.filter-select:focus {
+  border-color: var(--accent-primary, #6366f1);
+}

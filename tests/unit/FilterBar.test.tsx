@@ -9,6 +9,7 @@ describe('FilterBar Component (US3, US4 & Feature 013)', () => {
     priorityFilter: 'all',
     selectedTags: [],
     onlyBlocked: false,
+    sprintFilter: 'all',
   };
 
   it('renders search input, priority buttons, tags, and counter', () => {
@@ -105,6 +106,7 @@ describe('FilterBar Component (US3, US4 & Feature 013)', () => {
       priorityFilter: 'high',
       selectedTags: ['Backend'],
       onlyBlocked: false,
+      sprintFilter: 'all',
     };
 
     render(

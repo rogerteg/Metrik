@@ -670,6 +670,9 @@ export const App: React.FC = () => {
             visibleCount={filterData.visibleCount}
             totalCount={filterData.totalCount}
             blockedCount={filterData.blockedCount}
+            sprints={board.sprints}
+            activeSprintId={board.activeSprintId}
+            onSprintChange={filterData.setSprintFilter}
           />
 
           <Board

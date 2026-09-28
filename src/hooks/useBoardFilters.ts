@@ -7,6 +7,7 @@ const INITIAL_FILTER_STATE: FilterState = {
   priorityFilter: 'all',
   selectedTags: [],
   onlyBlocked: false,
+  sprintFilter: 'all',
 };
 
 export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
@@ -36,6 +37,10 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
     setFilters((prev) => ({ ...prev, onlyBlocked: !prev.onlyBlocked }));
   }, []);
 
+  const setSprintFilter = useCallback((sprintFilter: string) => {
+    setFilters((prev) => ({ ...prev, sprintFilter }));
+  }, []);
+
   const clearFilters = useCallback(() => {
     setFilters(INITIAL_FILTER_STATE);
   }, []);
@@ -44,7 +49,8 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
     filters.searchQuery.trim() !== '' ||
     filters.priorityFilter !== 'all' ||
     filters.selectedTags.length > 0 ||
-    filters.onlyBlocked,
+    filters.onlyBlocked ||
+    filters.sprintFilter !== 'all',
   );
 
   const availableTags = useMemo(() => {
@@ -109,6 +115,17 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
           return false;
         }
 
+        // 5. Sprint Filter (Feature 038)
+        if (filters.sprintFilter !== 'all') {
+          if (filters.sprintFilter === 'none') {
+            if (task.sprintId) return false;
+          } else if (filters.sprintFilter === 'active') {
+            if (!board.activeSprintId || task.sprintId !== board.activeSprintId) return false;
+          } else if (task.sprintId !== filters.sprintFilter) {
+            return false;
+          }
+        }
+
         return true;
       });
     });
@@ -129,6 +146,7 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
     setPriorityFilter,
     toggleTagFilter,
     toggleOnlyBlocked,
+    setSprintFilter,
     clearFilters,
     hasActiveFilters,
     filteredBoard,

@@ -197,4 +197,43 @@ describe('useBoardFilters Hook (Foundational)', () => {
     expect(result.current.filters.onlyBlocked).toBe(false);
     expect(result.current.visibleCount).toBe(5);
   });
+
+  it('filters by sprint (active/none/specific) (Feature 038)', () => {
+    const boardWithSprints: BoardState = {
+      ...sampleBoard,
+      activeSprintId: 'sp1',
+      sprints: [
+        { id: 'sp1', name: 'Sprint 1', status: 'active', createdAt: '2026-09-01T00:00:00Z' },
+        { id: 'sp2', name: 'Sprint 2', status: 'planned', createdAt: '2026-09-01T00:00:00Z' },
+      ],
+      tasks: {
+        ...sampleBoard.tasks,
+        todo: [
+          { ...sampleBoard.tasks['todo'][0], sprintId: 'sp1' },
+          { ...sampleBoard.tasks['todo'][1] },
+        ],
+        'in-progress': [{ ...sampleBoard.tasks['in-progress'][0], sprintId: 'sp2' }],
+      },
+    };
+
+    const { result } = renderHook(() => useBoardFilters(boardWithSprints));
+
+    act(() => result.current.setSprintFilter('active'));
+    expect(result.current.hasActiveFilters).toBe(true);
+    expect(result.current.visibleCount).toBe(1);
+    expect(result.current.filteredBoard.tasks['todo'].map((t) => t.id)).toEqual(['t-1']);
+
+    act(() => result.current.setSprintFilter('none'));
+    expect(result.current.visibleCount).toBe(2);
+    expect(result.current.filteredBoard.tasks['todo'].map((t) => t.id)).toEqual(['t-2']);
+    expect(result.current.filteredBoard.tasks['completed'].map((t) => t.id)).toEqual(['t-4']);
+
+    act(() => result.current.setSprintFilter('sp2'));
+    expect(result.current.visibleCount).toBe(1);
+    expect(result.current.filteredBoard.tasks['in-progress'].map((t) => t.id)).toEqual(['t-3']);
+
+    act(() => result.current.setSprintFilter('all'));
+    expect(result.current.visibleCount).toBe(4);
+    expect(result.current.hasActiveFilters).toBe(false);
+  });
 });
