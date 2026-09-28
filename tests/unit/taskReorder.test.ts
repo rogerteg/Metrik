@@ -195,6 +195,11 @@ describe('isTaskBlocked (Pure Predicate - Feature 025)', () => {
     expect(isTaskBlocked({ id: '3', title: 'C', column: 'c', createdAt: '2026-09-14', tags: ['Impedimento'] })).toBe(true);
   });
 
+  it('returns true when task.tags contains a prefix variation (prefix-aware predicate)', () => {
+    expect(isTaskBlocked({ id: '1', title: 'A', column: 'c', createdAt: '2026-09-14', tags: ['bloqueado-urgente'] })).toBe(true);
+    expect(isTaskBlocked({ id: '2', title: 'B', column: 'c', createdAt: '2026-09-14', tags: ['blocked-by-vendor'] })).toBe(true);
+  });
+
   it('returns false when task.tags has unrelated tags', () => {
     const task: TaskModel = {
       id: 't1',

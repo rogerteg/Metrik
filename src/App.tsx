@@ -96,6 +96,8 @@ export const App: React.FC = () => {
 
   const { columnWidths, setColumnWidth, resetColumnWidth } = useColumnWidths(activeBoardId);
 
+  const [toastMessage, setToastMessage] = React.useState<string | null>(null);
+
   const {
     board,
     addColumn,
@@ -117,7 +119,7 @@ export const App: React.FC = () => {
     clearTasks,
     resetToSeed,
     overwriteBoard,
-  } = useTaskCollection(activeBoardId);
+  } = useTaskCollection(activeBoardId, { onNotify: setToastMessage });
 
   const { exportData, importData } = useDataPortability();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -291,8 +293,6 @@ export const App: React.FC = () => {
     },
     [selectedTaskId, activeBoardId, allBoardTasks, updateTask]
   );
-
-  const [toastMessage, setToastMessage] = React.useState<string | null>(null);
 
   const [softBlockState, setSoftBlockState] = React.useState<{
     task: TaskModel;

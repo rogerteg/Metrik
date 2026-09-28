@@ -2,6 +2,21 @@ import { BLOCKED_TAG_KEYWORDS, BoardState, ColumnModel, TaskModel } from '../typ
 import { ReorderOptions } from '../types/dnd';
 
 /**
+ * Predicado puro que identifica se uma etiqueta textual representa bloqueio (Feature 025).
+ * A comparação é normalizada (trim + lowercase) e prefix-aware, conforme `data-model.md` §3:
+ * `clean === kw || clean.startsWith(kw)` — assim variações como `bloqueado-urgente`
+ * também são reconhecidas como etiqueta de bloqueio.
+ */
+export function isBlockingTag(tag: string | undefined | null): boolean {
+  if (!tag) return false;
+  const clean = tag.trim().toLowerCase();
+  if (clean === '') return false;
+  return (BLOCKED_TAG_KEYWORDS as readonly string[]).some(
+    (kw) => clean === kw || clean.startsWith(kw)
+  );
+}
+
+/**
  * Predicado puro de domínio que verifica se uma tarefa está bloqueada (Feature 025).
  * Uma tarefa é considerada bloqueada se:
  * 1. task.blocked === true
@@ -11,10 +26,7 @@ export function isTaskBlocked(task: TaskModel | undefined | null): boolean {
   if (!task) return false;
   if (task.blocked === true) return true;
   if (Array.isArray(task.tags) && task.tags.length > 0) {
-    return task.tags.some((tag) => {
-      const normalized = tag.trim().toLowerCase();
-      return (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(normalized);
-    });
+    return task.tags.some((tag) => isBlockingTag(tag));
   }
   return false;
 }

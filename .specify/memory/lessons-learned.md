@@ -12,9 +12,11 @@
 - **2026-09-25 | CSS** | Centralizar o feed de atividade em um único arquivo com prefixo próprio (`mrf-*`) e tokens semânticos (`var(--text-primary)`, `var(--color-progress)`, …) garantiu funcionamento em dark/light/neutral. | Evita cores fixas que quebram em tema claro.
 - **2026-09-25 | Verificação sem navegador** | Gerar preview estático renderizando os componentes em jsdom, serializando o HTML e injetando o CSS de produção (`dist/assets/*.css`) permitiu validar visualmente sem browser conectado. | Fluxo aplicado em `scratch/preview/*.preview.test.tsx`.
 - **2026-09-25 | Transparência por dados existentes** | Derivar métricas de fluxo apenas de campos já persistidos (`createdAt`, `startedAt`, `completedAt`, `totalBlockedMs`, `subtasks`, `comments`, `activityLog`, `links`) entregou valor sem alterar o modelo de dados. | Respeita o Princípio V (YAGNI).
+- **2026-09-28 | Canal de notificação não-obstrutivo** | Injetar `onNotify` opcional em `useTaskCollection` e plugá-lo no `ToastNotification` do `App` removeu `window.alert` dos guards de bloqueio sem acoplar o hook à UI; testes passam a injetar um espião e a provar que nenhum alerta é disparado. | Mantém o domínio testável e sem trava de thread (research Decisão 5 / Constituição III).
 
 ## 10.2 ❌ Anti-Padrões — Não Repetir
 
+- **2026-09-28 | Escopo** | Ao trocar `window.alert` por notificação não-obstrutiva, substituir também os avisos de movimento retrógrado (feature 014) extrapola o escopo de 025 e quebra testes que dependem do alerta. | A convergência deve tocar só os guards nomeados na tarefa; o canal de UI é reutilizável depois, em mudança própria com testes atualizados.
 - **2026-09-25 | Estilo** | Usar classes utilitárias de um framework CSS que **não está instalado nem configurado** no projeto (sem dependência em `package.json`, sem plugin no `vite`, sem CDN no `index.html`). Resultado: a área de atividade/comentários do modal ficou sem estilo (ex.: `bg-slate-900/50`, `rounded-xl`, `text-cyan-400` inertes). | Classes são texto morto; o defeito só aparece em runtime. | **Alternativa:** CSS vanilla com tokens do Metrik; se um framework for desejado, instalá-lo e provar no CSS de produção antes de usar.
 - **2026-09-25 | Arquitetura de UI** | Manter **dois** sistemas de atividade/comentário no mesmo modal (feed na coluna principal + painel na lateral), cada um com seu compositor. | Duplicação de fonte de verdade e confusão de UX. | **Alternativa:** uma única trilha unificada.
 - **2026-09-25 | Governança** | Referenciar nomes de marcas de produtos de inspiração/frameworks em comentários de código-fonte (vedado pelo Princípio VII). | Vazamento de marca. | **Alternativa:** termos neutros e canônicos do Metrik Design System.
@@ -26,8 +28,8 @@
 
 ## 10.4 ⚡ Armadilhas de Performance
 
-- **2026-09-25 | Build** | Bundle único de ~780 KB (aviso do Vite). | Sem code-splitting; charts/analytics no chunk inicial. | **Solução pendente:** `manualChunks`/`import()` dinâmico em analytics.
-- **2026-09-25 | Suíte de testes** | Vitest varre `.kilo/worktrees/**` e roda a suíte em duplicidade (~193 arquivos em vez de ~96). | `vite.config.ts` sem `test.exclude`. | **Solução pendente:** excluir `.kilo/**`, `dist/**`, `node_modules/**`.
+- **2026-09-25 | Build** | Bundle único de ~780 KB (aviso do Vite). | Sem code-splitting; charts/analytics no chunk inicial. | ✅ **Resolvido:** `manualChunks`/`import()` dinâmico em analytics (commits `perf(build)`).
+- **2026-09-25 | Suíte de testes** | Vitest varre `.kilo/worktrees/**` e roda a suíte em duplicidade (~193 arquivos em vez de ~96). | `vite.config.ts` sem `test.exclude`. | ✅ **Resolvido:** escopo de testes limitado ao projeto (commit `chore(test)`); suíte atual = 94 arquivos.
 
 ## 10.5 🔒 Lições de Segurança
 
@@ -47,4 +49,4 @@
 
 ---
 
-*Atualizado em: 2026-09-25.*
+*Atualizado em: 2026-09-28.*

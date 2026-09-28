@@ -40,6 +40,19 @@ export const Board: React.FC<BoardProps> = ({
   const columns = board.columns || [];
   const isAtColumnLimit = columns.length >= MAX_COLUMNS;
 
+  // Índice de tarefas (usa o board bruto quando disponível) para a validação
+  // preventiva de drop da Feature 025 — Camada 3.
+  const taskIndex = React.useMemo(() => {
+    const source = rawBoard ?? board;
+    const index = new Map<string, TaskModel>();
+    for (const tasks of Object.values(source.tasks)) {
+      for (const task of tasks) {
+        index.set(task.id, task);
+      }
+    }
+    return index;
+  }, [board, rawBoard]);
+
   return (
     <div className="board-container">
       {isReadOnly && (
@@ -82,6 +95,7 @@ export const Board: React.FC<BoardProps> = ({
               onUpdateColumn={isReadOnly ? undefined : onUpdateColumn}
               onDeleteColumn={isReadOnly ? undefined : onDeleteColumn}
               onDropTask={isReadOnly ? undefined : onDropTask}
+              getTaskById={(id) => taskIndex.get(id)}
               onMoveColumn={isReadOnly ? undefined : onMoveColumn}
             >
               {isFilteredEmpty ? (

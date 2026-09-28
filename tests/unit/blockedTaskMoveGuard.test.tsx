@@ -89,11 +89,14 @@ describe('Blocked Task Movement Guard', () => {
   });
 
   describe('useTaskCollection hook guards', () => {
-    it('moveTask triggers alert and does NOT move card when task is blocked', () => {
+    it('moveTask notifies via the non-blocking channel and does NOT move card when task is blocked', () => {
+      const notifyMock = vi.fn();
       const alertMock = vi.fn();
       vi.stubGlobal('alert', alertMock);
 
-      const { result } = renderHook(() => useTaskCollection('test-blocked-move-hook'));
+      const { result } = renderHook(() =>
+        useTaskCollection('test-blocked-move-hook', { onNotify: notifyMock })
+      );
 
       let createdTask: TaskModel;
       act(() => {
@@ -114,7 +117,8 @@ describe('Blocked Task Movement Guard', () => {
         result.current.moveTask(createdTask.id, 'in-progress');
       });
 
-      expect(alertMock).toHaveBeenCalledWith(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
+      expect(notifyMock).toHaveBeenCalledWith(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
+      expect(alertMock).not.toHaveBeenCalled();
       expect(result.current.board.tasks['todo'].some((t) => t.id === createdTask.id)).toBe(true);
       expect(result.current.board.tasks['in-progress'].some((t) => t.id === createdTask.id)).toBe(false);
 
@@ -135,11 +139,14 @@ describe('Blocked Task Movement Guard', () => {
       expect(result.current.board.tasks['in-progress'].some((t) => t.id === createdTask.id)).toBe(true);
     });
 
-    it('reorderOrMoveTask triggers alert and does NOT move card when dragging across columns while blocked', () => {
+    it('reorderOrMoveTask notifies via the non-blocking channel and does NOT move card across columns while blocked', () => {
+      const notifyMock = vi.fn();
       const alertMock = vi.fn();
       vi.stubGlobal('alert', alertMock);
 
-      const { result } = renderHook(() => useTaskCollection('test-blocked-dnd-hook'));
+      const { result } = renderHook(() =>
+        useTaskCollection('test-blocked-dnd-hook', { onNotify: notifyMock })
+      );
 
       let createdTask: TaskModel;
       act(() => {
@@ -159,7 +166,8 @@ describe('Blocked Task Movement Guard', () => {
         });
       });
 
-      expect(alertMock).toHaveBeenCalledWith(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
+      expect(notifyMock).toHaveBeenCalledWith(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
+      expect(alertMock).not.toHaveBeenCalled();
       expect(result.current.board.tasks['todo'].some((t) => t.id === createdTask.id)).toBe(true);
       expect(result.current.board.tasks['in-progress'].some((t) => t.id === createdTask.id)).toBe(false);
     });
@@ -278,6 +286,37 @@ describe('Blocked Task Movement Guard', () => {
       expect(toggleBlockedMock).toHaveBeenCalledWith(baseTask.id);
     });
 
+    it('badge fallback unlock strips blocking tags and accumulates totalBlockedMs when onToggleBlocked is absent', () => {
+      const updateMock = vi.fn();
+      const blockedAt = new Date(Date.now() - 5000).toISOString();
+      const taskWithHistory: TaskModel = {
+        ...baseTask,
+        blockedAt,
+        totalBlockedMs: 1000,
+        tags: ['bloqueado', 'urgente'],
+      };
+
+      render(
+        <Task
+          task={taskWithHistory}
+          onUpdateTask={updateMock}
+          onUpdateTitle={vi.fn()}
+          onDelete={vi.fn()}
+          onDiscardIfEmpty={vi.fn()}
+        />
+      );
+
+      fireEvent.click(screen.getByTestId('task-blocked-badge'));
+
+      expect(updateMock).toHaveBeenCalledTimes(1);
+      const [id, patch] = updateMock.mock.calls[0];
+      expect(id).toBe(taskWithHistory.id);
+      expect(patch.blocked).toBe(false);
+      expect(patch.blockedAt).toBeUndefined();
+      expect(patch.tags).toEqual(['urgente']);
+      expect(patch.totalBlockedMs).toBeGreaterThanOrEqual(6000);
+    });
+
     it('cancels dragStart and sets draggable=false when task is blocked by tag keyword', () => {
       const taskWithTag: TaskModel = {
         id: 'task-tag-blocked',
@@ -361,6 +400,54 @@ describe('Blocked Task Movement Guard', () => {
       taskInState = result.current.board.tasks['todo'].find((t) => t.id === createdTask.id);
       expect(taskInState?.blocked).toBe(false);
       expect(taskInState?.tags).not.toContain('bloqueado');
+    });
+
+    it('keeps the strict lock when a non-blocking tag is removed from a flag-only blocked card (FR-006)', () => {
+      const { result } = renderHook(() => useTaskCollection('test-flag-only-blocked'));
+
+      let createdTask: TaskModel;
+      act(() => {
+        result.current.clearTasks();
+        createdTask = result.current.addTask('todo', 'Flag Only Blocked');
+      });
+
+      // Bloqueio apenas por flag (sem etiquetas de bloqueio)
+      act(() => {
+        result.current.updateTask(createdTask.id, {
+          blocked: true,
+          blockedAt: new Date().toISOString(),
+          tags: [],
+        });
+      });
+
+      act(() => {
+        result.current.addTaskTag(createdTask.id, 'urgente');
+      });
+      act(() => {
+        result.current.removeTaskTag(createdTask.id, 'urgente');
+      });
+
+      const taskInState = result.current.board.tasks['todo'].find((t) => t.id === createdTask.id);
+      expect(taskInState?.blocked).toBe(true);
+      expect(taskInState?.tags).toEqual([]);
+    });
+
+    it('synchronizes blocked=true when a prefix-aware blocking tag is added', () => {
+      const { result } = renderHook(() => useTaskCollection('test-prefix-block-tag'));
+
+      let createdTask: TaskModel;
+      act(() => {
+        result.current.clearTasks();
+        createdTask = result.current.addTask('todo', 'Prefix Tag Task');
+      });
+
+      act(() => {
+        result.current.addTaskTag(createdTask.id, 'bloqueado-urgente');
+      });
+
+      const taskInState = result.current.board.tasks['todo'].find((t) => t.id === createdTask.id);
+      expect(taskInState?.blocked).toBe(true);
+      expect(taskInState?.tags).toContain('bloqueado-urgente');
     });
   });
 });

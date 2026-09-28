@@ -10,11 +10,10 @@ import {
   MAX_COLUMNS,
   FLOW_REGRESSION_WARNING_MESSAGE,
   BLOCKED_TASK_MOVE_WARNING_MESSAGE,
-  BLOCKED_TAG_KEYWORDS,
 } from '../types/kanban';
 import { createTaskActivityEvent, AuditDescriptions } from '../utils/taskActivityLogger';
 import { INITIAL_SEED_TASKS, isValidBoardState } from '../utils/seedData';
-import { reorderBoard, isBackwardColumnMove, reorderColumnList, isTaskBlocked } from '../utils/taskReorder';
+import { reorderBoard, isBackwardColumnMove, reorderColumnList, isTaskBlocked, isBlockingTag } from '../utils/taskReorder';
 import { ReorderOptions } from '../types/dnd';
 
 export interface UseTaskCollectionReturn {
@@ -43,6 +42,15 @@ export interface UseTaskCollectionReturn {
   clearTasks: () => void;
   resetToSeed: () => void;
   overwriteBoard: (newState: BoardState) => void;
+}
+
+/**
+ * Canal de notificação não-obstrutivo (Feature 025, research Decisão 5).
+ * Substitui alertas nativos `window.alert`/`window.confirm` por feedback contextual
+ * que não trava a thread do navegador. O chamador decide como exibir (ex.: Toast).
+ */
+export interface UseTaskCollectionOptions {
+  onNotify?: (message: string) => void;
 }
 
 const getBoardStateFromStorage = (boardId: string | null): BoardState => {
@@ -78,9 +86,20 @@ const getBoardStateFromStorage = (boardId: string | null): BoardState => {
   }
 };
 
-export function useTaskCollection(activeBoardId: string | null): UseTaskCollectionReturn {
+export function useTaskCollection(
+  activeBoardId: string | null,
+  options: UseTaskCollectionOptions = {}
+): UseTaskCollectionReturn {
   const [board, setBoard] = useState<BoardState>(() => getBoardStateFromStorage(activeBoardId));
   const currentBoardIdRef = useRef<string | null>(activeBoardId);
+
+  const onNotify = options.onNotify;
+  const notify = useCallback(
+    (message: string) => {
+      onNotify?.(message);
+    },
+    [onNotify]
+  );
 
   // When active board changes, load its data
   useEffect(() => {
@@ -294,21 +313,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
 
       if (targetTask && sourceColumnId) {
         if (isTaskBlocked(targetTask) && sourceColumnId !== targetColumnId) {
-          if (typeof window !== 'undefined') {
-            if (typeof window.alert === 'function') {
-              try {
-                window.alert(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
-              } catch {
-                // Ignore alert errors
-              }
-            } else if (typeof window.confirm === 'function') {
-              try {
-                window.confirm(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
-              } catch {
-                // Ignore confirm errors
-              }
-            }
-          }
+          notify(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
           return prev; // Tarefa bloqueada não pode mover de coluna!
         }
 
@@ -399,7 +404,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
 
       return { ...prev, tasks: nextTasks };
     });
-  }, []);
+  }, [notify]);
 
   const reorderOrMoveTask = useCallback((options: ReorderOptions) => {
     setBoard((prev) => {
@@ -415,21 +420,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
       }
 
       if (activeTask && sourceColumnId && isTaskBlocked(activeTask) && sourceColumnId !== options.targetColumn) {
-        if (typeof window !== 'undefined') {
-          if (typeof window.alert === 'function') {
-            try {
-              window.alert(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
-            } catch {
-              // Ignore alert errors
-            }
-          } else if (typeof window.confirm === 'function') {
-            try {
-              window.confirm(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
-            } catch {
-              // Ignore confirm errors
-            }
-          }
-        }
+        notify(BLOCKED_TASK_MOVE_WARNING_MESSAGE);
         return prev; // Tarefa bloqueada não pode mover de coluna!
       }
 
@@ -454,7 +445,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
 
       return reorderBoard(prev, options);
     });
-  }, []);
+  }, [notify]);
 
   const setTaskPriority = useCallback((taskId: string, priority?: PriorityLevel) => {
     setBoard((prev) => {
@@ -504,7 +495,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
             if (isDuplicate) return task;
 
             const nextTags = [...currentTags, cleanTag];
-            const isBlockingKeyword = (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(cleanTag.toLowerCase());
+            const isBlockingKeyword = isBlockingTag(cleanTag);
 
             const auditEvent = createTaskActivityEvent({
               taskId,
@@ -554,9 +545,8 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
             const nextTags = currentTags.filter(
               (t) => t.trim().toLowerCase() !== targetTag
             );
-            const hasRemainingBlockingTag = nextTags.some((t) =>
-              (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
-            );
+            const hasRemainingBlockingTag = nextTags.some((t) => isBlockingTag(t));
+            const removedIsBlocking = isBlockingTag(targetTag);
 
             const auditEvent = createTaskActivityEvent({
               taskId,
@@ -566,8 +556,8 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
               user: { id: 'usr_default', name: 'Rogerio Teixeira' },
             });
 
-            // Se retirou etiqueta de bloqueio e não resta nenhuma outra tag de bloqueio:
-            if (!hasRemainingBlockingTag && task.blocked) {
+            // Se retirou uma etiqueta de bloqueio e não resta nenhuma outra tag de bloqueio:
+            if (removedIsBlocking && !hasRemainingBlockingTag && task.blocked) {
               const startMs = task.blockedAt ? new Date(task.blockedAt).getTime() : Date.now();
               const elapsed = Math.max(0, Date.now() - startMs);
               const totalBlockedMs = (task.totalBlockedMs || 0) + elapsed;
@@ -643,9 +633,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
 
             if (willBlock) {
               const currentTags = task.tags ?? [];
-              const hasTag = currentTags.some((t) =>
-                (BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
-              );
+              const hasTag = currentTags.some((t) => isBlockingTag(t));
               const nextTags = hasTag ? currentTags : [...currentTags, 'bloqueado'];
               return {
                 ...task,
@@ -662,7 +650,7 @@ export function useTaskCollection(activeBoardId: string | null): UseTaskCollecti
               const totalBlockedMs = (task.totalBlockedMs || 0) + elapsed;
               const currentTags = task.tags ?? [];
               const nextTags = currentTags.filter(
-                (t) => !(BLOCKED_TAG_KEYWORDS as readonly string[]).includes(t.trim().toLowerCase())
+                (t) => !isBlockingTag(t)
               );
               return {
                 ...task,

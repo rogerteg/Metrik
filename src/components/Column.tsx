@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ColumnModel, PRESET_COLUMN_COLORS, getDefaultColumnColor } from '../types/kanban';
+import { ColumnModel, TaskModel, PRESET_COLUMN_COLORS, getDefaultColumnColor } from '../types/kanban';
 import { clampColumnWidth, resolveColumnWidth } from '../utils/columnGeometry';
+import { isTaskBlocked } from '../utils/taskReorder';
 import { WipLimitBadge } from './WipLimitBadge';
 import { ReorderOptions } from '../types/dnd';
 
@@ -16,6 +17,8 @@ export interface ColumnProps {
   onUpdateColumn?: (id: string, updates: Partial<ColumnModel>) => void;
   onDeleteColumn?: (id: string) => void;
   onDropTask?: (options: ReorderOptions) => void;
+  /** Resolve uma tarefa pelo id para validação preventiva de drop (Feature 025, Camada 3). */
+  getTaskById?: (taskId: string) => TaskModel | undefined;
   onMoveColumn?: (sourceIndex: number, destinationIndex: number) => void;
   children?: React.ReactNode;
 }
@@ -52,6 +55,7 @@ export const Column: React.FC<ColumnProps> = ({
   onUpdateColumn,
   onDeleteColumn,
   onDropTask,
+  getTaskById,
   onMoveColumn,
   children,
 }) => {
@@ -190,6 +194,13 @@ export const Column: React.FC<ColumnProps> = ({
     // 2. Drop de Tarefa
     const activeTaskId = e.dataTransfer ? e.dataTransfer.getData('text/plain') : '';
     if (activeTaskId && onDropTask) {
+      // Camada 3 (Feature 025): validação preventiva de drop.
+      // Ignora o drop quando a tarefa arrastada está bloqueada e cruza colunas.
+      const draggedTask = getTaskById?.(activeTaskId);
+      if (draggedTask && isTaskBlocked(draggedTask) && draggedTask.column !== column.id) {
+        return;
+      }
+
       onDropTask({
         activeTaskId,
         targetColumn: column.id,

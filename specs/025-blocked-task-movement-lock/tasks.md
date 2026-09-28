@@ -1,7 +1,7 @@
 # Tasks: Feature 025 - Trava Estrita de Movimentação para Cartões Bloqueados (Blocked Card Movement Lock)
 
 **Branch**: `025-blocked-task-movement-lock`  
-**Status**: Ready for Implementation (0/23 tasks)  
+**Status**: Completed (28/28 tasks)
 **Spec**: [spec.md](spec.md) | **Plan**: [plan.md](plan.md) | **Data Model**: [data-model.md](data-model.md) | **Checklists**: [checklists/blocked-task-movement-lock.md](checklists/blocked-task-movement-lock.md)
 
 ---
@@ -257,8 +257,8 @@ Task T018: "Add CSS rules in src/App.css"
 
 **Purpose**: Fechar as lacunas identificadas entre `spec.md`/`plan.md`/`data-model.md` e o estado atual do código (varredura de convergência pós-implementação). Ordenadas por severidade (HIGH → LOW).
 
-- [ ] T024 Guard `removeTaskTag` in `src/hooks/useTaskCollection.ts` so `task.blocked` is only cleared when the removed tag is itself a blocking keyword, preserving the strict movement lock for flag-only blocked cards per FR-006 (contradicts)
-- [ ] T025 Replace the blocking `window.alert`/`window.confirm` calls in the blocked-move guards of `moveTask` and `reorderOrMoveTask` in `src/hooks/useTaskCollection.ts` with the non-blocking contextual notification channel, and update the alert-based assertions in `tests/unit/blockedTaskMoveGuard.test.tsx` per plan: research Decisão 5 / Phase 5 (partial)
-- [ ] T026 Align the `⛔ Bloqueado` badge fallback unlock in `src/components/Task.tsx` with the modal unlock contract: strip blocking tags and accumulate `totalBlockedMs` when `onToggleBlocked` is absent per data-model Invariante 3 & 4 (partial)
-- [ ] T027 Add an explicit `isTaskBlocked` guard to `handleDrop` in `src/components/Column.tsx` before delegating to `onDropTask` per plan: Layer 3 drop handlers (T011) (partial)
-- [ ] T028 Implement the prefix-aware predicate documented in `data-model.md` §3 (`clean === kw || clean.startsWith(kw)`) in `isTaskBlocked` (`src/utils/taskReorder.ts`) with matching unit tests per data-model §3 (partial)
+- [X] T024 Guard `removeTaskTag` in `src/hooks/useTaskCollection.ts` so `task.blocked` is only cleared when the removed tag is itself a blocking keyword, preserving the strict movement lock for flag-only blocked cards per FR-006 (contradicts)
+- [X] T025 Replace the blocking `window.alert`/`window.confirm` calls in the blocked-move guards of `moveTask` and `reorderOrMoveTask` in `src/hooks/useTaskCollection.ts` with the non-blocking contextual notification channel, and update the alert-based assertions in `tests/unit/blockedTaskMoveGuard.test.tsx` per plan: research Decisão 5 / Phase 5 (partial)
+- [X] T026 Align the `⛔ Bloqueado` badge fallback unlock in `src/components/Task.tsx` with the modal unlock contract: strip blocking tags and accumulate `totalBlockedMs` when `onToggleBlocked` is absent per data-model Invariante 3 & 4 (partial)
+- [X] T027 Add an explicit `isTaskBlocked` guard to `handleDrop` in `src/components/Column.tsx` before delegating to `onDropTask` per plan: Layer 3 drop handlers (T011) (partial)
+- [X] T028 Implement the prefix-aware predicate documented in `data-model.md` §3 (`clean === kw || clean.startsWith(kw)`) in `isTaskBlocked` (`src/utils/taskReorder.ts`) with matching unit tests per data-model §3 (partial)

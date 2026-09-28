@@ -55,4 +55,55 @@ describe('Column Drop Target (US1 & US2)', () => {
     });
     expect(column.className).not.toContain('kanban-column-drop-target');
   });
+
+  it('rejects a cross-column drop when the dragged task is blocked (Feature 025, Layer 3)', () => {
+    const handleDrop = vi.fn();
+    render(
+      <Column
+        column={completedCol}
+        count={0}
+        onDropTask={handleDrop}
+        getTaskById={(id) =>
+          id === 'blocked-task'
+            ? { id, title: 'Blocked', column: 'in_progress', createdAt: '2026-09-14', blocked: true }
+            : undefined
+        }
+      />
+    );
+
+    const column = screen.getByRole('region', { name: /Coluna Completed/i });
+
+    fireEvent.drop(column, {
+      dataTransfer: {
+        getData: (format: string) => (format === 'text/plain' ? 'blocked-task' : ''),
+      },
+    });
+
+    expect(handleDrop).not.toHaveBeenCalled();
+  });
+
+  it('allows a same-column drop for a blocked task (intra-column reorder)', () => {
+    const handleDrop = vi.fn();
+    render(
+      <Column
+        column={completedCol}
+        count={0}
+        onDropTask={handleDrop}
+        getTaskById={(id) => ({ id, title: 'Blocked', column: 'completed', createdAt: '2026-09-14', blocked: true })}
+      />
+    );
+
+    const column = screen.getByRole('region', { name: /Coluna Completed/i });
+
+    fireEvent.drop(column, {
+      dataTransfer: {
+        getData: (format: string) => (format === 'text/plain' ? 'blocked-task' : ''),
+      },
+    });
+
+    expect(handleDrop).toHaveBeenCalledWith({
+      activeTaskId: 'blocked-task',
+      targetColumn: 'completed',
+    });
+  });
 });

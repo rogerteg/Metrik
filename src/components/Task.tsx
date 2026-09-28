@@ -1,7 +1,7 @@
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { PriorityLevel, TaskModel, isTaskStagnant, STAGNANT_BROWN_COLOR } from '../types/kanban';
-import { isTaskBlocked } from '../utils/taskReorder';
+import { isTaskBlocked, isBlockingTag } from '../utils/taskReorder';
 import { AutoResizeTextarea } from './AutoResizeTextarea';
 import { PriorityBadge } from './PriorityBadge';
 import { TaskTypeBadge } from './TaskTypeBadge';
@@ -131,6 +131,30 @@ export const Task: React.FC<TaskProps> = ({
   const handleDragEnd = () => {
     setIsDragging(false);
     setDropIndicator(null);
+  };
+
+  /**
+   * Desbloqueio rápido pelo badge (Feature 025 — contrato do modal de desbloqueio).
+   * Remove o flag `blocked`, retira as etiquetas de bloqueio e reconcilia `totalBlockedMs`.
+   */
+  const handleQuickUnlock = () => {
+    if (onToggleBlocked) {
+      onToggleBlocked(task.id);
+      return;
+    }
+    if (!onUpdateTask) return;
+
+    const startMs = task.blockedAt ? new Date(task.blockedAt).getTime() : Date.now();
+    const elapsed = Math.max(0, Date.now() - startMs);
+    const totalBlockedMs = (task.totalBlockedMs || 0) + elapsed;
+    const nextTags = (task.tags ?? []).filter((tag) => !isBlockingTag(tag));
+
+    onUpdateTask(task.id, {
+      blocked: false,
+      blockedAt: undefined,
+      totalBlockedMs,
+      tags: nextTags,
+    });
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLElement>) => {
@@ -326,21 +350,13 @@ export const Task: React.FC<TaskProps> = ({
               tabIndex={0}
               onClick={(e) => {
                 e.stopPropagation();
-                if (onToggleBlocked) {
-                  onToggleBlocked(task.id);
-                } else if (onUpdateTask) {
-                  onUpdateTask(task.id, { blocked: false, blockedAt: undefined });
-                }
+                handleQuickUnlock();
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.stopPropagation();
                   e.preventDefault();
-                  if (onToggleBlocked) {
-                    onToggleBlocked(task.id);
-                  } else if (onUpdateTask) {
-                    onUpdateTask(task.id, { blocked: false, blockedAt: undefined });
-                  }
+                  handleQuickUnlock();
                 }
               }}
             >
