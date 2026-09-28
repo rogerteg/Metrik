@@ -111,7 +111,7 @@ description: "Task list for feature 027 - Card Subtasks and Comments"
 
 ## Phase 3: User Story 1 - Subtarefas Direto no Cartão (Priority: P1) 🎯 MVP
 
-- [ ] T005 [P] [US1] Write failing component tests in `tests/unit/Task.test.tsx` asserting subtask creation input, toggle, removal, and counter updates directly in `Task.tsx`. *(Parcial: `Task.test.tsx` cobre apenas a renderização do indicador, não criação/toggle/remoção.)*
+- [X] T005 [P] [US1] Write failing component tests in `tests/unit/Task.test.tsx` asserting subtask creation input, toggle, removal, and counter updates directly in `Task.tsx`. *(Entregue em `tests/unit/TaskSubtasks.test.tsx` — 5 casos.)*
 - [X] T006 [US1] Implement collapsible subtasks section with inline creation and completion toggle in `src/components/Task.tsx`. *(Entregue: `handleAddSubtask`/`handleToggleSubtask`/`handleDeleteSubtask`.)*
 - [X] T007 [US1] Update progress badge in `src/components/Task.tsx` to react immediately to subtask additions and state changes. *(Entregue: progresso derivado de `task.subtasks`.)*
 - [X] T008 [US1] Add CSS styles for inline subtask items, checkboxes, and scroll containment in `src/App.css`. *(Entregue: estilos `task-detail-checklist*`; a contenção `max-height` de T016 segue pendente.)*
