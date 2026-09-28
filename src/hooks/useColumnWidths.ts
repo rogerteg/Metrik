@@ -17,9 +17,19 @@ const getStorageKey = (boardId: string | null): string => {
  */
 const readPersistedWidths = (boardId: string | null): Record<string, number> => {
   if (typeof window === 'undefined' || !window.localStorage) return {};
+  const storageKey = getStorageKey(boardId);
   try {
-    const raw = localStorage.getItem(getStorageKey(boardId));
-    return raw ? resolvePersistedWidthMap(JSON.parse(raw)) : {};
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    const resolved = resolvePersistedWidthMap(parsed);
+    // Poda idempotente (FR-009): reescreve o armazenamento quando algo foi
+    // descartado, para que o diagnóstico `[Metrik Guard]` seja emitido uma única
+    // vez em vez de a cada carregamento da página.
+    if (JSON.stringify(parsed) !== JSON.stringify(resolved)) {
+      localStorage.setItem(storageKey, JSON.stringify(resolved));
+    }
+    return resolved;
   } catch {
     // Falha defensiva de leitura: o quadro segue íntegro com as larguras padrão.
     console.warn('[Metrik Guard] Column width preferences could not be read; falling back to defaults.');

@@ -347,7 +347,7 @@ O jsdom **não** calcula layout (ver `research.md` §D6): as suítes comprovam i
 
 ## Status da Execução (2026-09-14)
 
-**24 de 26 tarefas concluídas** — T001 a T022, T025 e T026. Permanecem abertas **T023** e **T024**, que exigem navegadores reais e quadros de 2, 6 e 12 colunas.
+**27 de 29 tarefas concluídas** — T001 a T022, T025 a T029. Permanecem abertas **T023** e **T024**, que exigem navegadores reais (Edge, Chrome, Firefox e Safari) e quadros de 2, 6 e 12 colunas; a medição física de altura de T028 depende das mesmas execuções.
 
 ### Evidência
 
@@ -382,14 +382,24 @@ O jsdom **não** calcula layout (ver `research.md` §D6): as suítes comprovam i
 
 Nenhum desvio de escopo: nenhuma dependência adicionada, nenhum redesenho, nenhuma alteração de esquema de dados ou de regra de negócio.
 
+### Convergência (2026-09-28)
+
+| Item | Resultado |
+|---|---|
+| **T027** | FR-010 clarificado (via `/speckit-clarify`): largura fixa, sem esticamento. `spec.md` (FR-010) e `research.md` (D7) reconciliados; pendência de escopo removida. |
+| **T028** | Token `--metrik-scrollbar-lane` (8 px) + `scrollbar-width: thin` + `scrollbar-gutter: stable` em `.kanban-board-grid`; contrato automatizado garante ausência de literal e paridade de abordagem WebKit/Firefox. Medição de altura real pendente (T023/T024). |
+| **T029** | `readPersistedWidths` poda o `localStorage` quando descarta valores inválidos/fora da faixa, garantindo diagnóstico `[Metrik Guard]` único por carga (FR-009). Coberto por teste de idempotência. |
+| `npm run test` | **556 testes em 94 arquivos, todos aprovados** |
+| `npm run build` | **Limpo** — `tsc` sem erros, bundle gerado |
+
 ---
 
 ## Phase 7: Convergence
 
 **Purpose**: Fechar as lacunas identificadas entre `spec.md`/`plan.md`/`data-model.md` e o estado atual do código após a implementação (varredura de convergência). Ordenadas por severidade (HIGH → LOW).
 
-- [ ] T027 Reconcile the initial column width with FR-010 — either implement a window-aware default width or formalize the fixed-default decision (D7) via `/speckit-clarify` — so that code and specification agree on whether first-load horizontal scrolling is expected per FR-010 (partial)
-- [ ] T028 Reserve the horizontal scrollbar lane deterministically in `src/App.css` so the measured column height no longer varies with the browser's scrollbar style (6 px in Chromium/WebKit, default thickness in Firefox, zero with overlay scrollbars), then record the measured heights per FR-004 (partial)
-- [ ] T029 Prune discarded width preferences from `localStorage` on load in `src/hooks/useColumnWidths.ts` so the `[Metrik Guard]` geometry diagnostic is reported once instead of on every page load per FR-009 (partial)
+- [X] T027 Reconcile the initial column width with FR-010 — either implement a window-aware default width or formalize the fixed-default decision (D7) via `/speckit-clarify` — so that code and specification agree on whether first-load horizontal scrolling is expected per FR-010 (partial)
+- [X] T028 Reserve the horizontal scrollbar lane deterministically in `src/App.css` so the measured column height no longer varies with the browser's scrollbar style (6 px in Chromium/WebKit, default thickness in Firefox, zero with overlay scrollbars), then record the measured heights per FR-004 (partial) — token `--metrik-scrollbar-lane` + `scrollbar-width: thin` + contrato automatizado; medição de altura real pendente em T023/T024 (requer navegadores reais)
+- [X] T029 Prune discarded width preferences from `localStorage` on load in `src/hooks/useColumnWidths.ts` so the `[Metrik Guard]` geometry diagnostic is reported once instead of on every page load per FR-009 (partial)
 
 

@@ -100,7 +100,7 @@ Consequências verificadas no código:
 - *Esticar colunas para preencher a janela* — rejeitado nesta rodada: altera a referência de aceite e a aparência do navegador de referência.
 - *Colunas totalmente fluídas* — rejeitado: elimina a largura escolhida pelo usuário e amplia muito o escopo.
 
-> **Pendência de escopo**: esta decisão foi derivada por padrão (a pergunta correspondente em `/speckit-clarify` não foi respondida). Se a intenção for preencher a janela, a spec precisa ser ajustada via `/speckit-clarify` **antes** da implementação — o plano atual entrega paridade estrita.
+> **Resolvido em 2026-09-28 (via `/speckit-clarify` neste ciclo)**: a pergunta de FR-010 foi respondida e a intenção é **manter largura fixa** (esta decisão D7). Não há esticamento para preencher a janela; rolagem horizontal ocorre apenas quando a soma das larguras excede a largura disponível. A `spec.md` (FR-010) foi ajustada para refletir esta decisão — não há mais divergência entre código e especificação.
 
 ---
 

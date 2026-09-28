@@ -72,6 +72,11 @@
   --metrik-column-width-min: 220px;
   --metrik-column-width-max: 650px;
 
+  /* Pista determinística da barra de rolagem horizontal (Feature 026, FR-004):
+     mesma espessura no WebKit (::-webkit-scrollbar) e no Firefox (scrollbar-width: thin),
+     para que a altura útil das colunas não varie com o estilo de barra do navegador. */
+  --metrik-scrollbar-lane: 8px;
+
   /* Shadows & Glass */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 3px 8px rgba(0, 0, 0, 0.4);
@@ -473,11 +478,16 @@ body {
   overflow-x: auto;
   overflow-y: hidden;
   padding: 4px 6px 8px 4px;
+  /* Pista de barra determinística (FR-004): reserva o espaço e usa a mesma
+     espessura entre motores, independente do estilo nativo do navegador. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-gutter: stable;
 }
 
 /* Custom Horizontal Scrollbar for Board */
 .kanban-board-grid::-webkit-scrollbar {
-  height: 6px;
+  height: var(--metrik-scrollbar-lane);
 }
 
 .kanban-board-grid::-webkit-scrollbar-track {

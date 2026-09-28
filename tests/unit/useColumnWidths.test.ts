@@ -118,6 +118,29 @@ describe('useColumnWidths (US2 — FR-009, FR-010, GC-03, GC-05, GC-09)', () => 
     expect(String(warn.mock.calls[0][0])).toContain('[Metrik Guard]');
   });
 
+  it('prunes discarded preferences on load so the diagnostic is not repeated (FR-009)', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({ todo: 'largo', doing: 99999, review: 300 })
+    );
+
+    const first = renderHook(() => useColumnWidths(BOARD_ID));
+
+    expect(first.result.current.columnWidths).toEqual({ review: 300 });
+    expect(warn).toHaveBeenCalledTimes(1);
+    // O armazenamento é reescrito apenas com as preferências válidas.
+    expect(JSON.parse(localStorage.getItem(storageKey) || '{}')).toEqual({ review: 300 });
+
+    first.unmount();
+    warn.mockClear();
+
+    // Segunda carga: nada a descartar, portanto nenhum diagnóstico repetido.
+    const second = renderHook(() => useColumnWidths(BOARD_ID));
+    expect(second.result.current.columnWidths).toEqual({ review: 300 });
+    expect(warn).not.toHaveBeenCalled();
+  });
+
   it('survives a corrupted payload without breaking the layout (FR-009)', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     localStorage.setItem(storageKey, '{not-json');

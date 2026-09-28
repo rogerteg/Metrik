@@ -44,6 +44,7 @@
 
 ## 10.7 🤝 Lições de Integração
 
+- **2026-09-28 | Verificação de paridade cross-browser** | Este ambiente **não** tem navegador desktop conectado nem múltiplos motores instalados; a matriz Edge/Chrome/Firefox/Safari (T023/T024 da feature 026) não pode ser executada aqui. | Paridade fica coberta por invariantes/contratos; a medição física permanece pendente. | Registrar como bloqueio de ambiente e nunca marcar verde sem a medição real exigida pela spec.
 - **2026-09-25 | Supabase** | Sincronização é opcional, não-bloqueante e tolerante a falhas; ausência de credenciais não pode quebrar a inicialização. | — | Preservar comportamento offline autônomo (Princípio VIII).
 - **2026-09-25 | Fontes** | Tipografia vem de Google Fonts via `<link>` em `index.html`. | Dependência de rede na primeira carga. | Considerar fallback local se o ambiente exigir offline.
 

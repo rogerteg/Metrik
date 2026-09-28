@@ -85,7 +85,7 @@ Como mantenedor do produto, quero que a correção seja única e válida para to
 - **FR-007**: Todo recurso de estilo sem suporte universal MUST possuir alternativa funcional, de modo que a ausência do recurso nunca resulte em layout incorreto.
 - **FR-008**: O layout MUST permanecer íntegro com ampliação do navegador de 50% a 200% e com densidade de tela de 100% a 200%.
 - **FR-009**: As larguras de coluna persistidas MUST ser aplicadas de forma consistente entre navegadores, e valores inválidos, corrompidos ou fora da faixa permitida MUST ser descartados em favor de um layout íntegro.
-- **FR-010**: Na ausência de larguras persistidas, o quadro MUST calcular uma largura inicial que caiba na janela disponível sem gerar rolagem horizontal desnecessária, em qualquer navegador.
+- **FR-010**: Na ausência de larguras persistidas, cada coluna MUST usar a largura padrão da fonte única de geometria (`DEFAULT_COLUMN_WIDTH` = 290 px), mantida fixa e **sem esticamento** para preencher a janela. Rolagem horizontal é esperada apenas quando a soma das larguras exceder a largura disponível — nunca como efeito colateral de uma largura inicial maior que o necessário. *(Clarificado em 2026-09-28 — decisão D7: espaço horizontal excedente permanece livre.)*
 - **FR-011**: As interações de redimensionamento de coluna, arraste de cartão e arraste de coluna MUST permanecer operáveis em todos os navegadores suportados, com a mesma área de acionamento.
 - **FR-012**: Os temas claro, escuro e neutro MUST manter o mesmo layout em todos os navegadores, variando apenas as cores.
 - **FR-013**: A visão de Analytics e os painéis modais MUST manter a mesma paridade de renderização exigida para o quadro.

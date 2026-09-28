@@ -112,4 +112,20 @@ describe('columnGeometryContract — guarda anti-drift (GC-07, GC-08)', () => {
       expect(source).not.toMatch(/CSS\.supports/);
     });
   });
+
+  describe('pista determinística da barra de rolagem horizontal (FR-004, T028)', () => {
+    it('declares a single scrollbar-lane token', () => {
+      expect(readCustomProperty(appCss, '--metrik-scrollbar-lane')).toBe(8);
+    });
+
+    it('uses the token for the WebKit scrollbar height instead of a literal', () => {
+      expect(appCss).toMatch(/\.kanban-board-grid::-webkit-scrollbar\s*\{[^}]*height:\s*var\(--metrik-scrollbar-lane\)/);
+      expect(appCss).not.toMatch(/\.kanban-board-grid::-webkit-scrollbar\s*\{[^}]*height:\s*\d+px/);
+    });
+
+    it('requests a thin, token-coloured scrollbar for Firefox parity', () => {
+      expect(appCss).toMatch(/\.kanban-board-grid\s*\{[^}]*scrollbar-width:\s*thin/);
+      expect(appCss).toMatch(/\.kanban-board-grid\s*\{[^}]*scrollbar-color:/);
+    });
+  });
 });
