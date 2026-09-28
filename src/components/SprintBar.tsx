@@ -4,6 +4,7 @@ import {
   getActiveSprint,
   getSprintTasks,
   calculateSprintProgress,
+  calculateSprintPoints,
   isSprintOverdue,
 } from '../utils/sprintMetrics';
 
@@ -36,9 +37,13 @@ export const SprintBar: React.FC<SprintBarProps> = ({
   onOpenManager,
 }) => {
   const active = getActiveSprint(sprints, activeSprintId);
+  const activeTasks = active ? getSprintTasks(active.id, tasks) : [];
   const progress = active
-    ? calculateSprintProgress(getSprintTasks(active.id, tasks))
+    ? calculateSprintProgress(activeTasks)
     : { total: 0, completed: 0, percentage: 0, velocity: 0 };
+  const points = active
+    ? calculateSprintPoints(activeTasks)
+    : { committed: 0, completed: 0, percentage: 0 };
   const overdue = active ? isSprintOverdue(active) : false;
 
   return (
@@ -88,6 +93,16 @@ export const SprintBar: React.FC<SprintBarProps> = ({
           <span className="sprint-bar__velocity" data-testid="sprint-velocity">
             Velocity: {progress.velocity}
           </span>
+          {points.committed > 0 && (
+            <>
+              <span className="sprint-bar__numbers" data-testid="sprint-points">
+                {points.completed}/{points.committed} pts
+              </span>
+              <span className="sprint-bar__velocity" data-testid="sprint-velocity-points">
+                Velocity: {points.completed} pts
+              </span>
+            </>
+          )}
         </div>
       )}
 

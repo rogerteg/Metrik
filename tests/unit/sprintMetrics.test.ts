@@ -8,6 +8,9 @@ import {
   getActiveSprint,
   isSprintOverdue,
   orderSprints,
+  normalizeEstimation,
+  calculateSprintPoints,
+  MAX_ESTIMATION_POINTS,
 } from '../../src/utils/sprintMetrics';
 import { SprintModel, TaskModel } from '../../src/types/kanban';
 
@@ -135,6 +138,38 @@ describe('sprintMetrics (Feature 038)', () => {
         sprint({ id: 'a', status: 'active' }),
       ];
       expect(orderSprints(sprints).map((s) => s.id)).toEqual(['a', 'p', 'c']);
+    });
+  });
+
+  describe('normalizeEstimation / calculateSprintPoints (Feature 040)', () => {
+    it('accepts positive integers within the cap and rejects invalid values', () => {
+      expect(normalizeEstimation(5)).toBe(5);
+      expect(normalizeEstimation('8')).toBe(8);
+      expect(normalizeEstimation(MAX_ESTIMATION_POINTS)).toBe(MAX_ESTIMATION_POINTS);
+      expect(normalizeEstimation(0)).toBeUndefined();
+      expect(normalizeEstimation(-3)).toBeUndefined();
+      expect(normalizeEstimation(2.5)).toBeUndefined();
+      expect(normalizeEstimation(MAX_ESTIMATION_POINTS + 1)).toBeUndefined();
+      expect(normalizeEstimation('abc')).toBeUndefined();
+      expect(normalizeEstimation(undefined)).toBeUndefined();
+      expect(normalizeEstimation('')).toBeUndefined();
+    });
+
+    it('sums committed and completed points without persisting anything', () => {
+      const tasks = [
+        task({ id: 'a', estimation: 3, completedAt: '2026-09-05T00:00:00.000Z' }),
+        task({ id: 'b', estimation: 5 }),
+        task({ id: 'c' }), // sem estimativa
+      ];
+      expect(calculateSprintPoints(tasks)).toEqual({ committed: 8, completed: 3, percentage: 38 });
+    });
+
+    it('returns 0/0 and 0% without estimations (no division by zero)', () => {
+      expect(calculateSprintPoints([task({ id: 'a' })])).toEqual({
+        committed: 0,
+        completed: 0,
+        percentage: 0,
+      });
     });
   });
 });

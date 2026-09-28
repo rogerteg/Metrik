@@ -78,3 +78,38 @@ export function orderSprints(sprints: SprintModel[] | undefined): SprintModel[] 
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 }
+
+/** Teto prático da estimativa em pontos (Feature 040). */
+export const MAX_ESTIMATION_POINTS = 100;
+
+/**
+ * Normaliza uma estimativa: inteiro em `1..MAX_ESTIMATION_POINTS` ou `undefined`
+ * para "sem estimativa". Rejeita 0, negativos, frações, NaN e valores acima do teto.
+ */
+export function normalizeEstimation(value: unknown): number | undefined {
+  if (value === undefined || value === null || value === '') return undefined;
+  const num = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(num) || !Number.isInteger(num)) return undefined;
+  if (num < 1 || num > MAX_ESTIMATION_POINTS) return undefined;
+  return num;
+}
+
+export interface SprintPoints {
+  committed: number;
+  completed: number;
+  /** 0..100 (inteiro); 0 quando não há pontos comprometidos. */
+  percentage: number;
+}
+
+/** Pontos comprometidos/concluídos de um conjunto de tarefas (derivado). */
+export function calculateSprintPoints(tasks: TaskModel[]): SprintPoints {
+  let committed = 0;
+  let completed = 0;
+  for (const task of tasks) {
+    const points = normalizeEstimation(task.estimation) ?? 0;
+    committed += points;
+    if (task.completedAt) completed += points;
+  }
+  const percentage = committed === 0 ? 0 : Math.round((completed / committed) * 100);
+  return { committed, completed, percentage };
+}

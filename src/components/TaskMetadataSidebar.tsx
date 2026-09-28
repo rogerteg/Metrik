@@ -3,7 +3,7 @@ import { TaskModel, ColumnModel, SprintModel } from '../types/kanban';
 import { TaskType, TASK_TYPE_CONFIGS } from '../types/taskTypes';
 import { User } from '../types/team';
 import { calculateTaskBlockedTimeMs, formatBlockedTime } from '../utils/timeFormatters';
-import { orderSprints } from '../utils/sprintMetrics';
+import { orderSprints, normalizeEstimation, MAX_ESTIMATION_POINTS } from '../utils/sprintMetrics';
 
 interface TaskMetadataSidebarProps {
   task: TaskModel;
@@ -176,6 +176,44 @@ export const TaskMetadataSidebar: React.FC<TaskMetadataSidebarProps> = ({
               </option>
             ))}
           </select>
+        )}
+      </div>
+
+      {/* Estimativa em pontos (Feature 040) */}
+      <div className="td-sidebar-field">
+        <label className="td-sidebar-field-label" htmlFor="td-estimation">
+          <svg width={16} height={16} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v8m-4-4h8M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"
+            />
+          </svg>
+          Estimativa (pts)
+        </label>
+        {isReadOnly ? (
+          <span
+            className="td-input"
+            style={{ display: 'inline-block' }}
+            data-testid="td-estimation-readonly"
+          >
+            {task.estimation ? `${task.estimation} pts` : 'Sem estimativa'}
+          </span>
+        ) : (
+          <input
+            id="td-estimation"
+            type="number"
+            min={1}
+            max={MAX_ESTIMATION_POINTS}
+            className="td-input"
+            placeholder="—"
+            value={task.estimation ?? ''}
+            onChange={(e) =>
+              onUpdateTask(task.id, { estimation: normalizeEstimation(e.target.value) })
+            }
+            data-testid="td-estimation"
+          />
         )}
       </div>
 

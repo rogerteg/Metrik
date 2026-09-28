@@ -122,6 +122,9 @@ export interface TaskModel {
   /** Sprint à qual a tarefa pertence (Feature 038) */
   sprintId?: string | null;
 
+  /** Estimativa em story points (inteiro 1..100). Opcional (Feature 040) */
+  estimation?: number;
+
   dueDate?: string; // ISO 8601 string, e.g., '2026-10-15'
 
   /** Data de Início da Tarefa (planejada ou de execução) */

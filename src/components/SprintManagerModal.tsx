@@ -2,7 +2,12 @@ import React from 'react';
 import { Modal } from './Modal';
 import { SprintBurndownChart } from './SprintBurndownChart';
 import { SprintModel, TaskModel } from '../types/kanban';
-import { orderSprints, getSprintTasks, calculateSprintProgress } from '../utils/sprintMetrics';
+import {
+  orderSprints,
+  getSprintTasks,
+  calculateSprintProgress,
+  calculateSprintPoints,
+} from '../utils/sprintMetrics';
 import { buildSprintBurndown } from '../utils/sprintBurndown';
 
 export interface SprintManagerModalProps {
@@ -116,7 +121,9 @@ export const SprintManagerModal: React.FC<SprintManagerModalProps> = ({
         ) : (
           <ul className="sprint-manager__list">
             {ordered.map((sprint) => {
-              const progress = calculateSprintProgress(getSprintTasks(sprint.id, tasks));
+              const sprintTasks = getSprintTasks(sprint.id, tasks);
+              const progress = calculateSprintProgress(sprintTasks);
+              const points = calculateSprintPoints(sprintTasks);
               const isEditing = editingId === sprint.id;
               return (
                 <li key={sprint.id} className="sprint-manager__item" data-testid="sprint-item">
@@ -181,6 +188,9 @@ export const SprintManagerModal: React.FC<SprintManagerModalProps> = ({
                         </span>
                         <span data-testid={`sprint-progress-${sprint.id}`}>
                           {progress.completed}/{progress.total} · {progress.percentage}%
+                          {points.committed > 0
+                            ? ` · ${points.completed}/${points.committed} pts`
+                            : ''}
                         </span>
                       </div>
                       {(sprint.status === 'active' || sprint.status === 'completed') && (

@@ -336,7 +336,8 @@ export const Task: React.FC<TaskProps> = ({
     hasAcceptanceCriteria ||
     hasTestScenarios ||
     hasComments ||
-    !!sprintName;
+    !!sprintName ||
+    !!task.estimation;
 
   const canEditSubtasks = !readOnly && !!onUpdateTask;
   // A ausência de handler de comentário indica modo somente leitura (perfil convidado).
@@ -573,6 +574,15 @@ export const Task: React.FC<TaskProps> = ({
                   🏃 {sprintName}
                 </span>
               )}
+              {task.estimation ? (
+                <span
+                  className="task-detail-chip"
+                  title={`Estimativa: ${task.estimation} pts`}
+                  data-testid="task-estimation-chip"
+                >
+                  {task.estimation} pts
+                </span>
+              ) : null}
             </div>
           )}
 
