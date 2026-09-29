@@ -16,6 +16,8 @@ export interface WorkspaceHubProps {
   onSelectBoard: (boardId: string) => void;
   onNewPanel?: () => void;
   onNewBoard?: () => void;
+  /** Move um quadro para outro espaço (Feature 029). */
+  onMoveBoardToWorkspace?: (boardId: string, targetWorkspaceId: string | null) => void;
 }
 
 export const WorkspaceHub: React.FC<WorkspaceHubProps> = ({
@@ -28,6 +30,7 @@ export const WorkspaceHub: React.FC<WorkspaceHubProps> = ({
   onSelectBoard,
   onNewPanel,
   onNewBoard,
+  onMoveBoardToWorkspace,
 }) => {
   const [searchTerm, setSearchTerm] = React.useState('');
 
@@ -104,6 +107,7 @@ export const WorkspaceHub: React.FC<WorkspaceHubProps> = ({
           onToggleFavorite={onToggleFavorite}
           onSelectBoard={onSelectBoard}
           onNewBoard={onNewBoard}
+          onMoveBoardToWorkspace={onMoveBoardToWorkspace}
         />
       </div>
     </div>

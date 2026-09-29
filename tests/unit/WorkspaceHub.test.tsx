@@ -133,4 +133,61 @@ describe('WorkspaceHub Component (Feature 029 - US1 MVP)', () => {
     expect(screen.getByText('Entregas da Squad')).toBeDefined();
     expect(screen.queryByText('Projetos do 4º Trimestre')).toBeNull();
   });
+
+  it('moves a board to another workspace via the quick menu', () => {
+    const onMoveBoardToWorkspace = vi.fn();
+    render(
+      <WorkspaceHub
+        workspaces={mockWorkspaces}
+        activeWorkspaceId="ws-producao"
+        onSelectWorkspace={vi.fn()}
+        boards={mockBoards}
+        favoriteBoardIds={[]}
+        onToggleFavorite={vi.fn()}
+        onSelectBoard={vi.fn()}
+        onMoveBoardToWorkspace={onMoveBoardToWorkspace}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('board-menu-btn-b-prod-1'));
+    expect(screen.getByTestId('board-menu-b-prod-1')).toBeDefined();
+
+    fireEvent.click(screen.getByTestId('board-menu-move-b-prod-1-ws-gestao'));
+    expect(onMoveBoardToWorkspace).toHaveBeenCalledWith('b-prod-1', 'ws-gestao');
+  });
+
+  it('removes a board from its workspace via the quick menu', () => {
+    const onMoveBoardToWorkspace = vi.fn();
+    render(
+      <WorkspaceHub
+        workspaces={mockWorkspaces}
+        activeWorkspaceId="ws-producao"
+        onSelectWorkspace={vi.fn()}
+        boards={mockBoards}
+        favoriteBoardIds={[]}
+        onToggleFavorite={vi.fn()}
+        onSelectBoard={vi.fn()}
+        onMoveBoardToWorkspace={onMoveBoardToWorkspace}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('board-menu-btn-b-prod-1'));
+    fireEvent.click(screen.getByTestId('board-menu-remove-b-prod-1'));
+    expect(onMoveBoardToWorkspace).toHaveBeenCalledWith('b-prod-1', null);
+  });
+
+  it('hides the quick menu button when no move handler is provided', () => {
+    render(
+      <WorkspaceHub
+        workspaces={mockWorkspaces}
+        activeWorkspaceId="ws-producao"
+        onSelectWorkspace={vi.fn()}
+        boards={mockBoards}
+        favoriteBoardIds={[]}
+        onToggleFavorite={vi.fn()}
+        onSelectBoard={vi.fn()}
+      />,
+    );
+    expect(screen.queryByTestId('board-menu-btn-b-prod-1')).toBeNull();
+  });
 });

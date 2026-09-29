@@ -189,6 +189,21 @@ export const App: React.FC = () => {
     }
   };
 
+  /** Move um quadro entre espaços a partir do Hub (remove de todos e adiciona ao destino). */
+  const handleMoveBoardToWorkspace = React.useCallback(
+    (boardId: string, targetWorkspaceId: string | null) => {
+      workspaces.forEach((ws) => {
+        if (ws.boardIds.includes(boardId)) {
+          removeBoardFromWorkspace(ws.id, boardId);
+        }
+      });
+      if (targetWorkspaceId) {
+        addBoardToWorkspace(targetWorkspaceId, boardId);
+      }
+    },
+    [workspaces, addBoardToWorkspace, removeBoardFromWorkspace],
+  );
+
   const handleAddLink = React.useCallback(
     (
       targetTaskId: string,
@@ -608,6 +623,7 @@ export const App: React.FC = () => {
           }}
           onNewPanel={() => setIsCreateWorkspaceModalOpen(true)}
           onNewBoard={() => setIsBoardModalOpen(true)}
+          onMoveBoardToWorkspace={handleMoveBoardToWorkspace}
         />
       ) : view === 'settings' ? (
         <SettingsView

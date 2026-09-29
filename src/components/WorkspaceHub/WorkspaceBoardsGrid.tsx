@@ -9,6 +9,8 @@ interface WorkspaceBoardsGridProps {
   onToggleFavorite: (boardId: string) => void;
   onSelectBoard: (boardId: string) => void;
   onNewBoard?: () => void;
+  /** Move um quadro para outro espaço (ou `null` para "Sem espaço"). */
+  onMoveBoardToWorkspace?: (boardId: string, targetWorkspaceId: string | null) => void;
 }
 
 export const WorkspaceBoardsGrid: React.FC<WorkspaceBoardsGridProps> = ({
@@ -18,7 +20,17 @@ export const WorkspaceBoardsGrid: React.FC<WorkspaceBoardsGridProps> = ({
   onToggleFavorite,
   onSelectBoard,
   onNewBoard,
+  onMoveBoardToWorkspace,
 }) => {
+  const [openMenuBoardId, setOpenMenuBoardId] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!openMenuBoardId) return;
+    const close = () => setOpenMenuBoardId(null);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [openMenuBoardId]);
+
   if (boards.length === 0) {
     return (
       <div className="workspace-boards-empty">
@@ -43,6 +55,7 @@ export const WorkspaceBoardsGrid: React.FC<WorkspaceBoardsGridProps> = ({
         const workspace = workspaces.find((ws) => ws.boardIds.includes(board.id));
         const tasksCount = Object.values(board.tasks || {}).flat().length;
         const columnsCount = board.columns?.length || 0;
+        const isMenuOpen = openMenuBoardId === board.id;
 
         return (
           <div
@@ -97,14 +110,20 @@ export const WorkspaceBoardsGrid: React.FC<WorkspaceBoardsGridProps> = ({
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                   </svg>
                 </button>
-                <button
-                  type="button"
-                  className="board-more-btn"
-                  aria-label="Opções do quadro"
-                  title="Mais opções"
-                >
-                  •••
-                </button>
+                {onMoveBoardToWorkspace && (
+                  <button
+                    type="button"
+                    className="board-more-btn"
+                    aria-label="Opções do quadro"
+                    aria-haspopup="menu"
+                    aria-expanded={isMenuOpen}
+                    title="Mover para espaço / opções"
+                    data-testid={`board-menu-btn-${board.id}`}
+                    onClick={() => setOpenMenuBoardId(isMenuOpen ? null : board.id)}
+                  >
+                    •••
+                  </button>
+                )}
               </div>
             </div>
 
@@ -148,6 +167,54 @@ export const WorkspaceBoardsGrid: React.FC<WorkspaceBoardsGridProps> = ({
                 </span>
               </div>
             </div>
+
+            {isMenuOpen && onMoveBoardToWorkspace && (
+              <div
+                className="board-card-menu"
+                role="menu"
+                aria-label={`Opções do quadro ${board.name}`}
+                onClick={(e) => e.stopPropagation()}
+                data-testid={`board-menu-${board.id}`}
+              >
+                <span className="board-card-menu__label">Mover para espaço</span>
+                {workspaces
+                  .filter((ws) => ws.id !== workspace?.id)
+                  .map((ws) => (
+                    <button
+                      key={ws.id}
+                      type="button"
+                      role="menuitem"
+                      className="board-card-menu__item"
+                      data-testid={`board-menu-move-${board.id}-${ws.id}`}
+                      onClick={() => {
+                        onMoveBoardToWorkspace(board.id, ws.id);
+                        setOpenMenuBoardId(null);
+                      }}
+                    >
+                      <span
+                        className="workspace-color-dot"
+                        style={{ backgroundColor: ws.color }}
+                        aria-hidden="true"
+                      />
+                      {ws.name}
+                    </button>
+                  ))}
+                {workspace && (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="board-card-menu__item"
+                    data-testid={`board-menu-remove-${board.id}`}
+                    onClick={() => {
+                      onMoveBoardToWorkspace(board.id, null);
+                      setOpenMenuBoardId(null);
+                    }}
+                  >
+                    Remover do espaço
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         );
       })}

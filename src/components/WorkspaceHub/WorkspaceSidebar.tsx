@@ -26,7 +26,7 @@ export const WorkspaceSidebar: React.FC<WorkspaceSidebarProps> = ({
         type="button"
         className={`workspace-all-btn ${activeWorkspaceId === 'all' ? 'active' : ''}`}
         onClick={() => onSelectWorkspace('all')}
-        aria-selected={activeWorkspaceId === 'all'}
+        aria-current={activeWorkspaceId === 'all' ? 'page' : undefined}
       >
         <span className="workspace-home-icon" aria-hidden="true">
           <svg
@@ -64,7 +64,7 @@ export const WorkspaceSidebar: React.FC<WorkspaceSidebarProps> = ({
                   type="button"
                   className={`workspace-item-btn ${isActive ? 'active' : ''}`}
                   onClick={() => onSelectWorkspace(ws.id)}
-                  aria-selected={isActive}
+                  aria-current={isActive ? 'page' : undefined}
                   title={ws.description || ws.name}
                 >
                   <span
@@ -74,9 +74,6 @@ export const WorkspaceSidebar: React.FC<WorkspaceSidebarProps> = ({
                   />
                   <span className="workspace-name">{ws.name}</span>
                   {wsBoardCount > 0 && <span className="workspace-item-count">{wsBoardCount}</span>}
-                  <span className="workspace-item-menu" title="Opções do espaço" aria-hidden="true">
-                    •••
-                  </span>
                 </button>
               </li>
             );

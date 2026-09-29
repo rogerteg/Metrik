@@ -38,6 +38,59 @@
   color: #ef4444 !important;
 }
 
+/* Menu rápido do quadro (mover para espaço) */
+.workspace-board-card {
+  position: relative;
+}
+
+.board-card-menu {
+  position: absolute;
+  top: 38px;
+  right: 10px;
+  z-index: 20;
+  min-width: 190px;
+  background: var(--bg-elevated, var(--bg-card));
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg, 0 8px 20px rgba(0, 0, 0, 0.5));
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.board-card-menu__label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+}
+
+.board-card-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.board-card-menu__item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='light'] .board-card-menu__item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
 .workspace-hub-container {
   display: flex;
   width: 100%;
