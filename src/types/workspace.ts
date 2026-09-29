@@ -61,6 +61,12 @@ export interface AppSettings {
    * Padrão: 800ms.
    */
   autoSaveDebounceMs?: number;
+  /**
+   * Sincronização automática com o Supabase (opt-in; padrão false).
+   * Quando habilitada e configurada, envia o estado local após um debounce
+   * a cada alteração relevante. Não bloqueia a UI (Local-First).
+   */
+  cloudAutoSync?: boolean;
   /** Data da última sincronização de configurações */
   updatedAt: string;
 }

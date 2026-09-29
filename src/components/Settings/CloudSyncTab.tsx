@@ -18,6 +18,10 @@ export interface CloudSyncTabProps {
     boards: BoardModel[];
     tasksByBoardId: Record<string, BoardState>;
   }) => void;
+  /** Sincronização automática (opt-in) — Feature 038+. */
+  autoSyncEnabled?: boolean;
+  onToggleAutoSync?: (enabled: boolean) => void;
+  isAutoSyncing?: boolean;
 }
 
 export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
@@ -25,6 +29,9 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
   boards,
   onShowToast,
   onApplyRemoteData,
+  autoSyncEnabled = false,
+  onToggleAutoSync,
+  isAutoSyncing = false,
 }) => {
   const [configStatus, setConfigStatus] = useState(getSupabaseConfigStatus());
   const [isTesting, setIsTesting] = useState(false);
@@ -220,6 +227,26 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
         {lastSyncTime && (
           <div className="last-sync-tag">Última sincronização realizada às {lastSyncTime}</div>
         )}
+      </div>
+
+      {/* Sincronização Automática (opt-in) */}
+      <div className="cloud-sync-section">
+        <h4 className="cloud-section-heading">Sincronização Automática</h4>
+        <p className="cloud-section-description">
+          Envia automaticamente as alterações locais para o Supabase após um curto intervalo.
+          Desativada por padrão para preservar a Soberania Local-First.
+        </p>
+        <label className="cloud-autosync-toggle">
+          <input
+            type="checkbox"
+            checked={autoSyncEnabled}
+            disabled={!configStatus.isConfigured || !onToggleAutoSync}
+            onChange={(e) => onToggleAutoSync?.(e.target.checked)}
+            data-testid="cloud-autosync-toggle"
+          />
+          <span>{autoSyncEnabled ? 'Ativada' : 'Desativada'}</span>
+          {isAutoSyncing && <span className="cloud-autosync-status">sincronizando…</span>}
+        </label>
       </div>
 
       {/* Seção de Sincronização Sob Demanda */}

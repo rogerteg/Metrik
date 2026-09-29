@@ -40,6 +40,7 @@ import { buildTasksCsv, buildSprintsCsv } from './utils/csvExport';
 import { DependencySoftBlockModal } from './components/DependencySoftBlockModal';
 import { useWorkspaces } from './hooks/useWorkspaces';
 import { useAppSettings } from './hooks/useAppSettings';
+import { useCloudAutoSync } from './hooks/useCloudAutoSync';
 import { WorkspaceHub } from './components/WorkspaceHub/WorkspaceHub';
 import { CreateWorkspaceModal } from './components/WorkspaceHub/CreateWorkspaceModal';
 import { SettingsView } from './components/Settings/SettingsView';
@@ -153,6 +154,14 @@ export const App: React.FC = () => {
   } = useWorkspaces();
 
   const { settings, updateSettings } = useAppSettings();
+
+  // Sincronização automática (opt-in) — envia o estado local ao Supabase com debounce.
+  const { isSyncing: isCloudAutoSyncing } = useCloudAutoSync({
+    enabled: settings.cloudAutoSync ?? false,
+    workspaces,
+    boards,
+    revision: board,
+  });
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = React.useState(false);
   const [view, setView] = React.useState<
     'workspaces' | 'board' | 'analytics' | 'manage' | 'settings'
@@ -653,6 +662,9 @@ export const App: React.FC = () => {
           onExportTasksCsv={handleExportTasksCsv}
           onExportSprintsCsv={handleExportSprintsCsv}
           onApplyRemoteData={handleApplyRemoteData}
+          autoSyncEnabled={settings.cloudAutoSync ?? false}
+          onToggleAutoSync={(enabled) => updateSettings({ cloudAutoSync: enabled })}
+          isAutoSyncing={isCloudAutoSyncing}
           onShowToast={(msg) => setToastMessage(msg)}
         />
       ) : view === 'manage' ? (

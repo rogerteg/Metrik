@@ -10,6 +10,7 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
   enableAnimations: true,
   autoSaveComments: true,
   autoSaveDebounceMs: 800,
+  cloudAutoSync: false,
   updatedAt: new Date().toISOString(),
 };
 

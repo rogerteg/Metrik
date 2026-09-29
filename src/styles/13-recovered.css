@@ -196,3 +196,25 @@
   margin: 8px 0 0 0;
   overflow-x: auto;
 }
+
+/* Sincronização automática (opt-in) — Feature 038+ */
+.cloud-autosync-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.cloud-autosync-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-primary, #6366f1);
+}
+
+.cloud-autosync-status {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-primary, #6366f1);
+}

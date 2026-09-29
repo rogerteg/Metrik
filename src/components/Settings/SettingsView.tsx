@@ -36,6 +36,10 @@ export interface SettingsViewProps {
     boards: BoardModel[];
     tasksByBoardId: Record<string, BoardState>;
   }) => void;
+  /** Sincronização automática (opt-in) — Feature 038+. */
+  autoSyncEnabled?: boolean;
+  onToggleAutoSync?: (enabled: boolean) => void;
+  isAutoSyncing?: boolean;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
@@ -58,6 +62,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onExportSprintsCsv,
   onShowToast,
   onApplyRemoteData,
+  autoSyncEnabled,
+  onToggleAutoSync,
+  isAutoSyncing,
 }) => {
   const [activeTab, setActiveTab] = useState<SettingsTabId>('general');
 
@@ -221,6 +228,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               boards={boards}
               onShowToast={onShowToast}
               onApplyRemoteData={onApplyRemoteData}
+              autoSyncEnabled={autoSyncEnabled}
+              onToggleAutoSync={onToggleAutoSync}
+              isAutoSyncing={isAutoSyncing}
             />
           )}
         </main>
