@@ -189,6 +189,14 @@ export const App: React.FC = () => {
     }
   };
 
+  /**
+   * Aplica dados remotos (Pull do Supabase): o CloudSyncTab já persistiu no
+   * localStorage; recarregar reidrata os hooks (boards/workspaces/tasks).
+   */
+  const handleApplyRemoteData = React.useCallback(() => {
+    window.setTimeout(() => window.location.reload(), 600);
+  }, []);
+
   /** Move um quadro entre espaços a partir do Hub (remove de todos e adiciona ao destino). */
   const handleMoveBoardToWorkspace = React.useCallback(
     (boardId: string, targetWorkspaceId: string | null) => {
@@ -644,6 +652,7 @@ export const App: React.FC = () => {
           onClearTasks={handleClearBoard}
           onExportTasksCsv={handleExportTasksCsv}
           onExportSprintsCsv={handleExportSprintsCsv}
+          onApplyRemoteData={handleApplyRemoteData}
           onShowToast={(msg) => setToastMessage(msg)}
         />
       ) : view === 'manage' ? (
