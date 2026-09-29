@@ -58,6 +58,8 @@ describe('Supabase Sync Service', () => {
         priority: 'urgent',
         tags: ['backend', 'database'],
         subtasks: [{ id: 'sub-1', title: 'Criar schema', completed: true }],
+        sprintId: 'sp-1',
+        estimation: 5,
         createdAt: '2026-09-16T12:00:00Z',
       };
 
@@ -88,6 +90,8 @@ describe('Supabase Sync Service', () => {
       expect(rows[0].order_index).toBe(0);
       expect(rows[0].tags).toEqual(['backend', 'database']);
       expect(rows[0].subtasks).toHaveLength(1);
+      expect(rows[0].sprint_id).toBe('sp-1');
+      expect(rows[0].estimation).toBe(5);
     });
 
     it('handles empty or malformed boards gracefully', () => {
@@ -137,6 +141,15 @@ describe('Supabase Sync Service', () => {
       const tasksByBoardId: Record<string, BoardState> = {
         'b-1': {
           columns: [],
+          sprints: [
+            {
+              id: 'sp-1',
+              name: 'Sprint 1',
+              status: 'active',
+              createdAt: '2026-09-16T10:00:00Z',
+            },
+          ],
+          activeSprintId: 'sp-1',
           tasks: {
             'col-1': [
               {
@@ -163,6 +176,14 @@ describe('Supabase Sync Service', () => {
       expect(fromMock).toHaveBeenCalledWith('workspaces');
       expect(fromMock).toHaveBeenCalledWith('boards');
       expect(fromMock).toHaveBeenCalledWith('tasks');
+
+      // As sprints do quadro fazem parte do payload de boards (Feature 038–042).
+      const boardUpsert = upsertMock.mock.calls.find(
+        (call) => Array.isArray(call[0]) && call[0][0] && 'sprints' in call[0][0],
+      );
+      expect(boardUpsert).toBeDefined();
+      expect(boardUpsert?.[0][0].sprints).toHaveLength(1);
+      expect(boardUpsert?.[0][0].active_sprint_id).toBe('sp-1');
     });
   });
 
@@ -201,6 +222,15 @@ describe('Supabase Sync Service', () => {
                   id: 'b-1',
                   name: 'Quadro A',
                   columns: [{ id: 'col-1', title: 'Todo', category: 'todo' }],
+                  sprints: [
+                    {
+                      id: 'sp-1',
+                      name: 'Sprint 1',
+                      status: 'active',
+                      createdAt: '2026-09-16T10:00:00Z',
+                    },
+                  ],
+                  active_sprint_id: 'sp-1',
                   created_at: '2026-09-16T10:00:00Z',
                   updated_at: '2026-09-16T10:00:00Z',
                 },
@@ -219,6 +249,8 @@ describe('Supabase Sync Service', () => {
                   column_id: 'col-1',
                   title: 'Tarefa Nuvem',
                   priority: 'high',
+                  sprint_id: 'sp-1',
+                  estimation: 8,
                   created_at: '2026-09-16T10:00:00Z',
                   updated_at: '2026-09-16T10:00:00Z',
                 },
@@ -251,6 +283,10 @@ describe('Supabase Sync Service', () => {
       expect(result.data?.boards).toHaveLength(1);
       expect(result.data?.tasksByBoardId['b-1'].tasks['col-1']).toHaveLength(1);
       expect(result.data?.tasksByBoardId['b-1'].tasks['col-1'][0].title).toBe('Tarefa Nuvem');
+      expect(result.data?.tasksByBoardId['b-1'].sprints).toHaveLength(1);
+      expect(result.data?.tasksByBoardId['b-1'].activeSprintId).toBe('sp-1');
+      expect(result.data?.tasksByBoardId['b-1'].tasks['col-1'][0].sprintId).toBe('sp-1');
+      expect(result.data?.tasksByBoardId['b-1'].tasks['col-1'][0].estimation).toBe(8);
     });
   });
 });

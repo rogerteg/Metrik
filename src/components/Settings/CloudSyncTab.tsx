@@ -88,6 +88,7 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
       setLastSyncTime(nowStr);
       const msg = `Sincronização concluída: ${result.syncedCount.workspaces} espaços, ${result.syncedCount.boards} quadros e ${result.syncedCount.tasks} tarefas salvas na nuvem.`;
       if (onShowToast) onShowToast(msg, 'success');
+      if (result.warning && onShowToast) onShowToast(result.warning, 'warning');
     } else {
       if (onShowToast) onShowToast(`Falha no envio: ${result.error}`, 'error');
     }

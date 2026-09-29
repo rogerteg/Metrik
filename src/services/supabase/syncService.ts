@@ -24,6 +24,8 @@ export interface SyncPushResult {
     tasks: number;
   };
   error?: string;
+  /** Aviso quando a migração de colunas (sprints/pontos) ainda não foi aplicada. */
+  warning?: string;
 }
 
 export interface SyncPullResult {
@@ -112,6 +114,10 @@ export function flattenTasksForDb(tasksByBoardId: Record<string, BoardState>): a
           id: task.id,
           board_id: boardId,
           column_id: columnId,
+          sprint_id: task.sprintId || null,
+          estimation: task.estimation ?? null,
+          assignee: task.assignee || null,
+          last_moved_at: task.lastMovedAt || null,
           title: task.title || '',
           description: task.description || null,
           color: task.color || null,
@@ -145,6 +151,21 @@ export function flattenTasksForDb(tasksByBoardId: Record<string, BoardState>): a
 }
 
 /**
+ * Detecta erro de coluna inexistente (migração de sprints/pontos não aplicada).
+ */
+const MISSING_COLUMN_RE =
+  /column .*does not exist|Could not find the '.*' column|schema cache|42703/i;
+function isMissingColumnError(message: string): boolean {
+  return MISSING_COLUMN_RE.test(message);
+}
+function stripBoardMigrationColumns(rows: any[]): any[] {
+  return rows.map(({ sprints, active_sprint_id, ...rest }) => rest);
+}
+function stripTaskMigrationColumns(rows: any[]): any[] {
+  return rows.map(({ sprint_id, estimation, assignee, last_moved_at, ...rest }) => rest);
+}
+
+/**
  * Envia o estado local do Metrik para o Supabase (Push / Backup).
  */
 export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPushResult> {
@@ -156,6 +177,8 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
       error: 'Supabase não está configurado.',
     };
   }
+
+  let warning: string | undefined;
 
   try {
     // 1. Sincronizar Workspaces
@@ -188,6 +211,8 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
         id: b.id,
         name: b.name,
         columns: payload.tasksByBoardId[b.id]?.columns || [],
+        sprints: payload.tasksByBoardId[b.id]?.sprints || [],
+        active_sprint_id: payload.tasksByBoardId[b.id]?.activeSprintId ?? null,
         team_id: b.teamId || null,
         created_at: b.createdAt || new Date().toISOString(),
         updated_at: b.lastAccessed || new Date().toISOString(),
@@ -195,7 +220,18 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
 
       const { error: bError } = await client.from('boards').upsert(boardRows, { onConflict: 'id' });
 
-      if (bError) throw new Error(`Erro ao sincronizar boards: ${bError.message}`);
+      if (bError) {
+        if (isMissingColumnError(bError.message)) {
+          const { error: retryError } = await client
+            .from('boards')
+            .upsert(stripBoardMigrationColumns(boardRows), { onConflict: 'id' });
+          if (retryError) throw new Error(`Erro ao sincronizar boards: ${retryError.message}`);
+          warning =
+            'Colunas de sprint ainda não existem no Supabase. Execute a seção "Migrações incrementais" do supabase/schema.sql — sprints/pontos não foram enviados nesta execução.';
+        } else {
+          throw new Error(`Erro ao sincronizar boards: ${bError.message}`);
+        }
+      }
       boardsCount = boardRows.length;
     }
 
@@ -205,7 +241,18 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
     if (taskRows.length > 0) {
       const { error: tError } = await client.from('tasks').upsert(taskRows, { onConflict: 'id' });
 
-      if (tError) throw new Error(`Erro ao sincronizar tasks: ${tError.message}`);
+      if (tError) {
+        if (isMissingColumnError(tError.message)) {
+          const { error: retryError } = await client
+            .from('tasks')
+            .upsert(stripTaskMigrationColumns(taskRows), { onConflict: 'id' });
+          if (retryError) throw new Error(`Erro ao sincronizar tasks: ${retryError.message}`);
+          warning =
+            'Colunas de sprint/pontos ainda não existem no Supabase. Execute a seção "Migrações incrementais" do supabase/schema.sql — sprint/estimativa não foram enviados nesta execução.';
+        } else {
+          throw new Error(`Erro ao sincronizar tasks: ${tError.message}`);
+        }
+      }
       tasksCount = taskRows.length;
     }
 
@@ -236,6 +283,7 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
         boards: boardsCount,
         tasks: tasksCount,
       },
+      warning,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -301,6 +349,8 @@ export async function pullFromSupabase(): Promise<SyncPullResult> {
       tasksByBoardId[bRow.id] = {
         columns: boardCols,
         tasks: {},
+        sprints: Array.isArray(bRow.sprints) ? bRow.sprints : [],
+        activeSprintId: bRow.active_sprint_id || null,
       };
       for (const col of boardCols) {
         tasksByBoardId[bRow.id].tasks[col.id] = [];
@@ -327,6 +377,10 @@ export async function pullFromSupabase(): Promise<SyncPullResult> {
         id: row.id,
         title: row.title,
         column: columnId,
+        sprintId: row.sprint_id || undefined,
+        estimation: row.estimation ?? undefined,
+        assignee: row.assignee || undefined,
+        lastMovedAt: row.last_moved_at || undefined,
         color: row.color || undefined,
         description: row.description || undefined,
         priority: row.priority || undefined,

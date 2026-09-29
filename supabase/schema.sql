@@ -166,3 +166,20 @@ DROP TRIGGER IF EXISTS trigger_app_settings_updated_at ON public.app_settings;
 CREATE TRIGGER trigger_app_settings_updated_at
   BEFORE UPDATE ON public.app_settings
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+-- ==============================================================================
+-- 8. Migrações incrementais (idempotentes)
+--    Reescrevem o sync para preservar os dados das features 038–042
+--    (Sprint Planning, Burndown, Story Points). Seguro reexecutar.
+-- ==============================================================================
+
+-- boards: sprints do quadro e sprint ativa
+ALTER TABLE public.boards ADD COLUMN IF NOT EXISTS sprints JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE public.boards ADD COLUMN IF NOT EXISTS active_sprint_id TEXT;
+
+-- tasks: sprint da tarefa, estimativa (story points), responsável e última movimentação
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS sprint_id TEXT;
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS estimation INTEGER;
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS assignee TEXT;
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS last_moved_at TIMESTAMPTZ;
+
