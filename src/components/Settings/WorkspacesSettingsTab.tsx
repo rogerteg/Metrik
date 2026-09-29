@@ -1,11 +1,18 @@
 import React from 'react';
 import { Workspace } from '../../types/workspace';
+import { BoardModel } from '../../types/kanban';
 import { Team, User } from '../../types/team';
+import { DEFAULT_WORKSPACE_ID } from '../../hooks/useWorkspaces';
 
 interface WorkspacesSettingsTabProps {
   workspaces: Workspace[];
+  /** Quadros disponíveis para vincular (Feature 029/P3). */
+  boards?: BoardModel[];
   onUpdateWorkspace: (id: string, patch: Partial<Workspace>) => void;
   onCreateWorkspace?: () => void;
+  onAddBoardToWorkspace?: (workspaceId: string, boardId: string) => void;
+  onRemoveBoardFromWorkspace?: (workspaceId: string, boardId: string) => void;
+  onDeleteWorkspace?: (workspaceId: string) => void;
   teams: Team[];
   users: User[];
 }
@@ -24,8 +31,12 @@ const PRESET_COLORS = [
 
 export const WorkspacesSettingsTab: React.FC<WorkspacesSettingsTabProps> = ({
   workspaces,
+  boards = [],
   onUpdateWorkspace,
   onCreateWorkspace,
+  onAddBoardToWorkspace,
+  onRemoveBoardFromWorkspace,
+  onDeleteWorkspace,
   teams,
   users,
 }) => {
@@ -117,13 +128,35 @@ export const WorkspacesSettingsTab: React.FC<WorkspacesSettingsTabProps> = ({
                         </button>
                       </>
                     ) : (
-                      <button
-                        type="button"
-                        className="btn btn-secondary btn-compact"
-                        onClick={() => handleStartEdit(ws)}
-                      >
-                        Editar
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-compact"
+                          onClick={() => handleStartEdit(ws)}
+                        >
+                          Editar
+                        </button>
+                        {onDeleteWorkspace && ws.id !== DEFAULT_WORKSPACE_ID && (
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-compact workspace-delete-btn"
+                            onClick={() => {
+                              const confirmed =
+                                typeof window === 'undefined' ||
+                                typeof window.confirm !== 'function'
+                                  ? true
+                                  : window.confirm(
+                                      `Excluir o espaço "${ws.name}"? Os quadros vinculados voltam para "Geral".`,
+                                    );
+                              if (confirmed) onDeleteWorkspace(ws.id);
+                            }}
+                            aria-label={`Excluir espaço ${ws.name}`}
+                            data-testid={`delete-workspace-${ws.id}`}
+                          >
+                            Excluir
+                          </button>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
@@ -152,6 +185,41 @@ export const WorkspacesSettingsTab: React.FC<WorkspacesSettingsTabProps> = ({
                         />
                       ))}
                     </div>
+
+                    <label className="settings-field-label">Quadros vinculados:</label>
+                    {onAddBoardToWorkspace && onRemoveBoardFromWorkspace ? (
+                      boards.length > 0 ? (
+                        <div className="workspace-board-toggles">
+                          {boards.map((board) => {
+                            const linked = ws.boardIds.includes(board.id);
+                            return (
+                              <label
+                                key={board.id}
+                                className={`workspace-board-toggle ${linked ? 'is-linked' : ''}`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={linked}
+                                  onChange={() =>
+                                    linked
+                                      ? onRemoveBoardFromWorkspace(ws.id, board.id)
+                                      : onAddBoardToWorkspace(ws.id, board.id)
+                                  }
+                                  aria-label={`Vincular quadro ${board.name}`}
+                                />
+                                <span>{board.name}</span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="workspace-manage-desc">Nenhum quadro disponível.</p>
+                      )
+                    ) : (
+                      <p className="workspace-manage-desc">
+                        Vínculo de quadros indisponível nesta visão.
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <div className="workspace-manage-details">

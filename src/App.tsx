@@ -147,6 +147,9 @@ export const App: React.FC = () => {
     toggleFavoriteBoard,
     createWorkspace,
     updateWorkspace,
+    addBoardToWorkspace,
+    removeBoardFromWorkspace,
+    deleteWorkspace,
   } = useWorkspaces();
 
   const { settings, updateSettings } = useAppSettings();
@@ -613,6 +616,9 @@ export const App: React.FC = () => {
           workspaces={workspaces}
           onUpdateWorkspace={updateWorkspace}
           onCreateWorkspace={() => setIsCreateWorkspaceModalOpen(true)}
+          onAddBoardToWorkspace={addBoardToWorkspace}
+          onRemoveBoardFromWorkspace={removeBoardFromWorkspace}
+          onDeleteWorkspace={deleteWorkspace}
           boards={boards}
           teams={teams}
           users={users}

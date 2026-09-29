@@ -17,6 +17,9 @@ export interface SettingsViewProps {
   workspaces: Workspace[];
   onUpdateWorkspace: (id: string, patch: Partial<Workspace>) => void;
   onCreateWorkspace?: () => void;
+  onAddBoardToWorkspace?: (workspaceId: string, boardId: string) => void;
+  onRemoveBoardFromWorkspace?: (workspaceId: string, boardId: string) => void;
+  onDeleteWorkspace?: (workspaceId: string) => void;
   boards?: BoardModel[];
   teams: Team[];
   users: User[];
@@ -41,6 +44,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   workspaces,
   onUpdateWorkspace,
   onCreateWorkspace,
+  onAddBoardToWorkspace,
+  onRemoveBoardFromWorkspace,
+  onDeleteWorkspace,
   boards = [],
   teams,
   users,
@@ -181,8 +187,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           {activeTab === 'workspaces' && (
             <WorkspacesSettingsTab
               workspaces={workspaces}
+              boards={boards}
               onUpdateWorkspace={onUpdateWorkspace}
               onCreateWorkspace={onCreateWorkspace}
+              onAddBoardToWorkspace={onAddBoardToWorkspace}
+              onRemoveBoardFromWorkspace={onRemoveBoardFromWorkspace}
+              onDeleteWorkspace={onDeleteWorkspace}
               teams={teams}
               users={users}
             />
