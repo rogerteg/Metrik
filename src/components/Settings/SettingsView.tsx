@@ -36,6 +36,8 @@ export interface SettingsViewProps {
     workspaces: Workspace[];
     boards: BoardModel[];
     tasksByBoardId: Record<string, BoardState>;
+    teams?: Team[];
+    teamMembers?: TeamMember[];
   }) => void;
   /** Sincronização automática (opt-in) — Feature 038+. */
   autoSyncEnabled?: boolean;

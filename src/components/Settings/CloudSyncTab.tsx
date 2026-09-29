@@ -20,6 +20,8 @@ export interface CloudSyncTabProps {
     workspaces: Workspace[];
     boards: BoardModel[];
     tasksByBoardId: Record<string, BoardState>;
+    teams?: Team[];
+    teamMembers?: TeamMember[];
   }) => void;
   /** Sincronização automática (opt-in) — Feature 038+. */
   autoSyncEnabled?: boolean;
@@ -171,6 +173,8 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
           workspaces: remoteWs,
           boards: remoteBoards,
           tasksByBoardId: remoteTasks,
+          teams: remoteTeams,
+          teamMembers: remoteMembers,
         });
       }
 
