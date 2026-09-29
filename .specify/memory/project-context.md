@@ -122,9 +122,11 @@
 - ✅ Decomposição (início): mutações de comentário extraídas de `useTaskCollection` para `src/hooks/useTaskComments.ts` (composição por `setBoard`, sem mudança de comportamento).
 - ✅ Decomposição: checklist/subtarefas extraído de `Task.tsx` para `src/components/TaskChecklist.tsx` (inclui comentários de subtarefa e confirmação de cascata).
 - ✅ Decomposição: cartão conectado do quadro extraído de `App.tsx` para `src/components/BoardTask.tsx` (resolve coluna, iniciativa, bloqueadores e handlers; App passa props).
+- ✅ Decomposição: cabeçalho extraído de `App.tsx` para `src/components/AppHeader.tsx` (marca, seletor de quadro, navegação, tema, perfil e ações).
+- ✅ Cloud: sync de squads/membros, auto-sync opt-in, conflito por `updated_at`, banner de migração com "Copiar SQL"; novos quadros vinculados ao espaço ativo.
 - ✅ CSS: removidos 6 seletores com ocorrência anterior totalmente sobrescrita (movidos para o módulo final; `line-height` dos chips preservado). Restam **12** duplicados com merge pendente, agora protegidos por ratchet em `tests/unit/cssDuplicationGuard.test.ts`.
-- ⏳ Pendentes: deduplicar os 12 seletores restantes (merge; exige análise de cascata); demais responsabilidades de `App.tsx` podem ser extraídas incrementalmente.
+- ⏳ Pendente: deduplicar os 12 seletores CSS restantes (ganho marginal) e a **migração Supabase** de sprints/pontos (ação do usuário; banner no app copia o SQL).
 
 ---
 
-*Atualizado em: 2026-09-28.*
+*Atualizado em: 2026-09-29.*
