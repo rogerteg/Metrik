@@ -40,6 +40,7 @@ export interface SettingsViewProps {
   autoSyncEnabled?: boolean;
   onToggleAutoSync?: (enabled: boolean) => void;
   isAutoSyncing?: boolean;
+  autoSyncLastAt?: string | null;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
@@ -65,6 +66,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   autoSyncEnabled,
   onToggleAutoSync,
   isAutoSyncing,
+  autoSyncLastAt,
 }) => {
   const [activeTab, setActiveTab] = useState<SettingsTabId>('general');
 
@@ -231,6 +233,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               autoSyncEnabled={autoSyncEnabled}
               onToggleAutoSync={onToggleAutoSync}
               isAutoSyncing={isAutoSyncing}
+              autoSyncLastAt={autoSyncLastAt}
             />
           )}
         </main>

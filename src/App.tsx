@@ -156,7 +156,7 @@ export const App: React.FC = () => {
   const { settings, updateSettings } = useAppSettings();
 
   // Sincronização automática (opt-in) — envia o estado local ao Supabase com debounce.
-  const { isSyncing: isCloudAutoSyncing } = useCloudAutoSync({
+  const { isSyncing: isCloudAutoSyncing, lastSyncAt: cloudLastSyncAt } = useCloudAutoSync({
     enabled: settings.cloudAutoSync ?? false,
     workspaces,
     boards,
@@ -665,6 +665,7 @@ export const App: React.FC = () => {
           autoSyncEnabled={settings.cloudAutoSync ?? false}
           onToggleAutoSync={(enabled) => updateSettings({ cloudAutoSync: enabled })}
           isAutoSyncing={isCloudAutoSyncing}
+          autoSyncLastAt={cloudLastSyncAt}
           onShowToast={(msg) => setToastMessage(msg)}
         />
       ) : view === 'manage' ? (

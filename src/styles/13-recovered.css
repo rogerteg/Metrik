@@ -218,3 +218,9 @@
   font-weight: 600;
   color: var(--accent-primary, #6366f1);
 }
+
+.cloud-autosync-last {
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}

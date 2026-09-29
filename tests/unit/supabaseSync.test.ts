@@ -185,6 +185,55 @@ describe('Supabase Sync Service', () => {
       expect(boardUpsert?.[0][0].sprints).toHaveLength(1);
       expect(boardUpsert?.[0][0].active_sprint_id).toBe('sp-1');
     });
+
+    it('skips stale rows in favor of newer remote versions (updated_at)', async () => {
+      const upsertMock = vi.fn().mockResolvedValue({ error: null });
+      const inMock = vi.fn().mockResolvedValue({
+        data: [
+          { id: 'b-1', updated_at: '2030-01-01T00:00:00Z' },
+          { id: 't-1', updated_at: '2030-01-01T00:00:00Z' },
+        ],
+        error: null,
+      });
+      const selectMock = vi.fn().mockReturnValue({ in: inMock });
+      const fromMock = vi.fn().mockReturnValue({ select: selectMock, upsert: upsertMock });
+      _resetSupabaseClientForTesting({ from: fromMock } as any);
+
+      const result = await pushToSupabase({
+        workspaces: [],
+        boards: [
+          {
+            id: 'b-1',
+            name: 'Quadro 1',
+            createdAt: '2026-09-16T10:00:00Z',
+            lastAccessed: '2026-09-16T10:00:00Z',
+          },
+        ],
+        tasksByBoardId: {
+          'b-1': {
+            columns: [],
+            tasks: {
+              'col-1': [
+                {
+                  id: 't-1',
+                  title: 'Tarefa 1',
+                  column: 'col-1',
+                  createdAt: '2026-09-16T10:00:00Z',
+                  updatedAt: '2026-09-16T10:00:00Z',
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      expect(result.ok).toBe(true);
+      const pushedIds = upsertMock.mock.calls.flatMap((call) =>
+        Array.isArray(call[0]) ? call[0].map((row: { id: string }) => row.id) : [],
+      );
+      expect(pushedIds).not.toContain('b-1');
+      expect(pushedIds).not.toContain('t-1');
+    });
   });
 
   describe('pullFromSupabase', () => {

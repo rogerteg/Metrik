@@ -22,6 +22,7 @@ export interface CloudSyncTabProps {
   autoSyncEnabled?: boolean;
   onToggleAutoSync?: (enabled: boolean) => void;
   isAutoSyncing?: boolean;
+  autoSyncLastAt?: string | null;
 }
 
 export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
@@ -32,6 +33,7 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
   autoSyncEnabled = false,
   onToggleAutoSync,
   isAutoSyncing = false,
+  autoSyncLastAt = null,
 }) => {
   const [configStatus, setConfigStatus] = useState(getSupabaseConfigStatus());
   const [isTesting, setIsTesting] = useState(false);
@@ -247,6 +249,11 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
           <span>{autoSyncEnabled ? 'Ativada' : 'Desativada'}</span>
           {isAutoSyncing && <span className="cloud-autosync-status">sincronizando…</span>}
         </label>
+        {autoSyncLastAt && (
+          <p className="cloud-autosync-last" data-testid="cloud-autosync-last">
+            Última sincronização automática às {autoSyncLastAt}
+          </p>
+        )}
       </div>
 
       {/* Seção de Sincronização Sob Demanda */}

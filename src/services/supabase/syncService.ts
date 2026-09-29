@@ -166,6 +166,34 @@ function stripTaskMigrationColumns(rows: any[]): any[] {
 }
 
 /**
+ * Resolução de conflito por `updated_at`: mantém apenas as linhas locais que são
+ * iguais ou mais recentes que a versão remota. Degrada graciosamente (envia tudo)
+ * se a consulta de timestamps falhar.
+ */
+async function filterByRemoteTimestamp(client: any, table: string, rows: any[]): Promise<any[]> {
+  if (rows.length === 0) return rows;
+  try {
+    const ids = rows.map((r) => r.id);
+    const { data, error } = await client.from(table).select('id, updated_at').in('id', ids);
+    if (error || !Array.isArray(data)) return rows;
+
+    const remoteTs = new Map<string, number>();
+    for (const row of data) {
+      remoteTs.set(row.id, row.updated_at ? new Date(row.updated_at).getTime() : 0);
+    }
+
+    return rows.filter((row) => {
+      const remote = remoteTs.get(row.id);
+      if (remote === undefined) return true;
+      const local = row.updated_at ? new Date(row.updated_at).getTime() : 0;
+      return local >= remote;
+    });
+  } catch {
+    return rows;
+  }
+}
+
+/**
  * Envia o estado local do Metrik para o Supabase (Push / Backup).
  */
 export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPushResult> {
@@ -196,12 +224,19 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
         updated_at: w.updatedAt,
       }));
 
-      const { error: wsError } = await client
-        .from('workspaces')
-        .upsert(workspaceRows, { onConflict: 'id' });
+      const workspaceRowsToPush = await filterByRemoteTimestamp(
+        client,
+        'workspaces',
+        workspaceRows,
+      );
 
-      if (wsError) throw new Error(`Erro ao sincronizar workspaces: ${wsError.message}`);
-      workspacesCount = workspaceRows.length;
+      if (workspaceRowsToPush.length > 0) {
+        const { error: wsError } = await client
+          .from('workspaces')
+          .upsert(workspaceRowsToPush, { onConflict: 'id' });
+        if (wsError) throw new Error(`Erro ao sincronizar workspaces: ${wsError.message}`);
+      }
+      workspacesCount = workspaceRowsToPush.length;
     }
 
     // 2. Sincronizar Boards
@@ -218,7 +253,9 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
         updated_at: b.lastAccessed || new Date().toISOString(),
       }));
 
-      const { error: bError } = await client.from('boards').upsert(boardRows, { onConflict: 'id' });
+      const { error: bError } = await client
+        .from('boards')
+        .upsert(await filterByRemoteTimestamp(client, 'boards', boardRows), { onConflict: 'id' });
 
       if (bError) {
         if (isMissingColumnError(bError.message)) {
@@ -239,7 +276,10 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
     let tasksCount = 0;
     const taskRows = flattenTasksForDb(payload.tasksByBoardId);
     if (taskRows.length > 0) {
-      const { error: tError } = await client.from('tasks').upsert(taskRows, { onConflict: 'id' });
+      const taskRowsToPush = await filterByRemoteTimestamp(client, 'tasks', taskRows);
+      const { error: tError } = await client
+        .from('tasks')
+        .upsert(taskRowsToPush, { onConflict: 'id' });
 
       if (tError) {
         if (isMissingColumnError(tError.message)) {
