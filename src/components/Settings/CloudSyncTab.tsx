@@ -4,11 +4,21 @@ import {
   testConnection,
   pushToSupabase,
   pullFromSupabase,
+  checkSprintMigration,
   ConnectionTestResult,
 } from '../../services/supabase/syncService';
 import { Workspace } from '../../types/workspace';
 import { BoardModel, BoardState } from '../../types/kanban';
 import { Team, TeamMember } from '../../types/team';
+
+/** SQL idempotente da migração de Sprint/Story Points (ação do usuário no Supabase). */
+const MIGRATION_SQL = `ALTER TABLE public.boards ADD COLUMN IF NOT EXISTS sprints JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE public.boards ADD COLUMN IF NOT EXISTS active_sprint_id TEXT;
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS sprint_id TEXT;
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS estimation INTEGER;
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS assignee TEXT;
+ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS last_moved_at TIMESTAMPTZ;
+NOTIFY pgrst, 'reload schema';`;
 
 export interface CloudSyncTabProps {
   workspaces: Workspace[];
@@ -48,10 +58,39 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
   const [isPulling, setIsPulling] = useState(false);
   const [testResult, setTestResult] = useState<ConnectionTestResult | null>(null);
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
+  const [migrationPending, setMigrationPending] = useState(false);
 
   useEffect(() => {
     setConfigStatus(getSupabaseConfigStatus());
   }, []);
+
+  // Detecta se a migração de Sprint/Pontos já foi aplicada no projeto.
+  useEffect(() => {
+    if (!configStatus.isConfigured) return;
+    let active = true;
+    checkSprintMigration()
+      .then((result) => {
+        if (active) setMigrationPending(!result.applied);
+      })
+      .catch(() => {
+        if (active) setMigrationPending(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [configStatus.isConfigured]);
+
+  const handleCopyMigrationSql = async () => {
+    try {
+      await navigator.clipboard?.writeText(MIGRATION_SQL);
+      onShowToast?.('SQL de migração copiado para a área de transferência.', 'success');
+    } catch {
+      onShowToast?.(
+        'Não foi possível copiar automaticamente. Selecione o SQL manualmente.',
+        'warning',
+      );
+    }
+  };
 
   const handleTestConnection = async () => {
     setIsTesting(true);
@@ -249,6 +288,26 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
           <div className="last-sync-tag">Última sincronização realizada às {lastSyncTime}</div>
         )}
       </div>
+
+      {/* Migração pendente (Sprint/Story Points) */}
+      {migrationPending && (
+        <div className="cloud-migration-banner" role="alert" data-testid="cloud-migration-banner">
+          <p className="cloud-migration-banner__text">
+            <strong>Migração pendente:</strong> as colunas de Sprint/Pontos ainda não existem no
+            Supabase. Sprints e estimativas ficarão de fora do envio até você aplicar o SQL abaixo
+            no <em>SQL Editor</em> do projeto.
+          </p>
+          <pre className="env-code-block">{MIGRATION_SQL}</pre>
+          <button
+            type="button"
+            className="settings-action-btn secondary"
+            onClick={handleCopyMigrationSql}
+            data-testid="copy-migration-sql"
+          >
+            Copiar SQL
+          </button>
+        </div>
+      )}
 
       {/* Sincronização Automática (opt-in) */}
       <div className="cloud-sync-section">

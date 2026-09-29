@@ -1,7 +1,18 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import type { AxeResults } from 'axe-core';
+
+// Evita I/O de rede real no teste de acessibilidade do CloudSyncTab.
+vi.mock('../../src/services/supabase/syncService', () => ({
+  testConnection: vi.fn().mockResolvedValue({ ok: false, message: '' }),
+  pushToSupabase: vi.fn(),
+  pullFromSupabase: vi.fn(),
+  checkSprintMigration: vi.fn().mockResolvedValue({ applied: true }),
+}));
+vi.mock('../../src/services/supabase/client', () => ({
+  getSupabaseConfigStatus: () => ({ isConfigured: false, url: null, hasAnonKey: false }),
+}));
 import { Task } from '../../src/components/Task';
 import { CommentThread } from '../../src/components/CommentThread';
 import { Column } from '../../src/components/Column';

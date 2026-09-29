@@ -224,3 +224,27 @@
   font-size: 0.72rem;
   color: var(--text-secondary);
 }
+
+/* Banner de migração pendente (Sprint/Story Points) */
+.cloud-migration-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.08);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.cloud-migration-banner__text {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.cloud-migration-banner .env-code-block {
+  width: 100%;
+  box-sizing: border-box;
+}

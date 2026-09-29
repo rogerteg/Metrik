@@ -106,6 +106,26 @@ export async function testConnection(): Promise<ConnectionTestResult> {
 }
 
 /**
+ * Verifica se a migração de Sprint/Story Points já foi aplicada no Supabase.
+ * Retorna `applied=false` quando as colunas ainda não existem (42703).
+ */
+export async function checkSprintMigration(): Promise<{ applied: boolean; error?: string }> {
+  const client = getSupabaseClient();
+  if (!client) return { applied: false, error: 'Supabase não está configurado.' };
+
+  try {
+    const { error } = await client
+      .from('tasks')
+      .select('sprint_id', { count: 'exact', head: true });
+    if (!error) return { applied: true };
+    const missing = /42703|does not exist|schema cache/i.test(error.message);
+    return { applied: false, error: missing ? 'MIGRATION_PENDING' : error.message };
+  } catch (err) {
+    return { applied: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+/**
  * Converte dados de tarefas agrupadas por coluna em registros tabulares para o Supabase.
  */
 export function flattenTasksForDb(tasksByBoardId: Record<string, BoardState>): any[] {

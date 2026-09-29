@@ -10,6 +10,7 @@ vi.mock('../../src/services/supabase/syncService', () => ({
   testConnection: vi.fn(),
   pushToSupabase: vi.fn(),
   pullFromSupabase: vi.fn(),
+  checkSprintMigration: vi.fn(),
 }));
 vi.mock('../../src/services/supabase/client', () => ({
   getSupabaseConfigStatus: () => ({
@@ -23,11 +24,13 @@ import {
   testConnection,
   pushToSupabase,
   pullFromSupabase,
+  checkSprintMigration,
 } from '../../src/services/supabase/syncService';
 
 const mockPush = vi.mocked(pushToSupabase);
 const mockPull = vi.mocked(pullFromSupabase);
 const mockTest = vi.mocked(testConnection);
+const mockMigration = vi.mocked(checkSprintMigration);
 
 const workspaces: Workspace[] = [
   { id: 'ws-1', name: 'Geral', color: '#38bdf8', boardIds: ['b1'], createdAt: 'x', updatedAt: 'x' },
@@ -45,6 +48,7 @@ describe('CloudSyncTab', () => {
     localStorage.clear();
     localStorage.setItem('metrik-tasks-b1', JSON.stringify({ columns: [], tasks: {} }));
     vi.clearAllMocks();
+    mockMigration.mockResolvedValue({ applied: true });
   });
 
   afterEach(() => vi.restoreAllMocks());
@@ -114,6 +118,19 @@ describe('CloudSyncTab', () => {
 
     fireEvent.click(screen.getByTestId('cloud-autosync-toggle'));
     expect(onToggleAutoSync).toHaveBeenCalledWith(true);
+  });
+
+  it('shows the migration banner when columns are missing and copies the SQL', async () => {
+    mockMigration.mockResolvedValue({ applied: false, error: 'MIGRATION_PENDING' });
+    const onShowToast = vi.fn();
+    render(<CloudSyncTab workspaces={[]} boards={[]} onShowToast={onShowToast} />);
+
+    expect(await screen.findByTestId('cloud-migration-banner')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('copy-migration-sql'));
+    await waitFor(() =>
+      expect(onShowToast).toHaveBeenCalledWith(expect.stringContaining('copiado'), 'success'),
+    );
   });
 
   it('tests the connection and shows the result', async () => {
