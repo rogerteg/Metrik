@@ -102,7 +102,7 @@ export function useBoards() {
     setActiveBoardId(newBoard.id);
     localStorage.setItem(ACTIVE_BOARD_KEY, newBoard.id);
 
-    return newBoard.id;
+    return newBoard;
   }, []);
 
   const switchBoard = useCallback((id: string) => {

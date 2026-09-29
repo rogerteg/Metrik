@@ -38,7 +38,7 @@ import {
 } from './utils/taskRelations';
 import { buildTasksCsv, buildSprintsCsv } from './utils/csvExport';
 import { DependencySoftBlockModal } from './components/DependencySoftBlockModal';
-import { useWorkspaces } from './hooks/useWorkspaces';
+import { useWorkspaces, DEFAULT_WORKSPACE_ID } from './hooks/useWorkspaces';
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCloudAutoSync } from './hooks/useCloudAutoSync';
 import { WorkspaceHub } from './components/WorkspaceHub/WorkspaceHub';
@@ -221,6 +221,18 @@ export const App: React.FC = () => {
       }
     },
     [workspaces, addBoardToWorkspace, removeBoardFromWorkspace],
+  );
+
+  /** Cria um quadro já vinculado ao espaço ativo (ou "Geral" quando "Todos"). */
+  const handleCreateBoard = React.useCallback(
+    (name: string, teamId?: string) => {
+      const created = createBoard(name, teamId);
+      const targetWorkspaceId =
+        activeWorkspaceId === 'all' ? DEFAULT_WORKSPACE_ID : activeWorkspaceId;
+      addBoardToWorkspace(targetWorkspaceId, created.id);
+      return created;
+    },
+    [createBoard, activeWorkspaceId, addBoardToWorkspace],
   );
 
   const handleAddLink = React.useCallback(
@@ -681,7 +693,7 @@ export const App: React.FC = () => {
             setView('board');
           }}
           onCreateBoard={(name, teamId) => {
-            createBoard(name, teamId);
+            handleCreateBoard(name, teamId);
           }}
           onRenameBoard={(boardId, newName) => {
             renameBoard(boardId, newName);
@@ -846,7 +858,7 @@ export const App: React.FC = () => {
         onClose={() => setIsBoardModalOpen(false)}
         boards={boards}
         activeBoardId={activeBoardId}
-        onCreateBoard={createBoard}
+        onCreateBoard={handleCreateBoard}
         onRenameBoard={renameBoard}
         onDeleteBoard={deleteBoard}
         onSwitchBoard={switchBoard}

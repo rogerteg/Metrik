@@ -65,9 +65,13 @@ describe('useBoards Hook (Feature 010)', () => {
     const { result } = renderHook(() => useBoards());
     const initialId = result.current.activeBoardId;
 
+    let created: { id: string; name: string } | undefined;
     act(() => {
-      result.current.createBoard('Marketing');
+      created = result.current.createBoard('Marketing');
     });
+
+    expect(created?.id).toBeTruthy();
+    expect(created?.name).toBe('Marketing');
 
     expect(result.current.boards.length).toBe(2);
     expect(result.current.activeBoard?.name).toBe('Marketing');
