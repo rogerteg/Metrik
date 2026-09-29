@@ -30,6 +30,7 @@ const EXPECTED_ORDER = [
   './styles/10-comments-containment.css',
   './styles/11-sprint.css',
   './styles/12-workspace.css',
+  './styles/13-recovered.css',
 ];
 
 describe('App.css structure guard (P3 split)', () => {
