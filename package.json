@@ -13,7 +13,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\"",
-    "parity:compare": "node specs/026-cross-browser-column-layout/tools/parity-compare.mjs"
+    "parity:compare": "node specs/026-cross-browser-column-layout/tools/parity-compare.mjs",
+    "changelog": "node scripts/changelog.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
