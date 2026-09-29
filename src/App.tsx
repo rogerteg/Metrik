@@ -486,7 +486,6 @@ export const App: React.FC = () => {
             boards={boards}
             activeBoardId={activeBoardId}
             onSwitchBoard={switchBoard}
-            onManageBoards={() => setView('manage')}
             teams={teams}
             activeUserId={activeUserId}
           />

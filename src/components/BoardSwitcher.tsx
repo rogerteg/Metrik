@@ -6,7 +6,8 @@ export interface BoardSwitcherProps {
   boards: BoardModel[];
   activeBoardId: string | null;
   onSwitchBoard: (id: string) => void;
-  onManageBoards: () => void;
+  /** Opcional: quando ausente, o atalho "Gerenciar" não é exibido (a navegação já cobre). */
+  onManageBoards?: () => void;
   teams?: Team[];
   activeUserId?: string;
 }
@@ -54,10 +55,7 @@ export const BoardSwitcher: React.FC<BoardSwitcherProps> = ({
   }
 
   return (
-    <div
-      className="board-switcher"
-      style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '24px' }}
-    >
+    <div className="board-switcher" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
       <select
         value={activeBoardId || ''}
         onChange={(e) => onSwitchBoard(e.target.value)}
@@ -89,15 +87,17 @@ export const BoardSwitcher: React.FC<BoardSwitcherProps> = ({
               </option>
             ))}
       </select>
-      <button
-        type="button"
-        className="btn btn-secondary"
-        onClick={onManageBoards}
-        style={{ padding: '6px 12px', fontSize: '0.9rem' }}
-        title="Gerenciar Quadros"
-      >
-        Gerenciar
-      </button>
+      {onManageBoards && (
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={onManageBoards}
+          style={{ padding: '6px 12px', fontSize: '0.9rem' }}
+          title="Gerenciar Quadros"
+        >
+          Gerenciar
+        </button>
+      )}
     </div>
   );
 };
