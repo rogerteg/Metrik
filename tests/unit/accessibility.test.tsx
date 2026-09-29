@@ -7,7 +7,10 @@ import { CommentThread } from '../../src/components/CommentThread';
 import { Column } from '../../src/components/Column';
 import { SprintBar } from '../../src/components/SprintBar';
 import { SprintManagerModal } from '../../src/components/SprintManagerModal';
-import { TaskModel, ColumnModel } from '../../src/types/kanban';
+import { WorkspaceHub } from '../../src/components/WorkspaceHub/WorkspaceHub';
+import { CloudSyncTab } from '../../src/components/Settings/CloudSyncTab';
+import { TaskModel, ColumnModel, Board } from '../../src/types/kanban';
+import { Workspace } from '../../src/types/workspace';
 import { TaskComment } from '../../src/types/taskActivity';
 
 expect.extend(toHaveNoViolations);
@@ -142,6 +145,49 @@ describe('Acessibilidade (WCAG 2.1 AA) — Feature 027 / núcleo', () => {
         onComplete={() => {}}
       />,
     );
+    expect(await runAxe(container)).toHaveNoViolations();
+  });
+
+  it('WorkspaceHub has no violations', async () => {
+    const workspaces: Workspace[] = [
+      {
+        id: 'ws-1',
+        name: 'Geral',
+        color: '#38bdf8',
+        boardIds: ['b1'],
+        createdAt: '2026-09-01T00:00:00.000Z',
+        updatedAt: '2026-09-01T00:00:00.000Z',
+      },
+    ];
+    const boards: Board[] = [
+      {
+        id: 'b1',
+        name: 'Quadro 1',
+        columns: [],
+        tasks: {},
+        createdAt: '2026-09-01T00:00:00.000Z',
+        lastAccessed: '2026-09-01T00:00:00.000Z',
+      },
+    ];
+    const { container } = render(
+      <WorkspaceHub
+        workspaces={workspaces}
+        activeWorkspaceId="all"
+        onSelectWorkspace={() => {}}
+        boards={boards}
+        favoriteBoardIds={[]}
+        onToggleFavorite={() => {}}
+        onSelectBoard={() => {}}
+        onNewPanel={() => {}}
+        onNewBoard={() => {}}
+        onMoveBoardToWorkspace={() => {}}
+      />,
+    );
+    expect(await runAxe(container)).toHaveNoViolations();
+  });
+
+  it('CloudSyncTab has no violations', async () => {
+    const { container } = render(<CloudSyncTab workspaces={[]} boards={[]} />);
     expect(await runAxe(container)).toHaveNoViolations();
   });
 });
