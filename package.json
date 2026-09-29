@@ -15,7 +15,8 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\"",
     "parity:compare": "node specs/026-cross-browser-column-layout/tools/parity-compare.mjs",
     "changelog": "node scripts/changelog.mjs",
-    "supabase:check": "node scripts/check-supabase-migration.mjs"
+    "supabase:check": "node scripts/check-supabase-migration.mjs",
+    "supabase:migrate": "node scripts/apply-supabase-migration.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
