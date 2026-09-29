@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppSettings, Workspace } from '../../types/workspace';
-import { Team, User } from '../../types/team';
+import { Team, User, TeamMember } from '../../types/team';
 import { BoardModel, BoardState } from '../../types/kanban';
 import { GeneralSettingsTab } from './GeneralSettingsTab';
 import { WorkspacesSettingsTab } from './WorkspacesSettingsTab';
@@ -22,6 +22,7 @@ export interface SettingsViewProps {
   onDeleteWorkspace?: (workspaceId: string) => void;
   boards?: BoardModel[];
   teams: Team[];
+  teamMembers?: TeamMember[];
   users: User[];
   onBackToBoard: () => void;
   onExportData: () => void;
@@ -54,6 +55,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onDeleteWorkspace,
   boards = [],
   teams,
+  teamMembers = [],
   users,
   onBackToBoard,
   onExportData,
@@ -228,6 +230,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <CloudSyncTab
               workspaces={workspaces}
               boards={boards}
+              teams={teams}
+              teamMembers={teamMembers}
               onShowToast={onShowToast}
               onApplyRemoteData={onApplyRemoteData}
               autoSyncEnabled={autoSyncEnabled}

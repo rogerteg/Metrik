@@ -160,6 +160,8 @@ export const App: React.FC = () => {
     enabled: settings.cloudAutoSync ?? false,
     workspaces,
     boards,
+    teams,
+    teamMembers,
     revision: board,
   });
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = React.useState(false);
@@ -653,6 +655,7 @@ export const App: React.FC = () => {
           onDeleteWorkspace={deleteWorkspace}
           boards={boards}
           teams={teams}
+          teamMembers={teamMembers}
           users={users}
           onBackToBoard={() => setView('board')}
           onExportData={handleExport}

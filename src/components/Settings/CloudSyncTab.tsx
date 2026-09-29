@@ -8,10 +8,13 @@ import {
 } from '../../services/supabase/syncService';
 import { Workspace } from '../../types/workspace';
 import { BoardModel, BoardState } from '../../types/kanban';
+import { Team, TeamMember } from '../../types/team';
 
 export interface CloudSyncTabProps {
   workspaces: Workspace[];
   boards: BoardModel[];
+  teams?: Team[];
+  teamMembers?: TeamMember[];
   onShowToast?: (message: string, type: 'success' | 'warning' | 'error') => void;
   onApplyRemoteData?: (payload: {
     workspaces: Workspace[];
@@ -28,6 +31,8 @@ export interface CloudSyncTabProps {
 export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
   workspaces,
   boards,
+  teams = [],
+  teamMembers = [],
   onShowToast,
   onApplyRemoteData,
   autoSyncEnabled = false,
@@ -88,6 +93,8 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
       workspaces,
       boards,
       tasksByBoardId,
+      teams,
+      teamMembers,
     });
 
     setIsPushing(false);
@@ -131,6 +138,8 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
         workspaces: remoteWs,
         boards: remoteBoards,
         tasksByBoardId: remoteTasks,
+        teams: remoteTeams,
+        teamMembers: remoteMembers,
       } = result.data;
 
       // Salvar no localStorage
@@ -140,6 +149,12 @@ export const CloudSyncTab: React.FC<CloudSyncTabProps> = ({
         }
         if (remoteBoards.length > 0) {
           localStorage.setItem('metrik-boards-index', JSON.stringify(remoteBoards));
+        }
+        if (remoteTeams && remoteTeams.length > 0) {
+          localStorage.setItem('metrik_teams', JSON.stringify(remoteTeams));
+        }
+        if (remoteMembers && remoteMembers.length > 0) {
+          localStorage.setItem('metrik_team_members', JSON.stringify(remoteMembers));
         }
         for (const [boardId, boardState] of Object.entries(remoteTasks)) {
           localStorage.setItem(`metrik-tasks-${boardId}`, JSON.stringify(boardState));

@@ -2,6 +2,7 @@ import { getSupabaseClient, isSupabaseConfigured } from './client';
 import { Workspace } from '../../types/workspace';
 import { BoardModel, BoardState, TaskModel } from '../../types/kanban';
 import { AppSettings } from '../../types/workspace';
+import { Team, TeamMember } from '../../types/team';
 
 export interface ConnectionTestResult {
   ok: boolean;
@@ -14,6 +15,9 @@ export interface SyncPushPayload {
   boards: BoardModel[];
   tasksByBoardId: Record<string, BoardState>;
   settings?: AppSettings;
+  /** Squads/membros (tabelas teams/team_members). Opcional. */
+  teams?: Team[];
+  teamMembers?: TeamMember[];
 }
 
 export interface SyncPushResult {
@@ -22,6 +26,8 @@ export interface SyncPushResult {
     workspaces: number;
     boards: number;
     tasks: number;
+    teams?: number;
+    teamMembers?: number;
   };
   error?: string;
   /** Aviso quando a migração de colunas (sprints/pontos) ainda não foi aplicada. */
@@ -35,6 +41,8 @@ export interface SyncPullResult {
     boards: BoardModel[];
     tasksByBoardId: Record<string, BoardState>;
     settings?: AppSettings;
+    teams?: Team[];
+    teamMembers?: TeamMember[];
   };
   error?: string;
 }
@@ -211,6 +219,8 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
   try {
     // 1. Sincronizar Workspaces
     let workspacesCount = 0;
+    let teamsCount = 0;
+    let teamMembersCount = 0;
     if (payload.workspaces.length > 0) {
       const workspaceRows = payload.workspaces.map((w) => ({
         id: w.id,
@@ -296,7 +306,42 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
       tasksCount = taskRows.length;
     }
 
-    // 4. Sincronizar AppSettings (se fornecido)
+    // 4. Sincronizar Squads e Membros (tabelas teams/team_members)
+    if (payload.teams && payload.teams.length > 0) {
+      const teamRows = payload.teams.map((t) => ({
+        id: t.id,
+        name: t.name,
+        description: t.description || null,
+        created_by: t.createdById || null,
+        created_at: t.createdAt || new Date().toISOString(),
+        updated_at: t.createdAt || new Date().toISOString(),
+      }));
+      const teamsToPush = await filterByRemoteTimestamp(client, 'teams', teamRows);
+      if (teamsToPush.length > 0) {
+        const { error: teamError } = await client.from('teams').upsert(teamsToPush, {
+          onConflict: 'id',
+        });
+        if (teamError) throw new Error(`Erro ao sincronizar teams: ${teamError.message}`);
+      }
+      teamsCount = teamsToPush.length;
+    }
+
+    if (payload.teamMembers && payload.teamMembers.length > 0) {
+      const memberRows = payload.teamMembers.map((m) => ({
+        id: m.id,
+        team_id: m.teamId,
+        user_id: m.userId,
+        role: m.role,
+        joined_at: m.joinedAt || new Date().toISOString(),
+      }));
+      const { error: memberError } = await client
+        .from('team_members')
+        .upsert(memberRows, { onConflict: 'id' });
+      if (memberError) throw new Error(`Erro ao sincronizar team_members: ${memberError.message}`);
+      teamMembersCount = memberRows.length;
+    }
+
+    // 5. Sincronizar AppSettings (se fornecido)
     if (payload.settings) {
       await client.from('app_settings').upsert(
         {
@@ -322,6 +367,8 @@ export async function pushToSupabase(payload: SyncPushPayload): Promise<SyncPush
         workspaces: workspacesCount,
         boards: boardsCount,
         tasks: tasksCount,
+        teams: teamsCount,
+        teamMembers: teamMembersCount,
       },
       warning,
     };
@@ -462,6 +509,27 @@ export async function pullFromSupabase(): Promise<SyncPullResult> {
       };
     }
 
+    // 5. Buscar Squads e Membros
+    const { data: teamsData, error: teamsError } = await client.from('teams').select('*');
+    const teams: Team[] = teamsError
+      ? []
+      : (teamsData || []).map((row: any) => ({
+          id: row.id,
+          name: row.name,
+          description: row.description || undefined,
+          createdById: row.created_by || '',
+          createdAt: row.created_at,
+        }));
+
+    const { data: membersData } = await client.from('team_members').select('*');
+    const teamMembers: TeamMember[] = (membersData || []).map((row: any) => ({
+      id: row.id,
+      teamId: row.team_id,
+      userId: row.user_id,
+      role: row.role,
+      joinedAt: row.joined_at,
+    }));
+
     console.info(
       `[Metrik] Pull from Supabase successful: ${workspaces.length} workspaces, ${boards.length} boards, ${(tData || []).length} tasks.`,
     );
@@ -473,6 +541,8 @@ export async function pullFromSupabase(): Promise<SyncPullResult> {
         boards,
         tasksByBoardId,
         settings,
+        teams,
+        teamMembers,
       },
     };
   } catch (error) {

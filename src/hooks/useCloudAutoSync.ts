@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Workspace } from '../types/workspace';
 import { BoardModel, BoardState } from '../types/kanban';
+import { Team, TeamMember } from '../types/team';
 import { pushToSupabase, SyncPushResult } from '../services/supabase/syncService';
 import { isSupabaseConfigured } from '../services/supabase/client';
 
@@ -23,6 +24,8 @@ export interface UseCloudAutoSyncOptions {
   enabled: boolean;
   workspaces: Workspace[];
   boards: BoardModel[];
+  teams?: Team[];
+  teamMembers?: TeamMember[];
   /** Qualquer valor que mude quando o estado local relevante mudar. */
   revision?: unknown;
   debounceMs?: number;
@@ -46,7 +49,7 @@ export interface UseCloudAutoSyncReturn {
  * silenciosa e não-bloqueante (Local-First, Constituição VIII).
  */
 export function useCloudAutoSync(options: UseCloudAutoSyncOptions): UseCloudAutoSyncReturn {
-  const { enabled, workspaces, boards, revision, debounceMs = 2500 } = options;
+  const { enabled, workspaces, boards, teams, teamMembers, revision, debounceMs = 2500 } = options;
   const push = options.push ?? pushToSupabase;
   const onResult = options.onResult;
 
@@ -71,6 +74,8 @@ export function useCloudAutoSync(options: UseCloudAutoSyncOptions): UseCloudAuto
         workspaces,
         boards,
         tasksByBoardId: collectBoardsState(boards),
+        teams,
+        teamMembers,
       });
       setIsSyncing(false);
       if (result.ok) {
@@ -82,7 +87,7 @@ export function useCloudAutoSync(options: UseCloudAutoSyncOptions): UseCloudAuto
     return () => clearTimeout(timer);
     // `onResult` fica fora das deps para não reagendar a cada render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, workspaces, boards, revision, debounceMs, push]);
+  }, [enabled, workspaces, boards, teams, teamMembers, revision, debounceMs, push]);
 
   return { isSyncing, lastSyncAt };
 }

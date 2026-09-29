@@ -234,6 +234,36 @@ describe('Supabase Sync Service', () => {
       expect(pushedIds).not.toContain('b-1');
       expect(pushedIds).not.toContain('t-1');
     });
+
+    it('pushes teams and team members', async () => {
+      const upsertMock = vi.fn().mockResolvedValue({ error: null });
+      const fromMock = vi.fn().mockReturnValue({ upsert: upsertMock });
+      _resetSupabaseClientForTesting({ from: fromMock } as any);
+
+      const result = await pushToSupabase({
+        workspaces: [],
+        boards: [],
+        tasksByBoardId: {},
+        teams: [
+          { id: 'tm-1', name: 'Time A', createdById: 'u-1', createdAt: '2026-09-16T10:00:00Z' },
+        ],
+        teamMembers: [
+          {
+            id: 'm-1',
+            teamId: 'tm-1',
+            userId: 'u-1',
+            role: 'admin',
+            joinedAt: '2026-09-16T10:00:00Z',
+          },
+        ],
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result.syncedCount.teams).toBe(1);
+      expect(result.syncedCount.teamMembers).toBe(1);
+      expect(fromMock).toHaveBeenCalledWith('teams');
+      expect(fromMock).toHaveBeenCalledWith('team_members');
+    });
   });
 
   describe('pullFromSupabase', () => {
@@ -336,6 +366,58 @@ describe('Supabase Sync Service', () => {
       expect(result.data?.tasksByBoardId['b-1'].activeSprintId).toBe('sp-1');
       expect(result.data?.tasksByBoardId['b-1'].tasks['col-1'][0].sprintId).toBe('sp-1');
       expect(result.data?.tasksByBoardId['b-1'].tasks['col-1'][0].estimation).toBe(8);
+    });
+
+    it('pulls teams and team members', async () => {
+      const selectMock = vi.fn().mockImplementation((table: string) => {
+        if (table === 'teams') {
+          return {
+            select: vi.fn().mockResolvedValue({
+              data: [
+                {
+                  id: 'tm-1',
+                  name: 'Time A',
+                  created_by: 'u-1',
+                  created_at: '2026-09-16T10:00:00Z',
+                },
+              ],
+              error: null,
+            }),
+          };
+        }
+        if (table === 'team_members') {
+          return {
+            select: vi.fn().mockResolvedValue({
+              data: [
+                {
+                  id: 'm-1',
+                  team_id: 'tm-1',
+                  user_id: 'u-1',
+                  role: 'admin',
+                  joined_at: '2026-09-16T10:00:00Z',
+                },
+              ],
+              error: null,
+            }),
+          };
+        }
+        if (table === 'app_settings') {
+          return {
+            select: vi.fn().mockReturnValue({
+              limit: vi.fn().mockReturnValue({
+                maybeSingle: vi.fn().mockResolvedValue({ data: null }),
+              }),
+            }),
+          };
+        }
+        return { select: vi.fn().mockResolvedValue({ data: [], error: null }) };
+      });
+      _resetSupabaseClientForTesting({ from: selectMock } as any);
+
+      const result = await pullFromSupabase();
+      expect(result.ok).toBe(true);
+      expect(result.data?.teams?.[0].id).toBe('tm-1');
+      expect(result.data?.teamMembers?.[0].id).toBe('m-1');
     });
   });
 });
