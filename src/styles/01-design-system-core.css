@@ -485,15 +485,18 @@ body {
   align-items: stretch;
   gap: 14px;
   flex: 1;
+  min-width: 0;
   min-height: 0;
-  overflow-x: auto;
+  /* Rolagem horizontal sempre disponível (Feature 026): `scroll` reserva a pista
+     de forma determinística entre motores, evitando que a última coluna seja
+     cortada quando o estilo de barra difere (Edge × Chrome × Firefox). */
+  overflow-x: scroll;
   overflow-y: hidden;
+  overscroll-behavior-x: contain;
   padding: 4px 6px 8px 4px;
-  /* Pista de barra determinística (FR-004): reserva o espaço e usa a mesma
-     espessura entre motores, independente do estilo nativo do navegador. */
+  /* Pista de barra determinística (FR-004): mesma espessura entre motores. */
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) transparent;
-  scrollbar-gutter: stable;
 }
 
 /* Custom Horizontal Scrollbar for Board */
