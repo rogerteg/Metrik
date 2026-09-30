@@ -5,6 +5,8 @@ export interface UseColumnWidthsReturn {
   columnWidths: Record<string, number>;
   setColumnWidth: (columnId: string, width: number) => void;
   resetColumnWidth: (columnId: string) => void;
+  /** Remove todas as preferências (Feature 026). */
+  resetAllColumnWidths: () => void;
 }
 
 const getStorageKey = (boardId: string | null): string => {
@@ -90,9 +92,18 @@ export function useColumnWidths(activeBoardId: string | null): UseColumnWidthsRe
     [persist],
   );
 
+  /** Remove TODAS as preferências de largura (volta ao padrão em todas as colunas). */
+  const resetAllColumnWidths = useCallback(() => {
+    setColumnWidths(() => {
+      persist({});
+      return {};
+    });
+  }, [persist]);
+
   return {
     columnWidths,
     setColumnWidth,
     resetColumnWidth,
+    resetAllColumnWidths,
   };
 }

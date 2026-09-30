@@ -164,4 +164,21 @@ describe('useColumnWidths (US2 — FR-009, FR-010, GC-03, GC-05, GC-09)', () => 
 
     expect(result.current.columnWidths.todo).toBe(500);
   });
+
+  it('resetAllColumnWidths clears every preference (Feature 026)', () => {
+    const { result } = renderHook(() => useColumnWidths(BOARD_ID));
+
+    act(() => {
+      result.current.setColumnWidth('todo', 400);
+      result.current.setColumnWidth('doing', 500);
+    });
+    expect(Object.keys(result.current.columnWidths)).toHaveLength(2);
+
+    act(() => {
+      result.current.resetAllColumnWidths();
+    });
+
+    expect(result.current.columnWidths).toEqual({});
+    expect(JSON.parse(localStorage.getItem(storageKey) || '{}')).toEqual({});
+  });
 });

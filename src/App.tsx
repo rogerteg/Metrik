@@ -20,6 +20,7 @@ import { AppHeader } from './components/AppHeader';
 import { BoardManagementModal } from './components/BoardManagementModal';
 import { NewColumnModal } from './components/NewColumnModal';
 import { useColumnWidths } from './hooks/useColumnWidths';
+import { MIN_COLUMN_WIDTH } from './utils/columnGeometry';
 import { useTheme } from './hooks/useTheme';
 import { ToastNotification } from './components/ToastNotification';
 import { TaskModel, BLOCKED_TASK_MOVE_WARNING_MESSAGE } from './types/kanban';
@@ -95,7 +96,8 @@ export const App: React.FC = () => {
 
   const { theme, setTheme } = useTheme();
 
-  const { columnWidths, setColumnWidth, resetColumnWidth } = useColumnWidths(activeBoardId);
+  const { columnWidths, setColumnWidth, resetColumnWidth, resetAllColumnWidths } =
+    useColumnWidths(activeBoardId);
 
   const [toastMessage, setToastMessage] = React.useState<string | null>(null);
 
@@ -196,6 +198,30 @@ export const App: React.FC = () => {
       clearTasks();
     }
   };
+
+  /**
+   * Ajusta todas as colunas para caberem na largura atual da janela (mín. 220px).
+   * Solução para a paridade entre navegadores: em vez de depender do estilo de barra
+   * ou da largura da janela, comprime as colunas para exibir todas na tela.
+   */
+  const handleFitColumnsToWindow = () => {
+    const n = board.columns.length;
+    if (n === 0) return;
+    const grid =
+      typeof document !== 'undefined'
+        ? (document.querySelector('.kanban-board-grid') as HTMLElement | null)
+        : null;
+    const available =
+      grid?.clientWidth ?? (typeof window !== 'undefined' ? window.innerWidth - 40 : 0);
+    const GAP = 14;
+    const padding = 12;
+    const usable = available - padding - GAP * (n - 1);
+    const width = Math.max(MIN_COLUMN_WIDTH, Math.floor(usable / n));
+    board.columns.forEach((column) => setColumnWidth(column.id, width));
+  };
+
+  /** Remove todas as preferências de largura (volta ao padrão em todas as colunas). */
+  const handleResetColumnWidths = () => resetAllColumnWidths();
 
   /**
    * Aplica dados remotos (Pull do Supabase): o CloudSyncTab já persistiu no
@@ -608,6 +634,8 @@ export const App: React.FC = () => {
             sprints={board.sprints}
             activeSprintId={board.activeSprintId}
             onSprintChange={filterData.setSprintFilter}
+            onFitColumns={handleFitColumnsToWindow}
+            onResetColumns={handleResetColumnWidths}
           />
 
           <Board

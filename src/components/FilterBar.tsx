@@ -21,6 +21,9 @@ export interface FilterBarProps {
   sprints?: SprintModel[];
   activeSprintId?: string | null;
   onSprintChange?: (sprintFilter: string) => void;
+  /** Layout das colunas (Feature 026): comprimir à janela / redefinir larguras. */
+  onFitColumns?: () => void;
+  onResetColumns?: () => void;
 }
 
 const PRIORITY_OPTIONS: { level: PriorityLevel | 'all'; label: string; color?: string }[] = [
@@ -46,6 +49,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   sprints,
   activeSprintId,
   onSprintChange,
+  onFitColumns,
+  onResetColumns,
 }) => {
   const sprintOptions = React.useMemo(() => orderSprints(sprints), [sprints]);
 
@@ -237,6 +242,41 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                   </span>
                 )}
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Layout das colunas (Feature 026) */}
+        {(onFitColumns || onResetColumns) && (
+          <div
+            className="filter-group filter-group--layout"
+            role="group"
+            aria-label="Layout das colunas"
+          >
+            <span className="filter-group__label">Layout:</span>
+            <div className="filter-pills">
+              {onFitColumns && (
+                <button
+                  type="button"
+                  className="filter-pill"
+                  onClick={onFitColumns}
+                  data-testid="fit-columns"
+                  title="Comprimir as colunas para caberem na janela"
+                >
+                  Ajustar à janela
+                </button>
+              )}
+              {onResetColumns && (
+                <button
+                  type="button"
+                  className="filter-pill"
+                  onClick={onResetColumns}
+                  data-testid="reset-columns"
+                  title="Voltar todas as colunas à largura padrão"
+                >
+                  Redefinir larguras
+                </button>
+              )}
             </div>
           </div>
         )}

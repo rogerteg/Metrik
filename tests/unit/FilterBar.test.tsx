@@ -155,4 +155,31 @@ describe('FilterBar Component (US3, US4 & Feature 013)', () => {
     fireEvent.click(blockedBtn);
     expect(handleToggleBlocked).toHaveBeenCalledTimes(1);
   });
+
+  it('exposes layout actions to fit columns to the window and reset widths', () => {
+    const onFitColumns = vi.fn();
+    const onResetColumns = vi.fn();
+    render(
+      <FilterBar
+        filters={defaultFilters}
+        onSearchChange={vi.fn()}
+        onPriorityChange={vi.fn()}
+        onToggleTag={vi.fn()}
+        onClearFilters={vi.fn()}
+        hasActiveFilters={false}
+        availableTags={[]}
+        visibleCount={3}
+        totalCount={10}
+        onFitColumns={onFitColumns}
+        onResetColumns={onResetColumns}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('fit-columns'));
+    fireEvent.click(screen.getByTestId('reset-columns'));
+    expect(onFitColumns).toHaveBeenCalledTimes(1);
+    expect(onResetColumns).toHaveBeenCalledTimes(1);
+
+    expect(screen.getByTestId('fit-columns')).toBeInTheDocument();
+  });
 });
