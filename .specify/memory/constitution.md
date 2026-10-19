@@ -1,12 +1,33 @@
 <!--
 Sync Impact Report:
-- Version change: 1.6.2 → 1.6.3
-- Bump rationale: PATCH (Governance validation and non-semantic alignment following Feature 037 Task Details Activity & Objective Fields Redesign).
-- List of modified principles: None (All 9 core principles validated).
+- Version change: 1.6.3 → 1.7.0
+- Bump rationale: MINOR — Principle III is materially expanded with three new obligations. No existing
+  obligation is removed or redefined in a backward-incompatible way: work approved under a green baseline
+  remains valid, so the amendment does not qualify as MAJOR. It is not PATCH because it creates new
+  obligations rather than only clarifying wording.
+- Modified principles:
+  - III. Automated Verification & Testing (expanded; title unchanged)
 - Added sections: None
 - Removed sections: None
-- Expanded sections: None
-- Follow-up TODOs: None
+- Expanded sections:
+  - III.1 — executable suites now name the configured type gate as part of the obligation.
+  - III.2 — "pass clean" is defined for configured static-analysis gates, and warnings cease to be an
+    undefined pass/fail condition: they become bounded debt under a non-increasing ratchet.
+  - III.3 — protocol for a pre-existing red baseline: definition of done becomes "no regression",
+    remediation by weakening an assertion is prohibited, and a corrective feature is mandatory.
+  - III.4 — a declared verification gate MUST produce the evidence it claims; a gate that yields no
+    result is treated as not configured and must be raised as a defect.
+- Evidence (measured, not theorised):
+  - `npm run lint` exits 0 while reporting 40 warnings, and `Lint` is a blocking CI step — so "pass clean"
+    was ambiguous and the project was compliant or non-compliant depending on the reading.
+  - `npm run test` is red with 5 pre-existing clock-dependent failures, which made the previous text
+    unsatisfiable: no change could be declared complete, by definition.
+  - The CI coverage gate (`test:coverage`, then upload of `coverage/` with `if: always()`) produces no
+    summary and no report files in 5 independent runs, including to a directory outside the repository
+    (recorded as OPP-018 in the feature 043 artifacts).
+- Follow-up TODOs: None (no placeholder is intentionally deferred).
+- Not stored here: the warning-convergence owner and target, and the corrective-feature identifiers, are
+  tracked as declared indicators in the specification artifacts, which are subordinate to this document.
 -->
 
 # Metrik Constitution
@@ -20,7 +41,19 @@ All features, architectural updates, and non-trivial changes MUST start with a f
 Modules MUST be self-contained, single-purpose, and loosely coupled with clean interfaces. Code bases MUST maintain comprehensive inline documentation, clear boundaries, and zero circular dependencies.
 
 ### III. Automated Verification & Testing
-All feature additions, bug fixes, and critical paths MUST be verified by automated tests or automated verification scripts. A change is not complete until the project's executable verification suites — `npm run test` (Vitest) and `npm run build` (TypeScript + Vite) — pass with zero failures and zero errors. If a linter or static-analysis gate is configured in the project, it MUST also pass clean; while no such gate is configured, no lint obligation exists. Manual inspection alone NEVER constitutes verification.
+
+All feature additions, bug fixes, and critical paths MUST be verified by automated tests or automated verification scripts. Manual inspection alone NEVER constitutes verification.
+
+1. **Executable Suites**: A change is not complete until the project's executable verification suites — `npm run test` (Vitest), `npm run build` (TypeScript + Vite) — and the configured type gate (`npx tsc --noEmit`) pass with zero failures and zero errors.
+2. **Configured Gates and "Pass Clean"**: A gate is *configured* only when it is wired into the CI workflow (`.github/workflows/ci.yml`) as a blocking step. For a configured static-analysis gate, **"pass clean" means exit code 0 with zero errors**. Warnings are NOT a pass/fail condition; they are bounded debt governed as follows:
+   - The warning count MUST NOT increase. A change that introduces a new warning is not complete.
+   - Existing warnings MUST converge to zero under a named owner and a dated target, and the count MUST be tracked as a declared indicator carrying its measurement date.
+3. **Pre-existing Red Baseline**: When the executable suites already fail at the start of a change, the obligation adapts — and only in this way:
+   - The **identity and count** of pre-existing failures MUST be captured before the change and MUST remain unchanged after it. The definition of done for that change is then **no regression**, not a green suite.
+   - A change MUST NOT reduce the failure count by loosening, skipping, deleting, or otherwise weakening an assertion, fixture, or reporter. Remediation belongs to its own change, under its own specification.
+   - A **designated corrective feature** MUST exist to restore the green baseline, and the failing state MUST be recorded as tracked debt with dated evidence. Until that work lands, no change may be reported as verified without naming the pre-existing failure set it inherited.
+   - A green suite MUST NOT be obtained by narrowing test scope, excluding files, filtering cases, or suppressing reporters.
+4. **Gates Must Prove Themselves**: A verification gate — in CI, in a script, or in a configured threshold — MUST produce the evidence it claims to produce. A gate that announces itself and yields no result (no summary, no report artifact, no meaningful exit signal) MUST be treated as **not configured**, MUST be raised as a defect with an owner and a corrective feature, and its indicator MUST NOT be presented as enforced. Silence is not success: a gate whose evidence is absent satisfies no obligation under this principle.
 
 ### IV. Observability & Structured Logging
 Failure modes MUST be explicit, diagnosable, and fail fast. Systems MUST implement structured logging and clear error reporting using a stable, greppable diagnostic prefix (`[Metrik]`, `[Metrik Guard]`) and MUST include the actionable context required to identify the cause — operation, entity identifiers, and the violated rule. Errors MUST NOT be silently swallowed on user-facing or data-mutating paths; a defensive path that intentionally ignores a failure MUST document why at the call site. Diagnostic output MUST be sufficient to reach root cause without attaching a debugger.
@@ -105,4 +138,4 @@ practices, ad-hoc conventions, and per-feature preferences.
 operative workflows, roles, and tooling for day-to-day development. They are subordinate to this
 Constitution; where they conflict, this Constitution prevails.
 
-**Version**: 1.6.3 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-09-23
+**Version**: 1.7.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-10-08
