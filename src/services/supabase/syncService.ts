@@ -1,4 +1,5 @@
 import { getSupabaseClient, isSupabaseConfigured } from './client';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { Workspace } from '../../types/workspace';
 import { BoardModel, BoardState, TaskModel } from '../../types/kanban';
 import { AppSettings } from '../../types/workspace';
@@ -128,8 +129,10 @@ export async function checkSprintMigration(): Promise<{ applied: boolean; error?
 /**
  * Converte dados de tarefas agrupadas por coluna em registros tabulares para o Supabase.
  */
-export function flattenTasksForDb(tasksByBoardId: Record<string, BoardState>): any[] {
-  const rows: any[] = [];
+export function flattenTasksForDb(
+  tasksByBoardId: Record<string, BoardState>,
+): Record<string, unknown>[] {
+  const rows: Record<string, unknown>[] = [];
 
   for (const [boardId, boardState] of Object.entries(tasksByBoardId)) {
     if (!boardState || !boardState.tasks) continue;
@@ -186,11 +189,19 @@ const MISSING_COLUMN_RE =
 function isMissingColumnError(message: string): boolean {
   return MISSING_COLUMN_RE.test(message);
 }
-function stripBoardMigrationColumns(rows: any[]): any[] {
-  return rows.map(({ sprints, active_sprint_id, ...rest }) => rest);
+function stripBoardMigrationColumns(rows: Record<string, unknown>[]): Record<string, unknown>[] {
+  return rows.map(({ sprints: _sprints, active_sprint_id: _active_sprint_id, ...rest }) => rest);
 }
-function stripTaskMigrationColumns(rows: any[]): any[] {
-  return rows.map(({ sprint_id, estimation, assignee, last_moved_at, ...rest }) => rest);
+function stripTaskMigrationColumns(rows: Record<string, unknown>[]): Record<string, unknown>[] {
+  return rows.map(
+    ({
+      sprint_id: _sprint_id,
+      estimation: _estimation,
+      assignee: _assignee,
+      last_moved_at: _last_moved_at,
+      ...rest
+    }) => rest,
+  );
 }
 
 /**
@@ -198,10 +209,14 @@ function stripTaskMigrationColumns(rows: any[]): any[] {
  * iguais ou mais recentes que a versão remota. Degrada graciosamente (envia tudo)
  * se a consulta de timestamps falhar.
  */
-async function filterByRemoteTimestamp(client: any, table: string, rows: any[]): Promise<any[]> {
+async function filterByRemoteTimestamp<T extends { id?: string; updated_at?: string }>(
+  client: Pick<SupabaseClient, 'from'>,
+  table: string,
+  rows: T[],
+): Promise<T[]> {
   if (rows.length === 0) return rows;
   try {
-    const ids = rows.map((r) => r.id);
+    const ids = rows.map((r) => r.id).filter((id): id is string => Boolean(id));
     const { data, error } = await client.from(table).select('id, updated_at').in('id', ids);
     if (error || !Array.isArray(data)) return rows;
 
@@ -211,6 +226,7 @@ async function filterByRemoteTimestamp(client: any, table: string, rows: any[]):
     }
 
     return rows.filter((row) => {
+      if (!row.id) return true;
       const remote = remoteTs.get(row.id);
       if (remote === undefined) return true;
       const local = row.updated_at ? new Date(row.updated_at).getTime() : 0;
@@ -420,28 +436,28 @@ export async function pullFromSupabase(): Promise<SyncPullResult> {
     const { data: wsData, error: wsError } = await client.from('workspaces').select('*');
     if (wsError) throw new Error(`Erro ao buscar workspaces: ${wsError.message}`);
 
-    const workspaces: Workspace[] = (wsData || []).map((row: any) => ({
-      id: row.id,
-      name: row.name,
-      description: row.description || undefined,
-      color: row.color,
-      icon: row.icon || undefined,
-      boardIds: Array.isArray(row.board_ids) ? row.board_ids : [],
-      teamId: row.team_id || undefined,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
+    const workspaces: Workspace[] = (wsData || []).map((row: Record<string, unknown>) => ({
+      id: String(row.id || ''),
+      name: String(row.name || ''),
+      description: row.description ? String(row.description) : undefined,
+      color: String(row.color || '#6366f1'),
+      icon: row.icon ? String(row.icon) : undefined,
+      boardIds: Array.isArray(row.board_ids) ? (row.board_ids as string[]) : [],
+      teamId: row.team_id ? String(row.team_id) : undefined,
+      createdAt: String(row.created_at || ''),
+      updatedAt: String(row.updated_at || ''),
     }));
 
     // 2. Buscar Boards
     const { data: bData, error: bError } = await client.from('boards').select('*');
     if (bError) throw new Error(`Erro ao buscar boards: ${bError.message}`);
 
-    const boards: BoardModel[] = (bData || []).map((row: any) => ({
-      id: row.id,
-      name: row.name,
-      teamId: row.team_id || undefined,
-      createdAt: row.created_at,
-      lastAccessed: row.updated_at || row.created_at,
+    const boards: BoardModel[] = (bData || []).map((row: Record<string, unknown>) => ({
+      id: String(row.id || ''),
+      name: String(row.name || ''),
+      teamId: row.team_id ? String(row.team_id) : undefined,
+      createdAt: String(row.created_at || ''),
+      lastAccessed: String(row.updated_at || row.created_at || ''),
     }));
 
     // 3. Buscar Tasks
@@ -533,21 +549,21 @@ export async function pullFromSupabase(): Promise<SyncPullResult> {
     const { data: teamsData, error: teamsError } = await client.from('teams').select('*');
     const teams: Team[] = teamsError
       ? []
-      : (teamsData || []).map((row: any) => ({
-          id: row.id,
-          name: row.name,
-          description: row.description || undefined,
-          createdById: row.created_by || '',
-          createdAt: row.created_at,
+      : (teamsData || []).map((row: Record<string, unknown>) => ({
+          id: String(row.id || ''),
+          name: String(row.name || ''),
+          description: row.description ? String(row.description) : undefined,
+          createdById: String(row.created_by || ''),
+          createdAt: String(row.created_at || ''),
         }));
 
     const { data: membersData } = await client.from('team_members').select('*');
-    const teamMembers: TeamMember[] = (membersData || []).map((row: any) => ({
-      id: row.id,
-      teamId: row.team_id,
-      userId: row.user_id,
-      role: row.role,
-      joinedAt: row.joined_at,
+    const teamMembers: TeamMember[] = (membersData || []).map((row: Record<string, unknown>) => ({
+      id: String(row.id || ''),
+      teamId: String(row.team_id || ''),
+      userId: String(row.user_id || ''),
+      role: (row.role as TeamMember['role']) || 'member',
+      joinedAt: String(row.joined_at || ''),
     }));
 
     console.info(

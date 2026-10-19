@@ -204,6 +204,6 @@ export const useCfdData = (
 ): CfdData => {
   return useMemo(
     () => calculateCfd(tasks, daysCount, columns, customDateRange),
-    [tasks, daysCount, columns, customDateRange?.startDate, customDateRange?.endDate],
+    [tasks, daysCount, columns, customDateRange],
   );
 };

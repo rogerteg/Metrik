@@ -60,7 +60,9 @@ function initializeWorkspaces(): Workspace[] {
     if (rawBoards) {
       const parsed = JSON.parse(rawBoards);
       if (Array.isArray(parsed)) {
-        existingBoardIds = parsed.map((b: any) => b.id).filter(Boolean);
+        existingBoardIds = parsed
+          .map((b: { id?: string }) => b?.id)
+          .filter((id): id is string => Boolean(id));
       }
     }
   } catch (err) {

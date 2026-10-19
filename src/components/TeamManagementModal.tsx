@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Team, User, TeamInvitation, TeamRole } from '../types/team';
+import { Team, User, TeamInvitation, TeamRole, TeamMember } from '../types/team';
 import './Modal.css';
 
 export interface TeamManagementModalProps {
@@ -16,7 +16,7 @@ export interface TeamManagementModalProps {
   onAcceptInvitation: (code: string) => void;
   initialTab?: 'my-squads' | 'create-squad' | 'members' | 'invite' | 'join-code';
   selectedTeamId?: string;
-  teamMembers?: any[];
+  teamMembers?: TeamMember[];
 }
 
 export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
@@ -43,10 +43,10 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
   const safeUsers = Array.isArray(users) ? users : [];
   const safeInvitations = Array.isArray(invitations) ? invitations : [];
 
-  const getTeamMembers = (team?: Team): any[] => {
+  const getTeamMembers = (team?: Team): TeamMember[] => {
     if (!team) return [];
-    if (Array.isArray((team as any)?.members)) {
-      return (team as any).members;
+    if (Array.isArray(team.members)) {
+      return team.members;
     }
     if (Array.isArray(teamMembers)) {
       return teamMembers.filter((m) => m.teamId === team.id);
@@ -57,7 +57,7 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
   // Teams where active user is member
   const myTeams = safeTeams.filter((t) => {
     const members = getTeamMembers(t);
-    return members.some((m: any) => m?.userId === activeUserId);
+    return members.some((m: TeamMember) => m?.userId === activeUserId);
   });
 
   // Currently focused team for members and invitations
@@ -94,7 +94,7 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
   const activeTeam = safeTeams.find((t) => t.id === currentTeamId);
   const activeTeamMembers = getTeamMembers(activeTeam);
   const activeUserRoleInCurrentTeam = activeTeamMembers.find(
-    (m: any) => m.userId === activeUserId,
+    (m: TeamMember) => m.userId === activeUserId,
   )?.role;
   const isAdmin = activeUserRoleInCurrentTeam === 'admin';
 
@@ -114,8 +114,9 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
       setCurrentTeamId(created.id);
       setTab('my-squads');
       setFeedbackMessage({ text: `Squad "${created.name}" criada com sucesso!`, type: 'success' });
-    } catch (err: any) {
-      setFeedbackMessage({ text: err.message || 'Erro ao criar squad.', type: 'error' });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erro ao criar squad.';
+      setFeedbackMessage({ text: msg, type: 'error' });
     }
   };
 
@@ -140,8 +141,9 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
         text: `Convite gerado com sucesso! Código: ${inv.code}`,
         type: 'success',
       });
-    } catch (err: any) {
-      setFeedbackMessage({ text: err.message || 'Erro ao gerar convite.', type: 'error' });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erro ao gerar convite.';
+      setFeedbackMessage({ text: msg, type: 'error' });
     }
   };
 
@@ -159,9 +161,10 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
       setJoinCode('');
       setFeedbackMessage({ text: 'Você entrou na squad com sucesso!', type: 'success' });
       setTab('my-squads');
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Código de convite inválido ou expirado.';
       setFeedbackMessage({
-        text: err.message || 'Código de convite inválido ou expirado.',
+        text: msg,
         type: 'error',
       });
     }
@@ -174,8 +177,9 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
       try {
         onRemoveMember(currentTeamId, userId);
         setFeedbackMessage({ text: 'Membro removido da squad.', type: 'success' });
-      } catch (err: any) {
-        setFeedbackMessage({ text: err.message || 'Erro ao remover membro.', type: 'error' });
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Erro ao remover membro.';
+        setFeedbackMessage({ text: msg, type: 'error' });
       }
     }
   };
@@ -185,8 +189,9 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
     try {
       onUpdateMemberRole(currentTeamId, userId, role);
       setFeedbackMessage({ text: 'Papel do integrante atualizado com sucesso.', type: 'success' });
-    } catch (err: any) {
-      setFeedbackMessage({ text: err.message || 'Erro ao atualizar papel.', type: 'error' });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erro ao atualizar papel.';
+      setFeedbackMessage({ text: msg, type: 'error' });
     }
   };
 
@@ -300,7 +305,7 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
                 <div className="team-cards-grid">
                   {myTeams.map((t) => {
                     const members = getTeamMembers(t);
-                    const memberRecord = members.find((m: any) => m.userId === activeUserId);
+                    const memberRecord = members.find((m: TeamMember) => m.userId === activeUserId);
                     const role = memberRecord?.role || 'member';
                     return (
                       <div key={t.id} className="team-card">
@@ -415,7 +420,7 @@ export const TeamManagementModal: React.FC<TeamManagementModalProps> = ({
                     <span>Papel</span>
                     {isAdmin && <span>Ações</span>}
                   </div>
-                  {activeTeamMembers.map((member: any) => {
+                  {activeTeamMembers.map((member: TeamMember) => {
                     const userObj = safeUsers.find((u) => u.id === member.userId);
                     const userName = userObj ? userObj.name : `Usuário ${member.userId}`;
                     const userEmail = userObj ? userObj.email : '';

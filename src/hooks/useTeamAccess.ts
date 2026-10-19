@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   User,
   Team,
@@ -91,14 +91,23 @@ export function useTeamAccess() {
 
   const [isInitialized, setIsInitialized] = useState(false);
 
+  const initialValuesRef = useRef({ users, teams, teamMembers, invitations, activeUserId });
+
   // Initial persist if first run
   useEffect(() => {
-    safeSetStorage(USERS_STORAGE_KEY, users);
-    safeSetStorage(TEAMS_STORAGE_KEY, teams);
-    safeSetStorage(TEAM_MEMBERS_STORAGE_KEY, teamMembers);
-    safeSetStorage(TEAM_INVITATIONS_STORAGE_KEY, invitations);
+    const {
+      users: initUsers,
+      teams: initTeams,
+      teamMembers: initMembers,
+      invitations: initInvs,
+      activeUserId: initActiveUser,
+    } = initialValuesRef.current;
+    safeSetStorage(USERS_STORAGE_KEY, initUsers);
+    safeSetStorage(TEAMS_STORAGE_KEY, initTeams);
+    safeSetStorage(TEAM_MEMBERS_STORAGE_KEY, initMembers);
+    safeSetStorage(TEAM_INVITATIONS_STORAGE_KEY, initInvs);
     try {
-      localStorage.setItem(ACTIVE_USER_STORAGE_KEY, activeUserId);
+      localStorage.setItem(ACTIVE_USER_STORAGE_KEY, initActiveUser);
     } catch {
       // ignore
     }

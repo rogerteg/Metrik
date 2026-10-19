@@ -78,8 +78,8 @@ export const UserProfileMenu: React.FC<UserProfileMenuProps> = ({
       setNewName('');
       setNewEmail('');
       setIsCreatingUser(false);
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Erro ao cadastrar usuário.');
+    } catch (err: unknown) {
+      setErrorMessage(err instanceof Error ? err.message : 'Erro ao cadastrar usuário.');
     }
   };
 

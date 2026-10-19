@@ -1,5 +1,5 @@
 import React from 'react';
-import { TaskModel, ColumnModel, SprintModel } from '../types/kanban';
+import { TaskModel, ColumnModel, SprintModel, PriorityLevel } from '../types/kanban';
 import { TaskType, TASK_TYPE_CONFIGS } from '../types/taskTypes';
 import { User } from '../types/team';
 import { calculateTaskBlockedTimeMs, formatBlockedTime } from '../utils/timeFormatters';
@@ -86,7 +86,7 @@ export const TaskMetadataSidebar: React.FC<TaskMetadataSidebarProps> = ({
           <select
             className="td-select"
             value={priority}
-            onChange={(e) => onUpdateTask(task.id, { priority: e.target.value as any })}
+            onChange={(e) => onUpdateTask(task.id, { priority: e.target.value as PriorityLevel })}
           >
             <option value="urgent">🔴 Urgente</option>
             <option value="high">🟠 Alta</option>

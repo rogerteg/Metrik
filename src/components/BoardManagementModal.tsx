@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { BoardModel } from '../types/kanban';
-import { Team } from '../types/team';
+import { Team, TeamMember } from '../types/team';
 import './Modal.css';
 
 export interface BoardManagementModalProps {
@@ -33,12 +33,13 @@ export const BoardManagementModal: React.FC<BoardManagementModalProps> = ({
   const [editName, setEditName] = useState('');
 
   // Teams where user is member
-  const myTeams =
-    teams && activeUserId
-      ? teams.filter(
-          (t) => Array.isArray(t.members) && t.members.some((m: any) => m.userId === activeUserId),
-        )
-      : [];
+  const myTeams = useMemo(() => {
+    if (!teams || !activeUserId) return [];
+    return teams.filter(
+      (t) =>
+        Array.isArray(t.members) && t.members.some((m: TeamMember) => m.userId === activeUserId),
+    );
+  }, [teams, activeUserId]);
 
   const [selectedTeamId, setSelectedTeamId] = useState<string>(myTeams[0]?.id || '');
 

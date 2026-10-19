@@ -36,7 +36,7 @@ export default tseslint.config(
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
       // Blocos catch vazios são um padrão intencional de degradação defensiva aqui.
       'no-empty': ['error', { allowEmptyCatch: true }],
     },

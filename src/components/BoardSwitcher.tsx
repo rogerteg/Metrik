@@ -1,6 +1,6 @@
 import React from 'react';
 import { BoardModel } from '../types/kanban';
-import { Team } from '../types/team';
+import { Team, TeamMember } from '../types/team';
 
 export interface BoardSwitcherProps {
   boards: BoardModel[];
@@ -29,7 +29,7 @@ export const BoardSwitcher: React.FC<BoardSwitcherProps> = ({
   if (teams && activeUserId) {
     userTeams = teams.filter((t) => {
       if (Array.isArray(t.members)) {
-        return t.members.some((m: any) => m.userId === activeUserId);
+        return t.members.some((m: TeamMember) => m.userId === activeUserId);
       }
       return true; // Default fallback to preserve visibility
     });
