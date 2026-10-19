@@ -1,15 +1,16 @@
-# Research & Design Decisions: Clean Board Layout (Inspirado no Businessmap / Kanbanize)
+# Research & Design Decisions: Clean Board Layout (Design Enterprise Minimalista)
 
-**Feature**: `016-clean-board-layout-businessmap` | **Date**: 2026-09-11
+**Feature**: `016-clean-board-layout-minimalist` | **Date**: 2026-09-11
 
 ---
 
-## 1. Contexto & Benchmark Visual (Businessmap)
+## 1. Contexto & Benchmark Visual (Design Enterprise Minimalista)
 
-O **Businessmap** (antigo Kanbanize) é o padrão de ouro da indústria para ferramentas Kanban de nível enterprise devido a três pilares:
+O padrão de design enterprise minimalista adotado baseia-se em três pilares fundamentais:
 1. **Densidade de Informação Inteligente**: Apresenta múltiplos metadados (IDs, prioridade, prazos, bloqueios, sub-itens) sem gerar fadiga visual.
 2. **Contenção Visual e Baixo Ruído**: Não usa cores saturadas em blocos maciços; a cor é aplicada cirurgicamente em faixas laterais (*border-left* de 3px a 4px), tags e indicadores de status.
 3. **Ergonomia do Card**: Cards mantêm altura enxuta por padrão, permitindo inspeção ou expansão sob demanda, evitando colunas infinitamente esticadas.
+
 
 ---
 
@@ -29,12 +30,12 @@ O **Businessmap** (antigo Kanbanize) é o padrão de ouro da indústria para fer
   - *Opção B*: Faixa lateral esquerda sólida de 3px a 4px (`borderLeft`), corpo neutro dark slate (`#1e293b`).
   - *Opção C*: Apenas uma bolinha/badge de cor no topo do card.
 - **Decisão**: **Opção B (Faixa lateral sólida `borderLeft: 3px solid ${effectiveColor}`)**.
-- **Justificativa**: Consonância perfeita com o Businessmap e ferramentas enterprise. Garante legibilidade máxima do texto, alto contraste e clara associação visual à coluna sem poluição. Tarefas bloqueadas mantêm a faixa vermelha de bloqueio prioritária.
+- **Justificativa**: Consonância perfeita com os padrões minimalistas de ferramentas enterprise. Garante legibilidade máxima do texto, alto contraste e clara associação visual à coluna sem poluição. Tarefas bloqueadas mantêm a faixa vermelha de bloqueio prioritária.
 
 ### Decisão 3: Reestruturação do Cabeçalho de Colunas e WIP Limit
 - **Opções Avaliadas**:
   - *Opção A*: Manter badges dispersas e botões com textos extensos.
-  - *Opção B*: Cabeçalho compacto estilo Businessmap: drag handle sutil, badge de título nítida, cadeado de coluna fixa discreto, WIP em *pill* minimalista (`X / Y` em monospace suave) e seletor de cor integrado.
+  - *Opção B*: Cabeçalho compacto estilo minimalista: drag handle sutil, badge de título nítida, cadeado de coluna fixa discreto, WIP em *pill* minimalista (`X / Y` em monospace suave) e seletor de cor integrado.
 - **Decisão**: **Opção B (Cabeçalho Compacto Integrado)**.
 - **Justificativa**: Reduz a altura do cabeçalho da coluna, melhora o alinhamento horizontal do grid e confere acabamento profissional.
 

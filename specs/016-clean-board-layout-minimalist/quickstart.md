@@ -1,6 +1,7 @@
-# Quickstart & Verification Guide: Feature 016 - Clean Board Layout (Businessmap)
+# Quickstart & Verification Guide: Feature 016 - Clean Board Layout (Minimalist)
 
-**Feature**: `016-clean-board-layout-businessmap` | **Status**: Planned
+**Feature**: `016-clean-board-layout-minimalist` | **Status**: Implemented & Verified
+
 
 ---
 
@@ -24,7 +25,7 @@ npm run build
 
 ## 2. Roteiro de Verificação Visual e Manual
 
-### Teste 1: Grid e Cabeçalhos das Colunas (Estilo Businessmap)
+### Teste 1: Grid e Cabeçalhos das Colunas (Estilo Minimalista Enterprise)
 1. Abra a aplicação em `http://localhost:5173/`.
 2. Observe as colunas do board:
    - Os títulos estão nítidos, com contadores de WIP no formato *pill* minimalista (`X / Y`).

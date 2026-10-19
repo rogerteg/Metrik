@@ -1,9 +1,9 @@
-# Feature Specification: Layout Clean e Moderno do Board (Inspirado no Businessmap / Kanbanize)
+# Feature Specification: Layout Clean e Minimalista do Board
 
-**Feature Branch**: `016-clean-board-layout-businessmap`  
+**Feature Branch**: `016-clean-board-layout-minimalist`  
 **Created**: 2026-09-11  
 **Status**: Implemented & Converged (Verified)  
-**Input**: Solicitação do usuário: "melhorar layout do board, mais clean, pegue o exemplo/modelo do BusinessMap"
+**Input**: Solicitação do usuário: "melhorar layout do board, mais clean, padrão enterprise minimalista"
 
 ---
 
@@ -13,7 +13,8 @@
 - **Q1: Comportamento dos campos de 'Critérios de Aceitação' e 'Cenários de Testes' no card?**
   - **A1**: **Exibição compacta/resumida com toggle inline expandir/recolher**: Preserva a altura original do cartão no fluxo; quando preenchidos ou sob demanda, o usuário pode expandir com 1 clique para inspecionar ou editar sem precisar obrigatoriamente abrir o modal de detalhes.
 - **Q2: Como as cores customizadas das colunas devem se refletir nos cartões?**
-  - **A2**: **Faixa lateral esquerda sutil (3px a 4px de border-left sólida)** com fundo neutro escuro elegante (padrão de design enterprise do Businessmap/Jira), evitando poluição com fundos excessivamente saturados.
+  - **A2**: **Faixa lateral esquerda sutil (3px a 4px de border-left sólida)** com fundo neutro escuro elegante (padrão de design enterprise minimalista), evitando poluição com fundos excessivamente saturados.
+
 - **Q3: Visibilidade dos botões de ação do card (navegação direcional e exclusão)?**
   - **A3**: **Sempre visíveis com opacidade moderada/discreta (0.6)**, elevando suavemente para opacidade total (1.0) no hover/focus, garantindo usabilidade imediata e compatibilidade touch sem ruído visual constante.
 
@@ -21,9 +22,9 @@
 
 ## 1. Visão Geral & Contexto
 
-O **Metrik** evoluiu com múltiplos recursos essenciais de fluxo Kanban (WIP limits, bloqueios, fluxo unidirecional, governança de cores, critérios de aceitação e cenários de teste nos cards). Com a expansão desses dados, a densidade visual do quadro precisa de um refinamento de design enterprise inspirado no **Businessmap** (antigo Kanbanize), uma das referências mundiais de Kanban profissional.
+O **Metrik** evoluiu com múltiplos recursos essenciais de fluxo Kanban (WIP limits, bloqueios, fluxo unidirecional, governança de cores, critérios de aceitação e cenários de teste nos cards). Com a expansão desses dados, a densidade visual do quadro precisa de um refinamento de design enterprise com layout minimalista profissional, uma referência de Kanban limpo de alto sinal-ruído.
 
-### Características-chave do modelo Businessmap:
+### Características-chave do modelo Minimalista Enterprise:
 1. **Hierarquia Visual Limpa e Estruturada**:
    - Cabeçalhos de coluna discretos, com tipografia refinada, contadores de WIP compactos estilo pill/badge e ações contextuais bem distribuídas.
    - Divisórias sutis entre colunas com grid consistente, sem poluição visual ou sobreposição de sombras pesadas.
@@ -41,7 +42,7 @@ O **Metrik** evoluiu com múltiplos recursos essenciais de fluxo Kanban (WIP lim
 
 ## 2. User Scenarios & Casos de Teste
 
-### User Story 1 - Grid e Colunas do Board Estilo Businessmap (Priority: P1)
+### User Story 1 - Grid e Colunas do Board Minimalista (Priority: P1)
 
 Como gestor ou desenvolvedor utilizando o Metrik, quero visualizar o quadro com colunas bem delimitadas, cabeçalhos modernos e contadores de WIP discretos, para que o fluxo de trabalho seja imediatamente legível, limpo e profissional.
 
@@ -54,7 +55,7 @@ Como gestor ou desenvolvedor utilizando o Metrik, quero visualizar o quadro com 
 **Acceptance Scenarios**:
 1. **Given** o quadro carregado com colunas configuradas, **When** o usuário examina os cabeçalhos de coluna, **Then** as informações de título, cor teme e contagem de itens/limite de WIP são apresentadas em formato compacto, sem quebras indesejadas e com tipografia profissional.
 2. **Given** uma coluna com limite de WIP excedido, **When** a contagem ultrapassa o limite, **Then** o indicador exibe status de alerta limpo (borda/fundo âmbar/coral sutil) sem poluir o restante da coluna.
-3. **Given** o container do quadro Kanban, **When** renderizado em telas largas ou com scroll horizontal, **Then** as divisões entre colunas utilizam linhas de separação discretas no estilo swimlane/grid profissional do Businessmap.
+3. **Given** o container do quadro Kanban, **When** renderizado em telas largas ou com scroll horizontal, **Then** as divisões entre colunas utilizam linhas de separação discretas no estilo swimlane/grid profissional minimalista.
 
 ---
 
@@ -62,7 +63,7 @@ Como gestor ou desenvolvedor utilizando o Metrik, quero visualizar o quadro com 
 
 Como membro do time técnico, quero que cada cartão no quadro exiba seu título, prioridade, status e campos de qualidade com clareza visual, sem parecer sobrecarregado ou poluído, para que eu possa inspecionar o trabalho com rapidez.
 
-**Why this priority**: O card abriga múltiplas dimensões (prioridade, tags, bloqueios, estagnação, datas, critérios de aceitação e cenários de testes). Sem um design limpo e estruturado como o do Businessmap, o card fica excessivamente alto e desordenado.
+**Why this priority**: O card abriga múltiplas dimensões (prioridade, tags, bloqueios, estagnação, datas, critérios de aceitação e cenários de testes). Sem um design limpo e estruturado, o card fica excessivamente alto e desordenado.
 
 **Independent Test**: Criar um cartão com título, tags, bloqueio e preencher critérios de aceitação e cenários de testes. Inspecionar o card na coluna e atestar que os elementos estão agrupados de forma harmoniosa, com tipografia legível, padding equilibrado e bordas suaves.
 
@@ -105,7 +106,7 @@ Como usuário arrastando tarefas entre colunas, quero que o feedback visual (dro
 ## 4. Requisitos Não-Funcionais & Estéticos
 
 - **Tipografia**: Utilizar a família tipográfica moderna do sistema com tamanhos harmoniosos (13px-14px para títulos de tarefas, 11px-12px para metadados/tags/critérios).
-- **Paleta de Cores (Inspirada no Businessmap)**:
+- **Paleta de Cores (Minimalista Enterprise)**:
   - Fundo do board: `#0b0f19` / `#0f172a`.
   - Fundo da coluna: `#131b2e` / `#182238`.
   - Fundo do card: `#1e293b` (com elevação limpa no hover para `#243047`).
@@ -118,7 +119,7 @@ Como usuário arrastando tarefas entre colunas, quero que o feedback visual (dro
 
 ## 5. Critérios de Aceitação da Especificação
 
-1. O layout do board apresenta aparência visual notavelmente mais limpa, sofisticada e profissional, diretamente inspirada nas melhores práticas do Businessmap.
+1. O layout do board apresenta aparência visual notavelmente mais limpa, sofisticada e profissional, diretamente inspirada nas melhores práticas de design minimalista enterprise.
 2. Os cartões de tarefa exibem informações com alta hierarquia: título legível, prioridade e status em destaque discreto, e campos de critérios/cenários perfeitamente integrados.
 3. O cabeçalho das colunas é compacto, com contadores de WIP em formato pill e botões de ação contextuais elegantes.
 4. Todos os 202+ testes unitários continuam passando sem regressão e novos testes de interface validam a estrutura limpa.

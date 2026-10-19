@@ -1,15 +1,16 @@
-# Specification Quality Checklist: Feature 016 - Clean Board Layout (Businessmap)
+# Specification Quality Checklist: Feature 016 - Clean Board Layout (Minimalist)
 
-**Feature**: `016-clean-board-layout-businessmap`  
+**Feature**: `016-clean-board-layout-minimalist`  
 **Date**: 2026-09-11  
 **Status**: Passed / Ready for Planning  
 
 ## 1. Content Completeness
 - [x] **Problem Definition & Motivation**: O problema de densidade visual e ruído gráfico com novos campos foi claramente contextualizado.
-- [x] **Inspiration Model (Businessmap)**: As características de referência (alto signal-to-noise ratio, superfícies escuras, bordas finas, hierarquia de cards e grid consistente) estão formalizadas.
+- [x] **Inspiration Model (Design Minimalista)**: As características de referência (alto signal-to-noise ratio, superfícies escuras, bordas finas, hierarquia de cards e grid consistente) estão formalizadas.
 - [x] **Clarifications Record**: Sessão de perguntas e respostas registrada com 3 decisões essenciais (toggle inline de QA, faixa lateral de 3-4px para cor de coluna, botões de ação com opacidade 0.6 persistente e 1.0 no hover).
 - [x] **User Stories com Prioridades e Racional**:
-  - US1 (P1): Grid e Colunas do Board estilo Businessmap.
+  - US1 (P1): Grid e Colunas do Board estilo minimalista enterprise.
+
   - US2 (P1): Cartões de Tarefa com Visual Clean e Organização de Metadados.
   - US3 (P2): Estados Interativos e Feedback de Drag-and-Drop Harmoniosos.
 - [x] **Independent Tests**: Cada User Story define um teste isolado e verificável.

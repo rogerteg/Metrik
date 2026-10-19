@@ -1,14 +1,15 @@
-# Implementation Plan: Layout Clean e Moderno do Board (Inspirado no Businessmap / Kanbanize)
+# Implementation Plan: Layout Clean e Minimalista do Board
 
-**Branch**: `016-clean-board-layout-businessmap` | **Date**: 2026-09-11 | **Status**: Implemented & Converged | **Spec**: [specs/016-clean-board-layout-businessmap/spec.md](spec.md)
+**Branch**: `016-clean-board-layout-minimalist` | **Date**: 2026-09-11 | **Status**: Implemented & Converged | **Spec**: [specs/016-clean-board-layout-minimalist/spec.md](spec.md)
 
-**Input**: Feature specification e Clarificações de design consolidadas em `specs/016-clean-board-layout-businessmap/spec.md`.
+**Input**: Feature specification e Clarificações de design consolidadas em `specs/016-clean-board-layout-minimalist/spec.md`.
 
 ---
 
 ## 1. Summary & Visual Architecture
 
-Transformar a interface visual do quadro Kanban do Metrik em um layout limpo, moderno e de alto padrão enterprise inspirado diretamente no **Businessmap** (antigo Kanbanize). 
+Transformar a interface visual do quadro Kanban do Metrik em um layout limpo, moderno e de alto padrão enterprise minimalista.
+ 
 
 A evolução equilibra a riqueza de dados e controle de fluxo do Metrik com uma relação sinal-ruído exemplar:
 1. **Board & Column Grid**:
@@ -54,7 +55,7 @@ A evolução equilibra a riqueza de dados e controle de fluxo do Metrik com uma 
 
 ### Component Layer
 #### [MODIFY] [Board.tsx](file:///c:/Users/Rogerio%20Teixeira/OneDrive/Documentos/Antigravity/Metrik/src/components/Board.tsx)
-- Refinar classes e container do grid para alinhamento profissional estilo swimlane/grid do Businessmap.
+- Refinar classes e container do grid para alinhamento profissional estilo swimlane/grid minimalista.
 - Estilizar o botão de "Nova Coluna" com estética pontilhada/translúcida elegante.
 
 #### [MODIFY] [Column.tsx](file:///c:/Users/Rogerio%20Teixeira/OneDrive/Documentos/Antigravity/Metrik/src/components/Column.tsx)
@@ -81,7 +82,7 @@ A evolução equilibra a riqueza de dados e controle de fluxo do Metrik com uma 
   - Superfície do card: `#1e293b` com hover para `#233148` e sombra leve `0 1px 3px rgba(0, 0, 0, 0.35)`.
 - Adicionar estilos dedicados para:
   - `.task-qa-toggle-btn`: botão discreto de expandir/recolher critérios e cenários.
-  - `.badge-wip`: pílula clean estilo Businessmap.
+  - `.badge-wip`: pílula clean estilo minimalista.
   - `.task-nav-buttons` e `.btn-delete-task`: opacidade 0.6 e hover suave.
   - Scrollbars da lista de tarefas e transições fluidas de drop target.
 
