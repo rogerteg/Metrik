@@ -5,13 +5,7 @@
    Feature 004: Priority Badges, Tag System & FilterBar Styles
    ========================================================================== */
 
-/* Task Card Header & Priority Badge */
-.task-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
+/* Priority Badge */
 
 .priority-badge-container {
   position: relative;

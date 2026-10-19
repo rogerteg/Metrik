@@ -15,21 +15,8 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '../..');
 const stylesDir = path.join(repoRoot, 'src', 'styles');
 
-/** Lista-base dos seletores duplicados remanescentes (somente encolher). */
-const DUPLICATE_BASELINE = new Set([
-  '.add-column-card',
-  '.add-column-icon',
-  '.badge-cycle-time',
-  '.badge-lead-time',
-  '.badge-metric-time',
-  '.btn-add-column',
-  '.metrik-comment-list',
-  '.task-blocked-dependency-chip',
-  '.task-card-header',
-  '.task-indicator-badge',
-  '.task-indicators',
-  '.task-metrics-badges',
-]);
+/** Lista-base dos seletores duplicados remanescentes: ZERO duplicatas toleradas (OPP-001). */
+const DUPLICATE_BASELINE = new Set<string>([]);
 
 function importedModulesInOrder(): string[] {
   const appCss = readFileSync(path.join(repoRoot, 'src', 'App.css'), 'utf8');

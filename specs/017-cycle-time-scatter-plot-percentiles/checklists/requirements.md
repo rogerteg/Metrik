@@ -7,7 +7,7 @@
 ---
 
 ## 1. Content Completeness
-- [x] **Problem Definition & Motivation**: A necessidade de elevar os gráficos analíticos do Metrik ao padrão internacional da indústria (ActionableAgile / Daniel Vacanti / Businessmap) foi fundamentada com base direta na imagem enviada pelo usuário.
+- [x] **Problem Definition & Motivation**: A necessidade de elevar os gráficos analíticos do Metrik ao padrão internacional da indústria (Flow Analytics / Daniel Vacanti) foi fundamentada com base direta na imagem enviada pelo usuário.
 - [x] **Benchmark Model & Principles**:
   - Padrão internacional de dispersão de tempo de ciclo (*Cycle Time Scatter Plot*).
   - Determinação probabilística de prazos e Service Level Expectations (SLE) baseados em percentis (50%, 85%, 95%).

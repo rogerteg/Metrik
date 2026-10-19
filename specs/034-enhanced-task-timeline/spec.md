@@ -21,7 +21,7 @@
 
 Como membro ou gestor de equipe, quero visualizar o histórico da tarefa em um painel cronológico elegante com cartões visuais de alteração (diffs com valores anterior e novo) e agrupamento temporal, para compreender instantaneamente a evolução e as movimentações do cartão no Kanban.
 
-**Why this priority**: Substitui a lista de texto plano por uma interface moderna nível enterprise (estilo Businessmap/Jira), destacando movimentações de coluna, bloqueios e alterações de prioridade com clareza visual.
+**Why this priority**: Substitui a lista de texto plano por uma interface moderna nível enterprise (estilo Kanban Enterprise Moderno), destacando movimentações de coluna, bloqueios e alterações de prioridade com clareza visual.
 
 **Independent Test**: Abrir os detalhes de qualquer tarefa com histórico, verificar o agrupamento por períodos de tempo ("Hoje", "Ontem", "Anteriores"), os badges coloridos por tipo de evento e os cartões de diff legíveis (`De "A Fazer" ➔ Para "Em Progresso"`).
 

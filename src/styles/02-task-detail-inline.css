@@ -224,6 +224,8 @@
   display: flex;
   flex-direction: column;
   gap: 1px;
+  max-height: 240px;
+  overflow-y: auto;
 }
 
 .task-detail-checklist-item {
@@ -396,6 +398,10 @@
   line-height: 1.2;
 }
 
+.task-indicator-badge svg {
+  opacity: 0.7;
+}
+
 .task-indicator-badge.due-date-expired,
 .task-indicator-badge.due-date-overdue {
   background: rgba(239, 68, 68, 0.15);
@@ -417,10 +423,9 @@
   color: var(--text-secondary);
 }
 
-.task-blocked-dependency-chip {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  color: #fca5a5;
+.task-indicator-badge.due-date-completed {
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
 }
 
 .task-metrics-badges {
@@ -431,23 +436,27 @@
 }
 
 .badge-metric-time {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
   font-weight: 600;
-  padding: 1px 6px;
+  padding: 2px 6px;
   border-radius: 4px;
   letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .badge-lead-time {
-  background: rgba(99, 102, 241, 0.12);
-  color: #a5b4fc;
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
 }
 
 .badge-cycle-time {
-  background: rgba(16, 185, 129, 0.12);
-  color: #6ee7b7;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.25);
 }
 
 /* Card Footer - Seamless Hover Toolbar */
@@ -505,40 +514,6 @@
 .btn-delete-task:hover {
   color: #fb7185;
   background: rgba(244, 63, 94, 0.15);
-}
-
-/* Add Column Button / Card */
-.add-column-card {
-  width: 220px;
-  min-width: 200px;
-  flex-shrink: 0;
-  display: flex;
-}
-
-.btn-add-column {
-  width: 100%;
-  height: 100%;
-  min-height: 140px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  color: var(--text-muted);
-  font-family: var(--font-family);
-  font-size: 0.82rem;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: var(--transition-smooth);
-}
-
-.add-column-icon {
-  font-size: 1.4rem;
-  line-height: 1;
-  color: var(--text-secondary);
 }
 
 /* Empty Column State */
@@ -632,77 +607,6 @@
 .view-toggle .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
-}
-
-.task-indicators {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-.task-indicator-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: 0.2rem 0.4rem;
-  border-radius: var(--radius-sm);
-  line-height: 1;
-}
-
-.task-indicator-badge svg {
-  opacity: 0.7;
-}
-
-.due-date-overdue {
-  background-color: rgba(244, 63, 94, 0.15);
-  color: #fb7185;
-  border: 1px solid rgba(244, 63, 94, 0.3);
-}
-
-.due-date-warning {
-  background-color: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.due-date-normal {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-.due-date-completed {
-  background-color: rgba(16, 185, 129, 0.1);
-  color: #34d399;
-}
-
-.task-metrics-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 2px;
-}
-
-.badge-metric-time {
-  font-size: 0.7rem;
-  font-family: var(--font-mono);
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-muted);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.badge-lead-time {
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.08);
-  border-color: rgba(56, 189, 248, 0.25);
-}
-
-.badge-cycle-time {
-  color: #34d399;
-  background: rgba(52, 211, 153, 0.08);
-  border-color: rgba(52, 211, 153, 0.25);
 }
 
 /* Flow Metrics Summary Bar - Compact */
@@ -802,4 +706,30 @@
     align-items: flex-start;
     gap: 12px;
   }
+}
+
+/* QA Summary / Detalhe de Tarefa (migrado de 13-recovered.css) */
+.task-qa-section {
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+
+.task-qa-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.task-qa-summary-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.task-qa-summary-item.has-content {
+  color: #38bdf8;
+  font-weight: 600;
 }

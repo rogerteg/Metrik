@@ -1053,7 +1053,7 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 6px;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
 }
 
 .task-card-content {
@@ -1088,4 +1088,34 @@ body {
 .task-textarea:focus {
   background: rgba(255, 255, 255, 0.05);
   box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
+}
+
+/* Header clusters & navegação global (migrado de 13-recovered.css) */
+.header-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-cluster-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-subtle);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.task-nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-settings-trigger {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  gap: 4px;
+  transition: var(--transition-smooth);
 }

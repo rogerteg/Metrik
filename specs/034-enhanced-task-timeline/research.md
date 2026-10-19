@@ -33,7 +33,7 @@
 - **Decision**: Renderizar eventos de auditoria como cartões visuais estruturados contendo badges coloridos e representação explícita de valores `[De ➔ Para]`.
 - **Rationale**:
   - Atende 100% ao critério de sucesso **SC-002**, permitindo comparar instantaneamente colunas, prioridades e tags alteradas.
-  - Alinha a interface do Metrik ao padrão dos líderes de mercado em Kanban Enterprise (ex.: Businessmap).
+  - Alinha a interface do Metrik ao padrão dos líderes de mercado em Kanban Enterprise Moderno.
 - **Alternatives Considered**:
   - *Frases em texto simples ("Movido de X para Y")*: Funcionais, mas exigiam leitura completa da frase para extrair a informação.
 

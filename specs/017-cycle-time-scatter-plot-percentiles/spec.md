@@ -1,9 +1,9 @@
-# Feature Specification: Cycle Time Scatter Plot Avançado com Percentis e Navegação Analítica (ActionableAgile / Businessmap)
+# Feature Specification: Cycle Time Scatter Plot Avançado com Percentis e Navegação Analítica (Flow Analytics)
 
 **Feature Branch**: `017-cycle-time-scatter-plot-percentiles`  
 **Created**: 2026-09-11  
 **Status**: Completed  
-**Input**: Imagem fornecida pelo usuário inspirada na ferramenta de ponta **ActionableAgile / Businessmap Analytics**:
+**Input**: Imagem fornecida pelo usuário inspirada no padrão de ponta de **Flow Analytics**:
 - Navegação de abas analíticas no topo (`Dashboard`, `Cycle Time` [dropdown: *Scatter Plot*, *Histogram*, *Heat Map*], `Throughput`, `WIP`, `Flow`, `Blockers`, `SLEs`, `Forecasting`).
 - Gráfico principal: **Cycle Time Scatter Plot** com linhas horizontais de **Percentis (50%, 85%, 95%)** calculados estatisticamente sobre as tarefas concluídas.
 - Painel lateral de controles analíticos configuráveis (*Controls for this Chart*: Percentiles toggles, Dot Colors, Blocked Items highlight, Summary Statistics).
@@ -28,7 +28,7 @@
 
 O **Metrik** possui atualmente um módulo básico de gráficos analíticos em `AnalyticsDashboard.tsx` (com Throughput, CFD e um Scatter Plot simplificado de 14 dias). 
 
-A imagem de referência enviada pelo usuário apresenta o padrão internacional de **Flow Analytics (ActionableAgile / Daniel Vacanti)** adotado por ferramentas líderes de mercado como Businessmap e Jira Align:
+A imagem de referência enviada pelo usuário apresenta o padrão internacional de **Flow Analytics (Daniel Vacanti)** adotado por ferramentas líderes de mercado em Kanban Enterprise:
 1. **Cycle Time Scatter Plot com Percentis Matemáticos Reais**:
    - Cada ponto representa uma tarefa individual concluída (`X = Data de Conclusão`, `Y = Cycle Time em Dias`).
    - Linhas tracejadas pontilhadas horizontais representando os percentis do sistema:

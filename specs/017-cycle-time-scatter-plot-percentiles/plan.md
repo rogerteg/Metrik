@@ -1,8 +1,8 @@
-# Implementation Plan: Cycle Time Scatter Plot Avançado com Percentis e Navegação Analítica (ActionableAgile / Businessmap)
+# Implementation Plan: Cycle Time Scatter Plot Avançado com Percentis e Navegação Analítica (Flow Analytics)
 
 **Branch**: `017-cycle-time-scatter-plot-percentiles` | **Date**: 2026-09-11 | **Spec**: [specs/017-cycle-time-scatter-plot-percentiles/spec.md](spec.md)
 
-**Input**: Feature specification e clarificações aprovadas baseadas no modelo analítico do ActionableAgile / Businessmap.
+**Input**: Feature specification e clarificações aprovadas baseadas no modelo analítico de Flow Analytics.
 
 ---
 
