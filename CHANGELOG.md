@@ -5,7 +5,44 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ## [Unreleased]
 
-_(sem alterações desde `v0.1.0`)_
+_(sem alterações desde `v0.2.0`)_
+
+## [0.2.0] - 2026-10-19
+
+### Added
+
+- add Mika AI Flow Copilot with narrative diagnostics, subtask decomposition and BYOK
+- fit-columns-to-window and reset-widths controls
+- detect pending sprint migration and offer copyable SQL
+- auto-assign new boards to the active workspace
+- sync squads and team members
+
+### Changed
+
+- deduplicate CSS rules, decommission recovered stylesheet and raise coverage gates
+- strict TypeScript typing, asset optimization and hook stabilization
+- extract AppHeader from App.tsx
+- remove duplicate Manage entry from the board switcher
+
+### Fixed
+
+- deterministic horizontal scroll so no column is clipped across engines
+
+### Docs
+
+- rewrite README for real stack and sanitize third-party brand leaks
+- system health assessment, vision and strategic roadmap
+
+### Tests
+
+- eliminate clock-dependent flakiness with system time mocks
+- cover CloudSyncTab push/pull/autosync and extend apply payload
+- audit WorkspaceHub and CloudSyncTab (P3)
+
+### Maintenance
+
+- add Management API migration runner
+- add npm run supabase:check for migration status
 
 ## [0.1.0] - 2026-09-29
 
@@ -183,4 +220,3 @@ _(sem alterações desde `v0.1.0`)_
 - specify feature 029 workspace hub and settings (spec.md and requirements checklist)
 - Create README.md with project details and setup instructions
 - initial commit: initialize Metrik project with specify-cli and constitution
-
