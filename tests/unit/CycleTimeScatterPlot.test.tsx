@@ -1,9 +1,18 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { CycleTimeScatterPlot } from '../../src/components/charts/CycleTimeScatterPlot';
 import { TaskModel } from '../../src/types/kanban';
 
 describe('CycleTimeScatterPlot Component', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-09-15T12:00:00.000Z'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   const mockTasks: TaskModel[] = [
     {
       id: 'task-1',

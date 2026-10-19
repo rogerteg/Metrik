@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { MonteCarloSimulationView } from '../../src/components/MonteCarloSimulationView';
 import { AnalyticsDashboard } from '../../src/components/AnalyticsDashboard';
 import { TaskModel } from '../../src/types/kanban';
@@ -55,6 +55,15 @@ const mockTasksWithHistory: TaskModel[] = [
 ];
 
 describe('Feature 019: MonteCarloSimulationView UI', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-09-10T12:00:00.000Z'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('renders guidance card when task history is insufficient', () => {
     render(<MonteCarloSimulationView tasks={[]} />);
     expect(screen.getByTestId('monte-carlo-guidance')).toBeInTheDocument();
