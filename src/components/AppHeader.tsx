@@ -5,6 +5,7 @@ import { ThemeMode } from '../types/theme';
 import { BoardSwitcher } from './BoardSwitcher';
 import { ThemeSelector } from './ThemeSelector';
 import { UserProfileMenu } from './UserProfileMenu';
+import { MikaTriggerButton } from './Mika/MikaTriggerButton';
 import metrikLogo from '../assets/metrik-logo.png';
 
 export type AppView = 'workspaces' | 'board' | 'analytics' | 'manage' | 'settings';
@@ -31,6 +32,9 @@ export interface AppHeaderProps {
   onResetDemo: () => void;
   onClearBoard: () => void;
   isGuest: boolean;
+  onOpenMika?: () => void;
+  isMikaOpen?: boolean;
+  hasMikaAlerts?: boolean;
 }
 
 /** Cabeçalho do aplicativo (extraído de App.tsx — P3/SRP). */
@@ -56,6 +60,9 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   onResetDemo,
   onClearBoard,
   isGuest,
+  onOpenMika,
+  isMikaOpen,
+  hasMikaAlerts,
 }) => (
   <header className="app-header">
     <div className="brand-section" style={{ display: 'flex', alignItems: 'center' }}>
@@ -144,6 +151,10 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
         </button>
 
         <ThemeSelector currentTheme={theme} onSelectTheme={onSelectTheme} />
+
+        {onOpenMika && (
+          <MikaTriggerButton onClick={onOpenMika} isOpen={isMikaOpen} hasAlerts={hasMikaAlerts} />
+        )}
       </div>
 
       <div className="header-cluster-divider" aria-hidden="true" />

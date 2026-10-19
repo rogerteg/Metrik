@@ -716,3 +716,154 @@
   color: #fda4af;
   margin: 0;
 }
+
+/* Cloud Sync Tab & Setup Guide (migrado de 13-recovered.css) */
+.cloud-sync-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.feedback-icon {
+  font-weight: bold;
+}
+
+.feedback-text {
+  flex: 1;
+}
+
+.feedback-latency {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.last-sync-tag {
+  font-size: 0.82rem;
+  color: var(--text-muted, #64748b);
+  border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.06));
+  padding-top: 10px;
+}
+
+.cloud-sync-section,
+.cloud-guide-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cloud-section-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #f1f5f9);
+  margin: 0;
+}
+
+.cloud-section-description {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #94a3b8);
+  margin: 0;
+}
+
+.cloud-setup-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cloud-setup-steps li {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #94a3b8);
+  line-height: 1.5;
+  background: var(--surface-card, rgba(255, 255, 255, 0.02));
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
+}
+
+.cloud-setup-steps strong {
+  color: var(--text-primary, #f1f5f9);
+}
+
+.cloud-setup-steps a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.cloud-setup-steps a:hover {
+  text-decoration: underline;
+}
+
+.cloud-setup-steps code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #38bdf8;
+  font-family: monospace;
+}
+
+.env-code-block {
+  background: #0f172a;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #e2e8f0;
+  font-family: 'Fira Code', monospace, Consolas;
+  font-size: 0.85rem;
+  margin: 8px 0 0 0;
+  overflow-x: auto;
+}
+
+/* Sincronização automática (opt-in) — Feature 038+ */
+.cloud-autosync-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.cloud-autosync-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-primary, #6366f1);
+}
+
+.cloud-autosync-status {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-primary, #6366f1);
+}
+
+.cloud-autosync-last {
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+/* Banner de migração pendente (Sprint/Story Points) */
+.cloud-migration-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.08);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.cloud-migration-banner__text {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.cloud-migration-banner .env-code-block {
+  width: 100%;
+  box-sizing: border-box;
+}

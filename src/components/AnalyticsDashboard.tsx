@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { BoardState, TaskModel } from '../types/kanban';
 import {
   AnalyticsCategory,
@@ -25,13 +25,16 @@ import { DashboardSummaryCards } from './DashboardSummaryCards';
 import { SleAnalyticsView } from './SleAnalyticsView';
 import { BlockerAnalyticsView } from './BlockerAnalyticsView';
 import { DatasetConfigurationDrawer } from './DatasetConfigurationDrawer';
+import { MikaInsightCard } from './Mika/MikaInsightCard';
+import { mikaService } from '../services/ai/mikaService';
+import { MikaInsight } from '../types/mika';
 import './Analytics.css';
 
 export type ChartType = 'cfd' | 'throughput' | 'leadTime' | 'cycleTime';
 
 export interface AnalyticsDashboardProps {
   tasks: TaskModel[];
-  board?: BoardState;
+  board?: BoardState & { id?: string };
 }
 
 export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, board }) => {
@@ -57,6 +60,35 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
       (datasetConfig.selectedTypes && datasetConfig.selectedTypes.length > 0)
     );
   }, [datasetConfig]);
+
+  // Estados e Carregamento de Diagnósticos da Mika Copilot (Feature 048)
+  const [mikaInsights, setMikaInsights] = useState<MikaInsight[]>([]);
+  const [mikaLoading, setMikaLoading] = useState(false);
+
+  const boardId = board?.id || 'default-board';
+  const columns = useMemo(() => board?.columns || [], [board?.columns]);
+
+  useEffect(() => {
+    let isMounted = true;
+    mikaService.getBoardInsights(boardId, columns, filteredTasks).then((insights) => {
+      if (isMounted) {
+        setMikaInsights(insights);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [boardId, columns, filteredTasks]);
+
+  const handleRefreshMika = async () => {
+    setMikaLoading(true);
+    try {
+      const refreshed = await mikaService.getBoardInsights(boardId, columns, filteredTasks, true);
+      setMikaInsights(refreshed);
+    } finally {
+      setMikaLoading(false);
+    }
+  };
 
   // Determinar tarefas concluídas com base na categoria 'done' das colunas do board (ou fallback column === 'done')
   const completedTasks = useMemo(() => {
@@ -109,6 +141,13 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
         onSelectBlockerMode={setBlockerMode}
         onToggleDatasetDrawer={() => setDatasetDrawerOpen((prev) => !prev)}
         hasActiveDatasetFilters={hasActiveDatasetFilters}
+      />
+
+      {/* Diagnósticos Preditivos e Insights da Mika AI Flow Copilot (Feature 048) */}
+      <MikaInsightCard
+        insights={mikaInsights}
+        onRefresh={handleRefreshMika}
+        isLoading={mikaLoading}
       />
 
       {/* Visão 1: Cycle Time focado */}

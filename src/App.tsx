@@ -44,6 +44,8 @@ import { WorkspaceHub } from './components/WorkspaceHub/WorkspaceHub';
 import { CreateWorkspaceModal } from './components/WorkspaceHub/CreateWorkspaceModal';
 import { SettingsView } from './components/Settings/SettingsView';
 import { ManageBoardsView } from './components/ManageBoards/ManageBoardsView';
+import { useMika } from './hooks/useMika';
+import { MikaDrawer } from './components/Mika/MikaDrawer';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -134,6 +136,16 @@ export const App: React.FC = () => {
     overwriteBoard,
   } = useTaskCollection(activeBoardId, { onNotify: setToastMessage });
 
+  const allBoardTasks = React.useMemo(() => {
+    return Object.values(board.tasks).flat();
+  }, [board.tasks]);
+
+  const mika = useMika({
+    boardId: activeBoardId || 'default-board',
+    columns: board.columns || [],
+    tasks: allBoardTasks,
+  });
+
   const { exportData, importData, exportCsv } = useDataPortability();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -177,10 +189,6 @@ export const App: React.FC = () => {
   };
 
   const filterData = useBoardFilters(board);
-
-  const allBoardTasks = React.useMemo(() => {
-    return Object.values(board.tasks).flat();
-  }, [board.tasks]);
 
   const completedTasks = React.useMemo(() => {
     return board.columns
@@ -527,6 +535,11 @@ export const App: React.FC = () => {
         onResetDemo={resetToSeed}
         onClearBoard={handleClearBoard}
         isGuest={isGuest}
+        onOpenMika={mika.toggleDrawer}
+        isMikaOpen={mika.isDrawerOpen}
+        hasMikaAlerts={mika.insights.some(
+          (i) => i.severity === 'warning' || i.severity === 'critical',
+        )}
       />
 
       {view === 'workspaces' ? (
@@ -800,6 +813,17 @@ export const App: React.FC = () => {
         onCreateWorkspace={(name, color, description) => {
           createWorkspace(name, color, description);
         }}
+      />
+
+      <MikaDrawer
+        isOpen={mika.isDrawerOpen}
+        onClose={mika.closeDrawer}
+        insights={mika.insights}
+        onRefresh={mika.refreshInsights}
+        isLoading={mika.isLoading}
+        providerName={
+          mika.preferences.provider === 'gemini' ? 'Google Gemini' : 'Local-First (Offline)'
+        }
       />
 
       <ToastNotification message={toastMessage} onClose={() => setToastMessage(null)} />

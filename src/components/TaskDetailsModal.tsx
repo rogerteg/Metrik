@@ -22,6 +22,7 @@ import { Modal } from './Modal';
 import { useFieldEdit } from '../hooks/useFieldEdit';
 import { TaskFieldActionToolbar } from './TaskFieldActionToolbar';
 import { TaskMetadataSidebar } from './TaskMetadataSidebar';
+import { MikaTaskAssistant } from './Mika/MikaTaskAssistant';
 import './TaskDetailsModal.css';
 
 interface TaskDetailsModalProps {
@@ -91,6 +92,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const [localEndDate, setLocalEndDate] = useState(task.endDate || '');
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [showCloseGuard, setShowCloseGuard] = useState(false);
+  const [showMikaAssistant, setShowMikaAssistant] = useState(false);
   const [activeTab, setActiveTab] = useState<TaskDetailTab>('overview');
 
   const handleAddComment = (text: string, isDecision?: boolean) => {
@@ -570,13 +572,39 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               {/* Subtasks / Checklist */}
               <section className="td-checklist-card">
                 <div className="td-checklist-header">
-                  <label className="td-label">
-                    Checklist ({completedCount}/{subtasks.length})
-                  </label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <label className="td-label">
+                      Checklist ({completedCount}/{subtasks.length})
+                    </label>
+                    <button
+                      type="button"
+                      className="mika-trigger-btn"
+                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem' }}
+                      onClick={() => setShowMikaAssistant((prev) => !prev)}
+                      title="Sugerir Subtarefas com Mika AI"
+                    >
+                      ✨ Mika AI
+                    </button>
+                  </div>
                   {subtasks.length > 0 && (
                     <span className="td-initiative-progress-val">{progress}%</span>
                   )}
                 </div>
+
+                {showMikaAssistant && (
+                  <MikaTaskAssistant
+                    task={task}
+                    onAcceptSubtasks={(newItems) => {
+                      const next = [...(task.subtasks || []), ...newItems];
+                      onUpdateTask(task.id, { subtasks: next });
+                    }}
+                    onAcceptCriteria={(criteriaText) => {
+                      acEdit.setValue(criteriaText);
+                      onUpdateTask(task.id, { acceptanceCriteria: criteriaText });
+                    }}
+                    onClose={() => setShowMikaAssistant(false)}
+                  />
+                )}
 
                 {subtasks.length > 0 && (
                   <div className="td-progress-bar-track">

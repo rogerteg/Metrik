@@ -7,9 +7,10 @@ import { WorkspacesSettingsTab } from './WorkspacesSettingsTab';
 import { BoardPoliciesTab } from './BoardPoliciesTab';
 import { DataPortabilityTab } from './DataPortabilityTab';
 import { CloudSyncTab } from './CloudSyncTab';
+import { MikaSettingsTab } from '../Mika/MikaSettingsTab';
 import './Settings.css';
 
-export type SettingsTabId = 'general' | 'workspaces' | 'policies' | 'data' | 'cloud';
+export type SettingsTabId = 'general' | 'workspaces' | 'policies' | 'data' | 'cloud' | 'mika';
 
 export interface SettingsViewProps {
   settings: AppSettings;
@@ -188,6 +189,21 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </span>
               <span className="tab-text">Nuvem & Supabase</span>
             </button>
+
+            <button
+              type="button"
+              role="tab"
+              id="tab-mika"
+              aria-controls="panel-mika"
+              aria-selected={activeTab === 'mika'}
+              className={`settings-tab-btn ${activeTab === 'mika' ? 'active' : ''}`}
+              onClick={() => setActiveTab('mika')}
+            >
+              <span className="tab-icon" aria-hidden="true">
+                ✨
+              </span>
+              <span className="tab-text">Mika AI Copilot</span>
+            </button>
           </nav>
         </aside>
 
@@ -242,6 +258,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               autoSyncLastAt={autoSyncLastAt}
             />
           )}
+
+          {activeTab === 'mika' && <MikaSettingsTab onShowToast={onShowToast} />}
         </main>
       </div>
     </div>
