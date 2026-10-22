@@ -1,8 +1,8 @@
-# Feature Specification: 002-wip-limits-and-flow-metrics
+﻿# Feature Specification: 002-wip-limits-and-flow-metrics
 
 **Feature Branch**: `002-wip-limits-and-flow-metrics`  
 **Created**: 2026-09-08  
-**Status**: Draft  
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: User description: "Feature 002: Limites de WIP e Métricas de Fluxo (Lead Time e Cycle Time)"
 
 ---

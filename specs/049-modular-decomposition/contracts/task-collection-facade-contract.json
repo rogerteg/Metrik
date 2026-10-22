@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UseTaskCollectionFacadeContract",
+  "description": "Contrato público e retrocompatível de propriedades e métodos retornados pelo hook useTaskCollection",
+  "type": "object",
+  "required": [
+    "tasks",
+    "columns",
+    "addTask",
+    "updateTask",
+    "deleteTask",
+    "moveTask",
+    "reorderTaskRelative",
+    "addTaskComment"
+  ],
+  "properties": {
+    "tasks": { "type": "array", "description": "Array de tarefas do quadro ativo" },
+    "columns": { "type": "array", "description": "Array de colunas do quadro ativo" },
+    "addTask": { "type": "string", "description": "(taskData: Partial<Task>) => Task" },
+    "updateTask": { "type": "string", "description": "(taskId: string, updates: Partial<Task>) => void" },
+    "deleteTask": { "type": "string", "description": "(taskId: string) => void" },
+    "moveTask": { "type": "string", "description": "(taskId: string, targetColId: string) => void" },
+    "reorderTaskRelative": { "type": "string", "description": "(taskId: string, targetTaskId: string, position: 'before'|'after') => void" },
+    "addTaskComment": { "type": "string", "description": "(taskId: string, text: string, isDecision?: boolean) => void" }
+  }
+}

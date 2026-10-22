@@ -1,10 +1,10 @@
-# Feature Specification: Task Details Activity & Objective Fields Redesign
+﻿# Feature Specification: Task Details Activity & Objective Fields Redesign
 
 **Feature Branch**: `037-task-details-activity-redesign`
 
 **Created**: 2026-09-23
 
-**Status**: Implemented — reconciled 2026-09-25
+**Status**: Implemented & Verified (2026-10-21)
 
 **Input**: User description: "Recrie, organize, a funcao detalhe da tarefa. Use como inspiração a tela em anexo. Crie logs e campos objetivos."
 

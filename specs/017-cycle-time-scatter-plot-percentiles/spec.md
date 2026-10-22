@@ -1,8 +1,8 @@
-# Feature Specification: Cycle Time Scatter Plot Avançado com Percentis e Navegação Analítica (Flow Analytics)
+﻿# Feature Specification: Cycle Time Scatter Plot Avançado com Percentis e Navegação Analítica (Flow Analytics)
 
 **Feature Branch**: `017-cycle-time-scatter-plot-percentiles`  
 **Created**: 2026-09-11  
-**Status**: Completed  
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: Imagem fornecida pelo usuário inspirada no padrão de ponta de **Flow Analytics**:
 - Navegação de abas analíticas no topo (`Dashboard`, `Cycle Time` [dropdown: *Scatter Plot*, *Histogram*, *Heat Map*], `Throughput`, `WIP`, `Flow`, `Blockers`, `SLEs`, `Forecasting`).
 - Gráfico principal: **Cycle Time Scatter Plot** com linhas horizontais de **Percentis (50%, 85%, 95%)** calculados estatisticamente sobre as tarefas concluídas.

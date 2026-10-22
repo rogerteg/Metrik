@@ -1,10 +1,10 @@
-# Feature Specification: Salvamento Manual e Automático de Comentários e Campos da Tarefa
+﻿# Feature Specification: Salvamento Manual e Automático de Comentários e Campos da Tarefa
 
 **Feature Branch**: `032-task-comment-autosave`
 
 **Created**: 2026-09-18
 
-**Status**: Draft
+**Status**: Implemented & Verified (2026-10-21)
 
 **Input**: User description: "Melhoria: Na tarefa, quando fizer algum log, algum comentario no campo descrição, ou algum outro campo que possibilite algum comentario, Crie um botao salva no cartao. E crie uma opção dentro de configurações de qualquer comentario em qualquer campo permitido do board, salvar automaticamente. Crie um atalho para essa função. Melhore colaborativamente, empiricamente de acordo com seu know-how."
 

@@ -218,6 +218,11 @@ As medidas desta visão **não têm prazo de validade fixo** — elas são inval
 | Sincronização de squads/membros, autosync opt-in, resolução de conflito por data e banner de migração | 2026-09-29 |
 | 6 seletores de estilo com sobrescrita total removidos (de 18 para 12 duplicados) | 2026-09-29 |
 | Cobertura com limiar e análise estática integrados ao pipeline (0 erros) | 2026-09-28 |
+| OPP-010: Reconciliação do estado declarado de 32 especificações entregues (`**Status**: Implemented & Verified`) | 2026-10-21 (Feature 050) |
+| OPP-011: Eliminação de 3 marcadores [NEEDS CLARIFICATION] na spec 023 via Constituição VIII | 2026-10-21 (Feature 050) |
+| OPP-012: Formalização histórica de 55 tarefas nas specs 005 a 009 (`tasks.md`) | 2026-10-21 (Feature 050) |
+| OPP-013: Higienização e remoção segura de 14 branches locais e 3 remotas mescladas | 2026-10-21 (Feature 050) |
+| OPP-017: Auditoria e reconciliação documental de 11 checklists com bloqueio formal de ambiente | 2026-10-21 (Feature 050) |
 
 ---
 

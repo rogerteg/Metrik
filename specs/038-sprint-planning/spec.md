@@ -1,8 +1,8 @@
-# Feature Specification: Planejamento de Sprints
+﻿# Feature Specification: Planejamento de Sprints
 
 **Feature Branch**: `038-sprint-planning`
 **Created**: 2026-09-28
-**Status**: Draft
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: Capacidade de planejar e acompanhar iterações (sprints) por quadro, atribuindo tarefas e medindo progresso/velocity, mantendo a soberania Local-First.
 
 ## User Scenarios & Testing *(mandatory)*

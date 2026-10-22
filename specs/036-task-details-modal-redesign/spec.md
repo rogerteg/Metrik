@@ -1,10 +1,10 @@
-# Feature Specification: Task Details Modal & Activity System Complete UI/UX Redesign
+﻿# Feature Specification: Task Details Modal & Activity System Complete UI/UX Redesign
 
 **Feature Branch**: `036-task-details-modal-redesign`
 
 **Created**: 2026-09-22
 
-**Status**: Draft
+**Status**: Implemented & Verified (2026-10-21)
 
 **Input**: User description: "Melhoria: O design ficou muito ruim, a parte interna do card... Historico, comentarios, logs. Peço que analise como Design todo o sistema, e melhore isso. Toda configuração foi perdida, a formatação é ruim, pesima. Melhore isso."
 

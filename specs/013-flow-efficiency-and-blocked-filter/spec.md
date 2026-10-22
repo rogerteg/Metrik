@@ -1,4 +1,9 @@
-# Feature 013: Eficiência de Fluxo & Filtro de Bloqueios (Flow Efficiency & Blocked Filter)
+﻿# Feature 013: Eficiência de Fluxo & Filtro de Bloqueios (Flow Efficiency & Blocked Filter)
+
+**Feature Branch**: `013-flow-efficiency-and-blocked-filter`
+
+**Status**: Implemented & Verified (2026-10-21)
+
 
 ## 1. Context & Rationale
 Com a introdução da Feature 012 (Rastreamento de Bloqueios & Impedimentos), o Metrik passou a capturar com precisão o tempo que cada cartão permanece bloqueado (`totalBlockedMs`). No entanto, esses dados ainda não estão consolidados em nível de sistema para fornecer a métrica mais nobre do Kanban: a **Eficiência de Fluxo (*Flow Efficiency*)**, que quantifica qual porcentagem do tempo do ciclo de trabalho é realmente produtiva versus tempo desperdiçado em filas e impedimentos.

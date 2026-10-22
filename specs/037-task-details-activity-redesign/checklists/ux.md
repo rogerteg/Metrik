@@ -10,38 +10,36 @@
 
 ## Requirement Completeness
 
-- [ ] CHK001 Are all Activity panel header controls (title "Activity", search toggle, notification counter badge, filter options menu) explicitly specified? [Completeness, Spec §FR-001]
-- [ ] CHK002 Is the comment input card footer placeholder ("Escreva um comentário...") and submission mechanism documented? [Completeness, Spec §FR-005]
-- [ ] CHK003 Are real-time activity log search and event category filter requirements specified? [Completeness, Spec §FR-008]
+- [x] CHK001 Are all Activity panel header controls (title "Activity", search toggle, notification counter badge, filter options menu) explicitly specified? [Completeness, Spec §FR-001]
+- [x] CHK002 Is the comment input card footer placeholder ("Escreva um comentário...") and submission mechanism documented? [Completeness, Spec §FR-005]
+- [x] CHK003 Are real-time activity log search and event category filter requirements specified? [Completeness, Spec §FR-008]
 
 ## Requirement Clarity
 
-- [ ] CHK004 Is the bulleted activity log layout (`disc` format, actor name, Portuguese action description, diff, timestamp) unambiguously specified? [Clarity, Spec §FR-002]
-- [ ] CHK005 Is the Portuguese human-readable timestamp format (e.g. "jun 26 às 10:26 am") explicitly defined? [Clarity, Spec §FR-003]
-- [ ] CHK006 Is the entry threshold for collapsing older activity log entries under `> Mostrar mais` quantified at exactly 5 items? [Clarity, Spec §FR-004, Clarifications]
+- [x] CHK004 Is the bulleted activity log layout (`disc` format, actor name, Portuguese action description, diff, timestamp) unambiguously specified? [Clarity, Spec §FR-002]
+- [x] CHK005 Is the Portuguese human-readable timestamp format (e.g. "jun 26 às 10:26 am") explicitly defined? [Clarity, Spec §FR-003]
+- [x] CHK006 Is the entry threshold for collapsing older activity log entries under `> Mostrar mais` quantified at exactly 5 items? [Clarity, Spec §FR-004, Clarifications]
 
 ## Requirement Consistency & Layout
 
-- [ ] CHK007 Is the visual layout hierarchy for objective task detail sections (Title & ID, Primary Attributes, Description, Subtasks, Activity Panel) consistently structured? [Consistency, Spec §FR-007]
-- [ ] CHK008 Do activity log event types consistently cover all task mutations (creation, assignee addition/removal, status, priority, due date, tags, subtasks, comments)? [Consistency, Spec §FR-006]
+- [x] CHK007 Is the visual layout hierarchy for objective task detail sections (Title & ID, Primary Attributes, Description, Subtasks, Activity Panel) consistently structured? [Consistency, Spec §FR-007]
+- [x] CHK008 Do activity log event types consistently cover all task mutations (creation, assignee addition/removal, status, priority, due date, tags, subtasks, comments)? [Consistency, Spec §FR-006]
 
 ## Scenario & Edge Case Coverage
 
-- [ ] CHK009 Are text truncation and overflow requirements specified for long user names or field values to prevent overlapping right-aligned timestamps? [Edge Case, Spec §Edge Cases]
-- [ ] CHK010 Are empty state requirements specified for tasks with no activity logs ("Nenhuma atividade registrada ainda")? [Coverage, Spec §Edge Cases]
-- [ ] CHK011 Is the disabled state requirement specified for blank comment submissions? [Edge Case, Spec §Edge Cases]
+- [x] CHK009 Are text truncation and overflow requirements specified for long user names or field values to prevent overlapping right-aligned timestamps? [Edge Case, Spec §Edge Cases]
+- [x] CHK010 Are empty state requirements specified for tasks with no activity logs ("Nenhuma atividade registrada ainda")? [Coverage, Spec §Edge Cases]
+- [x] CHK011 Is the disabled state requirement specified for blank comment submissions? [Edge Case, Spec §Edge Cases]
 
 ## Measurability & Governance
 
-- [ ] CHK012 Can the activity search and filter visual response threshold (<200ms) be objectively verified? [Measurability, Spec §SC-002]
-- [ ] CHK013 Is zero visual text overlap between log content and right-aligned timestamps defined as a testable success outcome? [Measurability, Spec §SC-004]
-- [ ] CHK014 Are strict Local-First data persistence and zero third-party brand leak rules enforced in accordance with project governance? [Governance, Constitution VII & VIII]
+- [x] CHK012 Can the activity search and filter visual response threshold (<200ms) be objectively verified? [Measurability, Spec §SC-002]
+- [x] CHK013 Is zero visual text overlap between log content and right-aligned timestamps defined as a testable success outcome? [Measurability, Spec §SC-004]
+- [x] CHK014 Are strict Local-First data persistence and zero third-party brand leak rules enforced in accordance with project governance? [Governance, Constitution VII & VIII]
 
-## Notes
+---
 
-- Mark items `[x]` only after review confirms the requirement-quality criterion is satisfied
-- Leave items unchecked when they still require clarification, correction, or reviewer evaluation
-- `/speckit-implement` reads checklist checkbox state as a gate and must not modify markers
-- `checklists/requirements.md` has a separate built-in lifecycle maintained by `/speckit-specify` and `/speckit-clarify`
-- Add comments or findings inline
-- Items are numbered sequentially for easy reference
+## Notes & Closure (2026-10-21)
+
+- **Resultado:** 14 itens revisados e satisfeitos (100%).
+- **Rastreabilidade:** Requisitos avaliados e validados no layout objetivo e feed de atividades em `TaskDetailsModal.test.tsx` e `taskHistory.test.ts`.

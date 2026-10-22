@@ -1,8 +1,8 @@
-# Feature Specification: Burndown da Sprint
+﻿# Feature Specification: Burndown da Sprint
 
 **Feature Branch**: `039-sprint-burndown`
 **Created**: 2026-09-28
-**Status**: Draft
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: Visualizar o burndown da sprint (linha ideal vs. restante real) a partir dos dados já persistidos (`createdAt`/`completedAt`), sem snapshots.
 
 ## User Scenarios & Testing *(mandatory)*

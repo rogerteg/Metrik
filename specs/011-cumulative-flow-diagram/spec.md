@@ -1,4 +1,9 @@
-# Feature 011: Cumulative Flow Diagram (CFD)
+﻿# Feature 011: Cumulative Flow Diagram (CFD)
+
+**Feature Branch**: `011-cumulative-flow-diagram`
+
+**Status**: Implemented & Verified (2026-10-21)
+
 
 ## 1. Context & Rationale
 Metrik currently provides an Analytics Dashboard with a daily Throughput histogram and a Lead Time Scatter Plot. While these give insight into delivery pace and variability, agile and Kanban practitioners rely on the **Cumulative Flow Diagram (CFD)** to assess overall system stability, identify WIP accumulation bottlenecks, and track work progression over time.

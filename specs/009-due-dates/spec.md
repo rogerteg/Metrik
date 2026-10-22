@@ -1,4 +1,9 @@
-# Feature 009: Due Dates & Overdue Alerts
+﻿# Feature 009: Due Dates & Overdue Alerts
+
+**Feature Branch**: `009-due-dates`
+
+**Status**: Implemented & Verified (2026-10-21)
+
 
 ## 1. Context & Rationale
 Kanban is generally flow-based, but real-world tasks often have hard external deadlines. Metrik currently has no way to track when a task is due. Introducing Due Dates will allow users to set a deadline via the Task Details Modal and see visual alerts on the board if a task is approaching its deadline or is already overdue.

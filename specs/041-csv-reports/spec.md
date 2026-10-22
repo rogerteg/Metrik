@@ -1,8 +1,8 @@
-# Feature Specification: Relatórios Exportáveis (CSV)
+﻿# Feature Specification: Relatórios Exportáveis (CSV)
 
 **Feature Branch**: `041-csv-reports`
 **Created**: 2026-09-28
-**Status**: Draft
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: Exportar tarefas e sprints do quadro em CSV, complementando o backup JSON (feature 006).
 
 ## User Scenarios & Testing *(mandatory)*

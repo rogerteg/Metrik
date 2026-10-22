@@ -1,33 +1,28 @@
 <!--
 Sync Impact Report:
-- Version change: 1.6.3 → 1.7.0
-- Bump rationale: MINOR — Principle III is materially expanded with three new obligations. No existing
-  obligation is removed or redefined in a backward-incompatible way: work approved under a green baseline
-  remains valid, so the amendment does not qualify as MAJOR. It is not PATCH because it creates new
-  obligations rather than only clarifying wording.
-- Modified principles:
-  - III. Automated Verification & Testing (expanded; title unchanged)
+- Version change: 1.7.0 → 1.7.1
+- Bump rationale: PATCH — Governance and compliance review refinement following the successful completion
+  of Strategic Roadmap Phase 2 (Feature 050: Documentary Artifact Reconciliation & Governance).
+  Clarifies documentary compliance expectations under FR-024 (canonical status declaration for delivered specs),
+  zero-ambiguity closure on clarification markers, auditable historical task tracking, and safe branch pruning
+  policies. No principle is removed or weakened; existing obligations are refined with concrete criteria.
+- Modified principles: None (Principles I through IX maintained with 100% fidelity)
 - Added sections: None
 - Removed sections: None
 - Expanded sections:
-  - III.1 — executable suites now name the configured type gate as part of the obligation.
-  - III.2 — "pass clean" is defined for configured static-analysis gates, and warnings cease to be an
-    undefined pass/fail condition: they become bounded debt under a non-increasing ratchet.
-  - III.3 — protocol for a pre-existing red baseline: definition of done becomes "no regression",
-    remediation by weakening an assertion is prohibited, and a corrective feature is mandatory.
-  - III.4 — a declared verification gate MUST produce the evidence it claims; a gate that yields no
-    result is treated as not configured and must be raised as a defect.
+  - Compliance Review Expectations — explicitly formalizes:
+    (a) Canonical specification status declarations under criterion FR-024 (`**Status**: Implemented & Verified (<date>)` for delivered features; `Draft` for in-progress work).
+    (b) Mandatory resolution of all `[NEEDS CLARIFICATION]` markers prior to closing any delivered specification.
+    (c) Auditability of domain verification checklists (either verified `[x]` or formal Environment Block recorded).
+    (d) Workspace hygiene via strictly safe branch deletion (`git branch -d`) for merged branches.
 - Evidence (measured, not theorised):
-  - `npm run lint` exits 0 while reporting 40 warnings, and `Lint` is a blocking CI step — so "pass clean"
-    was ambiguous and the project was compliant or non-compliant depending on the reading.
-  - `npm run test` is red with 5 pre-existing clock-dependent failures, which made the previous text
-    unsatisfiable: no change could be declared complete, by definition.
-  - The CI coverage gate (`test:coverage`, then upload of `coverage/` with `if: always()`) produces no
-    summary and no report files in 5 independent runs, including to a directory outside the repository
-    (recorded as OPP-018 in the feature 043 artifacts).
+  - 100% of the 32 delivered feature specifications (specs 001..042 and 044..047) reconciled to `**Status**: Implemented & Verified (2026-10-21)`.
+  - Zero `[NEEDS CLARIFICATION]` markers remaining in delivered specifications (spec 023 fully harmonized with Principle VIII).
+  - 55 legacy tasks in specs 005..009 formalised as historically delivered (`- [x]`).
+  - 11 domain checklists audited with formal Environment Blocks recorded where external browser engines are absent on host.
+  - 14 merged local branches and 3 remote branches safely pruned (`git branch -d` and `git push origin --delete`).
+  - Automated governance test guard `tests/unit/documentaryGovernance.test.ts` passing 5/5 tests and global suite passing 749 tests across 126 test files.
 - Follow-up TODOs: None (no placeholder is intentionally deferred).
-- Not stored here: the warning-convergence owner and target, and the corrective-feature identifiers, are
-  tracked as declared indicators in the specification artifacts, which are subordinate to this document.
 -->
 
 # Metrik Constitution
@@ -131,6 +126,10 @@ practices, ad-hoc conventions, and per-feature preferences.
   block completion until it is resolved or the Constitution is explicitly amended.
 - New complexity, abstraction layers, and dependencies MUST be justified against Principle V; an
   unjustified addition is a compliance failure, not a stylistic preference.
+- Delivered feature specifications (`spec.md`) MUST declare the canonical status `**Status**: Implemented & Verified (<date>)` under criterion FR-024. Specifications in active planning or development MUST declare `**Status**: Draft`.
+- All `[NEEDS CLARIFICATION]` markers in delivered feature specifications MUST be fully resolved prior to closing the feature lifecycle.
+- Quality and review checklists in `specs/*/checklists/*.md` MUST have all verified items audited (`- [x]`) or carry an explicit, formal Environment Block.
+- Repository hygiene requires that all local and remote branches whose changes have been fully integrated into `main` be safely deleted (`git branch -d` locally, `git push origin --delete` remotely), preventing branch drift and clutter.
 - `/speckit-converge` is the designated gate for confirming that shipped code still satisfies the
   specification, the plan, and this Constitution.
 
@@ -138,4 +137,4 @@ practices, ad-hoc conventions, and per-feature preferences.
 operative workflows, roles, and tooling for day-to-day development. They are subordinate to this
 Constitution; where they conflict, this Constitution prevails.
 
-**Version**: 1.7.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-10-08
+**Version**: 1.7.1 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-10-22

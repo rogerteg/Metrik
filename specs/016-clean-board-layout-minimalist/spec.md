@@ -1,8 +1,8 @@
-# Feature Specification: Layout Clean e Minimalista do Board
+﻿# Feature Specification: Layout Clean e Minimalista do Board
 
 **Feature Branch**: `016-clean-board-layout-minimalist`  
 **Created**: 2026-09-11  
-**Status**: Implemented & Converged (Verified)  
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: Solicitação do usuário: "melhorar layout do board, mais clean, padrão enterprise minimalista"
 
 ---

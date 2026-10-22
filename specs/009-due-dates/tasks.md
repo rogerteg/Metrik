@@ -1,20 +1,20 @@
-# Implementation Tasks: Feature 009 (Due Dates)
+﻿# Implementation Tasks: Feature 009 (Due Dates)
 
 > ⚠️ **Spec histórica — capacidade entregue.** `dueDate` no `TaskModel`, `getDueDateStatus`/`formatDateShort` e o badge no cartão já existem. Este `tasks.md` é registro histórico; **não implementar**. _(Reconciliado em 2026-09-28.)_
 
 ## Phase 1: Data Model & Utilities
-- [ ] T001 Update `src/types/kanban.ts` to add `dueDate?: string;` to `TaskModel`.
-- [ ] T002 Update `src/utils/timeFormatters.ts` with `getDueDateStatus` and `formatDateShort`.
-- [ ] T003 Write unit tests for date calculation logic in `timeFormatters.test.ts`.
+- [x] T001 Update `src/types/kanban.ts` to add `dueDate?: string;` to `TaskModel`.
+- [x] T002 Update `src/utils/timeFormatters.ts` with `getDueDateStatus` and `formatDateShort`.
+- [x] T003 Write unit tests for date calculation logic in `timeFormatters.test.ts`.
 
 ## Phase 2: Task Details Modal Integration
-- [ ] T004 Update `src/components/TaskDetailsModal.tsx` to include an `<input type="date">`.
-- [ ] T005 Update `TaskDetailsModal.test.tsx` to verify setting and clearing the due date.
+- [x] T004 Update `src/components/TaskDetailsModal.tsx` to include an `<input type="date">`.
+- [x] T005 Update `TaskDetailsModal.test.tsx` to verify setting and clearing the due date.
 
 ## Phase 3: Task Card Visualization
-- [ ] T006 Update `src/components/Task.tsx` to render the due date badge with appropriate color classes.
-- [ ] T007 Update `src/components/Task.test.tsx` to verify the due date badge rendering and CSS classes.
+- [x] T006 Update `src/components/Task.tsx` to render the due date badge with appropriate color classes.
+- [x] T007 Update `src/components/Task.test.tsx` to verify the due date badge rendering and CSS classes.
 
 ## Phase 4: Styling & Finalization
-- [ ] T008 Add CSS for the date input in `TaskDetailsModal.css` and the badge colors in `App.css`.
-- [ ] T009 Run `npm run build` and `npm test` to ensure a 100% pass rate.
+- [x] T008 Add CSS for the date input in `TaskDetailsModal.css` and the badge colors in `App.css`.
+- [x] T009 Run `npm run build` and `npm test` to ensure a 100% pass rate.

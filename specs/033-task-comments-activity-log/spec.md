@@ -1,8 +1,8 @@
-# Feature Specification: Comentários e Trilha de Auditoria de Ações da Tarefa
+﻿# Feature Specification: Comentários e Trilha de Auditoria de Ações da Tarefa
 
 **Feature Branch**: `033-task-comments-activity-log`  
 **Created**: 2026-09-18  
-**Status**: Draft  
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: User description: "Incluir em cada cartao o campo comentario abaixo, para que sejam feitos comentarios nos cartoes, sobre atualizações. E essas fiquem no sistema para uma eventual consulta futura. Crie tambem um registro de todas as ações feitas nos cards. Para uma possivel rastreabilidade. Movimentações, quem moveu, registre o horario e a data, e o usuario que o fez."
 
 ---

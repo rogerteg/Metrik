@@ -1,4 +1,9 @@
-# Feature 007: Task Details Modal
+﻿# Feature 007: Task Details Modal
+
+**Feature Branch**: `007-task-details-modal`
+
+**Status**: Implemented & Verified (2026-10-21)
+
 
 ## 1. Context & Rationale
 Currently, tasks in Metrik only support a title, priority, and tags directly visible on the board's card. This limits the application's usefulness for complex workflows where tasks require extended descriptions, acceptance criteria, or subtasks. A "Task Details Modal" allows users to click a task card and open a dedicated view to manage rich metadata without cluttering the main Kanban view.

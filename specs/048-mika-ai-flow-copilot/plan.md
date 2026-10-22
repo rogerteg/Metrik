@@ -57,7 +57,8 @@ specs/048-mika-ai-flow-copilot/
 │   ├── mika-insights-schema.json
 │   └── mika-decomposition-schema.json
 └── checklists/
-    └── requirements.md  # Checklist de qualidade dos requisitos
+    ├── requirements.md  # Checklist de qualidade dos requisitos
+    └── security.md      # Checklist de segurança, soberania Local-First e BYOK
 ```
 
 ### Source Code Touched & Created

@@ -1,8 +1,8 @@
-# Feature Specification: Simulações de Monte Carlo no Gerenciamento de Projetos
+﻿# Feature Specification: Simulações de Monte Carlo no Gerenciamento de Projetos
 
 **Feature Branch**: `019-monte-carlo-simulation`  
 **Created**: 2026-09-11  
-**Status**: Completed  
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: Requisito do usuário: "Simulações de Monte Carlo no Gerenciamento de Projetos"
 - Previsões probabilísticas de entrega baseadas em dados empíricos de Throughput histórico diário do Metrik (Daniel Vacanti / Lei dos Grandes Números / Padrão NIST).
 - Resolução das duas perguntas fundamentais da gestão ágil e lean:

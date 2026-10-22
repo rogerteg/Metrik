@@ -1,8 +1,8 @@
-# Feature Specification: Gráfico de Envelhecimento do Trabalho em Progresso (Aging WIP Chart)
+﻿# Feature Specification: Gráfico de Envelhecimento do Trabalho em Progresso (Aging WIP Chart)
 
 **Feature Branch**: `020-wip-aging-chart`  
 **Created**: 2026-09-11  
-**Status**: Draft  
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: Imagem fornecida pelo usuário do **Aging Work In Progress Chart**:
 - **Cabeçalho / Navegação**: Nova aba analítica `WIP` (ou `Envelhecimento do WIP / Aging WIP`) posicionada entre `Throughput` e `CFD / Fluxo` no `AnalyticsNavHeader.tsx`.
 - **Painel de Configuração Lateral Esquerdo (`Dataset configuration`)**:

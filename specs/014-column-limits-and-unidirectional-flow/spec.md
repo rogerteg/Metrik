@@ -1,4 +1,9 @@
-# Feature 014: Limite de Colunas com Alerta & Fluxo Unidirecional com Guarda de Métricas
+﻿# Feature 014: Limite de Colunas com Alerta & Fluxo Unidirecional com Guarda de Métricas
+
+**Feature Branch**: `014-column-limits-and-unidirectional-flow`
+
+**Status**: Implemented & Verified (2026-10-21)
+
 
 ## 1. Context & Rationale
 O método Kanban apoia-se em dois pilares essenciais: a visibilidade do processo e o fluxo contínuo puxado. Contudo, em quadros com excesso de etapas (colunas), o sistema perde visibilidade, sobrecarrega o foco cognitivo da equipe e dilui os limites de Trabalho em Progresso (WIP). O limite recomendado de colunas em quadros ágeis eficientes não deve exceder a capacidade de visualização clara da esteira de valor.

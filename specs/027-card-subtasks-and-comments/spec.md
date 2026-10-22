@@ -1,10 +1,10 @@
-# Feature Specification: Subtarefas e Comentários nos Cartões
+﻿# Feature Specification: Subtarefas e Comentários nos Cartões
 
 **Feature Branch**: `027-card-subtasks-and-comments`
 
 **Created**: 2026-09-14
 
-**Status**: Implemented (delta Modo 2) — subtarefas inline e comentários (cartão + subtarefa) entregues; ver `proposal.md` e `tasks.md`
+**Status**: Implemented & Verified (2026-10-21)
 
 **Input**: User description: "Ajustar o sistema, melhorar de forma que dentro do card, possibilite criar uma subtarefa. E ter um campo que possibilite fazer comentario dentro do Card pai, e dentro do card, da subtarefa, ou seja, o Card filho."
 

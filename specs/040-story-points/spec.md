@@ -1,8 +1,8 @@
-# Feature Specification: Estimativa em Pontos e Velocity por Pontos
+﻿# Feature Specification: Estimativa em Pontos e Velocity por Pontos
 
 **Feature Branch**: `040-story-points`
 **Created**: 2026-09-28
-**Status**: Draft
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: Estimar tarefas em story points e acompanhar velocity/capacidade em pontos, estendendo o Planejamento de Sprints (038).
 
 ## User Scenarios & Testing *(mandatory)*

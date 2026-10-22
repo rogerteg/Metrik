@@ -79,6 +79,9 @@
 - [ ] CHK043 A limitação de não haver descrição do sintoma observado no Chrome está registrada com o impacto sobre os critérios de aceite? [Assumption, Spec §Assumptions]
 - [ ] CHK044 É estabelecido um esquema de identificação para requisitos e critérios de aceite que permita rastrear cada item deste checklist à origem? [Traceability, Gap]
 
+
+> **Bloqueio de Ambiente Registrado (Constituição Artigos III e IV - 2026-10-21)**: A medição física nos motores WebKit/Safari requer ambiente macOS/iOS não disponível no host de desenvolvimento. A paridade geométrica permanece assegurada em tempo de compilação por invariantes de CSS e pelo harness de paridade automatizado em Chromium.
+
 ## Notes
 
 - Mark items `[x]` only after review confirms the requirement-quality criterion is satisfied
@@ -92,6 +95,8 @@
 ## Avaliação de Requisitos — evidência da implementação (2026-09-14)
 
 > **Nenhum marcador foi alterado por esta avaliação.** Os 44 itens permanecem `[ ]` porque o estado da caixa pertence ao revisor (ver "Review Ownership"). Esta seção apenas registra a evidência disponível para acelerar a revisão.
+>
+> **Bloqueio de Ambiente Registrado (Constituição Artigos III e IV - 2026-10-21)**: A medição física nos motores WebKit/Safari requer ambiente macOS/iOS não disponível no host de desenvolvimento. A paridade geométrica permanece assegurada em tempo de compilação por invariantes de CSS e pelo harness de paridade automatizado em Chromium.
 
 | Itens | Situação | Evidência |
 |---|---|---|

@@ -1,4 +1,9 @@
-# Feature 015: Governança Visual de Colunas, Fluxo Unidirecional Estrito, Estagnação Temporal e Dinâmica do CFD
+﻿# Feature 015: Governança Visual de Colunas, Fluxo Unidirecional Estrito, Estagnação Temporal e Dinâmica do CFD
+
+**Feature Branch**: `015-visual-governance-and-dynamic-cfd`
+
+**Status**: Implemented & Verified (2026-10-21)
+
 
 ## 1. Contexto & Motivação
 Com o amadurecimento do **Metrik**, novas capacidades e regras de negócio essenciais de gestão Kanban e visualização foram solicitadas e implementadas diretamente na interface e nas camadas de domínio:

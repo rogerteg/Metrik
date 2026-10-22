@@ -1,10 +1,10 @@
-# Feature Specification: Higiene Documental do README e Conformidade de Marcas (Ciclo 2)
+﻿# Feature Specification: Higiene Documental do README e Conformidade de Marcas (Ciclo 2)
 
 **Feature Branch**: `045-readme-brand-hygiene`
 
 **Created**: 2026-10-15
 
-**Status**: Implemented
+**Status**: Implemented & Verified (2026-10-21)
 
 **Input**: User description: "/speckit-specify Ciclo 2: Higiene Documental do README e Conformidade de Marcas (P1)"
 

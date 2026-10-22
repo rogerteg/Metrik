@@ -1,4 +1,9 @@
-# Feature 008: Analytics Dashboard
+﻿# Feature 008: Analytics Dashboard
+
+**Feature Branch**: `008-analytics-dashboard`
+
+**Status**: Implemented & Verified (2026-10-21)
+
 
 ## 1. Context & Rationale
 Metrik currently calculates high-level Flow Metrics (Lead Time, Cycle Time, Throughput) and displays them in a summary bar. However, Agile teams need visual trends to diagnose bottlenecks (e.g., "Is our lead time increasing?" or "How steady is our delivery pace?"). Feature 008 introduces a dedicated Analytics Dashboard to visualize these metrics without introducing heavy third-party chart libraries, staying true to the 0-dependency native architecture.

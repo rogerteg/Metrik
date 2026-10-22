@@ -1,4 +1,8 @@
-# Tasks: Column Management
+﻿# Tasks: Column Management
+
+> ⚠️ **Entrega Histórica**: Capacidades integralmente implementadas, testadas e verificadas na versão v0.1.0 (2026-09-29). Este artefato é um registro histórico reconciliado em 2026-10-21; todas as tarefas foram formalmente concluídas.
+
+
 
 > ⚠️ **Spec histórica — capacidade entregue.** A gestão de colunas (CRUD + reordenação) já existe em `useTaskCollection` (`addColumn`/`updateColumn`/`deleteColumn`/`reorderColumn`), `Column.tsx` e `Board.tsx`. Este `tasks.md` é registro histórico; **não implementar**. _(Reconciliado em 2026-09-28.)_
 
@@ -40,25 +44,25 @@
 ---
 
 ## Phase 1: Data Model & Seed Refactoring
-- [ ] T001 [P] Modificar `src/types/kanban.ts` para introduzir `ColumnCategory`, `ColumnModel`, e atualizar `BoardState`. Deletar `ColumnType`.
-- [ ] T002 [P] Atualizar `src/utils/seedData.ts` para a nova estrutura de `BoardState`.
+- [x] T001 [P] Modificar `src/types/kanban.ts` para introduzir `ColumnCategory`, `ColumnModel`, e atualizar `BoardState`. Deletar `ColumnType`.
+- [x] T002 [P] Atualizar `src/utils/seedData.ts` para a nova estrutura de `BoardState`.
 
 ## Phase 2: State Management & Migration
-- [ ] T003 Atualizar `src/hooks/useTaskCollection.ts` para suportar `board.columns` e `board.tasks`, incluindo lógica de migração no `getInitialState`.
-- [ ] T004 Adicionar métodos ao `useTaskCollection.ts`: `addColumn`, `updateColumn`, `deleteColumn`, e `reorderColumn`.
-- [ ] T005 Ajustar os testes unitários em `tests/unit/useTaskCollection.test.ts`.
+- [x] T003 Atualizar `src/hooks/useTaskCollection.ts` para suportar `board.columns` e `board.tasks`, incluindo lógica de migração no `getInitialState`.
+- [x] T004 Adicionar métodos ao `useTaskCollection.ts`: `addColumn`, `updateColumn`, `deleteColumn`, e `reorderColumn`.
+- [x] T005 Ajustar os testes unitários em `tests/unit/useTaskCollection.test.ts`.
 
 ## Phase 3: Drag and Drop & Reordering (Core Logic)
-- [ ] T006 Atualizar `src/utils/taskReorder.ts` para trabalhar com `tasks: Record<string, TaskModel[]>` e lidar com a reordenação de colunas.
-- [ ] T007 Atualizar `src/types/dnd.ts` se necessário.
+- [x] T006 Atualizar `src/utils/taskReorder.ts` para trabalhar com `tasks: Record<string, TaskModel[]>` e lidar com a reordenação de colunas.
+- [x] T007 Atualizar `src/types/dnd.ts` se necessário.
 
 ## Phase 4: UI Updates (Board & Columns)
-- [ ] T008 Modificar `src/components/Board.tsx` para renderizar colunas iterando por `board.columns` e introduzir `Droppable` horizontal para colunas.
-- [ ] T009 Modificar `src/components/Column.tsx` para aceitar `ColumnModel` e adicionar UI de Editar/Excluir.
-- [ ] T010 Refatorar `useWipLimits.ts` e `WipLimitBadge.tsx` para obter o limite diretamente de `column.wipLimit`.
+- [x] T008 Modificar `src/components/Board.tsx` para renderizar colunas iterando por `board.columns` e introduzir `Droppable` horizontal para colunas.
+- [x] T009 Modificar `src/components/Column.tsx` para aceitar `ColumnModel` e adicionar UI de Editar/Excluir.
+- [x] T010 Refatorar `useWipLimits.ts` e `WipLimitBadge.tsx` para obter o limite diretamente de `column.wipLimit`.
 
 ## Phase 5: Metrics & Polish
-- [ ] T011 Atualizar `src/components/MetricsBar.tsx` para recalcular Lead/Cycle time baseado em `ColumnCategory.done`.
-- [ ] T012 Atualizar `src/hooks/useBoardFilters.ts` para filtrar sobre a nova estrutura de board.
-- [ ] T013 Corrigir todos os erros restantes do TypeScript (testes, imports órfãos).
-- [ ] T014 Validar a aplicação `npm run build` e `npm test`.
+- [x] T011 Atualizar `src/components/MetricsBar.tsx` para recalcular Lead/Cycle time baseado em `ColumnCategory.done`.
+- [x] T012 Atualizar `src/hooks/useBoardFilters.ts` para filtrar sobre a nova estrutura de board.
+- [x] T013 Corrigir todos os erros restantes do TypeScript (testes, imports órfãos).
+- [x] T014 Validar a aplicação `npm run build` e `npm test`.

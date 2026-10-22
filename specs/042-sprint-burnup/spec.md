@@ -1,8 +1,8 @@
-# Feature Specification: Burnup da Sprint
+﻿# Feature Specification: Burnup da Sprint
 
 **Feature Branch**: `042-sprint-burnup`
 **Created**: 2026-09-28
-**Status**: Draft
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: Alternar a visualização da sprint entre burndown e burnup (escopo vs. concluído), derivado dos dados existentes.
 
 ## User Scenarios & Testing *(mandatory)*

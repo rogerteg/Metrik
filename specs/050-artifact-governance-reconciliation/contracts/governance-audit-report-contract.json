@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GovernanceAuditReportContract",
+  "description": "Schema de validação do resultado da auditoria automatizada de governança documental (FR-009)",
+  "type": "object",
+  "required": [
+    "timestamp",
+    "totalSpecsEvaluated",
+    "deliveredSpecsCompliant",
+    "divergentSpecsCount",
+    "clarificationMarkersCount",
+    "historicalTasksPendingCount",
+    "mergedBranchesRemaining",
+    "passed"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "totalSpecsEvaluated": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "deliveredSpecsCompliant": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "divergentSpecsCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "description": "Deve ser 0 para aprovação (SC-001)"
+    },
+    "clarificationMarkersCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "description": "Deve ser 0 em specs entregues (SC-002)"
+    },
+    "historicalTasksPendingCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 0,
+      "description": "Deve ser 0 em specs/005..009 (SC-003)"
+    },
+    "mergedBranchesRemaining": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 0,
+      "description": "Deve ser array vazio de branches obsoletas (SC-005)"
+    },
+    "checklistsAudited": {
+      "type": "integer",
+      "minimum": 11
+    },
+    "passed": {
+      "type": "boolean",
+      "const": true
+    }
+  },
+  "additionalProperties": false
+}

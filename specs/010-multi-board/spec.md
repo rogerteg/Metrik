@@ -1,4 +1,9 @@
-# Feature 010: Multi-Board Support (Workspaces)
+﻿# Feature 010: Multi-Board Support (Workspaces)
+
+**Feature Branch**: `010-multi-board`
+
+**Status**: Implemented & Verified (2026-10-21)
+
 
 ## 1. Context & Rationale
 Currently, Metrik supports a single Kanban board whose state is persisted in `localStorage` under the key `metrik-tasks`. As users scale their agile workflows, they often need to manage multiple independent projects or teams (e.g., "Engineering", "Marketing", "Personal"). This feature will introduce the concept of "Boards" (or Workspaces), allowing users to create, switch between, and delete multiple independent Kanban boards.

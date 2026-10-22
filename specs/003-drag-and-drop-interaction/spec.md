@@ -1,8 +1,8 @@
-# Feature Specification: Interação Drag-and-Drop de Cartões (HTML5 Drag & Drop)
+﻿# Feature Specification: Interação Drag-and-Drop de Cartões (HTML5 Drag & Drop)
 
 **Feature Branch**: `003-drag-and-drop-interaction`  
 **Created**: 2026-09-08  
-**Status**: Draft  
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: User description: "Arrastar e soltar cartões nativo (HTML5 Drag & Drop) com feedback visual de drop zone e preservação dos botões direcionais como acessibilidade"
 
 ---

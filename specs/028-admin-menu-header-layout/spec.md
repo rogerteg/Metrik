@@ -1,10 +1,10 @@
-# Feature Specification: Desobstrução e Reorganização do Menu de Administrador e Barra de Métricas
+﻿# Feature Specification: Desobstrução e Reorganização do Menu de Administrador e Barra de Métricas
 
 **Feature Branch**: `028-admin-menu-header-layout`
 
 **Created**: 2026-09-15
 
-**Status**: Draft
+**Status**: Implemented & Verified (2026-10-21)
 
 **Input**: User description: "Correção: Quando clico em Administrador, nao consigo ver o que tem na tela, porque a linha onde tem as metricas troughput, leadtime medio... esta tampando. O ideal é reorganizar isso, e melhorar. faça."
 

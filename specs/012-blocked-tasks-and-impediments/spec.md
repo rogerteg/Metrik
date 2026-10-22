@@ -1,4 +1,9 @@
-# Feature 012: Gestão de Bloqueios & Impedimentos (Blocked Tasks)
+﻿# Feature 012: Gestão de Bloqueios & Impedimentos (Blocked Tasks)
+
+**Feature Branch**: `012-blocked-tasks-and-impediments`
+
+**Status**: Implemented & Verified (2026-10-21)
+
 
 ## 1. Context & Rationale
 No método Kanban e na teoria das filas (Little's Law), o tempo em que uma tarefa permanece impedida (*Blocked Time*) é o principal vilão do *Lead Time* e da previsibilidade de entrega. Diferente de um item aguardando naturalmente em uma coluna, um item **bloqueado** possui um impedimento externo ativo (ex.: dependência técnica, pendência de aprovação, bloqueio de infraestrutura).

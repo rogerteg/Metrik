@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TaskComponentPublicContract",
+  "description": "Contrato imutável de props públicas e assinaturas aceitas pelo componente Task e seus subcomponentes",
+  "type": "object",
+  "required": ["task", "index", "columns", "allTasks", "onOpenModal", "onDelete"],
+  "properties": {
+    "task": {
+      "type": "object",
+      "required": ["id", "title", "status", "createdAt"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "status": { "type": "string" },
+        "priority": { "type": "string", "enum": ["low", "medium", "high", "urgent"] },
+        "isBlocked": { "type": "boolean" },
+        "blockerReason": { "type": "string" },
+        "storyPoints": { "type": "number" },
+        "cycleTimeDays": { "type": "number" },
+        "leadTimeDays": { "type": "number" }
+      }
+    },
+    "index": { "type": "integer" },
+    "columns": { "type": "array" },
+    "allTasks": { "type": "array" },
+    "isSelected": { "type": "boolean" },
+    "onSelect": { "type": "string", "description": "Callback de seleção múltipla (taskId, MouseEvent)" },
+    "onOpenModal": { "type": "string", "description": "Callback de abertura de detalhes (task)" },
+    "onDelete": { "type": "string", "description": "Callback de exclusão de tarefa (taskId)" },
+    "onMoveTask": { "type": "string", "description": "Callback opcional de atalho de movimento (taskId, colId)" }
+  }
+}

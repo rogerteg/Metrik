@@ -1,8 +1,8 @@
-# Feature Specification: Trava Estrita de Movimentação para Cartões Bloqueados (Blocked Card Movement Lock)
+﻿# Feature Specification: Trava Estrita de Movimentação para Cartões Bloqueados (Blocked Card Movement Lock)
 
 **Feature Branch**: `025-blocked-task-movement-lock`  
 **Created**: 2026-09-14  
-**Status**: In Review (Draft Specification)  
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: Solicitação do usuário: *"Correção: O card quando esta bloqueado, ainda estou conseguindo mover de uma coluna para outra. Com card bloqueado, ele nao pode ser movido, ate que o usuario retire a etiqueta de bloqueado."*
 
 ---

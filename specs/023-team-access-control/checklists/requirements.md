@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain *(3 questões de esclarecimento pendentes de alinhamento com o usuário)*
+- [x] No [NEEDS CLARIFICATION] markers remain *(resolvidos formalmente em 2026-10-21 com base na Constituição Artigo VIII)*
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,4 +31,4 @@
 
 ## Notes
 
-- Há 3 pontos marcados com `[NEEDS CLARIFICATION]` que serão refinados na fase `/speckit-clarify` ou através de feedback imediato do usuário.
+- Todos os 3 pontos marcados com `[NEEDS CLARIFICATION]` foram formalmente resolvidos em 2026-10-21 com base nas decisões ratificadas da Constituição Artigo VIII.

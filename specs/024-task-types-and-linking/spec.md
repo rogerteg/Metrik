@@ -1,8 +1,8 @@
-# Feature Specification: Tipos de Tarefas (Cards, Subtarefas, Iniciativas), Vinculação Hierárquica e Vínculos Cross-Squad
+﻿# Feature Specification: Tipos de Tarefas (Cards, Subtarefas, Iniciativas), Vinculação Hierárquica e Vínculos Cross-Squad
 
 **Feature Branch**: `024-task-types-and-linking`  
 **Created**: 2026-09-12  
-**Status**: Implemented & Verified (Converged)  
+**Status**: Implemented & Verified (2026-10-21)
 **GitHub Issues**: [#44](https://github.com/rogerteg/Metrik/issues/44), [#45](https://github.com/rogerteg/Metrik/issues/45), [#46](https://github.com/rogerteg/Metrik/issues/46), [#47](https://github.com/rogerteg/Metrik/issues/47), [#48](https://github.com/rogerteg/Metrik/issues/48), [#49](https://github.com/rogerteg/Metrik/issues/49), [#50](https://github.com/rogerteg/Metrik/issues/50)  
 **Input**: Solicitação do usuário: *"Criar função tipos de tarefas, inserir nos cards. Tipos: Cards; subtarefas; iniciativas; vincular tarefas com outras tarefas, e permitir anexar tarefa de outro time, squad."*
 

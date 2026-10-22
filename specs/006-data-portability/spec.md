@@ -1,4 +1,9 @@
-# Feature 006: Data Portability (Export & Import)
+﻿# Feature 006: Data Portability (Export & Import)
+
+**Feature Branch**: `006-data-portability`
+
+**Status**: Implemented & Verified (2026-10-21)
+
 
 ## 1. Context & Rationale
 Metrik operates exclusively on the client-side utilizing the browser's `localStorage` to persist the Kanban board state. While this ensures zero latency, offline capability, and strong privacy (no server dependencies), it traps the user's data within a specific browser profile. If the user clears their browser data, switches devices, or changes browsers, their entire Kanban board is lost.

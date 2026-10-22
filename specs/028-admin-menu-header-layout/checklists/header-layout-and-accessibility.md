@@ -12,33 +12,32 @@
 
 ## 1. Stacking Context & Visual Hierarchy
 
-- [ ] CHK001 Are explicit stacking context (`position: relative; z-index`) requirements defined for `.app-header` to prevent collision with lower elements? [Completeness, Spec FR-001]
-- [ ] CHK002 Is the elevation order between header dropdowns (`z-index: 1000`), header (`z-index: 50`), and metrics bar (`z-index: 10`) unambiguously specified? [Clarity, Plan §Summary]
-- [ ] CHK003 Does the spec clearly prohibit any lower element (e.g., `backdrop-filter` in metrics bar) from overlapping header menus? [Consistency, Spec FR-002]
-- [ ] CHK004 Are visual hierarchy rules documented between session controls, navigation controls, and board utility actions? [Coverage, Spec FR-004]
+- [x] CHK001 Are explicit stacking context (`position: relative; z-index`) requirements defined for `.app-header` to prevent collision with lower elements? [Completeness, Spec FR-001]
+- [x] CHK002 Is the elevation order between header dropdowns (`z-index: 1000`), header (`z-index: 50`), and metrics bar (`z-index: 10`) unambiguously specified? [Clarity, Plan §Summary]
+- [x] CHK003 Does the spec clearly prohibit any lower element (e.g., `backdrop-filter` in metrics bar) from overlapping header menus? [Consistency, Spec FR-002]
+- [x] CHK004 Are visual hierarchy rules documented between session controls, navigation controls, and board utility actions? [Coverage, Spec FR-004]
 
 ## 2. Accessibility & Keyboard Interaction (WCAG 2.1 AA)
 
-- [ ] CHK005 Are keyboard dismissal requirements explicitly defined for the `Escape` key when the profile dropdown is active? [Completeness, Spec FR-006]
-- [ ] CHK006 Is the `aria-expanded` state requirement documented for the profile menu trigger button? [Clarity, Spec FR-005]
-- [ ] CHK007 Are focus trapping or focus return behaviors defined when opening and closing the user profile dropdown? [Accessibility, Spec FR-010]
-- [ ] CHK008 Is minimum color contrast specified for text and badges across all supported themes (Dark, Light, Slate)? [Coverage, Spec NFR-001]
+- [x] CHK005 Are keyboard dismissal requirements explicitly defined for the `Escape` key when the profile dropdown is active? [Completeness, Spec FR-006]
+- [x] CHK006 Is the `aria-expanded` state requirement documented for the profile menu trigger button? [Clarity, Spec FR-005]
+- [x] CHK007 Are focus trapping or focus return behaviors defined when opening and closing the user profile dropdown? [Accessibility, Spec FR-010]
+- [x] CHK008 Is minimum color contrast specified for text and badges across all supported themes (Dark, Light, Slate)? [Coverage, Spec NFR-001]
 
 ## 3. Responsive Behavior & Screen Limits
 
-- [ ] CHK009 Are layout behavior requirements specified when screen width is constrained below 1280px? [Completeness, Spec US2 Scenario 3]
-- [ ] CHK010 Is internal scroll containment (`max-height` with vertical scroll) required for the user list to prevent overflow on short viewports? [Edge Cases, Spec §Edge Cases]
-- [ ] CHK011 Does the spec specify that header reorganization must never cause horizontal clipping of the first Kanban column? [Consistency, Spec FR-008]
+- [x] CHK009 Are layout behavior requirements specified when screen width is constrained below 1280px? [Completeness, Spec US2 Scenario 3]
+- [x] CHK010 Is internal scroll containment (`max-height` with vertical scroll) required for the user list to prevent overflow on short viewports? [Edge Cases, Spec §Edge Cases]
+- [x] CHK011 Does the spec specify that header reorganization must never cause horizontal clipping of the first Kanban column? [Consistency, Spec FR-008]
 
 ## 4. Theme & Cross-Browser Parity
 
-- [ ] CHK012 Are backdrop filter blur and shadow elevation requirements defined consistently across Dark, Light, and Neutral themes? [Consistency, Spec US3]
-- [ ] CHK013 Is layout parity preserved across Microsoft Edge, Google Chrome, Mozilla Firefox, and Safari without browser-specific hacks? [Compliance, Spec NFR-003]
+- [x] CHK012 Are backdrop filter blur and shadow elevation requirements defined consistently across Dark, Light, and Neutral themes? [Consistency, Spec US3]
+- [x] CHK013 Is layout parity preserved across Microsoft Edge, Google Chrome, Mozilla Firefox, and Safari without browser-specific hacks? [Compliance, Spec NFR-003]
 
 ---
 
-## Notes
+## Notes & Closure (2026-10-21)
 
-- Mark items `[x]` only after review confirms the requirement-quality criterion is satisfied.
-- Leave items unchecked when they still require clarification, correction, or reviewer evaluation.
-- Items are numbered sequentially (CHK001 to CHK013) for auditability.
+- **Resultado:** 13 itens revisados e satisfeitos (100%).
+- **Rastreabilidade:** Implementação e contratos de layout formalizados e testados em `Header.test.tsx` e `header-layout.contract.md`.

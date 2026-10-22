@@ -1,10 +1,10 @@
-# Feature Specification: ClickUp-Inspired Task Activity & Comments Redesign
+﻿# Feature Specification: ClickUp-Inspired Task Activity & Comments Redesign
 
 **Feature Branch**: `035-clickup-task-activity-redesign`
 
 **Created**: 2026-09-21
 
-**Status**: Draft
+**Status**: Implemented & Verified (2026-10-21)
 
 **Input**: User description: "Analise a imagem, essa imagem aparece no corpo da tarefa. Melhor isso. Essa funcao de log historio e comentario da tarefa essa ruim. Corrija. O log Historico e comentario da tarefa do Clickup é muito bom. Use como inspiração."
 

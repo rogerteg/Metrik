@@ -1,8 +1,8 @@
-# Feature Specification: Gestão de Usuários, Times e Controle de Acesso a Quadros por Squad (Team Access Control)
+﻿# Feature Specification: Gestão de Usuários, Times e Controle de Acesso a Quadros por Squad (Team Access Control)
 
 **Feature Branch**: `023-team-access-control`  
 **Created**: 2026-09-12  
-**Status**: Implemented & Verified  
+**Status**: Implemented & Verified (2026-10-21)
 **GitHub Issues**: [#37](https://github.com/rogerteg/Metrik/issues/37), [#38](https://github.com/rogerteg/Metrik/issues/38), [#39](https://github.com/rogerteg/Metrik/issues/39), [#40](https://github.com/rogerteg/Metrik/issues/40), [#41](https://github.com/rogerteg/Metrik/issues/41), [#42](https://github.com/rogerteg/Metrik/issues/42), [#43](https://github.com/rogerteg/Metrik/issues/43)  
 **Input**: Solicitação do usuário: *"Criar função cadastro de usuario, cadastro de times, convidados para acessar o sistema, convite especifico daquela squad/time especifico. Os membros nao acessam os boards, de outros times, a menos que sejam convidados."*
 
@@ -113,7 +113,7 @@ Como administrador ou membro de um time, quero convidar outros usuários ou conv
 ### Cadastro de Usuários e Sessão
 - **FR-001**: O sistema DEVE permitir o cadastro de novos usuários com nome, e-mail único e avatar/iniciais.
 - **FR-002**: O sistema DEVE manter o registro de usuários persistido e permitir a alternância do usuário ativo na sessão atual.
-- **FR-003**: O sistema DEVE implementar gerenciamento de sessão local-first com chaveamento de perfis multi-usuário no `localStorage` [NEEDS CLARIFICATION: auth-mode - Como o Metrik opera como SPA client-side sem backend obrigatório, a autenticação e troca de perfil devem operar via sessão local-first com simulação multi-usuário ou requer integração externa com backend OAuth2/Firebase?].
+- **FR-003**: O sistema DEVE implementar gerenciamento de sessão local-first com chaveamento de perfis multi-usuário no `localStorage` sob modelo de Soberania Local-First (Constituição Artigo VIII.1 e VIII.5), gerenciando perfis multi-usuário e chaveamento de sessão localmente no localStorage do navegador, sem dependência mandatória de servidores externos de autenticação, dispondo de sincronização bidirecional em nuvem opcional e não-bloqueante.
 
 ### Cadastro e Gestão de Times (Squads)
 - **FR-004**: O sistema DEVE permitir a criação de times/squads com nome obrigatório, descrição opcional e identificador único.
@@ -122,12 +122,12 @@ Como administrador ou membro de um time, quero convidar outros usuários ou conv
 - **FR-007**: O sistema DEVE permitir a administradores do time editar dados da equipe e remover membros (desde que não remova o último administrador).
 
 ### Convites e Papéis
-- **FR-008**: O sistema DEVE permitir o envio de convites específicos para um time/squad, atribuindo papéis de `admin`, `member` ou `guest` [NEEDS CLARIFICATION: guest-permissions - Usuários com papel 'Convidado' (Guest) devem possuir acesso estritamente somente-leitura aos boards da squad ou podem também criar e mover cartões nas colunas?].
+- **FR-008**: O sistema DEVE permitir o envio de convites específicos para um time/squad, atribuindo papéis de `admin`, `member` ou `guest` onde usuários atribuídos ao papel de Convidado (guest) possuem acesso estritamente somente-leitura aos quadros e métricas da squad (Constituição Artigo VIII.4), sendo estruturalmente bloqueadas quaisquer operações de mutação, criação, edição, deleção de cartões ou reordenação de colunas.
 - **FR-009**: Cada convite DEVE possuir um código/token identificador, data de geração, e-mail do convidado, time vinculado e status (`pending`, `accepted`, `revoked`).
 - **FR-010**: O usuário convidado DEVE ser capaz de aceitar o convite, passando a integrar a equipe imediatamente com o papel atribuído.
 
 ### Controle de Acesso e Isolamento de Quadros
-- **FR-011**: Cada quadro Kanban DEVE estar associado a um time/squad específico [NEEDS CLARIFICATION: board-creation-scope - Todo novo quadro deve obrigatoriamente pertencer a um time, ou devem ser suportados quadros pessoais individuais não vinculados a squads?].
+- **FR-011**: Cada quadro Kanban DEVE estar associado a um time/squad específico sendo obrigatório o pertencimento a uma squad específica (Constituição Artigo VIII.2), não existindo quadros órfãos, com auto-associação à squad ativa na criação de novos quadros (CHANGELOG v0.2.0).
 - **FR-012**: O seletor de quadros (`BoardSwitcher`) DEVE exibir estritamente os quadros pertencentes aos times em que o usuário ativo é membro ou convidado aceito.
 - **FR-013**: O sistema DEVE bloquear qualquer leitura, consulta de métricas ou escrita em quadros cujo time não possua o usuário ativo em sua lista de membros/convidados válidos.
 - **FR-014**: Na primeira execução com dados legados existentes, os quadros pré-existentes DEVEM ser associados de forma transparente a um time padrão inicial para evitar perda de dados.

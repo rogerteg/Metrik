@@ -1,8 +1,8 @@
-# Feature Specification: Etiquetas (Tags), Níveis de Prioridade e Barra de Filtragem
+﻿# Feature Specification: Etiquetas (Tags), Níveis de Prioridade e Barra de Filtragem
 
 **Feature Branch**: `004-tags-and-priority-filters`  
 **Created**: 2026-09-09  
-**Status**: Draft  
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: User description: "Sistema de etiquetas (tags coloridas), prioridades (Alta, Média, Baixa) com indicadores visuais, e barra de busca e filtragem dinâmica"
 
 ---

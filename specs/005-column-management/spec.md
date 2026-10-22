@@ -1,4 +1,9 @@
-# Specification: Feature 005 - Column Management
+﻿# Specification: Feature 005 - Column Management
+
+**Feature Branch**: `005-column-management`
+
+**Status**: Implemented & Verified (2026-10-21)
+
 
 ## 1. Overview
 The Metrik Kanban Board currently uses a hardcoded set of four columns (`To Do`, `In Progress`, `Blocked`, `Completed`). To support custom team workflows, this feature introduces dynamic Column Management, allowing users to add, rename, reorder, and delete columns.

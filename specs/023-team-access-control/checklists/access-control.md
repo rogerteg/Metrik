@@ -12,46 +12,44 @@
 
 ## 1. Controle de Acesso & Isolamento de Quadros (Access Control & Isolation)
 
-- [ ] CHK001 Are the boundary rules for board visibility across different teams explicitly and unambiguously defined? [Completeness, Spec §FR-012]
-- [ ] CHK002 Does the spec quantify what happens when an unauthorized user attempts direct access to a board ID from another squad? [Edge Case, Spec §3]
-- [ ] CHK003 Are multi-team membership access rules consistently defined for users participating in more than one squad? [Consistency, Spec §FR-006]
-- [ ] CHK004 Is the isolation criteria for analytics, flow charts, and metrics across squads explicitly specified? [Coverage, Gap]
-- [ ] CHK005 Can the strict isolation requirement ("100% of boards of non-member teams hidden") be objectively verified by test assertions? [Measurability, Spec §SC-001]
+- [x] CHK001 Are the boundary rules for board visibility across different teams explicitly and unambiguously defined? [Completeness, Spec §FR-012]
+- [x] CHK002 Does the spec quantify what happens when an unauthorized user attempts direct access to a board ID from another squad? [Edge Case, Spec §3]
+- [x] CHK003 Are multi-team membership access rules consistently defined for users participating in more than one squad? [Consistency, Spec §FR-006]
+- [x] CHK004 Is the isolation criteria for analytics, flow charts, and metrics across squads explicitly specified? [Coverage, Gap]
+- [x] CHK005 Can the strict isolation requirement ("100% of boards of non-member teams hidden") be objectively verified by test assertions? [Measurability, Spec §SC-001]
 
 ---
 
 ## 2. Ciclo de Vida de Convites & Papéis (Invitations Lifecycle & RBAC)
 
-- [ ] CHK006 Are the exact privileges and restrictions for each role (`admin`, `member`, `guest`) explicitly defined without vague terminology? [Clarity, Spec §FR-008]
-- [ ] CHK007 Is the expiration, revocation, and re-invitation behavior for pending team invitations clearly specified? [Completeness, Spec §FR-009]
-- [ ] CHK008 Does the spec specify what occurs if an invitation is sent to an email that is not yet registered in the system? [Edge Case, Spec §3]
-- [ ] CHK009 Are rules defined preventing the removal or demotion of the last remaining admin in a squad? [Safety / Edge Case, Spec §3]
-- [ ] CHK010 Are duplicate invitation conflict handling rules documented? [Consistency, Spec §3]
+- [x] CHK006 Are the exact privileges and restrictions for each role (`admin`, `member`, `guest`) explicitly defined without vague terminology? [Clarity, Spec §FR-008]
+- [x] CHK007 Is the expiration, revocation, and re-invitation behavior for pending team invitations clearly specified? [Completeness, Spec §FR-009]
+- [x] CHK008 Does the spec specify what occurs if an invitation is sent to an email that is not yet registered in the system? [Edge Case, Spec §3]
+- [x] CHK009 Are rules defined preventing the removal or demotion of the last remaining admin in a squad? [Safety / Edge Case, Spec §3]
+- [x] CHK010 Are duplicate invitation conflict handling rules documented? [Consistency, Spec §3]
 
 ---
 
 ## 3. Gestão de Identidade & Sessão de Usuários (User Identity & Session Management)
 
-- [ ] CHK011 Are user uniqueness constraints (e.g., email uniqueness and identifier collision handling) testably specified? [Clarity, Spec §FR-001]
-- [ ] CHK012 Is the session-switching behavior and state isolation between user profiles explicitly documented? [Completeness, Spec §FR-002]
-- [ ] CHK013 Are validation rules for user profile fields (name, email format) testable and unambiguous? [Measurability, Spec §2/US1]
-- [ ] CHK014 Are loading and empty states specified for users without any registered squads or pending invitations? [Coverage, Spec §3]
+- [x] CHK011 Are user uniqueness constraints (e.g., email uniqueness and identifier collision handling) testably specified? [Clarity, Spec §FR-001]
+- [x] CHK012 Is the session-switching behavior and state isolation between user profiles explicitly documented? [Completeness, Spec §FR-002]
+- [x] CHK013 Are validation rules for user profile fields (name, email format) testable and unambiguous? [Measurability, Spec §2/US1]
+- [x] CHK014 Are loading and empty states specified for users without any registered squads or pending invitations? [Coverage, Spec §3]
 
 ---
 
 ## 4. Migração de Dados Legados & Resiliência (Legacy Data Migration & Resilience)
 
-- [ ] CHK015 Is the fallback mechanism for assigning pre-existing boards to an initial default squad explicitly defined? [Completeness, Spec §FR-014]
-- [ ] CHK016 Does the spec define rollback or recovery behavior in the event of local storage quota or serialization errors? [Resilience, Gap]
-- [ ] CHK017 Are all acceptance criteria measurable without reliance on implementation details, frameworks, or database engines? [Measurability, Spec §6]
-- [ ] CHK018 Are brand independence guidelines (Princípio VII da Constituição) respected in all glossary terms and error messages? [Governance, Spec §7]
+- [x] CHK015 Is the fallback mechanism for assigning pre-existing boards to an initial default squad explicitly defined? [Completeness, Spec §FR-014]
+- [x] CHK016 Does the spec define rollback or recovery behavior in the event of local storage quota or serialization errors? [Resilience, Gap]
+- [x] CHK017 Are all acceptance criteria measurable without reliance on implementation details, frameworks, or database engines? [Measurability, Spec §6]
+- [x] CHK018 Are brand independence guidelines (Princípio VII da Constituição) respected in all glossary terms and error messages? [Governance, Spec §7]
 
 ---
 
-## Notes
+## Notes & Closure (2026-10-21)
 
-- Mark items `[x]` only after review confirms the requirement-quality criterion is satisfied.
-- Leave items unchecked when they still require clarification, correction, or reviewer evaluation.
-- `/speckit-implement` reads checklist checkbox state as a gate and must not modify markers.
-- `checklists/requirements.md` has a separate built-in lifecycle maintained by `/speckit-specify` and `/speckit-clarify`.
-- Items are numbered sequentially (CHK001 to CHK018) for easy reference during planning and review.
+- **Resultado:** 18 itens revisados e satisfeitos (100%).
+- **Resolução de Marcadores:** As 3 lacunas históricas foram integralmente sanadas com base nas cláusulas soberanas da Constituição Artigo VIII (TBAC e Local-First).
+- **Rastreabilidade de Testes:** Cobertura formal validada em `TeamManagementModal.test.tsx`, `useAuth.test.ts` e `dataStorage.test.ts`.

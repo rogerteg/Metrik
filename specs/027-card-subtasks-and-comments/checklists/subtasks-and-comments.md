@@ -20,8 +20,8 @@
 
 ## 2. Requisitos — Clareza (Requirement Clarity)
 
-- [ ] CHK007 "Efeito visual imediato" está quantificado? — **Aceito:** NFR-001 é perceptual (sem recarregar a página); sem limiar numérico. Baixo risco.
-- [ ] CHK008 "Sem degradação perceptível de fluidez" está quantificado? — **Aceito:** SC-006 qualitativo; volumes de NFR-004 (50/200) usados como referência.
+- [x] CHK007 "Efeito visual imediato" está quantificado? — **Aceito:** NFR-001 é perceptual (sem recarregar a página); sem limiar numérico. Baixo risco.
+- [x] CHK008 "Sem degradação perceptível de fluidez" está quantificado? — **Aceito:** SC-006 qualitativo; volumes de NFR-004 (50/200) usados como referência.
 - [x] CHK009 O formato de data/hora está definido? — Definido na implementação: `pt-BR` (dia, mês abreviado, hora:minuto) em `CommentThread`.
 - [x] CHK010 Títulos longos quebram ou truncam? — *Edge Cases* + FR-019 (`word-break`/`white-space: pre-wrap`).
 - [x] CHK011 "Cartão filho" formalizado como sinônimo de subtarefa? — *Key Entities*.
@@ -43,7 +43,7 @@
 ## 5. Cobertura de Cenários (Scenario Coverage)
 
 - [x] CHK020 Requisitos para editar título de subtarefa? — Não; **fora de escopo** (`contracts §7`, `CHK020`).
-- [ ] CHK021 Requisitos de exceção para falha de gravação local? — **Aceito:** persistência é *best-effort*; sem requisito específico. Baixo risco.
+- [x] CHK021 Requisitos de exceção para falha de gravação local? — **Aceito:** persistência é *best-effort*; sem requisito específico. Baixo risco.
 - [x] CHK022 Requisitos de recuperação de comentário corrompido? — Payload corrompido cai para o seed (validação de board existente).
 - [x] CHK023 Interação com exportação/importação? — CI-06; comentários viajam dentro do `TaskModel`.
 - [x] CHK024 Fluxo de reabrir subtarefa concluída? — FR-003/FR-004.
@@ -57,7 +57,7 @@
 
 ## 7. Requisitos Não-Funcionais (Non-Functional Requirements)
 
-- [ ] CHK029 A meta de latência está quantificada? — **Aceito:** NFR-001 perceptual. Baixo risco.
+- [x] CHK029 A meta de latência está quantificada? — **Aceito:** NFR-001 perceptual. Baixo risco.
 - [x] CHK030 Acessibilidade ligada a controles específicos? — NFR-002 + `aria-label`/`aria-expanded` em `CommentThread` e na checklist.
 - [x] CHK031 Local-first expresso como restrição verificável? — NFR-003 + `localStorage` por quadro.
 - [x] CHK032 Não adicionar dependências é verificável? — NFR-007; zero dependências novas.

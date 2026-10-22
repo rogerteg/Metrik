@@ -1,8 +1,8 @@
-# Feature Specification: Core Kanban Board (MVP Fase 1)
+﻿# Feature Specification: Core Kanban Board (MVP Fase 1)
 
 **Feature Branch**: `001-core-kanban-board`  
 **Created**: 2026-09-08  
-**Status**: Draft  
+**Status**: Implemented & Verified (2026-10-21)
 **Input**: User description: "MVP Metrik Fase 1: Quadro Kanban multi-coluna (Todo, In Progress, Blocked, Completed) com tarefas editáveis e persistência local"
 
 ## Clarifications

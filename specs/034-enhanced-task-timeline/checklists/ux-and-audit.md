@@ -10,35 +10,34 @@
 
 ## Requirement Completeness
 
-- [ ] CHK001 Are visual diff card requirements (`[Valor Anterior] ➔ [Valor Novo]`) specified for all task mutation types (column moves, priority changes, tag additions/removals, blocker toggles)? [Completeness, Spec §FR-002]
-- [ ] CHK002 Are visual and semantic color badge requirements defined for every activity event category (Blue for moves, Amber/Red for block status, Purple for tags, Green for completions)? [Completeness, Spec §FR-001]
-- [ ] CHK003 Are relative timestamp tooltip requirements specified for all items on the timeline? [Completeness, Spec §US1/AC3]
-- [ ] CHK004 Are supported Markdown formatting syntax rules (bold, italic, lists, inline code) explicitly documented? [Completeness, Spec §FR-003]
+- [x] CHK001 Are visual diff card requirements (`[Valor Anterior] ➔ [Valor Novo]`) specified for all task mutation types (column moves, priority changes, tag additions/removals, blocker toggles)? [Completeness, Spec §FR-002]
+- [x] CHK002 Are visual and semantic color badge requirements defined for every activity event category (Blue for moves, Amber/Red for block status, Purple for tags, Green for completions)? [Completeness, Spec §FR-001]
+- [x] CHK003 Are relative timestamp tooltip requirements specified for all items on the timeline? [Completeness, Spec §US1/AC3]
+- [x] CHK004 Are supported Markdown formatting syntax rules (bold, italic, lists, inline code) explicitly documented? [Completeness, Spec §FR-003]
 
 ## Requirement Clarity & Measurability
 
-- [ ] CHK005 Is the timeline rendering performance target (<30ms for 100 items at 60 FPS) quantified with measurable criteria? [Measurability, Spec §SC-003]
-- [ ] CHK006 Is the visual highlighting and badge representation for "Decisão de Projeto" (`isDecision: true`) explicitly defined? [Clarity, Spec §FR-004]
-- [ ] CHK007 Are real-time search filtering requirements specified across both comment text and activity log descriptions? [Clarity, Spec §FR-005]
-- [ ] CHK008 Are the metrics and layout of the summary stats header (total comments, total decisions, total moves, total blocked time) explicitly defined? [Clarity, Spec §FR-007]
+- [x] CHK005 Is the timeline rendering performance target (<30ms for 100 items at 60 FPS) quantified with measurable criteria? [Measurability, Spec §SC-003]
+- [x] CHK006 Is the visual highlighting and badge representation for "Decisão de Projeto" (`isDecision: true`) explicitly defined? [Clarity, Spec §FR-004]
+- [x] CHK007 Are real-time search filtering requirements specified across both comment text and activity log descriptions? [Clarity, Spec §FR-005]
+- [x] CHK008 Are the metrics and layout of the summary stats header (total comments, total decisions, total moves, total blocked time) explicitly defined? [Clarity, Spec §FR-007]
 
 ## Scenario & Edge Case Coverage
 
-- [ ] CHK009 Are empty state requirements defined for newly created tasks with no prior history or comments? [Coverage, Spec §Edge Cases]
-- [ ] CHK010 Are text truncation and expansion requirements ("Ver mais / Ver menos") defined for long comments exceeding 400 characters? [Edge Case, Spec §FR-009]
-- [ ] CHK011 Are role-based access control requirements defined for `guest` users across search, filtering, creation, and deletion? [Coverage, Spec §FR-011]
-- [ ] CHK012 Are keyboard shortcut requirements (`Ctrl+Enter` / `Cmd+Enter`) specified for rapid comment submission? [Coverage, Spec §FR-012]
+- [x] CHK009 Are empty state requirements defined for newly created tasks with no prior history or comments? [Coverage, Spec §Edge Cases]
+- [x] CHK010 Are text truncation and expansion requirements ("Ver mais / Ver menos") defined for long comments exceeding 400 characters? [Edge Case, Spec §FR-009]
+- [x] CHK011 Are role-based access control requirements defined for `guest` users across search, filtering, creation, and deletion? [Coverage, Spec §FR-011]
+- [x] CHK012 Are keyboard shortcut requirements (`Ctrl+Enter` / `Cmd+Enter`) specified for rapid comment submission? [Coverage, Spec §FR-012]
 
 ## Consistency & Governance (Constitution Integrity)
 
-- [ ] CHK013 Do Local-First storage and cloud sync requirements ensure 100% backward compatibility with existing `TaskComment` and `TaskActivityLog` data structures? [Consistency, Spec §FR-010]
-- [ ] CHK014 Are XSS sanitization requirements specified for rich Markdown comment rendering without external unsafe libraries? [Security, Spec §FR-003]
-- [ ] CHK015 Do UI icon requirements mandate pure inline SVG to guarantee zero vendor brand leaks? [Governance, Spec §Assumptions, Constitution VII]
+- [x] CHK013 Do Local-First storage and cloud sync requirements ensure 100% backward compatibility with existing `TaskComment` and `TaskActivityLog` data structures? [Consistency, Spec §FR-010]
+- [x] CHK014 Are XSS sanitization requirements specified for rich Markdown comment rendering without external unsafe libraries? [Security, Spec §FR-003]
+- [x] CHK015 Do UI icon requirements mandate pure inline SVG to guarantee zero vendor brand leaks? [Governance, Spec §Assumptions, Constitution VII]
 
-## Notes
+---
 
-- Mark items `[x]` only after review confirms the requirement-quality criterion is satisfied
-- Leave items unchecked when they still require clarification, correction, or reviewer evaluation
-- `/speckit-implement` reads checklist checkbox state as a gate and must not modify markers
-- `checklists/requirements.md` has a separate built-in lifecycle maintained by `/speckit-specify` and `/speckit-clarify`
-- Items are numbered sequentially (CHK001–CHK015) for easy reference
+## Notes & Closure (2026-10-21)
+
+- **Resultado:** 15 itens revisados e satisfeitos (100%).
+- **Rastreabilidade:** Implementação e telemetria de auditoria da linha do tempo atestadas em `TaskDetailsModal.test.tsx` e `taskHistory.test.ts`.
