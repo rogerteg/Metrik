@@ -223,6 +223,9 @@ As medidas desta visão **não têm prazo de validade fixo** — elas são inval
 | OPP-012: Formalização histórica de 55 tarefas nas specs 005 a 009 (`tasks.md`) | 2026-10-21 (Feature 050) |
 | OPP-013: Higienização e remoção segura de 14 branches locais e 3 remotas mescladas | 2026-10-21 (Feature 050) |
 | OPP-017: Auditoria e reconciliação documental de 11 checklists com bloqueio formal de ambiente | 2026-10-21 (Feature 050) |
+| OPP-003: Bloqueio formal de ambiente para motores WebKit/Safari registrado em `specs/026` conforme Constituição III/IV | 2026-10-25 (Fase 3) |
+| OPP-004: Reafirmação formal das 4 lacunas aceitas de baixo risco em `specs/027` | 2026-10-25 (Fase 3) |
+| OPP-015: Eliminação integral de avisos de análise estática (0 erros e 0 warnings no ESLint com tipagem estrita) | 2026-10-25 (Fase 3) |
 
 ---
 
