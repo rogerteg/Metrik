@@ -65,9 +65,9 @@
 
 **Purpose**: Criação da infraestrutura de pastas e do teste automatizado de guarda que atua como Red-Bar inicial
 
-- [ ] T001 [P] Criar teste automatizado de guarda de linhas de módulos em `tests/unit/moduleLineCountGuard.test.ts` (Red Bar: falha com os 4 módulos alvos > 400 linhas)
-- [ ] T002 [P] Criar diretórios modulares estruturais `src/components/Task/`, `src/components/TaskDetailsModal/`, `src/components/App/` e `src/hooks/taskCollection/`
-- [ ] T003 [P] Criar definições de tipos e interfaces de props internas em `src/components/Task/types.ts` e `src/components/TaskDetailsModal/types.ts`
+- [x] T001 [P] Criar teste automatizado de guarda de linhas de módulos em `tests/unit/moduleLineCountGuard.test.ts` (Red Bar: falha com os 4 módulos alvos > 400 linhas)
+- [x] T002 [P] Criar diretórios modulares estruturais `src/components/Task/`, `src/components/TaskDetailsModal/`, `src/components/App/` e `src/hooks/taskCollection/`
+- [x] T003 [P] Criar definições de tipos e interfaces de props internas em `src/components/Task/types.ts` e `src/components/TaskDetailsModal/types.ts`
 
 ---
 
@@ -77,13 +77,13 @@
 
 **Independent Test**: Executar `npm test -- tests/unit/Task` e verificar que todas as informações do cartão (título, tag, prioridade, bloqueio, SLE, cycle time, checklist e comentários) continuam renderizando com fidelidade, menus de ação operacionais e arrasto fluido.
 
-- [ ] T004 [P] [US1] Extrair subcomponente de cabeçalho do cartão `TaskHeader.tsx` (título, ID, badges de prioridade/tipo, menu de contexto) em `src/components/Task/TaskHeader.tsx`
-- [ ] T005 [P] [US1] Extrair subcomponente de badges analíticas `TaskBadges.tsx` (Cycle Time, Lead Time, SLE, Story Points, Due Date) em `src/components/Task/TaskBadges.tsx`
-- [ ] T006 [P] [US1] Extrair subcomponente de impedimentos `TaskBlockerChips.tsx` (chip de bloqueio, tooltip de motivo, links de dependência) em `src/components/Task/TaskBlockerChips.tsx`
-- [ ] T007 [P] [US1] Extrair subcomponente de resumo de checklist `TaskChecklistSummary.tsx` (barra de progresso e contadores) em `src/components/Task/TaskChecklistSummary.tsx`
-- [ ] T008 [US1] Extrair subcomponente container draggable `TaskCardContainer.tsx` (encapsulamento de innerRef, draggableProps e seleção) em `src/components/Task/TaskCardContainer.tsx`
-- [ ] T009 [US1] Refatorar `src/components/Task.tsx` como fachada e container orquestrador delegando para os subcomponentes (< 200 linhas)
-- [ ] T010 [US1] Validar aprovação dos testes de unidade de Task com `npx vitest run tests/unit/taskTypesAndLinking.test.ts tests/unit/priorityAndTags.test.ts tests/unit/stagnation.test.ts`
+- [x] T004 [P] [US1] Extrair subcomponente de cabeçalho do cartão `TaskHeader.tsx` (título, ID, badges de prioridade/tipo, menu de contexto) em `src/components/Task/TaskHeader.tsx`
+- [x] T005 [P] [US1] Extrair subcomponente de badges analíticas `TaskBadges.tsx` (Cycle Time, Lead Time, SLE, Story Points, Due Date) em `src/components/Task/TaskBadges.tsx`
+- [x] T006 [P] [US1] Extrair subcomponente de impedimentos `TaskBlockerChips.tsx` (chip de bloqueio, tooltip de motivo, links de dependência) em `src/components/Task/TaskBlockerChips.tsx`
+- [x] T007 [P] [US1] Extrair subcomponente de resumo de checklist `TaskChecklistSummary.tsx` (barra de progresso e contadores) em `src/components/Task/TaskChecklistSummary.tsx`
+- [x] T008 [US1] Extrair subcomponente container draggable `TaskCardContainer.tsx` (encapsulamento de innerRef, draggableProps e seleção) em `src/components/Task/TaskCardContainer.tsx`
+- [x] T009 [US1] Refatorar `src/components/Task.tsx` como fachada e container orquestrador delegando para os subcomponentes (< 200 linhas)
+- [x] T010 [US1] Validar aprovação dos testes de unidade de Task com `npx vitest run tests/unit/taskTypesAndLinking.test.ts tests/unit/priorityAndTags.test.ts tests/unit/stagnation.test.ts`
 
 **Checkpoint**: `Task.tsx` refatorado para < 200 linhas com zero regressão em DND e renderização visual.
 
@@ -95,13 +95,13 @@
 
 **Independent Test**: Executar `npm test -- tests/unit/TaskDetailsModal*` e verificar que a edição de campos, formulário Markdown, abas de atividades e diálogo de confirmação de descarte funcionam sem nenhuma alteração perceptível.
 
-- [ ] T011 [P] [US2] Extrair subcomponente de cabeçalho do modal `TaskModalHeader.tsx` (título, ID clicável, indicador de salvamento e botão fechar) em `src/components/TaskDetailsModal/TaskModalHeader.tsx`
-- [ ] T012 [P] [US2] Extrair subcomponente de metadados primários `TaskModalPrimaryFields.tsx` (coluna, responsável, estimativa, datas e tags) em `src/components/TaskDetailsModal/TaskModalPrimaryFields.tsx`
-- [ ] T013 [P] [US2] Extrair subcomponente de editor de descrição `TaskModalDescription.tsx` (toolbar Markdown, toggle preview, botões Salvar/Descartar) em `src/components/TaskDetailsModal/TaskModalDescription.tsx`
-- [ ] T014 [P] [US2] Extrair subcomponente de abas de histórico/comentários `TaskModalActivityTab.tsx` (feed de atividade, lista de comentários, formulário) em `src/components/TaskDetailsModal/TaskModalActivityTab.tsx`
-- [ ] T015 [US2] Refatorar container principal `src/components/TaskDetailsModal.tsx` orquestrando as seções e preservando `isDirty`, listeners de atalhos (`Ctrl+S`, `Escape`) e `showDirtyConfirmDialog` (< 250 linhas)
-- [ ] T016 [US2] Executar suíte de testes de modal com `npx vitest run tests/unit/TaskDetailsModalAutosave.test.tsx tests/unit/TaskModalDraftGuard.test.tsx tests/unit/TaskDetailsModalRedesign.test.tsx`
-- [ ] T017 [US2] Validar que o guard de rascunho sujo impede o fechamento acidental quando o texto foi editado no novo subcomponente
+- [x] T011 [P] [US2] Extrair subcomponente de cabeçalho do modal `TaskModalHeader.tsx` (título, ID clicável, indicador de salvamento e botão fechar) em `src/components/TaskDetailsModal/TaskModalHeader.tsx`
+- [x] T012 [P] [US2] Extrair subcomponente de metadados primários `TaskModalPrimaryFields.tsx` (coluna, responsável, estimativa, datas e tags) em `src/components/TaskDetailsModal/TaskModalPrimaryFields.tsx`
+- [x] T013 [P] [US2] Extrair subcomponente de editor de descrição `TaskModalDescription.tsx` (toolbar Markdown, toggle preview, botões Salvar/Descartar) em `src/components/TaskDetailsModal/TaskModalDescription.tsx`
+- [x] T014 [P] [US2] Extrair subcomponente de abas de histórico/comentários `TaskModalActivityTab.tsx` (feed de atividade, lista de comentários, formulário) em `src/components/TaskDetailsModal/TaskModalActivityTab.tsx`
+- [x] T015 [US2] Refatorar container principal `src/components/TaskDetailsModal.tsx` orquestrando as seções e preservando `isDirty`, listeners de atalhos (`Ctrl+S`, `Escape`) e `showDirtyConfirmDialog` (< 250 linhas)
+- [x] T016 [US2] Executar suíte de testes de modal com `npx vitest run tests/unit/TaskDetailsModalAutosave.test.tsx tests/unit/TaskModalDraftGuard.test.tsx tests/unit/TaskDetailsModalRedesign.test.tsx`
+- [x] T017 [US2] Validar que o guard de rascunho sujo impede o fechamento acidental quando o texto foi editado no novo subcomponente
 
 **Checkpoint**: `TaskDetailsModal.tsx` refatorado para < 250 linhas com o guard de rascunho sujo 100% preservado.
 
@@ -113,13 +113,13 @@
 
 **Independent Test**: Executar a suíte de testes de coleções e reordenação (`tests/unit/useTaskCollection.test.ts`, `taskReorder.test.ts`, `taskTransitions.test.ts`) garantindo que todas as mutações locais e persistência no localStorage continuem funcionando sem alterações nos arquivos consumidores.
 
-- [ ] T018 [P] [US3] Implementar sub-hook especialista `useTaskMutations.ts` (CRUD de tarefas: add, update, delete, archive) em `src/hooks/taskCollection/useTaskMutations.ts`
-- [ ] T019 [P] [US3] Implementar sub-hook especialista `useTaskReorderManager.ts` (movimentações DND entre colunas e reordenação relativa `reorderTaskRelative`) em `src/hooks/taskCollection/useTaskReorderManager.ts`
-- [ ] T020 [P] [US3] Implementar sub-hook especialista `useTaskChecklistManager.ts` (operações atômicas no checklist da tarefa) em `src/hooks/taskCollection/useTaskChecklistManager.ts`
-- [ ] T021 [P] [US3] Implementar sub-hook especialista `useTaskCommentsManager.ts` (comentários, decisões de projeto e pinagem) em `src/hooks/taskCollection/useTaskCommentsManager.ts`
-- [ ] T022 [US3] Refatorar `src/hooks/useTaskCollection.ts` compondo os sub-hooks especialistas e re-exportando a interface idêntica `UseTaskCollectionReturn` (< 220 linhas)
-- [ ] T023 [US3] Executar suíte de testes de hook com `npx vitest run tests/unit/useTaskCollection.test.ts tests/unit/taskReorder.test.ts tests/unit/taskTransitions.test.ts`
-- [ ] T024 [US3] Validar que a persistência no `localStorage` mantém timestamps (`createdAt`, `startedAt`, `completedAt`) e estrutura determinística
+- [x] T018 [P] [US3] Implementar sub-hook especialista `useTaskMutations.ts` (CRUD de tarefas: add, update, delete, archive) em `src/hooks/taskCollection/useTaskMutations.ts`
+- [x] T019 [P] [US3] Implementar sub-hook especialista `useTaskReorderManager.ts` (movimentações DND entre colunas e reordenação relativa `reorderTaskRelative`) em `src/hooks/taskCollection/useTaskReorderManager.ts`
+- [x] T020 [P] [US3] Implementar sub-hook especialista `useTaskChecklistManager.ts` (operações atômicas no checklist da tarefa) em `src/hooks/taskCollection/useTaskChecklistManager.ts`
+- [x] T021 [P] [US3] Implementar sub-hook especialista `useTaskCommentsManager.ts` (comentários, decisões de projeto e pinagem) em `src/hooks/taskCollection/useTaskCommentsManager.ts`
+- [x] T022 [US3] Refatorar `src/hooks/useTaskCollection.ts` compondo os sub-hooks especialistas e re-exportando a interface idêntica `UseTaskCollectionReturn` (< 220 linhas)
+- [x] T023 [US3] Executar suíte de testes de hook com `npx vitest run tests/unit/useTaskCollection.test.ts tests/unit/taskReorder.test.ts tests/unit/taskTransitions.test.ts`
+- [x] T024 [US3] Validar que a persistência no `localStorage` mantém timestamps (`createdAt`, `startedAt`, `completedAt`) e estrutura determinística
 
 **Checkpoint**: `useTaskCollection.ts` refatorado como fachada coesa (< 220 linhas) sem quebrar nenhum componente consumidor.
 
@@ -131,11 +131,11 @@
 
 **Independent Test**: Iniciar a aplicação, navegar entre as visões (Quadro, Analytics, Configurações, Workspace Hub), abrir os diálogos globais (Novo Quadro, Mika Drawer, Exportação CSV) e validar estabilidade total.
 
-- [ ] T025 [P] [US4] Extrair componente de navegação superior `AppHeaderBar.tsx` (logo, seletor de quadro/squad, abas de visualização, alternador de tema e botão Mika) em `src/components/App/AppHeaderBar.tsx`
-- [ ] T026 [P] [US4] Extrair componente hospedeiro de diálogos `AppDialogsContainer.tsx` (modais de novo quadro, nova squad, exportação CSV, importação, Mika Drawer e wipe data) em `src/components/App/AppDialogsContainer.tsx`
-- [ ] T027 [US4] Refatorar `src/App.tsx` simplificando-o para um layout container limpo (< 250 linhas) integrando `AppHeaderBar` e `AppDialogsContainer`
-- [ ] T028 [US4] Validar que atalhos de teclado de navegação e abertura de modais continuam respondendo normalmente no layout raiz
-- [ ] T029 [US4] Executar testes de integração de App com `npx vitest run tests/unit/AnalyticsDashboard.test.tsx` e `tests/unit/appCssStructure.test.ts`
+- [x] T025 [P] [US4] Extrair componente de navegação superior `AppHeaderBar.tsx` (logo, seletor de quadro/squad, abas de visualização, alternador de tema e botão Mika) em `src/components/App/AppHeaderBar.tsx`
+- [x] T026 [P] [US4] Extrair componente hospedeiro de diálogos `AppDialogsContainer.tsx` (modais de novo quadro, nova squad, exportação CSV, importação, Mika Drawer e wipe data) em `src/components/App/AppDialogsContainer.tsx`
+- [x] T027 [US4] Refatorar `src/App.tsx` simplificando-o para um layout container limpo (< 250 linhas) integrando `AppHeaderBar` e `AppDialogsContainer`
+- [x] T028 [US4] Validar que atalhos de teclado de navegação e abertura de modais continuam respondendo normalmente no layout raiz
+- [x] T029 [US4] Executar testes de integração de App com `npx vitest run tests/unit/AnalyticsDashboard.test.tsx` e `tests/unit/appCssStructure.test.ts`
 
 **Checkpoint**: `App.tsx` refatorado para < 250 linhas; casca da aplicação limpa e altamente modular.
 
@@ -145,12 +145,12 @@
 
 **Purpose**: Verificação final da suíte completa de testes, limites de linhas, linter estrito e performance de compilação
 
-- [ ] T030 Executar teste de guarda `npx vitest run tests/unit/moduleLineCountGuard.test.ts` certificando que os 4 módulos alvos e todos os novos submódulos possuem rigorosamente ≤ 400 linhas (Green Bar completo)
-- [ ] T031 [P] Executar `npm run format` para garantir conformidade Prettier em todos os novos arquivos criados
-- [ ] T032 Executar `npm run lint` assegurando 0 erros e 0 warnings com a regra estrita de `no-explicit-any`
-- [ ] T033 Executar suíte completa de testes automatizados com `npm test` atestando 744+ testes verdes sem nenhuma regressão
-- [ ] T034 Executar `npm run test:coverage` validando que todos os 4 limiares constitucionais (Functions ≥ 60%, Statements ≥ 85%, Lines ≥ 85%, Branches ≥ 78%) permanecem verdes
-- [ ] T035 Executar compilação de produção com `npm run build` atestando tempo < 5s e zero erros TypeScript/Vite
+- [x] T030 Executar teste de guarda `npx vitest run tests/unit/moduleLineCountGuard.test.ts` certificando que os 4 módulos alvos e todos os novos submódulos possuem rigorosamente ≤ 400 linhas (Green Bar completo)
+- [x] T031 [P] Executar `npm run format` para garantir conformidade Prettier em todos os novos arquivos criados
+- [x] T032 Executar `npm run lint` assegurando 0 erros e 0 warnings com a regra estrita de `no-explicit-any`
+- [x] T033 Executar suíte completa de testes automatizados com `npm test` atestando 744+ testes verdes sem nenhuma regressão
+- [x] T034 Executar `npm run test:coverage` validando que todos os 4 limiares constitucionais (Functions ≥ 60%, Statements ≥ 85%, Lines ≥ 85%, Branches ≥ 78%) permanecem verdes
+- [x] T035 Executar compilação de produção com `npm run build` atestando tempo < 5s e zero erros TypeScript/Vite
 
 ---
 

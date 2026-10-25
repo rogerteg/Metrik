@@ -1,155 +1,22 @@
-import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { PriorityLevel, TaskModel, isTaskStagnant, STAGNANT_BROWN_COLOR } from '../types/kanban';
+import React, { useState } from 'react';
+import { isTaskStagnant } from '../types/kanban';
 import { isTaskBlocked, isBlockingTag } from '../utils/taskReorder';
-import { AutoResizeTextarea } from './AutoResizeTextarea';
-import { PriorityBadge } from './PriorityBadge';
-import { TaskTypeBadge } from './TaskTypeBadge';
-import { TagList } from './TagList';
-import { ReorderOptions } from '../types/dnd';
 import {
   calculateLeadTimeMs,
   calculateCycleTimeMs,
   formatDuration,
   getDueDateStatus,
-  formatDateShort,
 } from '../utils/timeFormatters';
-import { useFieldEdit } from '../hooks/useFieldEdit';
-import { TaskFieldActionToolbar } from './TaskFieldActionToolbar';
-import { CommentThread } from './CommentThread';
-import { TaskChecklist } from './TaskChecklist';
+import { AutoResizeTextarea } from './AutoResizeTextarea';
+import { TagList } from './TagList';
+import { TaskProps } from './Task/types';
+import { TaskHeader } from './Task/TaskHeader';
+import { TaskBadges } from './Task/TaskBadges';
+import { TaskBlockerChips } from './Task/TaskBlockerChips';
+import { TaskChecklistSummary } from './Task/TaskChecklistSummary';
+import { TaskCardContainer } from './Task/TaskCardContainer';
 
-/* Ícones compactos do detalhe inline (12px, herdam currentColor) */
-const DetailIcon: React.FC = () => (
-  <svg
-    width="12"
-    height="12"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M4 6h16M4 12h16M4 18h10" />
-  </svg>
-);
-
-const ChecklistIcon: React.FC = () => (
-  <svg
-    width="12"
-    height="12"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <polyline points="9 11 12 14 22 4" />
-    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-  </svg>
-);
-
-const DescriptionIcon: React.FC = () => (
-  <svg
-    width="12"
-    height="12"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <line x1="21" y1="6" x2="3" y2="6" />
-    <line x1="21" y1="12" x2="3" y2="12" />
-    <line x1="21" y1="18" x2="3" y2="18" />
-  </svg>
-);
-
-const CriteriaIcon: React.FC = () => (
-  <svg
-    width="12"
-    height="12"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-    <polyline points="8 13 11 16 16 10" />
-  </svg>
-);
-
-const TestIcon: React.FC = () => (
-  <svg
-    width="12"
-    height="12"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M9 3h6M10 3v6.5L5.5 17a2 2 0 0 0 1.7 3h9.6a2 2 0 0 0 1.7-3L14 9.5V3" />
-  </svg>
-);
-
-export interface TaskProps {
-  task: TaskModel;
-  columnColor?: string;
-  onUpdateTitle: (id: string, newTitle: string) => void;
-  onDelete: (id: string) => void;
-  onDiscardIfEmpty: (id: string) => void;
-  onUpdatePriority?: (id: string, priority?: PriorityLevel) => void;
-  onAddTag?: (id: string, tag: string) => void;
-  onRemoveTag?: (id: string, tag: string) => void;
-  onToggleBlocked?: (id: string) => void;
-  onMoveLeft?: (id: string) => void;
-  onMoveRight?: (id: string) => void;
-  canMoveLeft?: boolean;
-  canMoveRight?: boolean;
-  onDropTask?: (options: ReorderOptions) => void;
-  isCompleted?: boolean;
-  onClick?: () => void;
-  onUpdateTask?: (id: string, updates: Partial<TaskModel>) => void;
-  initiativeProgress?: { total: number; completed: number; percentage: number };
-  pendingBlockersCount?: number;
-  /** Modo de persistência de comentários e campos textuais (padrão: true) */
-  autoSaveComments?: boolean;
-  /** Intervalo de debounce em ms (padrão: 800ms) */
-  autoSaveDebounceMs?: number;
-  /** Comentários do cartão pai (Feature 027 delta) */
-  onAddComment?: (taskId: string, text: string) => void;
-  onEditComment?: (taskId: string, commentId: string, text: string) => void;
-  onDeleteComment?: (taskId: string, commentId: string) => void;
-  /** Comentários da subtarefa (Feature 027 delta) */
-  onAddSubtaskComment?: (taskId: string, subtaskId: string, text: string) => void;
-  onEditSubtaskComment?: (
-    taskId: string,
-    subtaskId: string,
-    commentId: string,
-    text: string,
-  ) => void;
-  onDeleteSubtaskComment?: (taskId: string, subtaskId: string, commentId: string) => void;
-  /** Perfil ativo, usado para autoria e permissões de comentário */
-  currentUser?: { id: string; name: string };
-  isAdmin?: boolean;
-  /** Quadro somente leitura (perfil convidado): nenhuma escrita é oferecida (FR-016) */
-  isReadOnly?: boolean;
-  /** Nome da sprint à qual a tarefa pertence (Feature 038) */
-  sprintName?: string;
-}
+export type { TaskProps };
 
 export const Task: React.FC<TaskProps> = ({
   task,
@@ -184,12 +51,10 @@ export const Task: React.FC<TaskProps> = ({
   isReadOnly = false,
   sprintName,
 }) => {
-  const [isDragging, setIsDragging] = React.useState(false);
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [dropIndicator, setDropIndicator] = React.useState<'before' | 'after' | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDetailEditing, setIsDetailEditing] = useState(false);
 
   const isBlocked = isTaskBlocked(task);
-  // Somente leitura por perfil (guest) OU por bloqueio: nenhuma edição é oferecida.
   const readOnly = isReadOnly || isBlocked;
 
   const handleBlur = () => {
@@ -199,28 +64,6 @@ export const Task: React.FC<TaskProps> = ({
     }
   };
 
-  const handleDragStart = (e: React.DragEvent<HTMLElement>) => {
-    if (readOnly) {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-    setIsDragging(true);
-    if (e.dataTransfer) {
-      e.dataTransfer.setData('text/plain', task.id);
-      e.dataTransfer.effectAllowed = 'move';
-    }
-  };
-
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    setDropIndicator(null);
-  };
-
-  /**
-   * Desbloqueio rápido pelo badge (Feature 025 — contrato do modal de desbloqueio).
-   * Remove o flag `blocked`, retira as etiquetas de bloqueio e reconcilia `totalBlockedMs`.
-   */
   const handleQuickUnlock = () => {
     if (onToggleBlocked) {
       onToggleBlocked(task.id);
@@ -231,7 +74,7 @@ export const Task: React.FC<TaskProps> = ({
     const startMs = task.blockedAt ? new Date(task.blockedAt).getTime() : Date.now();
     const elapsed = Math.max(0, Date.now() - startMs);
     const totalBlockedMs = (task.totalBlockedMs || 0) + elapsed;
-    const nextTags = (task.tags ?? []).filter((tag) => !isBlockingTag(tag));
+    const nextTags = (task.tags ?? []).filter((tag: string) => !isBlockingTag(tag));
 
     onUpdateTask(task.id, {
       blocked: false,
@@ -241,234 +84,46 @@ export const Task: React.FC<TaskProps> = ({
     });
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'move';
-    }
-    const rect = e.currentTarget.getBoundingClientRect();
-    const midY = rect.top + rect.height / 2;
-    const clientY = typeof e.clientY === 'number' ? e.clientY : midY - 1;
-    const pos = clientY < midY ? 'before' : 'after';
-    setDropIndicator(pos);
-  };
-
-  const handleDragLeave = (e: React.DragEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-      setDropIndicator(null);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const position = dropIndicator || 'before';
-    setDropIndicator(null);
-
-    const activeTaskId = e.dataTransfer ? e.dataTransfer.getData('text/plain') : '';
-    if (activeTaskId && onDropTask) {
-      onDropTask({
-        activeTaskId,
-        targetColumn: task.column,
-        targetTaskId: task.id,
-        position,
-      });
-    }
-  };
-
   const hasCompletedAt = isCompleted && !!task.completedAt;
   const leadTimeMs = hasCompletedAt ? calculateLeadTimeMs(task) : null;
   const cycleTimeMs = hasCompletedAt ? calculateCycleTimeMs(task) : null;
   const leadTimeStr = formatDuration(leadTimeMs);
   const cycleTimeStr = formatDuration(cycleTimeMs);
 
-  const dropClass =
-    dropIndicator === 'before'
-      ? 'task-card-drop-before'
-      : dropIndicator === 'after'
-        ? 'task-card-drop-after'
-        : '';
-
-  const subtasks = task.subtasks || [];
-  const completedSubtasks = subtasks.filter((st) => st.completed).length;
-  const hasSubtasks = subtasks.length > 0;
-  const comments = task.comments || [];
-  const hasComments = comments.length > 0;
+  const isStagnant = isTaskStagnant(task, isCompleted);
   const hasDueDate = !!task.dueDate;
   const dueDateStatus = hasDueDate ? getDueDateStatus(task.dueDate!, isCompleted) : null;
 
-  const isStagnant = isTaskStagnant(task, isCompleted);
-  const effectiveCardColor = isStagnant ? STAGNANT_BROWN_COLOR : columnColor;
-
-  const acEdit = useFieldEdit({
-    initialValue: task.acceptanceCriteria || '',
-    onSave: (val) => onUpdateTask?.(task.id, { acceptanceCriteria: val }),
-    autoSave: autoSaveComments,
-    debounceMs: autoSaveDebounceMs,
-    isReadOnly: !onUpdateTask || readOnly,
-  });
-
-  const tsEdit = useFieldEdit({
-    initialValue: task.testScenarios || '',
-    onSave: (val) => onUpdateTask?.(task.id, { testScenarios: val }),
-    autoSave: autoSaveComments,
-    debounceMs: autoSaveDebounceMs,
-    isReadOnly: !onUpdateTask || readOnly,
-  });
-
-  const descEdit = useFieldEdit({
-    initialValue: task.description || '',
-    onSave: (val) => onUpdateTask?.(task.id, { description: val }),
-    autoSave: autoSaveComments,
-    debounceMs: autoSaveDebounceMs,
-    isReadOnly: !onUpdateTask || readOnly,
-  });
-
-  const hasAcceptanceCriteria = !!(acEdit.value && acEdit.value.trim().length > 0);
-  const hasTestScenarios = !!(tsEdit.value && tsEdit.value.trim().length > 0);
-  const hasInlineDescription = !!(descEdit.value && descEdit.value.trim().length > 0);
-  const hasAnyInlineContent =
-    hasInlineDescription ||
-    hasSubtasks ||
-    hasAcceptanceCriteria ||
-    hasTestScenarios ||
-    hasComments ||
-    !!sprintName ||
-    !!task.estimation;
-
-  const canEditSubtasks = !readOnly && !!onUpdateTask;
-  // A ausência de handler de comentário indica modo somente leitura (perfil convidado).
-  const canCommentOnCard = !readOnly && !!onAddComment;
-
-  const handleToggleSubtask = (subtaskId: string) => {
-    if (!onUpdateTask) return;
-    const nextSubtasks = subtasks.map((st) =>
-      st.id === subtaskId ? { ...st, completed: !st.completed } : st,
-    );
-    onUpdateTask(task.id, { subtasks: nextSubtasks });
-  };
-
-  const handleRemoveSubtask = (subtaskId: string) => {
-    if (!onUpdateTask) return;
-    onUpdateTask(task.id, { subtasks: subtasks.filter((st) => st.id !== subtaskId) });
-  };
-
-  const handleCreateSubtask = (title: string) => {
-    if (!onUpdateTask) return;
-    onUpdateTask(task.id, {
-      subtasks: [...subtasks, { id: uuidv4(), title, completed: false }],
-    });
-  };
-
-  const [isQaExpanded, setIsQaExpanded] = React.useState(false);
-  const [isEditingDesc, setIsEditingDesc] = React.useState(false);
-  const [isEditingAC, setIsEditingAC] = React.useState(false);
-  const [isEditingTS, setIsEditingTS] = React.useState(false);
-
   return (
-    <article
-      className={`task-card ${isDragging ? 'task-card-dragging' : ''} ${isBlocked ? 'task-card-blocked task-card-blocked-locked' : ''} ${isStagnant ? 'task-card-stagnant' : ''} ${dropClass}`}
-      id={`task-${task.id}`}
-      aria-label={`Cartão de tarefa: ${task.title || 'Sem título'}`}
-      aria-disabled={isBlocked ? 'true' : undefined}
-      style={
-        effectiveCardColor && !isBlocked
-          ? {
-              borderLeft: `4px solid ${effectiveCardColor}`,
-            }
-          : undefined
-      }
-      draggable={!isEditing && !isEditingDesc && !isEditingAC && !isEditingTS && !readOnly}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      onClick={(e) => {
-        if (
-          isEditing ||
-          isEditingDesc ||
-          isEditingAC ||
-          isEditingTS ||
-          (e.target as HTMLElement).closest('.btn-nav-step') ||
-          (e.target as HTMLElement).closest('.btn-delete-task') ||
-          (e.target as HTMLElement).closest('.priority-badge-container') ||
-          (e.target as HTMLElement).closest('.tag-item-remove') ||
-          (e.target as HTMLElement).closest('.task-qa-toggle-bar') ||
-          (e.target as HTMLElement).closest('.task-field-box') ||
-          (e.target as HTMLElement).closest('.task-blocked-badge')
-        ) {
-          return;
-        }
-        if (onClick) {
-          onClick();
-        }
-      }}
+    <TaskCardContainer
+      task={task}
+      columnColor={columnColor}
+      isBlocked={isBlocked}
+      isStagnant={isStagnant}
+      readOnly={readOnly}
+      isAnyEditing={isEditing || isDetailEditing}
+      canMoveLeft={canMoveLeft}
+      canMoveRight={canMoveRight}
+      onMoveLeft={onMoveLeft}
+      onMoveRight={onMoveRight}
+      onDelete={onDelete}
+      onDropTask={onDropTask}
+      onClick={onClick}
     >
-      <div className="task-card-header" onPointerDown={(e) => e.stopPropagation()}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-          <TaskTypeBadge type={task.type} />
-          <PriorityBadge
-            priority={task.priority}
-            onChange={(newPriority) => onUpdatePriority?.(task.id, newPriority)}
-            readOnly={readOnly}
-          />
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-          {isStagnant && !isBlocked && (
-            <span
-              className="task-stagnant-badge"
-              title="Cartão sem movimentação há mais de 3 dias no board"
-              data-testid="task-stagnant-badge"
-            >
-              ⏳ Parado
-            </span>
-          )}
-          {isBlocked && (
-            <span
-              className={`task-blocked-badge ${isReadOnly ? '' : 'task-card-blocked-badge-clickable'}`}
-              title={
-                task.blockedReason
-                  ? `Bloqueado: ${task.blockedReason}`
-                  : 'Cartão bloqueado: clique para retirar a etiqueta de bloqueio'
-              }
-              data-testid="task-blocked-badge"
-              role={isReadOnly ? undefined : 'button'}
-              tabIndex={isReadOnly ? undefined : 0}
-              onClick={
-                isReadOnly
-                  ? undefined
-                  : (e) => {
-                      e.stopPropagation();
-                      handleQuickUnlock();
-                    }
-              }
-              onKeyDown={
-                isReadOnly
-                  ? undefined
-                  : (e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        handleQuickUnlock();
-                      }
-                    }
-              }
-            >
-              ⛔ Bloqueado
-            </span>
-          )}
-        </div>
-      </div>
+      <TaskHeader
+        task={task}
+        readOnly={readOnly}
+        isStagnant={isStagnant}
+        isBlocked={isBlocked}
+        isReadOnly={isReadOnly}
+        onUpdatePriority={onUpdatePriority}
+        onQuickUnlock={handleQuickUnlock}
+      />
 
       <div
         className="task-card-content"
         onPointerDown={(e) => {
-          // Isola seleção de texto do drag
-          if (isEditing || isEditingAC || isEditingTS) {
+          if (isEditing || isDetailEditing) {
             e.stopPropagation();
           }
         }}
@@ -490,466 +145,41 @@ export const Task: React.FC<TaskProps> = ({
           readOnly={readOnly}
         />
 
-        {/* Detalhe inline da tarefa: resumo compacto (glance) + gaveta de edição rápida */}
-        <div className="task-detail" data-testid="task-qa-section">
-          <button
-            type="button"
-            className="task-qa-toggle-bar"
-            onClick={() => setIsQaExpanded((prev) => !prev)}
-            title="Alternar critérios de aceitação e cenários de testes"
-            aria-expanded={isQaExpanded}
-            aria-controls={`task-detail-fields-${task.id}`}
-          >
-            <span className="task-detail-toggle-label">
-              <DetailIcon />
-              Detalhes
-            </span>
-            <span
-              className={`task-qa-toggle-icon ${isQaExpanded ? 'expanded' : ''}`}
-              aria-hidden="true"
-            >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </span>
-          </button>
+        <TaskChecklistSummary
+          task={task}
+          readOnly={readOnly}
+          isBlocked={isBlocked}
+          sprintName={sprintName}
+          autoSaveComments={autoSaveComments}
+          autoSaveDebounceMs={autoSaveDebounceMs}
+          onUpdateTask={onUpdateTask}
+          onAddComment={onAddComment}
+          onEditComment={onEditComment}
+          onDeleteComment={onDeleteComment}
+          onAddSubtaskComment={onAddSubtaskComment}
+          onEditSubtaskComment={onEditSubtaskComment}
+          onDeleteSubtaskComment={onDeleteSubtaskComment}
+          currentUser={currentUser}
+          isAdmin={isAdmin}
+          onClick={onClick}
+          onEditingChange={setIsDetailEditing}
+        />
 
-          {/* Resumo de presença quando recolhido: dá contexto sem abrir a gaveta */}
-          {hasAnyInlineContent && !isQaExpanded && (
-            <div className="task-detail-glance">
-              {hasSubtasks && (
-                <span
-                  className="task-detail-chip"
-                  title={`Checklist: ${completedSubtasks} de ${subtasks.length} concluídos`}
-                >
-                  <ChecklistIcon />
-                  {completedSubtasks}/{subtasks.length}
-                </span>
-              )}
-              {hasInlineDescription && (
-                <span className="task-detail-chip" title="Esta tarefa possui descrição">
-                  <DescriptionIcon />
-                  Descrição
-                </span>
-              )}
-              {hasAcceptanceCriteria && (
-                <span
-                  className="task-detail-chip"
-                  title="Esta tarefa possui critérios de aceitação"
-                >
-                  <CriteriaIcon />
-                  Critérios
-                </span>
-              )}
-              {hasTestScenarios && (
-                <span className="task-detail-chip" title="Esta tarefa possui cenários de testes">
-                  <TestIcon />
-                  Testes
-                </span>
-              )}
-              {hasComments && (
-                <span
-                  className="task-detail-chip"
-                  title={`${comments.length} comentário(s) no cartão`}
-                  data-testid="task-comments-chip"
-                >
-                  💬 {comments.length}
-                </span>
-              )}
-              {sprintName && (
-                <span
-                  className="task-detail-chip"
-                  title={`Sprint: ${sprintName}`}
-                  data-testid="task-sprint-chip"
-                >
-                  🏃 {sprintName}
-                </span>
-              )}
-              {task.estimation ? (
-                <span
-                  className="task-detail-chip"
-                  title={`Estimativa: ${task.estimation} pts`}
-                  data-testid="task-estimation-chip"
-                >
-                  {task.estimation} pts
-                </span>
-              ) : null}
-            </div>
-          )}
+        <TaskBadges
+          task={task}
+          hasCompletedAt={hasCompletedAt}
+          leadTimeStr={leadTimeStr}
+          cycleTimeStr={cycleTimeStr}
+          hasDueDate={hasDueDate}
+          dueDateStatus={dueDateStatus}
+        />
 
-          {isQaExpanded && (
-            <div
-              id={`task-detail-fields-${task.id}`}
-              className="task-qa-fields task-detail-drawer"
-              data-testid="task-qa-fields"
-              onClick={(e) => e.stopPropagation()}
-              onPointerDown={(e) => e.stopPropagation()}
-            >
-              {/* Descrição */}
-              <div className="task-field-box">
-                <div className="task-field-header">
-                  <span className="task-field-label">
-                    <DescriptionIcon />
-                    Descrição
-                  </span>
-                </div>
-                <textarea
-                  className="task-field-textarea"
-                  value={descEdit.value}
-                  placeholder="Adicione uma descrição..."
-                  aria-label="Descrição da tarefa"
-                  rows={2}
-                  onFocus={() => setIsEditingDesc(true)}
-                  onBlur={() => {
-                    setIsEditingDesc(false);
-                    descEdit.handleBlur();
-                  }}
-                  onChange={(e) => descEdit.setValue(e.target.value)}
-                  onKeyDown={descEdit.handleKeyDown}
-                />
-                <TaskFieldActionToolbar
-                  status={descEdit.status}
-                  isDirty={descEdit.isDirty}
-                  onSave={descEdit.saveNow}
-                  onDiscard={descEdit.discard}
-                  ariaLabelPrefix="da descrição"
-                  compact={true}
-                  isReadOnly={!onUpdateTask || isBlocked}
-                />
-              </div>
-
-              {/* Critérios de Aceitação */}
-              <div className="task-field-box">
-                <div className="task-field-header">
-                  <span className="task-field-label">
-                    <CriteriaIcon />
-                    Critérios de Aceitação
-                  </span>
-                </div>
-                <textarea
-                  className="task-field-textarea"
-                  value={acEdit.value}
-                  placeholder="Critérios de aceitação..."
-                  aria-label="Critérios de aceitação"
-                  rows={2}
-                  onFocus={() => setIsEditingAC(true)}
-                  onBlur={() => {
-                    setIsEditingAC(false);
-                    acEdit.handleBlur();
-                  }}
-                  onChange={(e) => acEdit.setValue(e.target.value)}
-                  onKeyDown={acEdit.handleKeyDown}
-                />
-                <TaskFieldActionToolbar
-                  status={acEdit.status}
-                  isDirty={acEdit.isDirty}
-                  onSave={acEdit.saveNow}
-                  onDiscard={acEdit.discard}
-                  ariaLabelPrefix="dos critérios de aceitação"
-                  compact={true}
-                  isReadOnly={!onUpdateTask || isBlocked}
-                />
-              </div>
-
-              {/* Cenários de Testes */}
-              <div className="task-field-box">
-                <div className="task-field-header">
-                  <span className="task-field-label">
-                    <TestIcon />
-                    Cenários de Testes
-                  </span>
-                </div>
-                <textarea
-                  className="task-field-textarea"
-                  value={tsEdit.value}
-                  placeholder="Cenários de testes..."
-                  aria-label="Cenários de testes"
-                  rows={2}
-                  onFocus={() => setIsEditingTS(true)}
-                  onBlur={() => {
-                    setIsEditingTS(false);
-                    tsEdit.handleBlur();
-                  }}
-                  onChange={(e) => tsEdit.setValue(e.target.value)}
-                  onKeyDown={tsEdit.handleKeyDown}
-                />
-                <TaskFieldActionToolbar
-                  status={tsEdit.status}
-                  isDirty={tsEdit.isDirty}
-                  onSave={tsEdit.saveNow}
-                  onDiscard={tsEdit.discard}
-                  ariaLabelPrefix="dos cenários de testes"
-                  compact={true}
-                  isReadOnly={!onUpdateTask || isBlocked}
-                />
-              </div>
-
-              <TaskChecklist
-                taskId={task.id}
-                subtasks={subtasks}
-                canEdit={canEditSubtasks}
-                currentUser={currentUser}
-                isAdmin={isAdmin}
-                onToggle={handleToggleSubtask}
-                onDelete={handleRemoveSubtask}
-                onAdd={handleCreateSubtask}
-                onAddComment={onAddSubtaskComment}
-                onEditComment={onEditSubtaskComment}
-                onDeleteComment={onDeleteSubtaskComment}
-              />
-
-              {/* Comentários do cartão pai (Feature 027 delta) */}
-              {(hasComments || canCommentOnCard) && (
-                <div
-                  className="task-field-box task-detail-comments"
-                  data-testid="card-comments-section"
-                >
-                  <CommentThread
-                    comments={task.comments}
-                    currentUser={currentUser}
-                    isReadOnly={!onAddComment}
-                    isAdmin={isAdmin}
-                    label="Comentários"
-                    emptyLabel="Nenhum comentário ainda."
-                    testIdPrefix="card-comment"
-                    onAdd={(text) => onAddComment?.(task.id, text)}
-                    onEdit={(commentId, text) => onEditComment?.(task.id, commentId, text)}
-                    onDelete={(commentId) => onDeleteComment?.(task.id, commentId)}
-                  />
-                </div>
-              )}
-
-              {onClick && (
-                <button
-                  type="button"
-                  className="task-detail-open-full"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onClick();
-                  }}
-                >
-                  Abrir detalhes completos
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="7" y1="17" x2="17" y2="7" />
-                    <polyline points="7 7 17 7 17 17" />
-                  </svg>
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Indicadores essenciais (datas) — descrição e checklist agora vivem no detalhe inline */}
-        {(hasDueDate || task.startDate || task.endDate) && (
-          <div className="task-indicators" aria-label="Indicadores da tarefa">
-            {task.startDate && (
-              <span
-                className="task-indicator-badge date-start-badge"
-                title={`Início da tarefa: ${formatDateShort(task.startDate)}`}
-              >
-                <svg
-                  width="11"
-                  height="11"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  style={{ marginRight: '3px' }}
-                >
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-                Início: {formatDateShort(task.startDate)}
-              </span>
-            )}
-            {task.endDate && (
-              <span
-                className="task-indicator-badge date-end-badge"
-                title={`Fim da tarefa: ${formatDateShort(task.endDate)}`}
-              >
-                <svg
-                  width="11"
-                  height="11"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  style={{ marginRight: '3px' }}
-                >
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                  <line x1="16" y1="2" x2="16" y2="6"></line>
-                  <line x1="8" y1="2" x2="8" y2="6"></line>
-                  <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
-                Fim: {formatDateShort(task.endDate)}
-              </span>
-            )}
-            {hasDueDate && (
-              <span
-                className={`task-indicator-badge due-date-${dueDateStatus}`}
-                title={`Data de entrega: ${formatDateShort(task.dueDate!)}`}
-              >
-                <svg
-                  width="11"
-                  height="11"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  style={{ marginRight: '3px' }}
-                >
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                  <line x1="16" y1="2" x2="16" y2="6"></line>
-                  <line x1="8" y1="2" x2="8" y2="6"></line>
-                  <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
-                {formatDateShort(task.dueDate!)}
-              </span>
-            )}
-          </div>
-        )}
-
-        {task.type === 'initiative' && initiativeProgress && initiativeProgress.total > 0 && (
-          <div className="task-initiative-progress" data-testid="task-initiative-progress">
-            <div className="task-initiative-progress__label">
-              <span>Progresso</span>
-              <span>
-                {initiativeProgress.completed}/{initiativeProgress.total} (
-                {initiativeProgress.percentage}%)
-              </span>
-            </div>
-            <div className="task-initiative-progress__bar">
-              <div
-                className="task-initiative-progress__fill"
-                style={{ width: `${initiativeProgress.percentage}%` }}
-              />
-            </div>
-          </div>
-        )}
-
-        {task.links && task.links.length > 0 && (
-          <div className="task-links-summary-row" data-testid="task-links-summary">
-            <span
-              className="task-links-counter-badge"
-              title={`${task.links.length} ${task.links.length === 1 ? 'vínculo associado' : 'vínculos associados'}`}
-            >
-              🔗 {task.links.length} {task.links.length === 1 ? 'vínculo' : 'vínculos'}
-            </span>
-            {task.links.some((l) => l.targetTeamId && l.targetTeamId !== '') && (
-              <span
-                className="task-cross-squad-chip"
-                title="Possui dependência com outra squad/time"
-              >
-                🏢 Cross-Squad
-              </span>
-            )}
-            {pendingBlockersCount !== undefined && pendingBlockersCount > 0 && (
-              <span
-                className="task-blocked-dependency-chip"
-                title={`${pendingBlockersCount} ${pendingBlockersCount === 1 ? 'dependência pendente' : 'dependências pendentes'}`}
-                data-testid="task-pending-blocker-chip"
-              >
-                🔒 {pendingBlockersCount}{' '}
-                {pendingBlockersCount === 1 ? 'bloqueador pendente' : 'bloqueadores pendentes'}
-              </span>
-            )}
-          </div>
-        )}
-
-        {hasCompletedAt && (
-          <div className="task-metrics-badges" aria-label="Métricas de fluxo do cartão">
-            <span
-              className="badge-metric-time badge-lead-time"
-              title="Lead Time: Tempo total decorrido da criação até a conclusão"
-            >
-              Lead: {leadTimeStr}
-            </span>
-            <span
-              className="badge-metric-time badge-cycle-time"
-              title="Cycle Time: Tempo de processamento efetivo do início até a conclusão"
-            >
-              Cycle: {cycleTimeStr}
-            </span>
-          </div>
-        )}
+        <TaskBlockerChips
+          task={task}
+          initiativeProgress={initiativeProgress}
+          pendingBlockersCount={pendingBlockersCount}
+        />
       </div>
-
-      <footer className="task-card-footer" onPointerDown={(e) => e.stopPropagation()}>
-        <div className="task-nav-buttons">
-          {!readOnly && canMoveLeft && onMoveLeft && (
-            <button
-              type="button"
-              className="btn-nav-step"
-              onClick={() => onMoveLeft(task.id)}
-              aria-label="Mover para coluna anterior"
-              title="Mover para coluna anterior"
-            >
-              ←
-            </button>
-          )}
-          {!readOnly && canMoveRight && onMoveRight && (
-            <button
-              type="button"
-              className="btn-nav-step"
-              onClick={() => onMoveRight(task.id)}
-              aria-label="Mover para próxima coluna"
-              title="Mover para próxima coluna"
-            >
-              →
-            </button>
-          )}
-        </div>
-
-        {!readOnly && (
-          <button
-            type="button"
-            className="btn-delete-task"
-            onClick={() => onDelete(task.id)}
-            aria-label="Excluir tarefa"
-            title="Excluir tarefa"
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-              <line x1="10" y1="11" x2="10" y2="17" />
-              <line x1="14" y1="11" x2="14" y2="17" />
-            </svg>
-          </button>
-        )}
-      </footer>
-    </article>
+    </TaskCardContainer>
   );
 };

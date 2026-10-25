@@ -124,7 +124,7 @@ export const BoardTask: React.FC<BoardTaskProps> = ({
       task={task}
       columnColor={colColor}
       onClick={() => onSelect(task.id)}
-      onUpdateTitle={(id, title) => onUpdateTask(id, { title })}
+      onUpdateTitle={(id: string, title: string) => onUpdateTask(id, { title })}
       onDelete={onDelete}
       onDiscardIfEmpty={onDiscardIfEmpty}
       onUpdatePriority={onUpdatePriority}
@@ -145,33 +145,37 @@ export const BoardTask: React.FC<BoardTaskProps> = ({
       currentUser={currentUser}
       isAdmin={isAdmin}
       onAddComment={
-        isGuest ? undefined : (taskId, text) => addTaskComment(taskId, text, currentUser)
+        isGuest
+          ? undefined
+          : (taskId: string, text: string) => addTaskComment(taskId, text, currentUser)
       }
       onEditComment={
         isGuest
           ? undefined
-          : (taskId, commentId, text) => editTaskComment(taskId, commentId, text, currentUser)
+          : (taskId: string, commentId: string, text: string) =>
+              editTaskComment(taskId, commentId, text, currentUser)
       }
       onDeleteComment={
         isGuest
           ? undefined
-          : (taskId, commentId) => deleteTaskComment(taskId, commentId, currentUser)
+          : (taskId: string, commentId: string) => deleteTaskComment(taskId, commentId, currentUser)
       }
       onAddSubtaskComment={
         isGuest
           ? undefined
-          : (taskId, subtaskId, text) => addSubtaskComment(taskId, subtaskId, text, currentUser)
+          : (taskId: string, subtaskId: string, text: string) =>
+              addSubtaskComment(taskId, subtaskId, text, currentUser)
       }
       onEditSubtaskComment={
         isGuest
           ? undefined
-          : (taskId, subtaskId, commentId, text) =>
+          : (taskId: string, subtaskId: string, commentId: string, text: string) =>
               editSubtaskComment(taskId, subtaskId, commentId, text, currentUser)
       }
       onDeleteSubtaskComment={
         isGuest
           ? undefined
-          : (taskId, subtaskId, commentId) =>
+          : (taskId: string, subtaskId: string, commentId: string) =>
               deleteSubtaskComment(taskId, subtaskId, commentId, currentUser, isAdmin)
       }
       onMoveLeft={() => {

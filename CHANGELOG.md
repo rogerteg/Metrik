@@ -5,7 +5,20 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ## [Unreleased]
 
-_(sem alterações desde `v0.2.0`)_
+### Added
+
+- Module line count guard test (`tests/unit/moduleLineCountGuard.test.ts`) enforcing constitutional limit of ≤ 400 lines across core modules and all extracted subcomponents.
+- Extracted modular component suites: `src/components/Task/` (`TaskHeader`, `TaskBadges`, `TaskBlockerChips`, `TaskChecklistSummary`, `TaskInlineIcons`, `TaskCardContainer`), `src/components/TaskDetailsModal/` (`TaskModalHeader`, `TaskModalPrimaryFields`, `TaskModalDescription`, `TaskModalActivityTab`, `TaskModalCloseGuard`), and `src/components/App/` (`AppHeaderBar`, `AppMainContent`, `AppBoardView`, `AppDialogsContainer`).
+- Extracted modular hooks: `src/hooks/taskCollection/` (`useTaskMutations`, `useTaskTagsAndBlockers`, `useTaskReorderManager`, `useTaskChecklistManager`, `useTaskCommentsManager`), `useCrossSquadLinking`, `useGuardedTaskMove`, and `useAppModals`.
+
+### Changed
+
+- Decomposed bloated monolithic files down to compliant sizes (Feature 049 / OPP-002 / Constituição Artigo II):
+  - `src/components/Task.tsx`: reduced from 907 lines to 186 lines (target ≤ 200).
+  - `src/components/TaskDetailsModal.tsx`: reduced from 780 lines to 319 lines (target ≤ 400).
+  - `src/hooks/useTaskCollection.ts`: reduced from 839 lines to 172 lines (target ≤ 220).
+  - `src/App.tsx`: reduced from 835 lines to 364 lines (target ≤ 400).
+- 100% backward compatibility preserved for public component and hook contracts with zero behavioral regressions.
 
 ## [0.2.0] - 2026-10-19
 

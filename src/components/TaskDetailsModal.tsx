@@ -1,31 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import {
-  TaskModel,
-  SubtaskModel,
-  BoardModel,
-  ColumnModel,
-  SprintModel,
-  getDefaultColumnColor,
-} from '../types/kanban';
+import React, { useState, useEffect, useMemo } from 'react';
+import { TaskModel, BoardModel, ColumnModel, SprintModel } from '../types/kanban';
 import { TaskRelationType } from '../types/taskTypes';
 import { Team, User } from '../types/team';
 import { calculateInitiativeProgress, getPendingBlockers } from '../utils/taskRelations';
-import { getDueDateStatus, formatDateShort } from '../utils/timeFormatters';
-import { TaskLinksSection } from './TaskLinksSection';
-import { TaskTimeline } from './TaskTimeline';
-import { TaskFlowMetricsPanel } from './TaskFlowMetricsPanel';
-import { TaskTypeBadge } from './TaskTypeBadge';
-import { TaskComment, TaskActivityLog } from '../types/taskActivity';
-import { createTaskActivityEvent, AuditDescriptions } from '../utils/taskActivityLogger';
+import { getDueDateStatus } from '../utils/timeFormatters';
 import { Modal } from './Modal';
 import { useFieldEdit } from '../hooks/useFieldEdit';
-import { TaskFieldActionToolbar } from './TaskFieldActionToolbar';
 import { TaskMetadataSidebar } from './TaskMetadataSidebar';
-import { MikaTaskAssistant } from './Mika/MikaTaskAssistant';
+import { TaskDetailTab } from './TaskDetailsModal/types';
+import { TaskModalHeader } from './TaskDetailsModal/TaskModalHeader';
+import { TaskModalPrimaryFields } from './TaskDetailsModal/TaskModalPrimaryFields';
+import { TaskModalDescription } from './TaskDetailsModal/TaskModalDescription';
+import { TaskModalActivityTab } from './TaskDetailsModal/TaskModalActivityTab';
+import { TaskModalCloseGuard } from './TaskDetailsModal/TaskModalCloseGuard';
 import './TaskDetailsModal.css';
 
-interface TaskDetailsModalProps {
+export interface TaskDetailsModalProps {
   task: TaskModel;
   isOpen: boolean;
   onClose: () => void;
@@ -35,9 +25,7 @@ interface TaskDetailsModalProps {
   onDeleteComment?: (taskId: string, commentId: string) => void;
   onEditComment?: (taskId: string, commentId: string, text: string) => void;
   currentUserId?: string;
-  /** Sprints do quadro (Feature 038) */
   sprints?: SprintModel[];
-  /** Atribui/remove a tarefa de uma sprint (Feature 038) */
   onSetTaskSprint?: (taskId: string, sprintId: string | null) => void;
   boardTasks?: TaskModel[];
   columns?: ColumnModel[];
@@ -58,8 +46,6 @@ interface TaskDetailsModalProps {
   onRemoveLink?: (targetTaskId: string) => void;
   onNavigateToBoard?: (boardId: string) => void;
 }
-
-type TaskDetailTab = 'overview' | 'activity' | 'metrics';
 
 export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   task,
@@ -90,71 +76,9 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const [localDueDate, setLocalDueDate] = useState(task.dueDate || '');
   const [localStartDate, setLocalStartDate] = useState(task.startDate || '');
   const [localEndDate, setLocalEndDate] = useState(task.endDate || '');
-  const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [showCloseGuard, setShowCloseGuard] = useState(false);
-  const [showMikaAssistant, setShowMikaAssistant] = useState(false);
   const [activeTab, setActiveTab] = useState<TaskDetailTab>('overview');
 
-  const handleAddComment = (text: string, isDecision?: boolean) => {
-    if (onAddComment) {
-      onAddComment(task.id, text, isDecision);
-    } else {
-      const now = new Date().toISOString();
-      const newComment: TaskComment = {
-        id: crypto.randomUUID
-          ? crypto.randomUUID()
-          : `cmt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-        taskId: task.id,
-        userId: 'usr_default',
-        userName: 'Rogerio Teixeira',
-        text,
-        isDecision: Boolean(isDecision),
-        createdAt: now,
-      };
-      const auditEvent: TaskActivityLog = createTaskActivityEvent({
-        taskId: task.id,
-        eventType: 'comment_added',
-        description: AuditDescriptions.commentAdded('Rogerio Teixeira'),
-        user: { id: 'usr_default', name: 'Rogerio Teixeira' },
-      });
-      onUpdateTask(task.id, {
-        comments: [...(task.comments || []), newComment],
-        activityLog: [...(task.activityLog || []), auditEvent],
-      });
-    }
-  };
-
-  const handleDeleteComment = (commentId: string) => {
-    if (onDeleteComment) {
-      onDeleteComment(task.id, commentId);
-    } else {
-      const updatedComments = (task.comments || []).filter((c) => c.id !== commentId);
-      const auditEvent: TaskActivityLog = createTaskActivityEvent({
-        taskId: task.id,
-        eventType: 'comment_deleted',
-        description: AuditDescriptions.commentDeleted('Rogerio Teixeira'),
-        user: { id: 'usr_default', name: 'Rogerio Teixeira' },
-      });
-      onUpdateTask(task.id, {
-        comments: updatedComments,
-        activityLog: [...(task.activityLog || []), auditEvent],
-      });
-    }
-  };
-
-  const handleEditComment = (commentId: string, text: string) => {
-    if (!text.trim()) return;
-    if (onEditComment) {
-      onEditComment(task.id, commentId, text);
-      return;
-    }
-    const updatedComments = (task.comments || []).map((c) =>
-      c.id === commentId ? { ...c, text: text.trim(), updatedAt: new Date().toISOString() } : c,
-    );
-    onUpdateTask(task.id, { comments: updatedComments });
-  };
-
-  // Field Edit Hooks
   const titleEdit = useFieldEdit<string>({
     initialValue: task.title,
     onSave: (val) => {
@@ -202,19 +126,22 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     isReadOnly,
   });
 
+  const editFields = useMemo(
+    () => [titleEdit, descEdit, acEdit, tsEdit, brEdit],
+    [titleEdit, descEdit, acEdit, tsEdit, brEdit],
+  );
+
   useEffect(() => {
     if (isOpen) {
       setLocalDueDate(task.dueDate || '');
       setLocalStartDate(task.startDate || '');
       setLocalEndDate(task.endDate || '');
-      setNewSubtaskTitle('');
       setShowCloseGuard(false);
       setActiveTab('overview');
     }
   }, [task, isOpen]);
 
-  const isAnyDirty =
-    titleEdit.isDirty || descEdit.isDirty || acEdit.isDirty || tsEdit.isDirty || brEdit.isDirty;
+  const isAnyDirty = editFields.some((f) => f.isDirty);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -227,6 +154,9 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [autoSaveComments, isAnyDirty]);
 
+  const saveAllDirty = () => editFields.forEach((f) => f.isDirty && f.saveNow());
+  const discardAllDirty = () => editFields.forEach((f) => f.isDirty && f.discard());
+
   const handleRequestClose = () => {
     if (!autoSaveComments && isAnyDirty) {
       setShowCloseGuard(true);
@@ -236,474 +166,106 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   };
 
   const handleSaveAndClose = () => {
-    if (titleEdit.isDirty) titleEdit.saveNow();
-    if (descEdit.isDirty) descEdit.saveNow();
-    if (acEdit.isDirty) acEdit.saveNow();
-    if (tsEdit.isDirty) tsEdit.saveNow();
-    if (brEdit.isDirty) brEdit.saveNow();
+    saveAllDirty();
     setShowCloseGuard(false);
     onClose();
   };
 
   const handleDiscardAndClose = () => {
-    if (titleEdit.isDirty) titleEdit.discard();
-    if (descEdit.isDirty) descEdit.discard();
-    if (acEdit.isDirty) acEdit.discard();
-    if (tsEdit.isDirty) tsEdit.discard();
-    if (brEdit.isDirty) brEdit.discard();
+    discardAllDirty();
     setShowCloseGuard(false);
     onClose();
-  };
-
-  const handleContinueEditing = () => {
-    setShowCloseGuard(false);
   };
 
   const handleModalKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
       e.preventDefault();
-      if (titleEdit.isDirty) titleEdit.saveNow();
-      if (descEdit.isDirty) descEdit.saveNow();
-      if (acEdit.isDirty) acEdit.saveNow();
-      if (tsEdit.isDirty) tsEdit.saveNow();
-      if (brEdit.isDirty) brEdit.saveNow();
+      saveAllDirty();
     }
   };
-
-  const handleDueDateBlur = () => {
-    if (localDueDate !== (task.dueDate || '')) {
-      onUpdateTask(task.id, { dueDate: localDueDate || undefined });
-    }
-  };
-
-  const handleStartDateBlur = () => {
-    if (localStartDate !== (task.startDate || '')) {
-      onUpdateTask(task.id, { startDate: localStartDate || undefined });
-    }
-  };
-
-  const handleEndDateBlur = () => {
-    if (localEndDate !== (task.endDate || '')) {
-      onUpdateTask(task.id, { endDate: localEndDate || undefined });
-    }
-  };
-
-  const handleAddSubtask = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newSubtaskTitle.trim()) return;
-
-    const newSubtask: SubtaskModel = {
-      id: uuidv4(),
-      title: newSubtaskTitle.trim(),
-      completed: false,
-    };
-
-    const nextSubtasks = [...(task.subtasks || []), newSubtask];
-    onUpdateTask(task.id, { subtasks: nextSubtasks });
-    setNewSubtaskTitle('');
-  };
-
-  const handleToggleSubtask = (subtaskId: string) => {
-    const currentSubtasks = task.subtasks || [];
-    const nextSubtasks = currentSubtasks.map((st) =>
-      st.id === subtaskId ? { ...st, completed: !st.completed } : st,
-    );
-    onUpdateTask(task.id, { subtasks: nextSubtasks });
-  };
-
-  const handleDeleteSubtask = (subtaskId: string) => {
-    const currentSubtasks = task.subtasks || [];
-    const nextSubtasks = currentSubtasks.filter((st) => st.id !== subtaskId);
-    onUpdateTask(task.id, { subtasks: nextSubtasks });
-  };
-
-  const subtasks = task.subtasks || [];
-  const completedCount = subtasks.filter((st) => st.completed).length;
-  const progress = subtasks.length > 0 ? Math.round((completedCount / subtasks.length) * 100) : 0;
 
   const currentColumn = columns.find((c) => c.id === task.column);
   const currentBoard = allBoards.find((b) => b.id === currentBoardId);
   const isCompletedColumn = currentColumn?.category === 'done';
   const dueDateStatus = task.dueDate ? getDueDateStatus(task.dueDate, isCompletedColumn) : null;
 
-  const initiativeProgress = React.useMemo(() => {
+  const initiativeProgress = useMemo(() => {
     if (task.type !== 'initiative' || !columns || columns.length === 0) {
       return { total: 0, completed: 0, percentage: 0 };
     }
     return calculateInitiativeProgress(task, boardTasks, columns);
   }, [task, boardTasks, columns]);
 
-  const pendingBlockers = React.useMemo(
+  const pendingBlockers = useMemo(
     () =>
       task.links && task.links.length > 0 ? getPendingBlockers(task, boardTasks, columns) : [],
     [task, boardTasks, columns],
   );
 
   const totalBlockedMs = task.totalBlockedMs || 0;
-
   const activityCount = (task.comments || []).length + (task.activityLog || []).length;
 
   return (
     <Modal isOpen={isOpen} onClose={handleRequestClose} title="Detalhes da Tarefa">
       <div className="task-details-redesigned" onKeyDown={handleModalKeyDown}>
-        {/* Main Column (Left) */}
         <div className="td-main-column">
-          {/* Context header: breadcrumb + identity + status at a glance */}
-          <div className="td-hero">
-            <nav className="td-breadcrumb" aria-label="Localização da tarefa">
-              <span className="td-breadcrumb__item" title={currentBoard?.name || 'Quadro'}>
-                {currentBoard?.name || 'Quadro'}
-              </span>
-              <span className="td-breadcrumb__sep" aria-hidden="true">
-                /
-              </span>
-              <span className="td-breadcrumb__item td-breadcrumb__item--current">
-                {currentColumn?.title || 'Sem coluna'}
-              </span>
-            </nav>
+          <TaskModalHeader
+            task={task}
+            currentBoard={currentBoard}
+            currentColumn={currentColumn}
+            dueDateStatus={dueDateStatus}
+            pendingBlockersCount={pendingBlockers.length}
+            titleEdit={titleEdit}
+            isReadOnly={isReadOnly}
+          />
 
-            <div className="td-hero__meta">
-              <TaskTypeBadge type={task.type} />
-              <span className="td-hero__id" title={`ID da tarefa: ${task.id}`}>
-                #{task.id.slice(0, 8)}
-              </span>
-              {currentColumn && (
-                <span
-                  className="td-hero__pill td-hero__pill--status"
-                  title={`Status atual: ${currentColumn.title}`}
-                >
-                  <span
-                    className="td-hero__status-dot"
-                    style={{ background: getDefaultColumnColor(currentColumn) }}
-                    aria-hidden="true"
-                  />
-                  {currentColumn.title}
-                </span>
-              )}
-              {task.assignee && (
-                <span
-                  className="td-hero__pill td-hero__pill--assignee"
-                  title={`Responsável: ${task.assignee}`}
-                >
-                  👤 {task.assignee}
-                </span>
-              )}
-              {task.dueDate && dueDateStatus && (
-                <span className={`td-hero__pill td-hero__pill--due-${dueDateStatus}`}>
-                  Entrega: {formatDateShort(task.dueDate)}
-                </span>
-              )}
-              {task.blocked && (
-                <span className="td-hero__pill td-hero__pill--blocked">⛔ Bloqueada</span>
-              )}
-              {pendingBlockers.length > 0 && (
-                <span className="td-hero__pill td-hero__pill--blockers">
-                  🔒 {pendingBlockers.length}{' '}
-                  {pendingBlockers.length === 1 ? 'bloqueador' : 'bloqueadores'}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Title Section */}
-          <section className="td-section">
-            <div className="td-section-header">
-              <label htmlFor="td-title" className="td-label">
-                Título
-              </label>
-              <TaskFieldActionToolbar
-                status={titleEdit.status}
-                isDirty={titleEdit.isDirty}
-                onSave={titleEdit.saveNow}
-                onDiscard={titleEdit.discard}
-                isReadOnly={isReadOnly}
-                ariaLabelPrefix="do título"
-                compact
-              />
-            </div>
-            <input
-              id="td-title"
-              type="text"
-              className="td-input td-title-input"
-              value={titleEdit.value}
-              onChange={(e) => titleEdit.setValue(e.target.value)}
-              onBlur={titleEdit.handleBlur}
-              onKeyDown={(e) => {
-                titleEdit.handleKeyDown(e);
-                if (e.key === 'Enter') e.currentTarget.blur();
-              }}
-            />
-          </section>
-
-          {/* Tabs */}
-          <div className="td-tabs" role="tablist" aria-label="Seções do detalhe da tarefa">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'overview'}
-              className={`td-tab ${activeTab === 'overview' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('overview')}
-            >
-              Visão Geral
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'activity'}
-              className={`td-tab ${activeTab === 'activity' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('activity')}
-            >
-              Atividade
-              {activityCount > 0 && <span className="td-tab__count">{activityCount}</span>}
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'metrics'}
-              className={`td-tab ${activeTab === 'metrics' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('metrics')}
-            >
-              Métricas
-            </button>
-          </div>
+          <TaskModalActivityTab
+            task={task}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            activityCount={activityCount}
+            currentUserId={currentUserId}
+            isReadOnly={isReadOnly}
+            currentColumnTitle={currentColumn?.title}
+            pendingBlockersCount={pendingBlockers.length}
+            initiativeProgress={initiativeProgress}
+            totalBlockedMs={totalBlockedMs}
+            onUpdateTask={onUpdateTask}
+            onAddComment={onAddComment}
+            onDeleteComment={onDeleteComment}
+            onEditComment={onEditComment}
+          />
 
           {activeTab === 'overview' && (
             <div className="td-tabpanel" role="tabpanel" aria-label="Visão Geral">
-              {/* Initiative Progress Section */}
-              {task.type === 'initiative' && (
-                <section className="td-initiative-card">
-                  <div className="td-initiative-header">
-                    <span>Progresso da Iniciativa</span>
-                    <span className="td-initiative-progress-val">
-                      {initiativeProgress.completed}/{initiativeProgress.total} (
-                      {initiativeProgress.percentage}%)
-                    </span>
-                  </div>
-                  <div className="td-progress-bar-track">
-                    <div
-                      className="td-progress-bar-fill"
-                      style={{ width: `${initiativeProgress.percentage}%` }}
-                    />
-                  </div>
-                </section>
-              )}
-
-              {/* Description Section */}
-              <section className="td-section">
-                <div className="td-section-header">
-                  <label htmlFor="td-description" className="td-label">
-                    Descrição
-                  </label>
-                  <TaskFieldActionToolbar
-                    status={descEdit.status}
-                    isDirty={descEdit.isDirty}
-                    onSave={descEdit.saveNow}
-                    onDiscard={descEdit.discard}
-                    isReadOnly={isReadOnly}
-                    ariaLabelPrefix="da descrição"
-                  />
-                </div>
-                <textarea
-                  id="td-description"
-                  className="td-textarea"
-                  placeholder="Adicione uma descrição detalhada..."
-                  value={descEdit.value}
-                  onChange={(e) => descEdit.setValue(e.target.value)}
-                  onBlur={descEdit.handleBlur}
-                  onKeyDown={descEdit.handleKeyDown}
-                  rows={4}
-                />
-              </section>
-
-              {/* Acceptance Criteria */}
-              <section className="td-section">
-                <div className="td-section-header">
-                  <label htmlFor="td-acceptance-criteria" className="td-label">
-                    Critérios de Aceitação
-                  </label>
-                  <TaskFieldActionToolbar
-                    status={acEdit.status}
-                    isDirty={acEdit.isDirty}
-                    onSave={acEdit.saveNow}
-                    onDiscard={acEdit.discard}
-                    isReadOnly={isReadOnly}
-                    ariaLabelPrefix="dos critérios de aceitação"
-                  />
-                </div>
-                <textarea
-                  id="td-acceptance-criteria"
-                  className="td-textarea"
-                  placeholder="Defina os critérios para aceitação..."
-                  value={acEdit.value}
-                  onChange={(e) => acEdit.setValue(e.target.value)}
-                  onBlur={acEdit.handleBlur}
-                  onKeyDown={acEdit.handleKeyDown}
-                  rows={3}
-                />
-              </section>
-
-              {/* Test Scenarios */}
-              <section className="td-section">
-                <div className="td-section-header">
-                  <label htmlFor="td-test-scenarios" className="td-label">
-                    Cenários de Testes
-                  </label>
-                  <TaskFieldActionToolbar
-                    status={tsEdit.status}
-                    isDirty={tsEdit.isDirty}
-                    onSave={tsEdit.saveNow}
-                    onDiscard={tsEdit.discard}
-                    isReadOnly={isReadOnly}
-                    ariaLabelPrefix="dos cenários de testes"
-                  />
-                </div>
-                <textarea
-                  id="td-test-scenarios"
-                  className="td-textarea"
-                  placeholder="Descreva os cenários de testes..."
-                  value={tsEdit.value}
-                  onChange={(e) => tsEdit.setValue(e.target.value)}
-                  onBlur={tsEdit.handleBlur}
-                  onKeyDown={tsEdit.handleKeyDown}
-                  rows={3}
-                />
-              </section>
-
-              {/* Subtasks / Checklist */}
-              <section className="td-checklist-card">
-                <div className="td-checklist-header">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <label className="td-label">
-                      Checklist ({completedCount}/{subtasks.length})
-                    </label>
-                    <button
-                      type="button"
-                      className="mika-trigger-btn"
-                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem' }}
-                      onClick={() => setShowMikaAssistant((prev) => !prev)}
-                      title="Sugerir Subtarefas com Mika AI"
-                    >
-                      ✨ Mika AI
-                    </button>
-                  </div>
-                  {subtasks.length > 0 && (
-                    <span className="td-initiative-progress-val">{progress}%</span>
-                  )}
-                </div>
-
-                {showMikaAssistant && (
-                  <MikaTaskAssistant
-                    task={task}
-                    onAcceptSubtasks={(newItems) => {
-                      const next = [...(task.subtasks || []), ...newItems];
-                      onUpdateTask(task.id, { subtasks: next });
-                    }}
-                    onAcceptCriteria={(criteriaText) => {
-                      acEdit.setValue(criteriaText);
-                      onUpdateTask(task.id, { acceptanceCriteria: criteriaText });
-                    }}
-                    onClose={() => setShowMikaAssistant(false)}
-                  />
-                )}
-
-                {subtasks.length > 0 && (
-                  <div className="td-progress-bar-track">
-                    <div className="td-progress-bar-fill" style={{ width: `${progress}%` }} />
-                  </div>
-                )}
-
-                <ul className="td-checklist-items">
-                  {subtasks.map((st) => (
-                    <li
-                      key={st.id}
-                      className={`td-checklist-item ${st.completed ? 'completed' : ''}`}
-                    >
-                      <label className="td-checklist-label">
-                        <input
-                          type="checkbox"
-                          checked={st.completed}
-                          onChange={() => handleToggleSubtask(st.id)}
-                          className="td-checkbox"
-                        />
-                        <span className="td-checklist-text">{st.title}</span>
-                      </label>
-                      <button
-                        type="button"
-                        className="td-checklist-delete-btn"
-                        onClick={() => handleDeleteSubtask(st.id)}
-                        aria-label="Excluir subtarefa"
-                      >
-                        ✕
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-
-                <form onSubmit={handleAddSubtask} className="td-checklist-form">
-                  <input
-                    type="text"
-                    className="td-input"
-                    placeholder="Adicionar um item..."
-                    value={newSubtaskTitle}
-                    onChange={(e) => setNewSubtaskTitle(e.target.value)}
-                  />
-                  <button
-                    type="submit"
-                    className="td-btn-add-subtask"
-                    disabled={!newSubtaskTitle.trim()}
-                  >
-                    Adicionar
-                  </button>
-                </form>
-              </section>
-
-              {/* Task Links & Dependencies */}
-              {onAddLink && onRemoveLink && (
-                <TaskLinksSection
-                  currentTask={task}
-                  currentBoardId={currentBoardId}
-                  currentTeamId={currentTeamId}
-                  boardTasks={boardTasks}
-                  allBoards={allBoards}
-                  teams={teams}
-                  isReadOnly={isReadOnly}
-                  onAddLink={onAddLink}
-                  onRemoveLink={onRemoveLink}
-                  onNavigateToBoard={onNavigateToBoard}
-                />
-              )}
-            </div>
-          )}
-
-          {activeTab === 'activity' && (
-            <div className="td-tabpanel" role="tabpanel" aria-label="Atividade">
-              <TaskTimeline
-                taskId={task.id}
-                comments={task.comments}
-                activityLog={task.activityLog}
-                onAddComment={handleAddComment}
-                onDeleteComment={handleDeleteComment}
-                onEditComment={handleEditComment}
-                currentUserId={currentUserId}
-                isGuest={isReadOnly}
-                totalBlockedMs={totalBlockedMs}
-              />
-            </div>
-          )}
-
-          {activeTab === 'metrics' && (
-            <div className="td-tabpanel" role="tabpanel" aria-label="Métricas">
-              <TaskFlowMetricsPanel
+              <TaskModalDescription
                 task={task}
-                currentColumnTitle={currentColumn?.title}
-                pendingBlockersCount={pendingBlockers.length}
+                descEdit={descEdit}
+                acEdit={acEdit}
+                tsEdit={tsEdit}
+                isReadOnly={isReadOnly}
+              />
+
+              <TaskModalPrimaryFields
+                task={task}
+                columns={columns}
+                boardTasks={boardTasks}
+                allBoards={allBoards}
+                teams={teams}
+                currentBoardId={currentBoardId}
+                currentTeamId={currentTeamId}
+                isReadOnly={isReadOnly}
                 initiativeProgress={initiativeProgress}
+                onUpdateTask={onUpdateTask}
+                acEdit={acEdit}
+                onAddLink={onAddLink}
+                onRemoveLink={onRemoveLink}
+                onNavigateToBoard={onNavigateToBoard}
               />
             </div>
           )}
         </div>
 
-        {/* Sidebar Column (Right) */}
         <div className="td-sidebar-column">
           <TaskMetadataSidebar
             task={task}
@@ -716,63 +278,35 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
             onToggleBlocked={onToggleBlocked}
             localStartDate={localStartDate}
             setLocalStartDate={setLocalStartDate}
-            handleStartDateBlur={handleStartDateBlur}
+            handleStartDateBlur={() => {
+              if (localStartDate !== (task.startDate || '')) {
+                onUpdateTask(task.id, { startDate: localStartDate || undefined });
+              }
+            }}
             localEndDate={localEndDate}
             setLocalEndDate={setLocalEndDate}
-            handleEndDateBlur={handleEndDateBlur}
+            handleEndDateBlur={() => {
+              if (localEndDate !== (task.endDate || '')) {
+                onUpdateTask(task.id, { endDate: localEndDate || undefined });
+              }
+            }}
             localDueDate={localDueDate}
             setLocalDueDate={setLocalDueDate}
-            handleDueDateBlur={handleDueDateBlur}
+            handleDueDateBlur={() => {
+              if (localDueDate !== (task.dueDate || '')) {
+                onUpdateTask(task.id, { dueDate: localDueDate || undefined });
+              }
+            }}
           />
         </div>
       </div>
 
-      {/* Close Guard Dialog */}
       {showCloseGuard && (
-        <div
-          className="td-close-guard-overlay"
-          role="alertdialog"
-          aria-modal="true"
-          aria-labelledby="guard-title"
-        >
-          <div className="td-close-guard-dialog">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: '1.5rem' }}>⚠️</span>
-              <h3
-                id="guard-title"
-                style={{
-                  margin: 0,
-                  fontSize: '1.1rem',
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                }}
-              >
-                Existem alterações não salvas
-              </h3>
-            </div>
-            <p
-              style={{
-                margin: 0,
-                fontSize: '0.85rem',
-                color: 'var(--text-secondary)',
-                lineHeight: 1.5,
-              }}
-            >
-              Você possui modificações pendentes nesta tarefa. Deseja salvar antes de fechar?
-            </p>
-            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-              <button type="button" className="btn btn-primary" onClick={handleSaveAndClose}>
-                Salvar e Fechar
-              </button>
-              <button type="button" className="btn btn-danger" onClick={handleDiscardAndClose}>
-                Descartar
-              </button>
-              <button type="button" className="btn btn-secondary" onClick={handleContinueEditing}>
-                Continuar Editando
-              </button>
-            </div>
-          </div>
-        </div>
+        <TaskModalCloseGuard
+          onSaveAndClose={handleSaveAndClose}
+          onDiscardAndClose={handleDiscardAndClose}
+          onContinueEditing={() => setShowCloseGuard(false)}
+        />
       )}
     </Modal>
   );
