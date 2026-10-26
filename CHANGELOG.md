@@ -7,6 +7,8 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ### Added
 
+- Elevação da cobertura global de funções para **71.02%** ($\ge 70.0\%$), com limiar constitucional atualizado em `vite.config.ts` (`coverage.thresholds.functions: 70`), resolvendo OPP-006 (Issue #267).
+- Novas suítes de testes unitários dedicadas para `TaskFlowMetricsPanel`, `BoardTask`, `SprintManagerModal`, `BoardTableView`, `BoardCardGrid`, `AppHeader`, `ActivityLogItem` e expansão de `AnalyticsDashboard`.
 - Module line count guard test (`tests/unit/moduleLineCountGuard.test.ts`) enforcing constitutional limit of ≤ 400 lines across core modules and all extracted subcomponents.
 - Extracted modular component suites: `src/components/Task/` (`TaskHeader`, `TaskBadges`, `TaskBlockerChips`, `TaskChecklistSummary`, `TaskInlineIcons`, `TaskCardContainer`), `src/components/TaskDetailsModal/` (`TaskModalHeader`, `TaskModalPrimaryFields`, `TaskModalDescription`, `TaskModalActivityTab`, `TaskModalCloseGuard`), and `src/components/App/` (`AppHeaderBar`, `AppMainContent`, `AppBoardView`, `AppDialogsContainer`).
 - Extracted modular hooks: `src/hooks/taskCollection/` (`useTaskMutations`, `useTaskTagsAndBlockers`, `useTaskReorderManager`, `useTaskChecklistManager`, `useTaskCommentsManager`), `useCrossSquadLinking`, `useGuardedTaskMove`, and `useAppModals`.

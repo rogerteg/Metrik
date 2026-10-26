@@ -226,6 +226,7 @@ As medidas desta visão **não têm prazo de validade fixo** — elas são inval
 | OPP-003: Bloqueio formal de ambiente para motores WebKit/Safari registrado em `specs/026` conforme Constituição III/IV | 2026-10-25 (Fase 3) |
 | OPP-004: Reafirmação formal das 4 lacunas aceitas de baixo risco em `specs/027` | 2026-10-25 (Fase 3) |
 | OPP-015: Eliminação integral de avisos de análise estática (0 erros e 0 warnings no ESLint com tipagem estrita) | 2026-10-25 (Fase 3) |
+| OPP-006: Elevação da cobertura de funções para 71.02% (>= 70.0%) com trava elevada em vite.config.ts | 2026-10-26 (Fase 4) |
 
 ---
 

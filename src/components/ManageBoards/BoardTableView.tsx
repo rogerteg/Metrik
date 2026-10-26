@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { BoardModel } from '../../types/kanban';
+import { Board, BoardModel } from '../../types/kanban';
 import { Team } from '../../types/team';
 import { computeBoardSummaryMetrics } from '../../utils/boardMetrics';
 
 export interface BoardTableViewProps {
-  boards: BoardModel[];
+  boards: Board[];
   activeBoardId: string | null;
   teams: Team[];
   onSelectBoard: (boardId: string) => void;

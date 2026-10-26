@@ -90,4 +90,82 @@ describe('AnalyticsDashboard Component (Feature 011 & 030 Integration)', () => {
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
+
+  it('navigates to cycle-time, blockers, sles and forecasting views', () => {
+    render(<AnalyticsDashboard tasks={sampleTasks} />);
+
+    // Cycle time tab
+    const cycleTab = screen.getByTestId('tab-cycle-time');
+    fireEvent.click(cycleTab);
+    expect(screen.getByTestId('focused-cycle-time-view')).toBeInTheDocument();
+
+    // Blockers tab
+    const blockersTab = screen.getByTestId('tab-blockers');
+    fireEvent.click(blockersTab);
+    expect(screen.getByTestId('focused-blockers-view')).toBeInTheDocument();
+
+    // SLEs tab
+    const slesTab = screen.getByTestId('tab-sles');
+    fireEvent.click(slesTab);
+    expect(screen.getByTestId('focused-sles-view')).toBeInTheDocument();
+
+    // Forecasting tab
+    const forecastTab = screen.getByTestId('tab-forecasting');
+    fireEvent.click(forecastTab);
+    expect(screen.getByTestId('focused-forecasting-view')).toBeInTheDocument();
+  });
+
+  it('navigates through summary cards click handlers on dashboard', () => {
+    render(<AnalyticsDashboard tasks={sampleTasks} />);
+
+    // Ensure we are on dashboard
+    fireEvent.click(screen.getByTestId('tab-dashboard'));
+
+    // Click on WIP card
+    const wipCard = screen.getByTestId('card-wip');
+    fireEvent.click(wipCard);
+    expect(screen.getByTestId('focused-wip-view')).toBeInTheDocument();
+
+    // Return to dashboard and click SLE card
+    fireEvent.click(screen.getByTestId('tab-dashboard'));
+    const sleCard = screen.getByTestId('card-sle');
+    fireEvent.click(sleCard);
+    expect(screen.getByTestId('focused-sles-view')).toBeInTheDocument();
+
+    // Return to dashboard and click Throughput card
+    fireEvent.click(screen.getByTestId('tab-dashboard'));
+    const tpCard = screen.getByTestId('card-throughput');
+    fireEvent.click(tpCard);
+    expect(screen.getByTestId('focused-throughput-view')).toBeInTheDocument();
+
+    // Return to dashboard and click Blockers card
+    fireEvent.click(screen.getByTestId('tab-dashboard'));
+    const blCard = screen.getByTestId('card-blockers');
+    fireEvent.click(blCard);
+    expect(screen.getByTestId('focused-blockers-view')).toBeInTheDocument();
+  });
+
+  it('toggles dataset configuration drawer and updates time window', () => {
+    render(<AnalyticsDashboard tasks={sampleTasks} />);
+
+    // Dataset button in nav header
+    const datasetBtn = screen.getByTestId('dataset-drawer-trigger');
+    fireEvent.click(datasetBtn);
+
+    // Drawer opens
+    const drawer = screen.getByRole('dialog', { name: /configuração do conjunto de dados/i });
+    expect(drawer).toBeInTheDocument();
+
+    // Click 30 days window chip
+    const window30Chip = screen.getByTestId('window-btn-30');
+    fireEvent.click(window30Chip);
+
+    // Close drawer
+    const closeDrawerBtn = screen.getByRole('button', { name: /fechar painel de dados/i });
+    fireEvent.click(closeDrawerBtn);
+
+    expect(
+      screen.queryByRole('dialog', { name: /configuração do conjunto de dados/i }),
+    ).not.toBeInTheDocument();
+  });
 });

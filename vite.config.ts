@@ -30,13 +30,13 @@ export default defineConfig({
       reportsDirectory: './coverage',
       include: ['src/**/*.{ts,tsx}'],
       exclude: ['src/**/*.d.ts', 'src/main.tsx', 'src/vite-env.d.ts'],
-      // Limiares calibrados na feature 047 (Governança de Qualidade Estática):
-      // Linha de base medida: stmts/lines 86.34% · branches 79.75% · functions 62.01%.
+      // Limiares calibrados na feature 047 e elevados na OPP-006 (Issue #267):
+      // Linha de base medida: stmts/lines 88.14% · branches 81.91% · functions 71.02%.
       thresholds: {
         statements: 85,
         lines: 85,
         branches: 78,
-        functions: 60,
+        functions: 70,
       },
     },
     // Exclui worktrees locais (.kilo), o harness de preview (scratch) e as
