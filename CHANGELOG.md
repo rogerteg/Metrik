@@ -5,6 +5,8 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-27
+
 ### Added
 
 - Consolidação da migração de schema e testes de contrato para Supabase Cloud Sync (OPP-005 / Issue #266) com guia operacional em `supabase/README.md` e suíte dedicada `tests/unit/supabaseMigration.test.ts`.
