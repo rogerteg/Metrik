@@ -7,6 +7,7 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ### Added
 
+- Consolidação da migração de schema e testes de contrato para Supabase Cloud Sync (OPP-005 / Issue #266) com guia operacional em `supabase/README.md` e suíte dedicada `tests/unit/supabaseMigration.test.ts`.
 - Elevação da cobertura global de funções para **71.02%** ($\ge 70.0\%$), com limiar constitucional atualizado em `vite.config.ts` (`coverage.thresholds.functions: 70`), resolvendo OPP-006 (Issue #267).
 - Novas suítes de testes unitários dedicadas para `TaskFlowMetricsPanel`, `BoardTask`, `SprintManagerModal`, `BoardTableView`, `BoardCardGrid`, `AppHeader`, `ActivityLogItem` e expansão de `AnalyticsDashboard`.
 - Module line count guard test (`tests/unit/moduleLineCountGuard.test.ts`) enforcing constitutional limit of ≤ 400 lines across core modules and all extracted subcomponents.

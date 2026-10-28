@@ -227,6 +227,7 @@ As medidas desta visão **não têm prazo de validade fixo** — elas são inval
 | OPP-004: Reafirmação formal das 4 lacunas aceitas de baixo risco em `specs/027` | 2026-10-25 (Fase 3) |
 | OPP-015: Eliminação integral de avisos de análise estática (0 erros e 0 warnings no ESLint com tipagem estrita) | 2026-10-25 (Fase 3) |
 | OPP-006: Elevação da cobertura de funções para 71.02% (>= 70.0%) com trava elevada em vite.config.ts | 2026-10-26 (Fase 4) |
+| OPP-005: Consolidação idempotente do schema de migração para Sprints (038) e Pontos (040) em supabase/schema.sql com testes de contrato e guia operacional | 2026-10-26 (Fase 4) |
 
 ---
 
