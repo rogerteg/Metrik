@@ -4,9 +4,18 @@
 
 **Created**: 2026-10-27
 
-**Status**: Draft
+**Status**: Implemented & Verified (2026-11-02)
 
 **Input**: User description: "relatórios exportáveis em PDF/Excel, automações de fluxo, ou integrações externas" (selecionada opção de Relatórios Exportáveis em PDF/Excel)
+
+---
+
+## Clarifications
+
+### Session 2026-10-27
+
+- Q: Qual mecanismo técnico e arquitetural deve ser adotado para a geração e download do Relatório Executivo em PDF? → A: Visualização de impressão dedicada via CSS `@media print` e `window.print()` nativo do navegador, formatada em folha de estilo A4 executiva e limpa, com zero dependências externas adicionais (YAGNI / Local-First).
+- Q: Qual formato de delimitador e padronização numérica deve ser adotado na exportação da planilha tabular? → A: Delimitador ponto-e-vírgula (`;`), vírgula como separador decimal para métricas de tempo/pontos e codificação UTF-8 com BOM (`\uFEFF`), garantindo abertura colunada imediata no Microsoft Excel em português (pt-BR).
 
 ---
 
@@ -73,10 +82,10 @@ Como usuário do Metrik, desejo poder personalizar o escopo antes da geração d
 ### Functional Requirements
 
 - **FR-001**: O sistema DEVE disponibilizar uma ação visível e acessível de "Exportar Relatório" tanto no painel de Analytics (`AnalyticsNavHeader`) quanto no menu de ações do quadro.
-- **FR-002**: O sistema DEVE permitir a exportação em formato PDF com layout executivo formatado para impressão (A4 paisagem/retrato), contendo cabeçalho institucional, indicadores de fluxo e gráficos essenciais.
+- **FR-002**: O sistema DEVE fornecer uma visão de relatório executivo otimizada para impressão (`@media print` e acionamento via `window.print()`), formatada para exportação em PDF em padrão A4, contendo cabeçalho institucional, indicadores de fluxo consolidados e diagnóstico da Mika sem elementos de navegação web.
 - **FR-003**: O relatório executivo DEVE consolidar os seguintes KPIs de fluxo: Throughput total do período, Lead Time médio formatado, Cycle Time médio formatado, Expectativa de Nível de Serviço (SLE no percentil 85%) com taxa de conformidade, e Taxa de Bloqueios (%).
 - **FR-004**: O relatório em PDF DEVE incluir os diagnósticos narrativos da Mika AI Flow Copilot vigentes para o período, evidenciando gargalos e recomendações de fluxo.
-- **FR-005**: O sistema DEVE permitir a exportação tabular de tarefas em planilha compatível com Excel e ferramentas de BI via formato padronizado com codificação UTF-8 e BOM (`\uFEFF`).
+- **FR-005**: O sistema DEVE permitir a exportação tabular de tarefas em formato de planilha compatível com Microsoft Excel (pt-BR) utilizando delimitador ponto-e-vírgula (`;`), números com vírgula decimal e codificação UTF-8 com BOM (`\uFEFF`).
 - **FR-006**: A exportação tabular DEVE conter colunas normalizadas: `ID`, `Título`, `Tipo`, `Coluna`, `Categoria`, `Prioridade`, `Responsável`, `Sprint`, `Story Points`, `Criado Em`, `Iniciado Em`, `Concluído Em`, `Lead Time (dias)`, `Cycle Time (dias)`, `Bloqueado`, `Tempo Bloqueado (horas)`, `Tags` e `Total Subtarefas`.
 - **FR-007**: A geração dos relatórios DEVE respeitar rigorosamente a filtragem e recorte temporal configurados na gaveta de amostragem de dados (`DatasetFilterConfig`), preservando coerência visual com as telas analíticas.
 - **FR-008**: O processo de exportação DEVE ser estritamente não-destrutivo e somente-leitura, sem efetuar qualquer mutação nas tarefas, sprints ou configurações do quadro.
@@ -97,7 +106,7 @@ Como usuário do Metrik, desejo poder personalizar o escopo antes da geração d
 ### Measurable Outcomes
 
 - **SC-001**: O tempo de geração e início de download do relatório (seja PDF ou Planilha) DEVE ser inferior a **1,5 segundos** para quadros com até 500 tarefas.
-- **SC-002**: 100% dos relatórios em planilha exportados DEVEM abrir no Microsoft Excel sem avisos de codificação ou corrupção de caracteres acentuados em português.
+- **SC-002**: 100% dos relatórios em planilha exportados DEVEM abrir no Microsoft Excel (pt-BR) diretamente com colunas separadas e acentuação íntegra sem necessidade de assistente manual de importação de texto.
 - **SC-003**: O relatório em PDF DEVE renderizar todos os textos e indicadores sem cortes, sobreposições ou quebras indevidas de página em resolução padrão A4.
 - **SC-004**: A funcionalidade DEVE atingir **100% de cobertura por testes automatizados** (testes unitários para cálculo das linhas tabulares, formatação de dados de exportação e acionamento dos gatilhos de download).
 - **SC-005**: Zero bytes de dados de tarefas ou métricas devem transitar por APIs externas para geração dos relatórios (verificação de soberania Local-First).
@@ -106,6 +115,6 @@ Como usuário do Metrik, desejo poder personalizar o escopo antes da geração d
 
 ## Assumptions
 
-- A geração de PDF utilizará capacidades nativas do navegador com estilos CSS `@media print` otimizados para exportação direta ou renderizador leve de documento client-side, evitando dependências externas pesadas (Constituição Artigo V / YAGNI).
-- A exportação em planilha utilizará CSV universal formatado com delimitador e BOM UTF-8, garantindo compatibilidade imediata com Microsoft Excel, LibreOffice Calc, Apple Numbers e Google Sheets sem a necessidade de bibliotecas binárias de manipulação de Excel pesadas.
+- A geração de PDF utilizará capacidades nativas do navegador com estilos CSS `@media print` e acionamento via `window.print()` em layout A4 executivo, sem introduzir bibliotecas pesadas de terceiros (Constituição Artigo V / YAGNI).
+- A exportação em planilha utilizará CSV com delimitador ponto-e-vírgula (`;`), números com vírgula decimal e BOM UTF-8 (`\uFEFF`), garantindo compatibilidade imediata com Microsoft Excel pt-BR, LibreOffice Calc, Apple Numbers e Google Sheets sem a necessidade de bibliotecas binárias de terceiros (Constituição Artigo V / YAGNI).
 - Usuários com papel de visitante (`guest`) também podem exportar relatórios para visualização, pois trata-se de operação puramente de leitura (read-only).

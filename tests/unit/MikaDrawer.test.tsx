@@ -1,9 +1,13 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MikaDrawer } from '../../src/components/Mika/MikaDrawer';
 import { MikaInsight } from '../../src/types/mika';
 
 describe('MikaDrawer', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   const mockInsights: MikaInsight[] = [
     {
       id: 'i-drawer-1',
@@ -22,12 +26,37 @@ describe('MikaDrawer', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('deve renderizar o cabeçalho, os insights e o botão de fechar quando isOpen for true', () => {
+  it('deve renderizar o cabeçalho, as abas de navegação e o botão de fechar quando isOpen for true', () => {
     render(<MikaDrawer isOpen={true} onClose={vi.fn()} insights={mockInsights} />);
 
     expect(screen.getByText('Mika Flow Copilot')).toBeInTheDocument();
-    expect(screen.getByText('Vazão Estável')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Fechar gaveta da Mika/i })).toBeInTheDocument();
+    expect(screen.getByTestId('mika-tab-chat')).toBeInTheDocument();
+    expect(screen.getByTestId('mika-tab-insights')).toBeInTheDocument();
+  });
+
+  it('deve alternar entre a aba de Chat e a aba de Diagnósticos', () => {
+    render(<MikaDrawer isOpen={true} onClose={vi.fn()} insights={mockInsights} />);
+
+    // Aba inicial é o Chat
+    expect(
+      screen.getByRole('textbox', { name: /Mensagem para a Mika AI/i }),
+    ).toBeInTheDocument();
+
+    // Alterna para Diagnósticos
+    const insightsTabBtn = screen.getByTestId('mika-tab-insights');
+    fireEvent.click(insightsTabBtn);
+
+    expect(screen.getByText('Vazão Estável')).toBeInTheDocument();
+    expect(screen.getByText(/Throughput médio de 3.2 itens por dia/i)).toBeInTheDocument();
+
+    // Alterna de volta para o Chat
+    const chatTabBtn = screen.getByTestId('mika-tab-chat');
+    fireEvent.click(chatTabBtn);
+
+    expect(
+      screen.getByRole('textbox', { name: /Mensagem para a Mika AI/i }),
+    ).toBeInTheDocument();
   });
 
   it('deve chamar onClose ao clicar no botão de fechar ou no backdrop', () => {

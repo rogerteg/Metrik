@@ -498,6 +498,23 @@
   transition: all 0.15s ease;
 }
 
+.analytics-export-report-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.analytics-export-report-trigger:hover,
 .analytics-dataset-drawer-trigger:hover {
   background: rgba(255, 255, 255, 0.09);
   color: var(--text-primary);

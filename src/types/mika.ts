@@ -77,3 +77,65 @@ export interface MikaCacheEntry {
   /** Timestamp epoch em milissegundos */
   generatedAt: number;
 }
+
+// ==========================================
+// Feature 052: Mika Conversational AI Chat
+// ==========================================
+
+export type MikaChatRole = 'user' | 'assistant' | 'system';
+export type MikaChatProvider = 'gemini' | 'heuristic';
+export type MikaQuickPromptCategory =
+  | 'bottleneck'
+  | 'sle'
+  | 'blocked'
+  | 'throughput'
+  | 'general';
+
+export interface MikaChatMessage {
+  id: string;
+  role: MikaChatRole;
+  content: string;
+  timestamp: string;
+  provider: MikaChatProvider;
+  referencedTaskIds?: string[];
+}
+
+export interface MikaChatSession {
+  boardId: string;
+  messages: MikaChatMessage[];
+  updatedAt: string;
+}
+
+export interface MikaQuickPrompt {
+  id: string;
+  label: string;
+  query: string;
+  category: MikaQuickPromptCategory;
+  icon?: string;
+}
+
+export interface MikaBoardTelemetryContext {
+  boardId: string;
+  boardTitle: string;
+  columns: {
+    id: string;
+    title: string;
+    wipLimit?: number;
+    taskCount: number;
+    isOverWip: boolean;
+    avgStageTimeHours?: number;
+  }[];
+  blockedTasks: {
+    id: string;
+    title: string;
+    columnTitle: string;
+    reason?: string;
+    blockedHours: number;
+  }[];
+  cycleTimeP85Days: number | null;
+  throughputLast14Days: number;
+  totalActiveTasks: number;
+  totalCompletedTasks: number;
+  generatedAt: string;
+}
+

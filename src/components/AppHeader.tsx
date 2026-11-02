@@ -35,6 +35,7 @@ export interface AppHeaderProps {
   onOpenMika?: () => void;
   isMikaOpen?: boolean;
   hasMikaAlerts?: boolean;
+  onOpenExportModal?: () => void;
 }
 
 /** Cabeçalho do aplicativo (extraído de App.tsx — P3/SRP). */
@@ -63,6 +64,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   onOpenMika,
   isMikaOpen,
   hasMikaAlerts,
+  onOpenExportModal,
 }) => (
   <header className="app-header">
     <div className="brand-section" style={{ display: 'flex', alignItems: 'center' }}>
@@ -195,6 +197,18 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
         >
           Exportar
         </button>
+        {onOpenExportModal && (
+          <button
+            type="button"
+            className="btn btn-secondary btn-compact"
+            onClick={onOpenExportModal}
+            aria-label="Exportar Relatório"
+            title="Exportar Relatório Executivo em PDF ou Planilha Excel"
+            data-testid="header-export-report-btn"
+          >
+            Relatório
+          </button>
+        )}
         {!isGuest && (
           <>
             <button

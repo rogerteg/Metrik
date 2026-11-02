@@ -19,6 +19,9 @@ import { useMika } from './hooks/useMika';
 import { useCrossSquadLinking } from './hooks/useCrossSquadLinking';
 import { useGuardedTaskMove } from './hooks/useGuardedTaskMove';
 import { useAppModals } from './hooks/useAppModals';
+import { ExportReportModal } from './components/ExportReportModal';
+import { ExecutiveReportPrintView } from './components/ExecutiveReportPrintView';
+import { FlowReportSnapshot } from './types/reports';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -76,6 +79,8 @@ export const App: React.FC = () => {
 
   const workspacesData = useWorkspaces();
   const { settings, updateSettings } = useAppSettings();
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [headerPrintSnapshot, setHeaderPrintSnapshot] = useState<FlowReportSnapshot | null>(null);
 
   const { isSyncing: isCloudAutoSyncing, lastSyncAt: cloudLastSyncAt } = useCloudAutoSync({
     enabled: settings.cloudAutoSync ?? false,
@@ -225,6 +230,7 @@ export const App: React.FC = () => {
         hasMikaAlerts={mika.insights.some(
           (i) => i.severity === 'warning' || i.severity === 'critical',
         )}
+        onOpenExportModal={() => setIsExportModalOpen(true)}
       />
 
       <AppMainContent
@@ -308,6 +314,7 @@ export const App: React.FC = () => {
       <AppDialogsContainer
         selectedTaskId={modals.selectedTaskId}
         onCloseTaskModal={modals.closeTaskModal}
+        onOpenTaskDetails={modals.setSelectedTaskId}
         allBoardTasks={allBoardTasks}
         board={board}
         activeBoardId={activeBoardId}
@@ -356,6 +363,34 @@ export const App: React.FC = () => {
         toastMessage={modals.toastMessage}
         onCloseToast={modals.closeToast}
       />
+
+      {/* Modal de Exportação de Relatórios disparado pelo AppHeaderBar (Feature 051) */}
+      {board && (
+        <ExportReportModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          board={board as any}
+          tasks={allBoardTasks}
+          filteredTasks={Object.values(filterData.filteredBoard.tasks).flat()}
+          mikaInsights={mika.insights}
+          hasActiveFilters={filterData.hasActiveFilters}
+          activeDateFilterLabel={
+            filterData.hasActiveFilters
+              ? 'Filtros do Quadro Ativos'
+              : 'Todos os dados do quadro'
+          }
+          onGeneratePdf={(snapshot) => setHeaderPrintSnapshot(snapshot)}
+        />
+      )}
+
+      {/* Visualização de Impressão Executiva disparada pelo AppHeaderBar */}
+      {headerPrintSnapshot && (
+        <ExecutiveReportPrintView
+          snapshot={headerPrintSnapshot}
+          onClose={() => setHeaderPrintSnapshot(null)}
+          autoPrint={true}
+        />
+      )}
     </div>
   );
 };

@@ -13,10 +13,12 @@ import { MikaDrawer } from '../Mika/MikaDrawer';
 import { ToastNotification } from '../ToastNotification';
 import { UseTaskCollectionReturn } from '../../hooks/useTaskCollection';
 import { MikaInsight } from '../../types/mika';
+import { buildBoardTelemetryContext } from '../../services/ai/mikaContextBuilder';
 
 export interface AppDialogsContainerProps {
   selectedTaskId: string | null;
   onCloseTaskModal: () => void;
+  onOpenTaskDetails?: (taskId: string) => void;
   allBoardTasks: TaskModel[];
   board: BoardState;
   activeBoardId: string | null;
@@ -100,7 +102,7 @@ export interface AppDialogsContainerProps {
     insights: MikaInsight[];
     refreshInsights: () => void;
     isLoading: boolean;
-    preferences: { provider?: string };
+    preferences: { provider?: string; apiKey?: string };
   };
 
   toastMessage: string | null;
@@ -110,6 +112,7 @@ export interface AppDialogsContainerProps {
 export const AppDialogsContainer: React.FC<AppDialogsContainerProps> = ({
   selectedTaskId,
   onCloseTaskModal,
+  onOpenTaskDetails,
   allBoardTasks,
   board,
   activeBoardId,
@@ -284,16 +287,37 @@ export const AppDialogsContainer: React.FC<AppDialogsContainerProps> = ({
         onCreateWorkspace={onCreateWorkspace}
       />
 
-      <MikaDrawer
-        isOpen={mika.isDrawerOpen}
-        onClose={mika.closeDrawer}
-        insights={mika.insights}
-        onRefresh={mika.refreshInsights}
-        isLoading={mika.isLoading}
-        providerName={
-          mika.preferences.provider === 'gemini' ? 'Google Gemini' : 'Local-First (Offline)'
-        }
-      />
+      {(() => {
+        const currentBoardModel = boards.find((b) => b.id === activeBoardId);
+        const currentBoardInfo = {
+          id: activeBoardId || 'default-board',
+          title: currentBoardModel?.name || 'Quadro Atual',
+        };
+        const telemetryContext = buildBoardTelemetryContext(
+          currentBoardInfo,
+          allBoardTasks,
+          board.columns || []
+        );
+
+        return (
+          <MikaDrawer
+            isOpen={mika.isDrawerOpen}
+            onClose={mika.closeDrawer}
+            insights={mika.insights}
+            onRefresh={mika.refreshInsights}
+            isLoading={mika.isLoading}
+            providerName={
+              mika.preferences.provider === 'gemini' ? 'Google Gemini' : 'Local-First (Offline)'
+            }
+            boardId={currentBoardInfo.id}
+            boardTitle={currentBoardInfo.title}
+            telemetryContext={telemetryContext}
+            onOpenTaskDetails={onOpenTaskDetails}
+            availableTasks={allBoardTasks}
+            apiKey={mika.preferences.apiKey}
+          />
+        );
+      })()}
 
       <ToastNotification message={toastMessage} onClose={onCloseToast} />
     </>

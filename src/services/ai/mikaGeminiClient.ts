@@ -152,6 +152,75 @@ Responda EXCLUSIVAMENTE em formato JSON com a estrutura:
       timestamp,
     };
   }
+
+  /**
+   * Envia uma mensagem em diálogo multi-turn com histórico recente e system instruction (Feature 052)
+   */
+  public async sendMessage(
+    apiKey: string,
+    systemPrompt: string,
+    history: { role: string; content: string }[],
+    userQuery: string
+  ): Promise<string> {
+    if (!apiKey || !apiKey.trim()) {
+      throw new Error('Chave de API do Gemini não fornecida');
+    }
+
+    if (!userQuery || !userQuery.trim()) {
+      throw new Error('Mensagem do usuário vazia');
+    }
+
+    // Janela deslizante das últimas 6 mensagens para a API (3 pares)
+    const recentHistory = (history || [])
+      .filter((m) => m.role === 'user' || m.role === 'assistant' || m.role === 'model')
+      .slice(-6);
+
+    const contents = recentHistory.map((m) => ({
+      role: m.role === 'assistant' || m.role === 'model' ? 'model' : 'user',
+      parts: [{ text: m.content }],
+    }));
+
+    // Adiciona a pergunta atual do usuário
+    contents.push({
+      role: 'user',
+      parts: [{ text: userQuery.trim() }],
+    });
+
+    const requestBody: Record<string, any> = {
+      contents,
+      generationConfig: {
+        temperature: 0.4,
+        maxOutputTokens: 1024,
+      },
+    };
+
+    if (systemPrompt && systemPrompt.trim()) {
+      requestBody.systemInstruction = {
+        parts: [{ text: systemPrompt.trim() }],
+      };
+    }
+
+    const response = await fetch(`${GEMINI_API_URL}?key=${encodeURIComponent(apiKey.trim())}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Falha na chamada Gemini API (${response.status}): ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const answer = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!answer) {
+      throw new Error('A resposta da Mika veio vazia da API do Gemini.');
+    }
+
+    return answer.trim();
+  }
 }
 
 export const mikaGeminiClient = new MikaGeminiClient();
+

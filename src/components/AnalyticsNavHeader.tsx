@@ -25,6 +25,8 @@ export interface AnalyticsNavHeaderProps {
   onToggleDatasetDrawer?: () => void;
   /** Indicador visual se há filtros ativos */
   hasActiveDatasetFilters?: boolean;
+  /** Callback para abrir o modal de exportação de relatório (Feature 051) */
+  onOpenExportModal?: () => void;
 }
 
 export const AnalyticsNavHeader: React.FC<AnalyticsNavHeaderProps> = ({
@@ -38,6 +40,7 @@ export const AnalyticsNavHeader: React.FC<AnalyticsNavHeaderProps> = ({
   onSelectBlockerMode,
   onToggleDatasetDrawer,
   hasActiveDatasetFilters = false,
+  onOpenExportModal,
 }) => {
   const currentCategory = activeCategory || activeTab || 'dashboard';
 
@@ -277,27 +280,43 @@ export const AnalyticsNavHeader: React.FC<AnalyticsNavHeaderProps> = ({
         </button>
       </div>
 
-      {/* Botão de disparo da Gaveta de Configuração do Conjunto de Dados */}
-      {onToggleDatasetDrawer && (
+      {/* Ações Analíticas: Exportar Relatório e Disparo da Gaveta de Dados */}
+      {(onToggleDatasetDrawer || onOpenExportModal) && (
         <div className="analytics-nav-actions">
-          <button
-            type="button"
-            className={`analytics-dataset-drawer-trigger ${hasActiveDatasetFilters ? 'has-filters' : ''}`}
-            onClick={onToggleDatasetDrawer}
-            aria-label="Configurar conjunto de dados"
-            data-testid="dataset-drawer-trigger"
-            title="Configurar amostragem de dados e filtros temporais"
-          >
-            <span className="analytics-action-icon">🎛️</span>
-            <span className="analytics-action-text">Dados</span>
-            {hasActiveDatasetFilters && (
-              <span
-                className="dataset-filter-indicator"
-                data-testid="dataset-filter-indicator"
-                title="Filtros ativos"
-              />
-            )}
-          </button>
+          {onOpenExportModal && (
+            <button
+              type="button"
+              className="analytics-export-report-trigger"
+              onClick={onOpenExportModal}
+              aria-label="Exportar Relatório"
+              data-testid="export-report-trigger"
+              title="Exportar Relatório em PDF ou Planilha Excel"
+            >
+              <span className="analytics-action-icon">📑</span>
+              <span className="analytics-action-text">Exportar</span>
+            </button>
+          )}
+
+          {onToggleDatasetDrawer && (
+            <button
+              type="button"
+              className={`analytics-dataset-drawer-trigger ${hasActiveDatasetFilters ? 'has-filters' : ''}`}
+              onClick={onToggleDatasetDrawer}
+              aria-label="Configurar conjunto de dados"
+              data-testid="dataset-drawer-trigger"
+              title="Configurar amostragem de dados e filtros temporais"
+            >
+              <span className="analytics-action-icon">🎛️</span>
+              <span className="analytics-action-text">Dados</span>
+              {hasActiveDatasetFilters && (
+                <span
+                  className="dataset-filter-indicator"
+                  data-testid="dataset-filter-indicator"
+                  title="Filtros ativos"
+                />
+              )}
+            </button>
+          )}
         </div>
       )}
     </nav>

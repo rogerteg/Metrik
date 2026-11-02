@@ -1,0 +1,339 @@
+/**
+ * Executive Report Print Stylesheet (Feature 051)
+ * Optimized for standard A4 portrait executive reporting (@media print)
+ */
+
+/* ==========================================================================
+   Screen Preview Mode (Modal overlay before triggering print)
+   ========================================================================== */
+.executive-print-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  padding: 24px 16px;
+}
+
+.executive-print-toolbar {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  background: var(--bg-surface, #1e293b);
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: var(--text-primary, #f8fafc);
+}
+
+.executive-print-toolbar-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.executive-print-container {
+  width: 100%;
+  max-width: 800px;
+  background-color: #ffffff;
+  color: #0f172a;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  padding: 36px 40px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   Executive Report Visual Sections
+   ========================================================================== */
+.executive-report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 24px;
+}
+
+.executive-report-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.executive-report-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.executive-report-title h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.executive-report-title p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+  font-weight: 500;
+}
+
+.executive-report-meta {
+  text-align: right;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.executive-report-meta strong {
+  color: #1e293b;
+}
+
+.executive-report-scope {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+}
+
+.executive-scope-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.executive-scope-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+.executive-scope-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-top: 2px;
+}
+
+/* Section Headings */
+.executive-section-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 24px 0 14px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* KPI Tiles Grid */
+.executive-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.executive-kpi-card {
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 14px 16px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.executive-kpi-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.executive-kpi-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 6px 0 2px 0;
+}
+
+.executive-kpi-detail {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Percentiles & SLE Section */
+.executive-distribution-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.executive-panel {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 16px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.executive-panel h4 {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  text-transform: uppercase;
+}
+
+.executive-percentile-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px dashed #cbd5e1;
+  font-size: 13px;
+}
+
+.executive-percentile-row:last-child {
+  border-bottom: none;
+}
+
+/* Mika AI Diagnostics in Print */
+.executive-mika-block {
+  margin-top: 20px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.executive-insight-item {
+  border-left: 4px solid #3b82f6;
+  background-color: #f8fafc;
+  padding: 12px 14px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 10px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.executive-insight-item.warning {
+  border-left-color: #f59e0b;
+  background-color: #fffbeb;
+}
+
+.executive-insight-item.critical {
+  border-left-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.executive-insight-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.executive-insight-message {
+  font-size: 12px;
+  color: #334155;
+  line-height: 1.4;
+}
+
+/* Footer */
+.executive-report-footer {
+  margin-top: 32px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* ==========================================================================
+   @media print Rules (Strict A4 Layout & Chrome Suppression)
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm;
+  }
+
+  /* Ocultar casca e elementos da interface web */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Ocultar barra superior, botões e controles */
+  .app-header,
+  .analytics-nav-header,
+  .header-actions,
+  .header-cluster,
+  .view-toggle,
+  .executive-print-toolbar,
+  .modal-backdrop,
+  .analytics-dashboard > *:not(.executive-print-overlay),
+  .btn {
+    display: none !important;
+  }
+
+  /* Tornar visível exclusivamente o documento executivo */
+  .executive-print-overlay,
+  .executive-print-overlay * {
+    visibility: visible;
+  }
+
+  .executive-print-overlay {
+    position: static !important;
+    background: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .executive-print-container {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    color: #000000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .executive-kpi-card,
+  .executive-panel,
+  .executive-insight-item {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

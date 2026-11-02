@@ -28,6 +28,9 @@ import { DatasetConfigurationDrawer } from './DatasetConfigurationDrawer';
 import { MikaInsightCard } from './Mika/MikaInsightCard';
 import { mikaService } from '../services/ai/mikaService';
 import { MikaInsight } from '../types/mika';
+import { ExportReportModal } from './ExportReportModal';
+import { ExecutiveReportPrintView } from './ExecutiveReportPrintView';
+import { FlowReportSnapshot } from '../types/reports';
 import './Analytics.css';
 
 export type ChartType = 'cfd' | 'throughput' | 'leadTime' | 'cycleTime';
@@ -43,6 +46,8 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
   const [blockerMode, setBlockerMode] = useState<BlockerViewMode>('clustering');
   const [datasetDrawerOpen, setDatasetDrawerOpen] = useState(false);
   const [expandedChart, setExpandedChart] = useState<ChartType | null>(null);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
+  const [printSnapshot, setPrintSnapshot] = useState<FlowReportSnapshot | null>(null);
 
   // Configuração ativa de filtragem do conjunto de dados (Feature 030)
   const [datasetConfig, setDatasetConfig] = useState<DatasetFilterConfig>({
@@ -141,6 +146,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
         onSelectBlockerMode={setBlockerMode}
         onToggleDatasetDrawer={() => setDatasetDrawerOpen((prev) => !prev)}
         hasActiveDatasetFilters={hasActiveDatasetFilters}
+        onOpenExportModal={() => setExportModalOpen(true)}
       />
 
       {/* Diagnósticos Preditivos e Insights da Mika AI Flow Copilot (Feature 048) */}
@@ -333,6 +339,36 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
         onUpdateConfig={(patch) => setDatasetConfig((prev) => ({ ...prev, ...patch }))}
         onResetToDefaults={() => setDatasetConfig({ timeWindow: 'all' })}
       />
+
+      {/* Modal de Configuração de Escopo e Exportação de Relatórios (Feature 051) */}
+      {board && (
+        <ExportReportModal
+          isOpen={exportModalOpen}
+          onClose={() => setExportModalOpen(false)}
+          board={board as any}
+          tasks={tasks as any}
+          filteredTasks={filteredTasks as any}
+          mikaInsights={mikaInsights}
+          activeDateFilterLabel={
+            datasetConfig.timeWindow === 'all'
+              ? 'Todos os dados do quadro'
+              : datasetConfig.timeWindow === 'custom'
+                ? `Customizado: ${datasetConfig.customStartDate || ''} até ${datasetConfig.customEndDate || ''}`
+                : `Últimos ${datasetConfig.timeWindow} dias`
+          }
+          hasActiveFilters={hasActiveDatasetFilters}
+          onGeneratePdf={(snapshot) => setPrintSnapshot(snapshot)}
+        />
+      )}
+
+      {/* Visualização de Impressão Executiva A4 (@media print) */}
+      {printSnapshot && (
+        <ExecutiveReportPrintView
+          snapshot={printSnapshot}
+          onClose={() => setPrintSnapshot(null)}
+          autoPrint={true}
+        />
+      )}
     </div>
   );
 };
