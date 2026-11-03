@@ -39,9 +39,7 @@ describe('MikaDrawer', () => {
     render(<MikaDrawer isOpen={true} onClose={vi.fn()} insights={mockInsights} />);
 
     // Aba inicial é o Chat
-    expect(
-      screen.getByRole('textbox', { name: /Mensagem para a Mika AI/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /Mensagem para a Mika AI/i })).toBeInTheDocument();
 
     // Alterna para Diagnósticos
     const insightsTabBtn = screen.getByTestId('mika-tab-insights');
@@ -54,9 +52,7 @@ describe('MikaDrawer', () => {
     const chatTabBtn = screen.getByTestId('mika-tab-chat');
     fireEvent.click(chatTabBtn);
 
-    expect(
-      screen.getByRole('textbox', { name: /Mensagem para a Mika AI/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /Mensagem para a Mika AI/i })).toBeInTheDocument();
   });
 
   it('deve chamar onClose ao clicar no botão de fechar ou no backdrop', () => {

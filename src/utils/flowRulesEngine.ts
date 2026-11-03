@@ -141,8 +141,8 @@ export function matchConditions(
 
       case 'contains': {
         if (Array.isArray(rawValue)) {
-          return rawValue.some((item) =>
-            String(item).toLowerCase() === String(cond.value).toLowerCase(),
+          return rawValue.some(
+            (item) => String(item).toLowerCase() === String(cond.value).toLowerCase(),
           );
         }
         return String(rawValue).toLowerCase().includes(String(cond.value).toLowerCase());
@@ -150,8 +150,8 @@ export function matchConditions(
 
       case 'not_contains': {
         if (Array.isArray(rawValue)) {
-          return !rawValue.some((item) =>
-            String(item).toLowerCase() === String(cond.value).toLowerCase(),
+          return !rawValue.some(
+            (item) => String(item).toLowerCase() === String(cond.value).toLowerCase(),
           );
         }
         return !String(rawValue).toLowerCase().includes(String(cond.value).toLowerCase());

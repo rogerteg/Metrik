@@ -6,8 +6,7 @@
 import { FlowRule } from '../types/flowRules';
 import { ColumnPoliciesMap } from '../types/columnPolicy';
 
-export const getFlowRulesStorageKey = (boardId: string): string =>
-  `metrik_flow_rules_${boardId}`;
+export const getFlowRulesStorageKey = (boardId: string): string => `metrik_flow_rules_${boardId}`;
 
 export const getColumnPoliciesStorageKey = (boardId: string): string =>
   `metrik_column_policies_${boardId}`;
@@ -29,9 +28,8 @@ export function loadFlowRules(boardId: string): FlowRule[] {
     }
 
     // Sanitiza e valida integridade mínima
-    return parsed.filter(
-      (rule): rule is FlowRule =>
-        Boolean(rule && typeof rule.id === 'string' && typeof rule.name === 'string' && rule.trigger),
+    return parsed.filter((rule): rule is FlowRule =>
+      Boolean(rule && typeof rule.id === 'string' && typeof rule.name === 'string' && rule.trigger),
     );
   } catch (error) {
     console.error(`[Metrik][FlowRules] Falha ao carregar regras do board ${boardId}:`, error);
@@ -69,7 +67,10 @@ export function loadColumnPolicies(boardId: string): ColumnPoliciesMap {
 
     return parsed as ColumnPoliciesMap;
   } catch (error) {
-    console.error(`[Metrik][ColumnPolicies] Falha ao carregar políticas do board ${boardId}:`, error);
+    console.error(
+      `[Metrik][ColumnPolicies] Falha ao carregar políticas do board ${boardId}:`,
+      error,
+    );
     return {};
   }
 }

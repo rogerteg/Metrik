@@ -296,7 +296,7 @@ export const AppDialogsContainer: React.FC<AppDialogsContainerProps> = ({
         const telemetryContext = buildBoardTelemetryContext(
           currentBoardInfo,
           allBoardTasks,
-          board.columns || []
+          board.columns || [],
         );
 
         return (

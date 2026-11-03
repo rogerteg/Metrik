@@ -14,19 +14,19 @@ export interface ReportDateWindow {
 }
 
 export interface FlowReportMetrics {
-  throughput: number;             // Total concluded items in window
-  avgLeadTimeDays: number;         // Average lead time in days
-  avgCycleTimeDays: number;        // Average cycle time in days
-  sleP85Days: number;              // 85th percentile service level expectation in days
-  sleComplianceRate: number;       // Percentage of items completed within SLE (0-100)
-  blockerRatePercent: number;      // Percentage of items that experienced a block (0-100)
-  totalBlockedHours: number;       // Sum of all blocked hours across evaluated items
+  throughput: number; // Total concluded items in window
+  avgLeadTimeDays: number; // Average lead time in days
+  avgCycleTimeDays: number; // Average cycle time in days
+  sleP85Days: number; // 85th percentile service level expectation in days
+  sleComplianceRate: number; // Percentage of items completed within SLE (0-100)
+  blockerRatePercent: number; // Percentage of items that experienced a block (0-100)
+  totalBlockedHours: number; // Sum of all blocked hours across evaluated items
 }
 
 export interface CycleTimePercentiles {
-  p50: number;                     // Median cycle time (days)
-  p85: number;                     // 85th percentile (days)
-  p95: number;                     // 95th percentile (days)
+  p50: number; // Median cycle time (days)
+  p85: number; // 85th percentile (days)
+  p95: number; // 95th percentile (days)
 }
 
 export interface MikaInsightSnippet {
@@ -57,7 +57,7 @@ export interface FlowReportSnapshot {
   boardId: string;
   boardTitle: string;
   squadName?: string;
-  generatedAt: string;            // ISO 8601
+  generatedAt: string; // ISO 8601
   dateWindow: ReportDateWindow;
   filterSummary: string;
   totalTasks: number;
@@ -75,21 +75,21 @@ export interface FlowReportSnapshot {
 export interface TaskExportRow {
   id: string;
   title: string;
-  type: string;                    // 'Cartão' | 'Subtarefa' | 'Iniciativa'
+  type: string; // 'Cartão' | 'Subtarefa' | 'Iniciativa'
   column: string;
   category: string;
   priority: string;
   assignee: string;
   sprint: string;
-  storyPoints: string;             // Number formatted with comma or '-'
-  createdAt: string;              // 'DD/MM/YYYY HH:mm'
-  startedAt: string;              // 'DD/MM/YYYY HH:mm' or '-'
-  completedAt: string;            // 'DD/MM/YYYY HH:mm' or '-'
-  leadTimeDays: string;           // Formatted decimal with comma or '-'
-  cycleTimeDays: string;          // Formatted decimal with comma or '-'
-  isBlocked: string;              // 'Sim' | 'Não'
-  blockedHours: string;           // Formatted decimal with comma or '0,0'
-  tags: string;                   // Semicolon-separated tags or '-'
+  storyPoints: string; // Number formatted with comma or '-'
+  createdAt: string; // 'DD/MM/YYYY HH:mm'
+  startedAt: string; // 'DD/MM/YYYY HH:mm' or '-'
+  completedAt: string; // 'DD/MM/YYYY HH:mm' or '-'
+  leadTimeDays: string; // Formatted decimal with comma or '-'
+  cycleTimeDays: string; // Formatted decimal with comma or '-'
+  isBlocked: string; // 'Sim' | 'Não'
+  blockedHours: string; // Formatted decimal with comma or '0,0'
+  tags: string; // Semicolon-separated tags or '-'
   subtaskCount: number;
 }
 

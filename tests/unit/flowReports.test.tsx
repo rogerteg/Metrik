@@ -16,8 +16,20 @@ import {
 describe('flowReportExporter', () => {
   const mockColumns: ColumnModel[] = [
     { id: 'col-backlog', title: 'Backlog', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-    { id: 'col-wip', title: 'Em Progresso', category: 'in_progress', wipLimit: 5, colorScheme: 'progress' },
-    { id: 'col-done', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
+    {
+      id: 'col-wip',
+      title: 'Em Progresso',
+      category: 'in_progress',
+      wipLimit: 5,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'col-done',
+      title: 'Concluído',
+      category: 'done',
+      wipLimit: null,
+      colorScheme: 'completed',
+    },
   ];
 
   const mockBoard: ReportBoardLike = {
@@ -113,7 +125,7 @@ describe('flowReportExporter', () => {
     });
 
     it('envolve campos com quebras de linha em aspas', () => {
-      expect(escapeCsvField("Linha 1\nLinha 2")).toBe('"Linha 1\nLinha 2"');
+      expect(escapeCsvField('Linha 1\nLinha 2')).toBe('"Linha 1\nLinha 2"');
     });
 
     it('retorna texto simples inalterado quando não há caracteres especiais', () => {
@@ -152,18 +164,12 @@ describe('flowReportExporter', () => {
       // Blocker summary
       expect(snapshot.blockerSummary?.totalBlockers).toBe(1);
       expect(snapshot.blockerSummary?.totalImpactHours).toBeCloseTo(8.0, 1);
-      expect(snapshot.blockerSummary?.topReasons[0].reason).toBe(
-        'Aguardando credenciais do IdP',
-      );
+      expect(snapshot.blockerSummary?.topReasons[0].reason).toBe('Aguardando credenciais do IdP');
     });
 
     it('lida com quadro sem tarefas concluídas sem retornar NaN ou erros', () => {
       const emptyTasks: ReportTaskLike[] = [];
-      const snapshot = buildFlowReportSnapshot(
-        mockBoard,
-        emptyTasks,
-        defaultOptions,
-      );
+      const snapshot = buildFlowReportSnapshot(mockBoard, emptyTasks, defaultOptions);
 
       expect(snapshot.totalTasks).toBe(0);
       expect(snapshot.completedTasks).toBe(0);
@@ -183,12 +189,7 @@ describe('flowReportExporter', () => {
         ...defaultOptions,
         includeMikaInsights: false,
       };
-      const snapshot = buildFlowReportSnapshot(
-        mockBoard,
-        mockTasks,
-        options,
-        mockMikaInsights,
-      );
+      const snapshot = buildFlowReportSnapshot(mockBoard, mockTasks, options, mockMikaInsights);
       expect(snapshot.mikaInsights).toBeUndefined();
     });
   });
@@ -231,11 +232,7 @@ describe('flowReportExporter', () => {
     });
 
     it('inclui subtarefas como linhas individuais quando solicitado', () => {
-      const rowsWithSubtasks = projectTasksToExportRows(
-        mockTasks,
-        mockColumns,
-        true,
-      );
+      const rowsWithSubtasks = projectTasksToExportRows(mockTasks, mockColumns, true);
       // 3 tarefas + 2 subtarefas da TASK-1 = 5 linhas
       expect(rowsWithSubtasks).toHaveLength(5);
 
@@ -314,7 +311,8 @@ describe('flowReportExporter', () => {
   describe('ExecutiveReportPrintView Component', () => {
     it('renderiza cabeçalho, KPIs, percentis e diagnóstico da Mika no relatório executivo', async () => {
       const { render, screen, fireEvent } = await import('@testing-library/react');
-      const { ExecutiveReportPrintView } = await import('../../src/components/ExecutiveReportPrintView');
+      const { ExecutiveReportPrintView } =
+        await import('../../src/components/ExecutiveReportPrintView');
 
       const snapshot = buildFlowReportSnapshot(
         mockBoard,
@@ -430,12 +428,7 @@ describe('flowReportExporter', () => {
 
       const onOpenExport = vi.fn();
 
-      render(
-        <AnalyticsNavHeader
-          activeCategory="dashboard"
-          onOpenExportModal={onOpenExport}
-        />,
-      );
+      render(<AnalyticsNavHeader activeCategory="dashboard" onOpenExportModal={onOpenExport} />);
 
       const exportBtn = screen.getByTestId('export-report-trigger');
       expect(exportBtn).toBeInTheDocument();

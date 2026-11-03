@@ -176,11 +176,7 @@ export const FlowRulesModal: React.FC<FlowRulesModalProps> = ({
               >
                 📤 Exportar
               </button>
-              <button
-                type="button"
-                className="flow-btn-primary btn-sm"
-                onClick={handleOpenCreate}
-              >
+              <button type="button" className="flow-btn-primary btn-sm" onClick={handleOpenCreate}>
                 + Nova Regra
               </button>
             </div>
@@ -205,15 +201,11 @@ export const FlowRulesModal: React.FC<FlowRulesModalProps> = ({
                 <div className="flow-empty-icon">⚙️</div>
                 <h3>Nenhuma regra configurada neste quadro</h3>
                 <p>
-                  Automatize movimentações, sinalize itens parados há muito tempo ou
-                  aplique tags de QA automaticamente.
+                  Automatize movimentações, sinalize itens parados há muito tempo ou aplique tags de
+                  QA automaticamente.
                 </p>
                 <div className="flow-empty-actions">
-                  <button
-                    type="button"
-                    className="flow-btn-primary"
-                    onClick={handleOpenCreate}
-                  >
+                  <button type="button" className="flow-btn-primary" onClick={handleOpenCreate}>
                     Criar Primeira Regra
                   </button>
                   <button

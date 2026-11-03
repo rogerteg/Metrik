@@ -60,7 +60,7 @@ export const MikaMessageContent: React.FC<MikaMessageContentProps> = ({
 function parseLineFragments(
   line: string,
   onOpenTaskDetails?: (taskId: string) => void,
-  taskSet?: Set<string> | null
+  taskSet?: Set<string> | null,
 ): React.ReactNode[] {
   // Regex que captura tokens de negrito (**...**) ou tokens de tarefas (#ID)
   // Exemplo: "#42" ou "#task-123" ou "**texto**"
@@ -118,7 +118,7 @@ function parseLineFragments(
 function parseTaskReferencesOnly(
   text: string,
   onOpenTaskDetails?: (taskId: string) => void,
-  taskSet?: Set<string> | null
+  taskSet?: Set<string> | null,
 ): React.ReactNode {
   const parts = text.split(/(#[\w-]+)/g);
   if (parts.length === 1) return text;

@@ -5,11 +5,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  MikaChatMessage,
-  MikaQuickPrompt,
-  MikaBoardTelemetryContext,
-} from '../../types/mika';
+import { MikaChatMessage, MikaQuickPrompt, MikaBoardTelemetryContext } from '../../types/mika';
 import { TaskModel } from '../../types/kanban';
 import {
   loadChatSession,
@@ -131,11 +127,14 @@ export const MikaChatInterface: React.FC<MikaChatInterfaceProps> = ({
             apiKey!,
             systemPrompt,
             messages,
-            trimmed
+            trimmed,
           );
           assistantProvider = 'gemini';
         } catch (apiError) {
-          console.warn('[Metrik Mika Chat] Falha na chamada da API Gemini, executando fallback local:', apiError);
+          console.warn(
+            '[Metrik Mika Chat] Falha na chamada da API Gemini, executando fallback local:',
+            apiError,
+          );
           // Fallback gracioso para a heurística local
           const localResult = processMikaHeuristicChat(trimmed, telemetryContext);
           assistantText = `⚠️ *(Resposta gerada via Local-First por indisponibilidade momentânea da rede)*\n\n${localResult.content}`;
@@ -292,7 +291,10 @@ export const MikaChatInterface: React.FC<MikaChatInterfaceProps> = ({
 
             <div className="mika-message-footer">
               <span className="mika-msg-time">
-                {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(msg.timestamp).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
               </span>
 
               {msg.role === 'assistant' && (

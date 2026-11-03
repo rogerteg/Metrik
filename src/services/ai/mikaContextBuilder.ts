@@ -13,7 +13,7 @@ import { calculatePercentile } from '../../utils/statistics';
 export function buildBoardTelemetryContext(
   board: { id: string; title: string },
   tasks: TaskModel[] = [],
-  columns: ColumnModel[] = []
+  columns: ColumnModel[] = [],
 ): MikaBoardTelemetryContext {
   const now = Date.now();
   const columnMap = new Map<string, ColumnModel>();
@@ -23,7 +23,8 @@ export function buildBoardTelemetryContext(
   const columnsTelemetry = columns.map((col) => {
     const columnTasks = tasks.filter((t) => t.column === col.id);
     const taskCount = columnTasks.length;
-    const wipLimit = typeof col.wipLimit === 'number' && col.wipLimit > 0 ? col.wipLimit : undefined;
+    const wipLimit =
+      typeof col.wipLimit === 'number' && col.wipLimit > 0 ? col.wipLimit : undefined;
     const isOverWip = wipLimit !== undefined ? taskCount > wipLimit : false;
 
     // Cálculo do tempo médio de permanência na coluna (em horas)
@@ -36,7 +37,8 @@ export function buildBoardTelemetryContext(
       });
     }
 
-    const avgStageTimeHours = taskCount > 0 ? Math.round((totalStageHours / taskCount) * 10) / 10 : 0;
+    const avgStageTimeHours =
+      taskCount > 0 ? Math.round((totalStageHours / taskCount) * 10) / 10 : 0;
 
     return {
       id: col.id,
@@ -53,7 +55,9 @@ export function buildBoardTelemetryContext(
     .filter((t) => Boolean(t.blocked))
     .map((t) => {
       const col = columnMap.get(t.column);
-      const blockedMs = t.blockedAt ? Math.max(0, now - new Date(t.blockedAt).getTime()) : (t.totalBlockedMs || 0);
+      const blockedMs = t.blockedAt
+        ? Math.max(0, now - new Date(t.blockedAt).getTime())
+        : t.totalBlockedMs || 0;
       const blockedHours = Math.round((blockedMs / (1000 * 60 * 60)) * 10) / 10;
 
       return {
@@ -66,13 +70,9 @@ export function buildBoardTelemetryContext(
     });
 
   // 3. Cálculo de SLE 85% do Tempo de Ciclo (tarefas concluídas)
-  const doneColumnIds = new Set(
-    columns.filter((c) => c.category === 'done').map((c) => c.id)
-  );
+  const doneColumnIds = new Set(columns.filter((c) => c.category === 'done').map((c) => c.id));
 
-  const completedTasks = tasks.filter(
-    (t) => doneColumnIds.has(t.column) || Boolean(t.completedAt)
-  );
+  const completedTasks = tasks.filter((t) => doneColumnIds.has(t.column) || Boolean(t.completedAt));
 
   const cycleTimesDays: number[] = [];
   const fourteenDaysAgo = now - 14 * 24 * 60 * 60 * 1000;
@@ -96,9 +96,7 @@ export function buildBoardTelemetryContext(
   });
 
   const cycleTimeP85Days =
-    cycleTimesDays.length > 0
-      ? calculatePercentile(cycleTimesDays, 85)
-      : null;
+    cycleTimesDays.length > 0 ? calculatePercentile(cycleTimesDays, 85) : null;
 
   const totalActiveTasks = tasks.length - completedTasks.length;
 
@@ -121,7 +119,9 @@ export function buildBoardTelemetryContext(
 export function buildMikaSystemPrompt(context: MikaBoardTelemetryContext): string {
   const columnsSummary = context.columns
     .map((c) => {
-      const wipInfo = c.wipLimit ? `WIP: ${c.taskCount}/${c.wipLimit}${c.isOverWip ? ' (VIOLADO)' : ''}` : `Tarefas: ${c.taskCount} (sem limite)`;
+      const wipInfo = c.wipLimit
+        ? `WIP: ${c.taskCount}/${c.wipLimit}${c.isOverWip ? ' (VIOLADO)' : ''}`
+        : `Tarefas: ${c.taskCount} (sem limite)`;
       return `- **${c.title}**: ${wipInfo}, permanência média: ~${c.avgStageTimeHours}h`;
     })
     .join('\n');
@@ -129,7 +129,10 @@ export function buildMikaSystemPrompt(context: MikaBoardTelemetryContext): strin
   const blockedSummary =
     context.blockedTasks.length > 0
       ? context.blockedTasks
-          .map((b) => `- #${b.id} "${b.title}" na coluna "${b.columnTitle}" há ${b.blockedHours}h (Motivo: ${b.reason})`)
+          .map(
+            (b) =>
+              `- #${b.id} "${b.title}" na coluna "${b.columnTitle}" há ${b.blockedHours}h (Motivo: ${b.reason})`,
+          )
           .join('\n')
       : 'Nenhuma tarefa bloqueada no momento.';
 

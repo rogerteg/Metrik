@@ -207,8 +207,8 @@ export const MikaDrawer: React.FC<MikaDrawerProps> = ({
                 lineHeight: 1.5,
               }}
             >
-              👋 <strong>Olá! Sou a Mika</strong>, sua copiloto analítica. Analiso a variabilidade do
-              fluxo, estabilidade do WIP e as probabilidades de Monte Carlo para apoiar decisões
+              👋 <strong>Olá! Sou a Mika</strong>, sua copiloto analítica. Analiso a variabilidade
+              do fluxo, estabilidade do WIP e as probabilidades de Monte Carlo para apoiar decisões
               técnicas baseadas em dados.
             </div>
 

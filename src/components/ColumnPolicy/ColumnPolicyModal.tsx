@@ -8,10 +8,7 @@ export interface ColumnPolicyModalProps {
   columnTitle: string;
   initialEntryCriteria?: string;
   initialExitCriteria?: string;
-  onSave: (
-    columnId: string,
-    data: { entryCriteria: string; exitCriteria: string },
-  ) => void;
+  onSave: (columnId: string, data: { entryCriteria: string; exitCriteria: string }) => void;
   onClose: () => void;
 }
 
@@ -90,15 +87,14 @@ export const ColumnPolicyModal: React.FC<ColumnPolicyModalProps> = ({
       aria-modal="true"
       aria-labelledby="col-policy-modal-title"
     >
-      <div
-        className="col-policy-modal-container"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="col-policy-modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="col-policy-modal-header">
           <div className="flex-align">
             <span className="col-policy-icon">📋</span>
             <div>
-              <h3 id="col-policy-modal-title" className="col-policy-modal-title">Políticas da Coluna</h3>
+              <h3 id="col-policy-modal-title" className="col-policy-modal-title">
+                Políticas da Coluna
+              </h3>
               <p className="col-policy-modal-subtitle">Etapa: {columnTitle}</p>
             </div>
           </div>
@@ -150,11 +146,7 @@ export const ColumnPolicyModal: React.FC<ColumnPolicyModalProps> = ({
           </div>
 
           <div className="col-policy-modal-footer">
-            <button
-              type="button"
-              className="flow-btn-secondary"
-              onClick={handleAttemptClose}
-            >
+            <button type="button" className="flow-btn-secondary" onClick={handleAttemptClose}>
               Cancelar
             </button>
             <button type="submit" className="flow-btn-primary">
@@ -166,7 +158,5 @@ export const ColumnPolicyModal: React.FC<ColumnPolicyModalProps> = ({
     </div>
   );
 
-  return typeof document !== 'undefined'
-    ? createPortal(modalContent, document.body)
-    : modalContent;
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent;
 };

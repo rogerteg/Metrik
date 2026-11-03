@@ -10,18 +10,23 @@ export interface FlowRuleTemplate {
   name: string;
   description: string;
   category: 'aging' | 'governance' | 'quality' | 'hygiene';
-  ruleTemplate: Omit<FlowRule, 'id' | 'boardId' | 'createdAt' | 'updatedAt' | 'executionCount' | 'lastTriggeredAt'>;
+  ruleTemplate: Omit<
+    FlowRule,
+    'id' | 'boardId' | 'createdAt' | 'updatedAt' | 'executionCount' | 'lastTriggeredAt'
+  >;
 }
 
 export const FLOW_RULE_TEMPLATES: FlowRuleTemplate[] = [
   {
     id: 'template_aging_in_progress',
     name: 'Sinalizar WIP Aging Crítico',
-    description: 'Eleva a prioridade para Urgente e adiciona tag de alerta quando um cartão passar mais de 3 dias em progresso.',
+    description:
+      'Eleva a prioridade para Urgente e adiciona tag de alerta quando um cartão passar mais de 3 dias em progresso.',
     category: 'aging',
     ruleTemplate: {
       name: 'Alerta de WIP Aging em Progresso',
-      description: 'Eleva prioridade para urgente e anexa a tag aging-alert após 3 dias em coluna de progresso',
+      description:
+        'Eleva prioridade para urgente e anexa a tag aging-alert após 3 dias em coluna de progresso',
       enabled: true,
       trigger: {
         type: 'aging_threshold_exceeded',
@@ -45,7 +50,10 @@ export const FLOW_RULE_TEMPLATES: FlowRuleTemplate[] = [
         {
           id: 'action_toast_aging',
           type: 'notify_toast',
-          payload: { toastMessage: 'Atenção: Cartão excedeu 3 dias em progresso e teve a prioridade elevada.' },
+          payload: {
+            toastMessage:
+              'Atenção: Cartão excedeu 3 dias em progresso e teve a prioridade elevada.',
+          },
         },
       ],
     },
@@ -53,7 +61,8 @@ export const FLOW_RULE_TEMPLATES: FlowRuleTemplate[] = [
   {
     id: 'template_needs_qa_on_review',
     name: 'Adicionar Tag ao Mover para Revisão',
-    description: 'Anexa automaticamente a tag "needs-qa" sempre que um item for puxado para a etapa de revisão.',
+    description:
+      'Anexa automaticamente a tag "needs-qa" sempre que um item for puxado para a etapa de revisão.',
     category: 'quality',
     ruleTemplate: {
       name: 'Adicionar Tag needs-qa em Revisão',
@@ -78,7 +87,8 @@ export const FLOW_RULE_TEMPLATES: FlowRuleTemplate[] = [
   {
     id: 'template_high_priority_blocked',
     name: 'Elevar Prioridade se Bloqueado',
-    description: 'Eleva a prioridade do item para Alta e anexa a tag "impedimento" quando for marcado como bloqueado.',
+    description:
+      'Eleva a prioridade do item para Alta e anexa a tag "impedimento" quando for marcado como bloqueado.',
     category: 'governance',
     ruleTemplate: {
       name: 'Elevar Prioridade em Bloqueio',
@@ -108,11 +118,13 @@ export const FLOW_RULE_TEMPLATES: FlowRuleTemplate[] = [
   {
     id: 'template_clean_triage_tags',
     name: 'Limpar Tags de Triagem ao Iniciar',
-    description: 'Remove tags temporárias como "triagem" ou "backlog" assim que o item entrar em desenvolvimento.',
+    description:
+      'Remove tags temporárias como "triagem" ou "backlog" assim que o item entrar em desenvolvimento.',
     category: 'hygiene',
     ruleTemplate: {
       name: 'Remover Tag de Triagem ao Iniciar',
-      description: 'Mantém a higiene visual dos cartões removendo marcadores que não se aplicam a itens em execução',
+      description:
+        'Mantém a higiene visual dos cartões removendo marcadores que não se aplicam a itens em execução',
       enabled: true,
       trigger: {
         type: 'card_moved',

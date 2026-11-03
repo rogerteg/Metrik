@@ -136,10 +136,7 @@ export function useFlowRules(boardId: string): UseFlowRulesReturn {
     [updateAndPersist],
   );
 
-  const activeRulesCount = useMemo(
-    () => rules.filter((r) => r.enabled).length,
-    [rules],
-  );
+  const activeRulesCount = useMemo(() => rules.filter((r) => r.enabled).length, [rules]);
 
   return {
     rules,

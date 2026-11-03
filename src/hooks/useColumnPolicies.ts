@@ -11,10 +11,7 @@ export interface UseColumnPoliciesReturn {
   policies: ColumnPoliciesMap;
   getPolicy: (columnId: string) => ColumnPolicy;
   hasPolicy: (columnId: string) => boolean;
-  setPolicy: (
-    columnId: string,
-    data: { entryCriteria: string; exitCriteria: string },
-  ) => void;
+  setPolicy: (columnId: string, data: { entryCriteria: string; exitCriteria: string }) => void;
   deletePolicy: (columnId: string) => void;
 }
 

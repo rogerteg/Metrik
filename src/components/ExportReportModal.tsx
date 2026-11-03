@@ -135,7 +135,8 @@ export const ExportReportModal: React.FC<ExportReportModalProps> = ({
                   <span className="export-format-name">Relatório PDF (A4)</span>
                 </div>
                 <div className="export-format-desc">
-                  Layout executivo diagramado com KPIs consolidados, gráficos e diagnósticos da Mika AI.
+                  Layout executivo diagramado com KPIs consolidados, gráficos e diagnósticos da Mika
+                  AI.
                 </div>
               </button>
 
@@ -150,7 +151,8 @@ export const ExportReportModal: React.FC<ExportReportModalProps> = ({
                   <span className="export-format-name">Planilha Excel / CSV</span>
                 </div>
                 <div className="export-format-desc">
-                  Exportação tabular completa de 18 colunas com Lead/Cycle Time compatível com Excel pt-BR.
+                  Exportação tabular completa de 18 colunas com Lead/Cycle Time compatível com Excel
+                  pt-BR.
                 </div>
               </button>
             </div>

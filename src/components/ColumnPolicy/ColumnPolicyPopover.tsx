@@ -26,7 +26,11 @@ export const ColumnPolicyPopover: React.FC<ColumnPolicyPopoverProps> = ({
   const hasAnyPolicy = hasEntry || hasExit;
 
   return (
-    <div className="col-policy-popover" role="dialog" aria-label={`Políticas da coluna ${columnTitle}`}>
+    <div
+      className="col-policy-popover"
+      role="dialog"
+      aria-label={`Políticas da coluna ${columnTitle}`}
+    >
       <div className="col-policy-header">
         <div className="col-policy-title-group">
           <span className="col-policy-icon">📋</span>
@@ -59,18 +63,14 @@ export const ColumnPolicyPopover: React.FC<ColumnPolicyPopoverProps> = ({
           <>
             {hasEntry && (
               <div className="col-policy-section">
-                <span className="col-policy-label is-entry">
-                  📥 Critérios de Entrada (DoR)
-                </span>
+                <span className="col-policy-label is-entry">📥 Critérios de Entrada (DoR)</span>
                 <div className="col-policy-text">{policy.entryCriteria}</div>
               </div>
             )}
 
             {hasExit && (
               <div className="col-policy-section">
-                <span className="col-policy-label is-exit">
-                  📤 Critérios de Saída (DoD)
-                </span>
+                <span className="col-policy-label is-exit">📤 Critérios de Saída (DoD)</span>
                 <div className="col-policy-text">{policy.exitCriteria}</div>
               </div>
             )}

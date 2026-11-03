@@ -101,7 +101,13 @@ describe('Mika Chat Storage Manager (Local-First Sovereignty)', () => {
 describe('Mika Context Builder (Telemetria & System Prompt)', () => {
   const mockColumns: ColumnModel[] = [
     { id: 'c1', title: 'A Fazer', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-    { id: 'c2', title: 'Em Progresso', category: 'in_progress', wipLimit: 2, colorScheme: 'progress' },
+    {
+      id: 'c2',
+      title: 'Em Progresso',
+      category: 'in_progress',
+      wipLimit: 2,
+      colorScheme: 'progress',
+    },
     { id: 'c3', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
   ];
 
@@ -142,7 +148,7 @@ describe('Mika Context Builder (Telemetria & System Prompt)', () => {
     const context = buildBoardTelemetryContext(
       { id: 'b1', title: 'Squad Pagamentos' },
       mockTasks,
-      mockColumns
+      mockColumns,
     );
 
     expect(context.boardId).toBe('b1');
@@ -169,7 +175,7 @@ describe('Mika Context Builder (Telemetria & System Prompt)', () => {
     const context = buildBoardTelemetryContext(
       { id: 'b1', title: 'Squad Core' },
       mockTasks,
-      mockColumns
+      mockColumns,
     );
 
     const prompt = buildMikaSystemPrompt(context);
@@ -179,10 +185,20 @@ describe('Mika Context Builder (Telemetria & System Prompt)', () => {
     expect(prompt).toContain('VIOLADO');
 
     // Validação estrita de marca (zero menção a produtos terceiros)
-    const forbiddenBrands = ['Jira', 'ClickUp', 'Trello', 'Businessmap', 'ActionableAgile', 'Monday'];
+    const forbiddenBrands = [
+      'Jira',
+      'ClickUp',
+      'Trello',
+      'Businessmap',
+      'ActionableAgile',
+      'Monday',
+    ];
     forbiddenBrands.forEach((brand) => {
       // O prompt só pode citar a marca se for na cláusula de proibição "NUNCA mencione..."
-      const promptWithoutDisclaimer = prompt.replace('NUNCA mencione marcas ou produtos de concorrentes ou de terceiros (ex.: Jira, ClickUp, Trello, Businessmap, ActionableAgile, etc.)', '');
+      const promptWithoutDisclaimer = prompt.replace(
+        'NUNCA mencione marcas ou produtos de concorrentes ou de terceiros (ex.: Jira, ClickUp, Trello, Businessmap, ActionableAgile, etc.)',
+        '',
+      );
       expect(promptWithoutDisclaimer).not.toContain(brand);
     });
   });
@@ -194,7 +210,14 @@ describe('Mika Chat Heuristic Engine (Offline / Local-First)', () => {
     boardTitle: 'Quadro de Engenharia',
     columns: [
       { id: 'c1', title: 'Backlog', taskCount: 2, isOverWip: false, avgStageTimeHours: 5 },
-      { id: 'c2', title: 'Desenvolvimento', wipLimit: 3, taskCount: 4, isOverWip: true, avgStageTimeHours: 18 },
+      {
+        id: 'c2',
+        title: 'Desenvolvimento',
+        wipLimit: 3,
+        taskCount: 4,
+        isOverWip: true,
+        avgStageTimeHours: 18,
+      },
       { id: 'c3', title: 'Done', taskCount: 10, isOverWip: false, avgStageTimeHours: 0 },
     ],
     blockedTasks: [
@@ -243,7 +266,10 @@ describe('Mika Chat Heuristic Engine (Offline / Local-First)', () => {
   });
 
   it('responde a consultas sobre previsão e ritmo com base na vazão recente', () => {
-    const res = processMikaHeuristicChat('Qual é a nossa previsão de entrega e ritmo?', baseContext);
+    const res = processMikaHeuristicChat(
+      'Qual é a nossa previsão de entrega e ritmo?',
+      baseContext,
+    );
     expect(res.category).toBe('throughput');
     expect(res.content).toContain('concluiu **8 tarefas**');
     expect(res.content).toContain('Tarefas atualmente ativas no quadro: **6**');
@@ -259,14 +285,14 @@ describe('Mika Chat Heuristic Engine (Offline / Local-First)', () => {
 
 describe('Mika Gemini Client Multi-Turn Chat', () => {
   it('lança erro se a chave de API for vazia', async () => {
-    await expect(
-      mikaGeminiClient.sendMessage('', 'system instruction', [], 'Olá')
-    ).rejects.toThrow('Chave de API do Gemini não fornecida');
+    await expect(mikaGeminiClient.sendMessage('', 'system instruction', [], 'Olá')).rejects.toThrow(
+      'Chave de API do Gemini não fornecida',
+    );
   });
 
   it('lança erro se a mensagem do usuário for vazia', async () => {
     await expect(
-      mikaGeminiClient.sendMessage('valid-key', 'system instruction', [], '   ')
+      mikaGeminiClient.sendMessage('valid-key', 'system instruction', [], '   '),
     ).rejects.toThrow('Mensagem do usuário vazia');
   });
 
@@ -300,7 +326,7 @@ describe('Mika Gemini Client Multi-Turn Chat', () => {
       'fake-api-key',
       'System prompt test',
       history,
-      'Pergunta atual'
+      'Pergunta atual',
     );
 
     expect(answer).toBe('O principal gargalo está na coluna Em Progresso.');
@@ -335,7 +361,7 @@ describe('MikaMessageContent (Interactive Task Chips - US1)', () => {
         content="A tarefa #task-10 está bloqueada há mais de 12 horas."
         onOpenTaskDetails={onOpenMock}
         availableTaskIds={['task-10']}
-      />
+      />,
     );
 
     const chip = screen.getByRole('button', { name: /Ver detalhes da tarefa/i });
@@ -359,10 +385,23 @@ describe('MikaChatInterface - US1 & US2 (Chat Conversacional & Chips Rápidos)',
     boardTitle: 'Quadro Principal',
     columns: [
       { id: 'col-1', title: 'A Fazer', taskCount: 2, isOverWip: false, avgStageTimeHours: 10 },
-      { id: 'col-2', title: 'Em Progresso', taskCount: 4, wipLimit: 3, isOverWip: true, avgStageTimeHours: 48 },
+      {
+        id: 'col-2',
+        title: 'Em Progresso',
+        taskCount: 4,
+        wipLimit: 3,
+        isOverWip: true,
+        avgStageTimeHours: 48,
+      },
     ],
     blockedTasks: [
-      { id: 'task-10', title: 'Ajuste no Gateway', columnTitle: 'Em Progresso', reason: 'Aguardando credenciais', blockedHours: 12 },
+      {
+        id: 'task-10',
+        title: 'Ajuste no Gateway',
+        columnTitle: 'Em Progresso',
+        reason: 'Aguardando credenciais',
+        blockedHours: 12,
+      },
     ],
     cycleTimeP85Days: 4.5,
     throughputLast14Days: 15,
@@ -389,7 +428,7 @@ describe('MikaChatInterface - US1 & US2 (Chat Conversacional & Chips Rápidos)',
         boardTitle="Quadro Principal"
         telemetryContext={mockTelemetry}
         availableTasks={mockTasks}
-      />
+      />,
     );
 
     expect(screen.getByText(/Olá! Sou a Mika, sua copiloto/i)).toBeInTheDocument();
@@ -405,7 +444,7 @@ describe('MikaChatInterface - US1 & US2 (Chat Conversacional & Chips Rápidos)',
         boardTitle="Quadro Principal"
         telemetryContext={mockTelemetry}
         availableTasks={mockTasks}
-      />
+      />,
     );
 
     const textarea = screen.getByRole('textbox', { name: /Mensagem para a Mika AI/i });
@@ -431,7 +470,7 @@ describe('MikaChatInterface - US1 & US2 (Chat Conversacional & Chips Rápidos)',
         boardTitle="Quadro Principal"
         telemetryContext={mockTelemetry}
         availableTasks={mockTasks}
-      />
+      />,
     );
 
     const textarea = screen.getByRole('textbox', { name: /Mensagem para a Mika AI/i });
@@ -450,7 +489,7 @@ describe('MikaChatInterface - US1 & US2 (Chat Conversacional & Chips Rápidos)',
         boardTitle="Quadro Principal"
         telemetryContext={mockTelemetry}
         availableTasks={mockTasks}
-      />
+      />,
     );
 
     const bottleneckChip = screen.getByRole('button', { name: /🚨 Onde está o gargalo\?/i });
@@ -493,7 +532,7 @@ describe('MikaChatInterface - US3 (Persistência, Cópia e Limpeza de Conversa)'
         boardId="board-test-persisted"
         boardTitle="Quadro Persistido"
         telemetryContext={mockTelemetry}
-      />
+      />,
     );
 
     expect(screen.getByText('Mensagem salva no storage')).toBeInTheDocument();
@@ -520,10 +559,12 @@ describe('MikaChatInterface - US3 (Persistência, Cópia e Limpeza de Conversa)'
         boardId="board-test-persisted"
         boardTitle="Quadro Persistido"
         telemetryContext={mockTelemetry}
-      />
+      />,
     );
 
-    const copyBtn = screen.getByRole('button', { name: /Copiar resposta para a área de transferência/i });
+    const copyBtn = screen.getByRole('button', {
+      name: /Copiar resposta para a área de transferência/i,
+    });
     expect(copyBtn).toBeInTheDocument();
 
     fireEvent.click(copyBtn);
@@ -548,7 +589,7 @@ describe('MikaChatInterface - US3 (Persistência, Cópia e Limpeza de Conversa)'
         boardId="board-test-persisted"
         boardTitle="Quadro Persistido"
         telemetryContext={mockTelemetry}
-      />
+      />,
     );
 
     expect(screen.getByText('Texto a ser deletado')).toBeInTheDocument();
@@ -595,7 +636,7 @@ describe('MikaChatInterface - US4 (Resiliência Offline e Fallback)', () => {
         telemetryContext={mockTelemetry}
         apiKey=""
         providerName="Local-First (Offline)"
-      />
+      />,
     );
 
     expect(screen.getByText('Local-First (Offline)')).toBeInTheDocument();
@@ -612,7 +653,7 @@ describe('MikaChatInterface - US4 (Resiliência Offline e Fallback)', () => {
         telemetryContext={mockTelemetry}
         apiKey="test-key-with-network-error"
         providerName="Google Gemini"
-      />
+      />,
     );
 
     const textarea = screen.getByRole('textbox', { name: /Mensagem para a Mika AI/i });
@@ -623,11 +664,12 @@ describe('MikaChatInterface - US4 (Resiliência Offline e Fallback)', () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Resposta gerada via Local-First por indisponibilidade momentânea da rede/i)
+        screen.getByText(
+          /Resposta gerada via Local-First por indisponibilidade momentânea da rede/i,
+        ),
       ).toBeInTheDocument();
     });
 
     vi.unstubAllGlobals();
   });
 });
-

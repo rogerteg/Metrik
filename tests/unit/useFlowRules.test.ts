@@ -20,7 +20,10 @@ describe('useFlowRules Hook', () => {
   it('deve adicionar uma nova regra e persistir no localStorage', () => {
     const { result } = renderHook(() => useFlowRules(boardId));
 
-    const newRuleInput: Omit<FlowRule, 'id' | 'boardId' | 'createdAt' | 'updatedAt' | 'executionCount' | 'lastTriggeredAt'> = {
+    const newRuleInput: Omit<
+      FlowRule,
+      'id' | 'boardId' | 'createdAt' | 'updatedAt' | 'executionCount' | 'lastTriggeredAt'
+    > = {
       name: 'Regra Teste',
       description: 'Desc',
       enabled: true,

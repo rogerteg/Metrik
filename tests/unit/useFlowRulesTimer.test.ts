@@ -14,8 +14,20 @@ describe('useFlowRulesTimer Hook', () => {
   });
 
   const dummyColumns: ColumnModel[] = [
-    { id: 'col-dev', title: 'Em Progresso', category: 'in_progress', wipLimit: null, colorScheme: 'progress' },
-    { id: 'col-done', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
+    {
+      id: 'col-dev',
+      title: 'Em Progresso',
+      category: 'in_progress',
+      wipLimit: null,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'col-done',
+      title: 'Concluído',
+      category: 'done',
+      wipLimit: null,
+      colorScheme: 'completed',
+    },
   ];
 
   const dummyTask: TaskModel = {

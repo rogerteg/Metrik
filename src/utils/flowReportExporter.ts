@@ -169,9 +169,7 @@ export function buildFlowReportSnapshot(
   }
 
   const avgLeadTimeDays =
-    leadTimesDays.length > 0
-      ? leadTimesDays.reduce((a, b) => a + b, 0) / leadTimesDays.length
-      : 0;
+    leadTimesDays.length > 0 ? leadTimesDays.reduce((a, b) => a + b, 0) / leadTimesDays.length : 0;
 
   const avgCycleTimeDays =
     cycleTimesDays.length > 0
@@ -189,9 +187,7 @@ export function buildFlowReportSnapshot(
   const sleP85Days = percentiles.p85;
   const compliantItems = cycleTimesDays.filter((ct) => ct <= sleP85Days).length;
   const sleComplianceRate =
-    cycleTimesDays.length > 0
-      ? Math.round((compliantItems / cycleTimesDays.length) * 100)
-      : 0;
+    cycleTimesDays.length > 0 ? Math.round((compliantItems / cycleTimesDays.length) * 100) : 0;
 
   // Contagem de WIP (tarefas com startedAt mas sem completedAt)
   const wipTasks = tasks.filter((t) => t.startedAt && !t.completedAt);
@@ -205,9 +201,7 @@ export function buildFlowReportSnapshot(
   for (const t of tasks) {
     const taskHours = calculateTaskBlockedHours(t);
     const hasBlockers = Boolean(
-      taskHours > 0 ||
-        t.blocked ||
-        (t.blockers && t.blockers.length > 0),
+      taskHours > 0 || t.blocked || (t.blockers && t.blockers.length > 0),
     );
     if (hasBlockers) {
       tasksWithBlockersCount++;
@@ -216,7 +210,8 @@ export function buildFlowReportSnapshot(
       if (t.blockers && t.blockers.length > 0) {
         for (const b of t.blockers) {
           const duration = b.unblockedAt
-            ? (new Date(b.unblockedAt).getTime() - new Date(b.blockedAt).getTime()) / (1000 * 60 * 60)
+            ? (new Date(b.unblockedAt).getTime() - new Date(b.blockedAt).getTime()) /
+              (1000 * 60 * 60)
             : (Date.now() - new Date(b.blockedAt).getTime()) / (1000 * 60 * 60);
           const reasonKey = b.reason?.trim() || 'Outro / Não especificado';
           const existing = reasonsMap.get(reasonKey) ?? { count: 0, impactHours: 0 };
@@ -236,8 +231,7 @@ export function buildFlowReportSnapshot(
     }
   }
 
-  const blockerRatePercent =
-    totalTasks > 0 ? (tasksWithBlockersCount / totalTasks) * 100 : 0;
+  const blockerRatePercent = totalTasks > 0 ? (tasksWithBlockersCount / totalTasks) * 100 : 0;
 
   const topReasons: BlockerReportReason[] = Array.from(reasonsMap.entries())
     .map(([reason, data]) => ({
@@ -338,7 +332,7 @@ export function projectTasksToExportRows(
     // Blocker status
     const isCurrentlyBlocked = Boolean(
       task.blocked ||
-        (task.blockers && task.blockers.some((b: TaskBlockerEntry) => !b.unblockedAt)),
+      (task.blockers && task.blockers.some((b: TaskBlockerEntry) => !b.unblockedAt)),
     );
     const blockedHours = formatDecimalPtBr(calculateTaskBlockedHours(task));
 
@@ -350,15 +344,19 @@ export function projectTasksToExportRows(
         : '-';
 
     // Tags
-    const tags =
-      task.tags && task.tags.length > 0 ? task.tags.join('; ') : '-';
+    const tags = task.tags && task.tags.length > 0 ? task.tags.join('; ') : '-';
 
     const subtaskCount = task.subtasks ? task.subtasks.length : 0;
 
     const mainRow: TaskExportRow = {
       id: task.id,
       title: task.title,
-      type: task.type === 'subtask' ? 'Subtarefa' : task.type === 'initiative' ? 'Iniciativa' : 'Cartão',
+      type:
+        task.type === 'subtask'
+          ? 'Subtarefa'
+          : task.type === 'initiative'
+            ? 'Iniciativa'
+            : 'Cartão',
       column: columnName,
       category: task.category || 'Geral',
       priority: formatPriorityPtBr(task.priority),
@@ -380,28 +378,30 @@ export function projectTasksToExportRows(
 
     // Subtarefas como linhas individuais se solicitado
     if (includeSubtasks && task.subtasks && task.subtasks.length > 0) {
-      task.subtasks.forEach((sub: { id: string; title: string; completed?: boolean }, idx: number) => {
-        rows.push({
-          id: `${task.id}.${idx + 1}`,
-          title: sub.title,
-          type: 'Subtarefa',
-          column: sub.completed ? 'Concluído' : columnName,
-          category: task.category || 'Geral',
-          priority: formatPriorityPtBr(task.priority),
-          assignee: task.assignee || '-',
-          sprint: task.sprint || task.sprintId || '-',
-          storyPoints: '-',
-          createdAt: formatDatePtBr(task.createdAt),
-          startedAt: '-',
-          completedAt: sub.completed ? formatDatePtBr(task.completedAt) : '-',
-          leadTimeDays: '-',
-          cycleTimeDays: '-',
-          isBlocked: 'Não',
-          blockedHours: '0,0',
-          tags: '-',
-          subtaskCount: 0,
-        });
-      });
+      task.subtasks.forEach(
+        (sub: { id: string; title: string; completed?: boolean }, idx: number) => {
+          rows.push({
+            id: `${task.id}.${idx + 1}`,
+            title: sub.title,
+            type: 'Subtarefa',
+            column: sub.completed ? 'Concluído' : columnName,
+            category: task.category || 'Geral',
+            priority: formatPriorityPtBr(task.priority),
+            assignee: task.assignee || '-',
+            sprint: task.sprint || task.sprintId || '-',
+            storyPoints: '-',
+            createdAt: formatDatePtBr(task.createdAt),
+            startedAt: '-',
+            completedAt: sub.completed ? formatDatePtBr(task.completedAt) : '-',
+            leadTimeDays: '-',
+            cycleTimeDays: '-',
+            isBlocked: 'Não',
+            blockedHours: '0,0',
+            tags: '-',
+            subtaskCount: 0,
+          });
+        },
+      );
     }
   }
 
@@ -531,5 +531,7 @@ export function exportTasksToSpreadsheet(
     .replace(/[^a-z0-9_-]/g, '-');
   const filename = `metrik-fluxo-${sanitizedTitle}-${dateStr}.csv`;
   downloadTextFile(csv, filename, 'text/csv;charset=utf-8;');
-  console.info(`[Metrik Report] Planilha exportada com sucesso: ${filename} (${rows.length} linhas).`);
+  console.info(
+    `[Metrik Report] Planilha exportada com sucesso: ${filename} (${rows.length} linhas).`,
+  );
 }

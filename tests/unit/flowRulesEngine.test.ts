@@ -30,9 +30,27 @@ describe('flowRulesEngine — Motor Puro de Regras de Fluxo', () => {
 
   const dummyColumns: ColumnModel[] = [
     { id: 'col-todo', title: 'To Do', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-    { id: 'col-dev', title: 'Desenvolvimento', category: 'in_progress', wipLimit: 5, colorScheme: 'progress' },
-    { id: 'col-review', title: 'Revisão', category: 'in_progress', wipLimit: 3, colorScheme: 'progress' },
-    { id: 'col-done', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
+    {
+      id: 'col-dev',
+      title: 'Desenvolvimento',
+      category: 'in_progress',
+      wipLimit: 5,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'col-review',
+      title: 'Revisão',
+      category: 'in_progress',
+      wipLimit: 3,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'col-done',
+      title: 'Concluído',
+      category: 'done',
+      wipLimit: null,
+      colorScheme: 'completed',
+    },
   ];
 
   describe('matchTrigger', () => {
@@ -155,9 +173,7 @@ describe('flowRulesEngine — Motor Puro de Regras de Fluxo', () => {
 
   describe('resolveActions', () => {
     it('deve adicionar nova tag sem duplicar existentes', () => {
-      const actions = [
-        { id: 'a1', type: 'add_tag' as const, payload: { tag: 'needs-qa' } },
-      ];
+      const actions = [{ id: 'a1', type: 'add_tag' as const, payload: { tag: 'needs-qa' } }];
       const result = resolveActions(actions, dummyTask, 'Regra QA');
 
       expect(result.hasChanges).toBe(true);
@@ -170,9 +186,7 @@ describe('flowRulesEngine — Motor Puro de Regras de Fluxo', () => {
     });
 
     it('deve remover tag com sucesso', () => {
-      const actions = [
-        { id: 'a1', type: 'remove_tag' as const, payload: { tag: 'backend' } },
-      ];
+      const actions = [{ id: 'a1', type: 'remove_tag' as const, payload: { tag: 'backend' } }];
       const result = resolveActions(actions, dummyTask, 'Limpar Tag');
 
       expect(result.hasChanges).toBe(true);
@@ -182,7 +196,11 @@ describe('flowRulesEngine — Motor Puro de Regras de Fluxo', () => {
     it('deve alterar prioridade e registrar toast', () => {
       const actions = [
         { id: 'a1', type: 'set_priority' as const, payload: { priority: 'urgent' as const } },
-        { id: 'a2', type: 'notify_toast' as const, payload: { toastMessage: 'Prioridade alterada para Urgente' } },
+        {
+          id: 'a2',
+          type: 'notify_toast' as const,
+          payload: { toastMessage: 'Prioridade alterada para Urgente' },
+        },
       ];
       const result = resolveActions(actions, dummyTask, 'Regra Prioridade');
 
@@ -193,7 +211,11 @@ describe('flowRulesEngine — Motor Puro de Regras de Fluxo', () => {
 
     it('deve marcar cartão como bloqueado com motivo', () => {
       const actions = [
-        { id: 'a1', type: 'set_blocked' as const, payload: { blockReason: 'Aguardando validação externa' } },
+        {
+          id: 'a1',
+          type: 'set_blocked' as const,
+          payload: { blockReason: 'Aguardando validação externa' },
+        },
       ];
       const result = resolveActions(actions, dummyTask, 'Auto Bloqueio');
 

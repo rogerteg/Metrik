@@ -32,12 +32,7 @@ export interface FlowTrigger {
 
 export type FlowConditionField = 'priority' | 'tags' | 'type' | 'assignee' | 'columnCategory';
 export type FlowConditionOperator =
-  | 'equals'
-  | 'not_equals'
-  | 'contains'
-  | 'not_contains'
-  | 'is_empty'
-  | 'is_not_empty';
+  'equals' | 'not_equals' | 'contains' | 'not_contains' | 'is_empty' | 'is_not_empty';
 
 export interface FlowCondition {
   id: string;

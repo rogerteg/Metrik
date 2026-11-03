@@ -11,9 +11,7 @@ export const FlowRuleTemplates: React.FC<FlowRuleTemplatesProps> = ({ onSelectTe
       {FLOW_RULE_TEMPLATES.map((tmpl) => (
         <div key={tmpl.id} className="flow-template-card">
           <div className="flow-template-header">
-            <span className={`flow-cat-badge is-${tmpl.category}`}>
-              {tmpl.category}
-            </span>
+            <span className={`flow-cat-badge is-${tmpl.category}`}>{tmpl.category}</span>
             <h4>{tmpl.name}</h4>
           </div>
           <p className="flow-template-desc">{tmpl.description}</p>

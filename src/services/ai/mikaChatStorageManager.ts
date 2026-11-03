@@ -52,7 +52,10 @@ export const loadChatSession = (boardId: string): MikaChatSession => {
       updatedAt: parsed.updatedAt || new Date().toISOString(),
     };
   } catch (err) {
-    console.warn(`[Metrik Mika Chat] Falha ao carregar histórico local para o quadro ${boardId}:`, err);
+    console.warn(
+      `[Metrik Mika Chat] Falha ao carregar histórico local para o quadro ${boardId}:`,
+      err,
+    );
     return {
       boardId,
       messages: [],
@@ -64,10 +67,7 @@ export const loadChatSession = (boardId: string): MikaChatSession => {
 /**
  * Adiciona uma mensagem ao histórico e persiste em localStorage sob regime FIFO (máx 30)
  */
-export const appendChatMessage = (
-  boardId: string,
-  message: MikaChatMessage
-): MikaChatSession => {
+export const appendChatMessage = (boardId: string, message: MikaChatMessage): MikaChatSession => {
   if (!boardId) {
     return {
       boardId: '',
@@ -89,7 +89,10 @@ export const appendChatMessage = (
     localStorage.setItem(getChatStorageKey(boardId), JSON.stringify(newSession));
     return newSession;
   } catch (err) {
-    console.warn(`[Metrik Mika Chat] Falha ao salvar mensagem no storage local para o quadro ${boardId}:`, err);
+    console.warn(
+      `[Metrik Mika Chat] Falha ao salvar mensagem no storage local para o quadro ${boardId}:`,
+      err,
+    );
     return {
       boardId,
       messages: [message],

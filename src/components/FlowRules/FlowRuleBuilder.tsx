@@ -37,22 +37,14 @@ export const FlowRuleBuilder: React.FC<FlowRuleBuilderProps> = ({
   const [targetColumnCategory, setTargetColumnCategory] = useState(
     initialRule?.trigger.config.targetColumnCategory || 'in_progress',
   );
-  const [agingDays, setAgingDays] = useState(
-    initialRule?.trigger.config.agingThresholdDays || 3,
-  );
-  const [dueHours, setDueHours] = useState(
-    initialRule?.trigger.config.dueHoursThreshold || 24,
-  );
+  const [agingDays, setAgingDays] = useState(initialRule?.trigger.config.agingThresholdDays || 3);
+  const [dueHours, setDueHours] = useState(initialRule?.trigger.config.dueHoursThreshold || 24);
   const [blockStatus, setBlockStatus] = useState<'blocked' | 'unblocked' | 'any'>(
     initialRule?.trigger.config.blockStatus || 'blocked',
   );
 
-  const [conditions, setConditions] = useState<FlowCondition[]>(
-    initialRule?.conditions || [],
-  );
-  const [actions, setActions] = useState<FlowAction[]>(
-    initialRule?.actions || [],
-  );
+  const [conditions, setConditions] = useState<FlowCondition[]>(initialRule?.conditions || []);
+  const [actions, setActions] = useState<FlowAction[]>(initialRule?.actions || []);
 
   const handleAddCondition = () => {
     const newCond: FlowCondition = {
@@ -65,9 +57,7 @@ export const FlowRuleBuilder: React.FC<FlowRuleBuilderProps> = ({
   };
 
   const handleUpdateCondition = (id: string, updates: Partial<FlowCondition>) => {
-    setConditions((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...updates } : c)),
-    );
+    setConditions((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)));
   };
 
   const handleRemoveCondition = (id: string) => {
@@ -84,9 +74,7 @@ export const FlowRuleBuilder: React.FC<FlowRuleBuilderProps> = ({
   };
 
   const handleUpdateAction = (id: string, updates: Partial<FlowAction>) => {
-    setActions((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, ...updates } : a)),
-    );
+    setActions((prev) => prev.map((a) => (a.id === id ? { ...a, ...updates } : a)));
   };
 
   const handleRemoveAction = (id: string) => {
@@ -153,13 +141,16 @@ export const FlowRuleBuilder: React.FC<FlowRuleBuilderProps> = ({
         },
       },
       conditions,
-      actions: actions.length > 0 ? actions : [
-        {
-          id: `action_default_${Date.now()}`,
-          type: 'add_tag',
-          payload: { tag: 'automatizado' },
-        },
-      ],
+      actions:
+        actions.length > 0
+          ? actions
+          : [
+              {
+                id: `action_default_${Date.now()}`,
+                type: 'add_tag',
+                payload: { tag: 'automatizado' },
+              },
+            ],
     };
 
     onSave(ruleData);
@@ -202,13 +193,15 @@ export const FlowRuleBuilder: React.FC<FlowRuleBuilderProps> = ({
 
         <label
           className="flow-checkbox-label"
-          style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}
+          style={{
+            marginTop: '0.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            cursor: 'pointer',
+          }}
         >
-          <input
-            type="checkbox"
-            checked={enabled}
-            onChange={(e) => setEnabled(e.target.checked)}
-          />
+          <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} />
           <span style={{ fontSize: '0.875rem' }}>Regra Ativa</span>
         </label>
       </div>
@@ -332,17 +325,15 @@ export const FlowRuleBuilder: React.FC<FlowRuleBuilderProps> = ({
             <span className="step-badge">2</span>
             <h4>Condições Adicionais (Se...)</h4>
           </div>
-          <button
-            type="button"
-            className="flow-btn-secondary btn-sm"
-            onClick={handleAddCondition}
-          >
+          <button type="button" className="flow-btn-secondary btn-sm" onClick={handleAddCondition}>
             + Adicionar Condição
           </button>
         </div>
 
         {conditions.length === 0 ? (
-          <p className="flow-empty-hint">Nenhuma condição. O gatilho aplicará para todos os cartões.</p>
+          <p className="flow-empty-hint">
+            Nenhuma condição. O gatilho aplicará para todos os cartões.
+          </p>
         ) : (
           <div className="flow-item-list">
             {conditions.map((cond) => (
@@ -408,11 +399,7 @@ export const FlowRuleBuilder: React.FC<FlowRuleBuilderProps> = ({
             <span className="step-badge">3</span>
             <h4>Ações (Então faça...)</h4>
           </div>
-          <button
-            type="button"
-            className="flow-btn-secondary btn-sm"
-            onClick={handleAddAction}
-          >
+          <button type="button" className="flow-btn-secondary btn-sm" onClick={handleAddAction}>
             Adicionar Ação
           </button>
         </div>
@@ -534,11 +521,7 @@ export const FlowRuleBuilder: React.FC<FlowRuleBuilderProps> = ({
         <button type="button" className="flow-btn-secondary" onClick={handleCancel}>
           Cancelar
         </button>
-        <button
-          type="submit"
-          className="flow-btn-primary"
-          disabled={!name.trim()}
-        >
+        <button type="submit" className="flow-btn-primary" disabled={!name.trim()}>
           Salvar Regra
         </button>
       </div>

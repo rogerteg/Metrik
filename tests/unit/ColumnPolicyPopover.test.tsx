@@ -20,12 +20,14 @@ describe('ColumnPolicyPopover Component', () => {
         policy={dummyPolicy}
         onClose={vi.fn()}
         onEdit={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText(/políticas da coluna/i)).toBeInTheDocument();
     expect(screen.getByText('Critérios de entrada bem definidos')).toBeInTheDocument();
-    expect(screen.getByText('Testes de unidade passando e code review aprovado')).toBeInTheDocument();
+    expect(
+      screen.getByText('Testes de unidade passando e code review aprovado'),
+    ).toBeInTheDocument();
   });
 
   it('deve chamar onEdit quando o botão de edição for clicado', () => {
@@ -37,7 +39,7 @@ describe('ColumnPolicyPopover Component', () => {
         policy={dummyPolicy}
         onClose={vi.fn()}
         onEdit={onEdit}
-      />
+      />,
     );
 
     const editBtn = screen.getByRole('button', { name: /editar políticas/i });
@@ -61,7 +63,7 @@ describe('ColumnPolicyPopover Component', () => {
         policy={emptyPolicy}
         onClose={vi.fn()}
         onEdit={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText(/nenhuma política explícita configurada/i)).toBeInTheDocument();
@@ -79,7 +81,7 @@ describe('ColumnPolicyModal Component', () => {
         initialExitCriteria="Critério DoD inicial"
         onSave={vi.fn()}
         onClose={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByText(/etapa: em desenvolvimento/i)).toBeInTheDocument();
@@ -100,7 +102,7 @@ describe('ColumnPolicyModal Component', () => {
         initialExitCriteria=""
         onSave={onSave}
         onClose={onClose}
-      />
+      />,
     );
 
     const entryInput = screen.getByPlaceholderText(/ex: escopo refinado/i);
@@ -130,7 +132,7 @@ describe('ColumnPolicyModal Component', () => {
         initialExitCriteria="Critério"
         onSave={vi.fn()}
         onClose={onClose}
-      />
+      />,
     );
 
     const cancelBtn = screen.getByRole('button', { name: /cancelar/i });
@@ -152,7 +154,7 @@ describe('ColumnPolicyModal Component', () => {
         initialExitCriteria="Original DoD"
         onSave={vi.fn()}
         onClose={onClose}
-      />
+      />,
     );
 
     const entryInput = screen.getByDisplayValue('Original DoR');
@@ -186,7 +188,7 @@ describe('ColumnPolicyModal Component', () => {
         initialExitCriteria="Original DoD"
         onSave={onSave}
         onClose={onClose}
-      />
+      />,
     );
 
     // Ctrl+S salva

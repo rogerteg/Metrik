@@ -84,12 +84,7 @@ export interface MikaCacheEntry {
 
 export type MikaChatRole = 'user' | 'assistant' | 'system';
 export type MikaChatProvider = 'gemini' | 'heuristic';
-export type MikaQuickPromptCategory =
-  | 'bottleneck'
-  | 'sle'
-  | 'blocked'
-  | 'throughput'
-  | 'general';
+export type MikaQuickPromptCategory = 'bottleneck' | 'sle' | 'blocked' | 'throughput' | 'general';
 
 export interface MikaChatMessage {
   id: string;
@@ -138,4 +133,3 @@ export interface MikaBoardTelemetryContext {
   totalCompletedTasks: number;
   generatedAt: string;
 }
-

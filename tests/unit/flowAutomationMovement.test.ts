@@ -21,7 +21,13 @@ describe('flowAutomationMovement — Integração de Movimentação com Automaç
 
   const dummyColumns: ColumnModel[] = [
     { id: 'col-dev', title: 'Dev', category: 'in_progress', wipLimit: 5, colorScheme: 'progress' },
-    { id: 'col-review', title: 'Review', category: 'in_progress', wipLimit: 3, colorScheme: 'progress' },
+    {
+      id: 'col-review',
+      title: 'Review',
+      category: 'in_progress',
+      wipLimit: 3,
+      colorScheme: 'progress',
+    },
   ];
 
   const rule: FlowRule = {

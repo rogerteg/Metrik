@@ -117,7 +117,7 @@ export const Column: React.FC<ColumnProps> = ({
 
   const hasPolicy = Boolean(
     (policy?.entryCriteria && policy.entryCriteria.trim().length > 0) ||
-      (policy?.exitCriteria && policy.exitCriteria.trim().length > 0),
+    (policy?.exitCriteria && policy.exitCriteria.trim().length > 0),
   );
 
   useEffect(() => {

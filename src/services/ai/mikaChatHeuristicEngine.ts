@@ -28,7 +28,7 @@ export function normalizeQuery(query: string): string {
  */
 export function processMikaHeuristicChat(
   query: string,
-  context: MikaBoardTelemetryContext
+  context: MikaBoardTelemetryContext,
 ): MikaHeuristicChatResult {
   const normalized = normalizeQuery(query);
   const referencedTaskIds: string[] = [];
@@ -54,7 +54,7 @@ export function processMikaHeuristicChat(
     const list = context.blockedTasks
       .map(
         (b) =>
-          `- #${b.id} **${b.title}**\n  📍 Coluna: *${b.columnTitle}* | ⏳ Bloqueada há: ~${b.blockedHours}h\n  ⚠️ Motivo: *${b.reason}*`
+          `- #${b.id} **${b.title}**\n  📍 Coluna: *${b.columnTitle}* | ⏳ Bloqueada há: ~${b.blockedHours}h\n  ⚠️ Motivo: *${b.reason}*`,
       )
       .join('\n\n');
 
@@ -78,7 +78,7 @@ export function processMikaHeuristicChat(
   ) {
     const overWipCols = context.columns.filter((c) => c.isOverWip);
     const sortedByAging = [...context.columns].sort(
-      (a, b) => (b.avgStageTimeHours || 0) - (a.avgStageTimeHours || 0)
+      (a, b) => (b.avgStageTimeHours || 0) - (a.avgStageTimeHours || 0),
     );
     const highestAgingCol = sortedByAging[0];
 
@@ -166,7 +166,10 @@ export function processMikaHeuristicChat(
     const colsOverWip = context.columns.filter((c) => c.isOverWip);
 
     let details = colsWithWip
-      .map((c) => `- **${c.title}**: ${c.taskCount}/${c.wipLimit} ${c.isOverWip ? '⚠️ (Acima do limite)' : '✅'}`)
+      .map(
+        (c) =>
+          `- **${c.title}**: ${c.taskCount}/${c.wipLimit} ${c.isOverWip ? '⚠️ (Acima do limite)' : '✅'}`,
+      )
       .join('\n');
 
     if (!details) {

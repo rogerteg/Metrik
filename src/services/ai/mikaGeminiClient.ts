@@ -160,7 +160,7 @@ Responda EXCLUSIVAMENTE em formato JSON com a estrutura:
     apiKey: string,
     systemPrompt: string,
     history: { role: string; content: string }[],
-    userQuery: string
+    userQuery: string,
   ): Promise<string> {
     if (!apiKey || !apiKey.trim()) {
       throw new Error('Chave de API do Gemini não fornecida');
@@ -223,4 +223,3 @@ Responda EXCLUSIVAMENTE em formato JSON com a estrutura:
 }
 
 export const mikaGeminiClient = new MikaGeminiClient();
-

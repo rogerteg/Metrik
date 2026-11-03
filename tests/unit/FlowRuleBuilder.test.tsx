@@ -6,19 +6,31 @@ import { ColumnModel } from '../../src/types/kanban';
 describe('FlowRuleBuilder Component', () => {
   const dummyColumns: ColumnModel[] = [
     { id: 'col-todo', title: 'To Do', category: 'todo', wipLimit: null, colorScheme: 'todo' },
-    { id: 'col-dev', title: 'Desenvolvimento', category: 'in_progress', wipLimit: 5, colorScheme: 'progress' },
-    { id: 'col-review', title: 'Revisão', category: 'in_progress', wipLimit: 3, colorScheme: 'progress' },
-    { id: 'col-done', title: 'Concluído', category: 'done', wipLimit: null, colorScheme: 'completed' },
+    {
+      id: 'col-dev',
+      title: 'Desenvolvimento',
+      category: 'in_progress',
+      wipLimit: 5,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'col-review',
+      title: 'Revisão',
+      category: 'in_progress',
+      wipLimit: 3,
+      colorScheme: 'progress',
+    },
+    {
+      id: 'col-done',
+      title: 'Concluído',
+      category: 'done',
+      wipLimit: null,
+      colorScheme: 'completed',
+    },
   ];
 
   it('deve renderizar campos obrigatórios do construtor', () => {
-    render(
-      <FlowRuleBuilder
-        columns={dummyColumns}
-        onSave={vi.fn()}
-        onCancel={vi.fn()}
-      />
-    );
+    render(<FlowRuleBuilder columns={dummyColumns} onSave={vi.fn()} onCancel={vi.fn()} />);
 
     expect(screen.getByLabelText(/nome da regra/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/gatilho/i)).toBeInTheDocument();
@@ -28,13 +40,7 @@ describe('FlowRuleBuilder Component', () => {
 
   it('deve permitir adicionar ação e invocar onSave com os dados preenchidos', () => {
     const onSave = vi.fn();
-    render(
-      <FlowRuleBuilder
-        columns={dummyColumns}
-        onSave={onSave}
-        onCancel={vi.fn()}
-      />
-    );
+    render(<FlowRuleBuilder columns={dummyColumns} onSave={onSave} onCancel={vi.fn()} />);
 
     fireEvent.change(screen.getByLabelText(/nome da regra/i), {
       target: { value: 'Auto Tagging' },
@@ -70,13 +76,7 @@ describe('FlowRuleBuilder Component', () => {
     const onCancel = vi.fn();
     const confirmSpy = vi.spyOn(window, 'confirm');
 
-    render(
-      <FlowRuleBuilder
-        columns={dummyColumns}
-        onSave={vi.fn()}
-        onCancel={onCancel}
-      />
-    );
+    render(<FlowRuleBuilder columns={dummyColumns} onSave={vi.fn()} onCancel={onCancel} />);
 
     // Modifica o campo nome
     fireEvent.change(screen.getByLabelText(/nome da regra/i), {
@@ -101,13 +101,7 @@ describe('FlowRuleBuilder Component', () => {
   it('deve disparar cancelamento com confirmação ao pressionar a tecla Escape', () => {
     const onCancel = vi.fn();
 
-    render(
-      <FlowRuleBuilder
-        columns={dummyColumns}
-        onSave={vi.fn()}
-        onCancel={onCancel}
-      />
-    );
+    render(<FlowRuleBuilder columns={dummyColumns} onSave={vi.fn()} onCancel={onCancel} />);
 
     // Sem alterações, fecha diretamente
     fireEvent.keyDown(window, { key: 'Escape' });
