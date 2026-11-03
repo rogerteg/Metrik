@@ -7,6 +7,7 @@ import {
   getDefaultColumnColor,
 } from '../types/kanban';
 import { ReorderOptions } from '../types/dnd';
+import { CardSlePrediction } from '../types/sle';
 import { isTaskBlocked } from '../utils/taskReorder';
 import { calculateInitiativeProgress, getPendingBlockers } from '../utils/taskRelations';
 import { Task } from './Task';
@@ -23,6 +24,8 @@ export interface BoardTaskProps {
   autoSaveDebounceMs: number;
   /** Sprints do quadro (Feature 038) */
   sprints?: SprintModel[];
+  /** Previsão dinâmica de SLE do cartão (Feature 054) */
+  slePrediction?: CardSlePrediction;
   onSelect: (taskId: string) => void;
   onUpdateTask: (id: string, updates: Partial<TaskModel>) => void;
   onDelete: (id: string) => void;
@@ -83,6 +86,7 @@ export const BoardTask: React.FC<BoardTaskProps> = ({
   autoSaveComments,
   autoSaveDebounceMs,
   sprints,
+  slePrediction,
   onSelect,
   onUpdateTask,
   onDelete,
@@ -133,6 +137,8 @@ export const BoardTask: React.FC<BoardTaskProps> = ({
       onToggleBlocked={onToggleBlocked}
       onDropTask={onDropTask}
       isCompleted={currentColumn?.category === 'done'}
+      isColumnActive={currentColumn?.category !== 'done' && currentColumn?.category !== 'todo'}
+      slePrediction={slePrediction}
       canMoveLeft={canMoveLeft}
       canMoveRight={canMoveRight}
       onUpdateTask={onUpdateTask}

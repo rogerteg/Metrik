@@ -54,6 +54,7 @@ describe('Module Line Count Guard (Feature 049 - OPP-002 / Constituição Artigo
       path.join(ROOT_DIR, 'src/hooks/useCrossSquadLinking.ts'),
       path.join(ROOT_DIR, 'src/hooks/useGuardedTaskMove.ts'),
       path.join(ROOT_DIR, 'src/hooks/useAppModals.ts'),
+      path.join(ROOT_DIR, 'src/hooks/useDynamicSle.ts'),
     ];
 
     const violations: { file: string; lines: number }[] = [];

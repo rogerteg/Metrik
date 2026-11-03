@@ -6,6 +6,10 @@ export interface FilterState {
   selectedTags: string[];
   onlyBlocked: boolean;
   /**
+   * Filtro rápido para exibir apenas cartões com risco de SLE (P50, P85, P95) (Feature 054)
+   */
+  onlySleRisk?: boolean;
+  /**
    * Filtro por sprint (Feature 038):
    * `'all'` (todas) | `'active'` (sprint ativa) | `'none'` (sem sprint) | `<sprintId>`.
    */
@@ -18,6 +22,7 @@ export interface UseBoardFiltersReturn {
   setPriorityFilter: (priority: PriorityLevel | 'all') => void;
   toggleTagFilter: (tag: string) => void;
   toggleOnlyBlocked: () => void;
+  toggleOnlySleRisk?: () => void;
   setSprintFilter: (sprintFilter: string) => void;
   clearFilters: () => void;
   hasActiveFilters: boolean;
@@ -26,4 +31,5 @@ export interface UseBoardFiltersReturn {
   visibleCount: number;
   totalCount: number;
   blockedCount: number;
+  sleRiskCount?: number;
 }

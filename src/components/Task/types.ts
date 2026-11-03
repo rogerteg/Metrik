@@ -1,6 +1,7 @@
 import React from 'react';
 import { PriorityLevel, TaskModel } from '../../types/kanban';
 import { ReorderOptions } from '../../types/dnd';
+import { CardSlePrediction } from '../../types/sle';
 
 export interface TaskCardProps {
   task: TaskModel;
@@ -39,6 +40,8 @@ export interface TaskCardProps {
   isAdmin?: boolean;
   isReadOnly?: boolean;
   sprintName?: string;
+  slePrediction?: CardSlePrediction;
+  isColumnActive?: boolean;
 }
 
 export type TaskProps = TaskCardProps;
@@ -60,6 +63,8 @@ export interface TaskBadgesProps {
   cycleTimeStr: string | null;
   hasDueDate: boolean;
   dueDateStatus: string | null;
+  slePrediction?: CardSlePrediction;
+  isColumnActive?: boolean;
 }
 
 export interface TaskBlockerChipsProps {

@@ -23,6 +23,7 @@ import { AppAutomationReportDialogs } from './components/App/AppAutomationReport
 import { useFlowRules } from './hooks/useFlowRules';
 import { useFlowRulesTimer } from './hooks/useFlowRulesTimer';
 import { useColumnPolicies } from './hooks/useColumnPolicies';
+import { useDynamicSle } from './hooks/useDynamicSle';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -97,7 +98,8 @@ export const App: React.FC = () => {
     }
   };
 
-  const filterData = useBoardFilters(board);
+  const sle = useDynamicSle(activeBoardId || 'default-board', allBoardTasks, board.columns);
+  const filterData = useBoardFilters(board, sle.predictions);
 
   const completedTasks = useMemo(() => {
     return board.columns
@@ -272,6 +274,9 @@ export const App: React.FC = () => {
         isCloudAutoSyncing={isCloudAutoSyncing}
         cloudLastSyncAt={cloudLastSyncAt}
         onShowToast={modals.setToastMessage}
+        sleConfig={sle.config}
+        onUpdateSleConfig={sle.updateConfig}
+        onResetSleConfig={sle.resetConfig}
         boardViewProps={{
           board,
           allBoardTasks,
@@ -294,6 +299,7 @@ export const App: React.FC = () => {
           onSelectTask: modals.setSelectedTaskId,
           policies: columnPolicies.policies,
           onSavePolicy: columnPolicies.setPolicy,
+          slePredictions: sle.predictions,
         }}
       />
 

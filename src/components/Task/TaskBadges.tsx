@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatDateShort } from '../../utils/timeFormatters';
 import { TaskBadgesProps } from './types';
+import { TaskSleBadge } from './TaskSleBadge';
 
 export const TaskBadges: React.FC<TaskBadgesProps> = ({
   task,
@@ -9,11 +10,19 @@ export const TaskBadges: React.FC<TaskBadgesProps> = ({
   cycleTimeStr,
   hasDueDate,
   dueDateStatus,
+  slePrediction,
+  isColumnActive = true,
 }) => {
+  const showSleBadge =
+    !hasCompletedAt &&
+    isColumnActive &&
+    Boolean(slePrediction && slePrediction.riskLevel !== 'normal');
+
   return (
     <>
-      {(hasDueDate || task.startDate || task.endDate) && (
+      {(hasDueDate || task.startDate || task.endDate || showSleBadge) && (
         <div className="task-indicators" aria-label="Indicadores da tarefa">
+          {showSleBadge && <TaskSleBadge prediction={slePrediction} />}
           {task.startDate && (
             <span
               className="task-indicator-badge date-start-badge"

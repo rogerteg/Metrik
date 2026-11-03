@@ -1,16 +1,21 @@
 import { useState, useMemo, useCallback } from 'react';
 import { BoardState, PriorityLevel, TaskModel } from '../types/kanban';
 import { FilterState, UseBoardFiltersReturn } from '../types/filter';
+import { CardSlePrediction } from '../types/sle';
 
 const INITIAL_FILTER_STATE: FilterState = {
   searchQuery: '',
   priorityFilter: 'all',
   selectedTags: [],
   onlyBlocked: false,
+  onlySleRisk: false,
   sprintFilter: 'all',
 };
 
-export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
+export function useBoardFilters(
+  board: BoardState,
+  slePredictions?: Record<string, CardSlePrediction>,
+): UseBoardFiltersReturn {
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTER_STATE);
 
   const setSearchQuery = useCallback((query: string) => {
@@ -37,6 +42,10 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
     setFilters((prev) => ({ ...prev, onlyBlocked: !prev.onlyBlocked }));
   }, []);
 
+  const toggleOnlySleRisk = useCallback(() => {
+    setFilters((prev) => ({ ...prev, onlySleRisk: !prev.onlySleRisk }));
+  }, []);
+
   const setSprintFilter = useCallback((sprintFilter: string) => {
     setFilters((prev) => ({ ...prev, sprintFilter }));
   }, []);
@@ -50,6 +59,7 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
     filters.priorityFilter !== 'all' ||
     filters.selectedTags.length > 0 ||
     filters.onlyBlocked ||
+    filters.onlySleRisk ||
     filters.sprintFilter !== 'all',
   );
 
@@ -126,6 +136,19 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
           }
         }
 
+        // 6. Only SLE Risk Filter (Feature 054)
+        if (filters.onlySleRisk) {
+          const pred = slePredictions?.[task.id];
+          if (
+            !pred ||
+            (pred.riskLevel !== 'warning_p50' &&
+              pred.riskLevel !== 'risk_p85' &&
+              pred.riskLevel !== 'critical_p95')
+          ) {
+            return false;
+          }
+        }
+
         return true;
       });
     });
@@ -134,11 +157,21 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
       columns: board.columns,
       tasks: resultTasks,
     };
-  }, [board, filters]);
+  }, [board, filters, slePredictions]);
 
   const visibleCount = useMemo(() => {
     return Object.values(filteredBoard.tasks).reduce((acc, tasks) => acc + tasks.length, 0);
   }, [filteredBoard]);
+
+  const sleRiskCount = useMemo(() => {
+    if (!slePredictions) return 0;
+    return Object.values(slePredictions).filter(
+      (p) =>
+        p.riskLevel === 'warning_p50' ||
+        p.riskLevel === 'risk_p85' ||
+        p.riskLevel === 'critical_p95',
+    ).length;
+  }, [slePredictions]);
 
   return {
     filters,
@@ -146,6 +179,7 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
     setPriorityFilter,
     toggleTagFilter,
     toggleOnlyBlocked,
+    toggleOnlySleRisk,
     setSprintFilter,
     clearFilters,
     hasActiveFilters,
@@ -154,5 +188,6 @@ export function useBoardFilters(board: BoardState): UseBoardFiltersReturn {
     visibleCount,
     totalCount,
     blockedCount,
+    sleRiskCount,
   };
 }

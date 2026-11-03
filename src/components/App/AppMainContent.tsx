@@ -7,6 +7,7 @@ import { SettingsView } from '../Settings/SettingsView';
 import { ManageBoardsView } from '../ManageBoards/ManageBoardsView';
 import { RestrictedBoardFallback } from '../RestrictedBoardFallback';
 import { AppBoardView, AppBoardViewProps } from './AppBoardView';
+import { SleConfig } from '../../types/sle';
 
 const AnalyticsDashboard = lazy(() =>
   import('../AnalyticsDashboard').then((module) => ({
@@ -55,6 +56,9 @@ export interface AppMainContentProps {
   cloudLastSyncAt: string | null;
   onShowToast: (msg: string) => void;
   boardViewProps: AppBoardViewProps;
+  sleConfig?: SleConfig;
+  onUpdateSleConfig?: (updates: Partial<Omit<SleConfig, 'boardId'>>) => void;
+  onResetSleConfig?: () => void;
 }
 
 export const AppMainContent: React.FC<AppMainContentProps> = ({
@@ -98,6 +102,9 @@ export const AppMainContent: React.FC<AppMainContentProps> = ({
   cloudLastSyncAt,
   onShowToast,
   boardViewProps,
+  sleConfig,
+  onUpdateSleConfig,
+  onResetSleConfig,
 }) => {
   if (view === 'workspaces') {
     return (
@@ -146,6 +153,9 @@ export const AppMainContent: React.FC<AppMainContentProps> = ({
         isAutoSyncing={isCloudAutoSyncing}
         autoSyncLastAt={cloudLastSyncAt}
         onShowToast={onShowToast}
+        sleConfig={sleConfig}
+        onUpdateSleConfig={onUpdateSleConfig}
+        onResetSleConfig={onResetSleConfig}
       />
     );
   }

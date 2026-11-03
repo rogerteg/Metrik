@@ -9,6 +9,7 @@ import { UseBoardFiltersReturn } from '../../types/filter';
 import { ReorderOptions } from '../../types/dnd';
 import { UseTaskCollectionReturn } from '../../hooks/useTaskCollection';
 import { ColumnPoliciesMap } from '../../types/columnPolicy';
+import { CardSlePrediction } from '../../types/sle';
 
 export interface AppBoardViewProps {
   board: BoardState;
@@ -35,6 +36,8 @@ export interface AppBoardViewProps {
   onSelectTask: (taskId: string) => void;
   policies?: ColumnPoliciesMap;
   onSavePolicy?: (columnId: string, data: { entryCriteria: string; exitCriteria: string }) => void;
+  /** Mapa indexado de previsões de SLE por taskId (Feature 054) */
+  slePredictions?: Record<string, CardSlePrediction>;
 }
 
 export const AppBoardView: React.FC<AppBoardViewProps> = ({
@@ -59,6 +62,7 @@ export const AppBoardView: React.FC<AppBoardViewProps> = ({
   onSelectTask,
   policies,
   onSavePolicy,
+  slePredictions,
 }) => {
   return (
     <>
@@ -78,12 +82,14 @@ export const AppBoardView: React.FC<AppBoardViewProps> = ({
         onPriorityChange={filterData.setPriorityFilter}
         onToggleTag={filterData.toggleTagFilter}
         onToggleOnlyBlocked={filterData.toggleOnlyBlocked}
+        onToggleOnlySleRisk={filterData.toggleOnlySleRisk}
         onClearFilters={filterData.clearFilters}
         hasActiveFilters={filterData.hasActiveFilters}
         availableTags={filterData.availableTags}
         visibleCount={filterData.visibleCount}
         totalCount={filterData.totalCount}
         blockedCount={filterData.blockedCount}
+        sleRiskCount={filterData.sleRiskCount}
         sprints={board.sprints}
         activeSprintId={board.activeSprintId}
         onSprintChange={filterData.setSprintFilter}
@@ -114,6 +120,7 @@ export const AppBoardView: React.FC<AppBoardViewProps> = ({
             columnId={columnId}
             board={board}
             allBoardTasks={allBoardTasks}
+            slePrediction={slePredictions?.[task.id]}
             isGuest={isGuest}
             isAdmin={isAdmin}
             currentUser={currentUser}

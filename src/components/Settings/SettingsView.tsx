@@ -8,6 +8,7 @@ import { BoardPoliciesTab } from './BoardPoliciesTab';
 import { DataPortabilityTab } from './DataPortabilityTab';
 import { CloudSyncTab } from './CloudSyncTab';
 import { MikaSettingsTab } from '../Mika/MikaSettingsTab';
+import { SleConfig } from '../../types/sle';
 import './Settings.css';
 
 export type SettingsTabId = 'general' | 'workspaces' | 'policies' | 'data' | 'cloud' | 'mika';
@@ -45,6 +46,10 @@ export interface SettingsViewProps {
   onToggleAutoSync?: (enabled: boolean) => void;
   isAutoSyncing?: boolean;
   autoSyncLastAt?: string | null;
+  /** Configuração de Expectativa de Nível de Serviço (SLE) (Feature 054) */
+  sleConfig?: SleConfig;
+  onUpdateSleConfig?: (updates: Partial<Omit<SleConfig, 'boardId'>>) => void;
+  onResetSleConfig?: () => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
@@ -72,6 +77,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   onToggleAutoSync,
   isAutoSyncing,
   autoSyncLastAt,
+  sleConfig,
+  onUpdateSleConfig,
+  onResetSleConfig,
 }) => {
   const [activeTab, setActiveTab] = useState<SettingsTabId>('general');
 
@@ -231,6 +239,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <BoardPoliciesTab
               showWipLimits={settings.showWipLimits}
               onToggleWipLimits={(enabled) => onUpdateSettings({ showWipLimits: enabled })}
+              sleConfig={sleConfig}
+              onUpdateSleConfig={onUpdateSleConfig}
+              onResetSleConfig={onResetSleConfig}
             />
           )}
 

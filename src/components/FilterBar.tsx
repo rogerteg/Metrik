@@ -11,12 +11,14 @@ export interface FilterBarProps {
   onPriorityChange: (priority: PriorityLevel | 'all') => void;
   onToggleTag: (tag: string) => void;
   onToggleOnlyBlocked?: () => void;
+  onToggleOnlySleRisk?: () => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
   availableTags: string[];
   visibleCount: number;
   totalCount: number;
   blockedCount?: number;
+  sleRiskCount?: number;
   /** Sprints do quadro (Feature 038) */
   sprints?: SprintModel[];
   activeSprintId?: string | null;
@@ -40,12 +42,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   onPriorityChange,
   onToggleTag,
   onToggleOnlyBlocked,
+  onToggleOnlySleRisk,
   onClearFilters,
   hasActiveFilters,
   availableTags,
   visibleCount,
   totalCount,
   blockedCount,
+  sleRiskCount,
   sprints,
   activeSprintId,
   onSprintChange,
@@ -242,6 +246,43 @@ export const FilterBar: React.FC<FilterBarProps> = ({
                   </span>
                 )}
               </button>
+
+              {onToggleOnlySleRisk && (
+                <button
+                  type="button"
+                  className={`filter-pill filter-pill--sle-risk ${filters.onlySleRisk ? 'is-selected' : ''}`}
+                  onClick={onToggleOnlySleRisk}
+                  aria-pressed={Boolean(filters.onlySleRisk)}
+                  data-testid="filter-only-sle-risk"
+                  title="Filtrar cartões com alerta preditivo de SLE (P50, P85, P95)"
+                  style={
+                    filters.onlySleRisk
+                      ? {
+                          borderColor: '#f97316',
+                          color: '#f97316',
+                          backgroundColor: 'rgba(249, 115, 22, 0.15)',
+                        }
+                      : undefined
+                  }
+                >
+                  <span>⚠️ Risco de SLE</span>
+                  {typeof sleRiskCount === 'number' && sleRiskCount > 0 && (
+                    <span
+                      style={{
+                        marginLeft: '6px',
+                        background: '#f97316',
+                        color: '#ffffff',
+                        borderRadius: '10px',
+                        padding: '1px 6px',
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                      }}
+                    >
+                      {sleRiskCount}
+                    </span>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         )}

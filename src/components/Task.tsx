@@ -50,6 +50,8 @@ export const Task: React.FC<TaskProps> = ({
   isAdmin = false,
   isReadOnly = false,
   sprintName,
+  slePrediction,
+  isColumnActive = true,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDetailEditing, setIsDetailEditing] = useState(false);
@@ -172,6 +174,8 @@ export const Task: React.FC<TaskProps> = ({
           cycleTimeStr={cycleTimeStr}
           hasDueDate={hasDueDate}
           dueDateStatus={dueDateStatus}
+          slePrediction={slePrediction}
+          isColumnActive={isColumnActive}
         />
 
         <TaskBlockerChips
