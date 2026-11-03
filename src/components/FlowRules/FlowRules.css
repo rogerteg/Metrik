@@ -1,0 +1,599 @@
+/**
+ * Metrik — Estilos de Automações de Fluxo & Construtor de Regras
+ * Specification: specs/053-flow-automation-policies/spec.md
+ */
+
+.flow-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.flow-modal-container {
+  background-color: var(--bg-card, #1e293b);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 820px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  color: var(--text-primary, #f8fafc);
+}
+
+.flow-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color, #334155);
+  background: var(--bg-header, rgba(30, 41, 59, 0.8));
+}
+
+.flow-modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.flow-modal-title-badge {
+  font-size: 1.5rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.flow-modal-heading {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary, #f8fafc);
+}
+
+.flow-modal-subheading {
+  margin: 0.2rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.flow-modal-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.flow-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary, #f8fafc);
+}
+
+/* Nav bar & Tabs */
+.flow-modal-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-secondary, rgba(15, 23, 42, 0.4));
+  border-bottom: 1px solid var(--border-color, #334155);
+  gap: 1rem;
+}
+
+.flow-nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.flow-nav-tab {
+  background: transparent;
+  border: none;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary, #94a3b8);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flow-nav-tab:hover {
+  color: var(--text-primary, #f8fafc);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.flow-nav-tab.is-active {
+  background: var(--accent-color, #6366f1);
+  color: #ffffff;
+}
+
+.flow-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Modal Body */
+.flow-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Empty state */
+.flow-empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.flow-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.7;
+}
+
+.flow-empty-state h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.flow-empty-state p {
+  color: var(--text-secondary, #94a3b8);
+  max-width: 420px;
+  margin: 0 auto 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.flow-empty-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+/* Rules List */
+.flow-rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.flow-rule-item {
+  background: var(--bg-primary, #0f172a);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.flow-rule-item.is-disabled {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+.flow-rule-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.flow-rule-title-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.flow-rule-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.flow-rule-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #f8fafc);
+}
+
+.flow-rule-desc {
+  margin: 0.2rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.flow-rule-actions-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.flow-rule-exec-badge {
+  font-size: 0.75rem;
+  background: rgba(99, 102, 241, 0.12);
+  color: #a5b4fc;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  margin-right: 0.4rem;
+}
+
+.flow-rule-icon-btn {
+  background: transparent;
+  border: 1px solid var(--border-color, #334155);
+  color: var(--text-secondary, #94a3b8);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.flow-rule-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary, #f8fafc);
+}
+
+.flow-rule-icon-btn.is-danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.flow-rule-summary-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.flow-rule-pill {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary, #94a3b8);
+}
+
+.flow-rule-pill strong {
+  color: var(--text-primary, #f8fafc);
+}
+
+.flow-rule-pill.trigger-pill {
+  border-left: 3px solid #6366f1;
+}
+
+.flow-rule-pill.condition-pill {
+  border-left: 3px solid #f59e0b;
+}
+
+.flow-rule-pill.action-pill {
+  border-left: 3px solid #10b981;
+}
+
+/* Toggle Switch */
+.flow-rule-toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.flow-rule-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.flow-rule-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #475569;
+  border-radius: 22px;
+  transition: 0.2s ease;
+}
+
+.flow-rule-toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.2s ease;
+}
+
+.flow-rule-toggle-switch input:checked + .flow-rule-toggle-slider {
+  background-color: #10b981;
+}
+
+.flow-rule-toggle-switch input:checked + .flow-rule-toggle-slider:before {
+  transform: translateX(16px);
+}
+
+/* Builder Form */
+.flow-rule-builder-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.flow-builder-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.flow-builder-sub {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.flow-builder-card {
+  background: var(--bg-primary, #0f172a);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.flow-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.flow-card-title.justify-between {
+  justify-content: space-between;
+}
+
+.flex-align {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.step-badge {
+  background: var(--accent-color, #6366f1);
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.flow-card-title h4 {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.flow-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary, #94a3b8);
+  margin-bottom: 0.35rem;
+}
+
+.flow-input,
+.flow-select,
+.flow-textarea {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  background: var(--bg-card, #1e293b);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 8px;
+  color: var(--text-primary, #f8fafc);
+  font-size: 0.875rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.flow-input:focus,
+.flow-select:focus,
+.flow-textarea:focus {
+  outline: none;
+  border-color: var(--accent-color, #6366f1);
+}
+
+.trigger-params-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.flow-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.flow-condition-row,
+.flow-action-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 1.8fr 36px;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.select-sm,
+.input-sm {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8125rem;
+}
+
+.flow-empty-hint {
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.8125rem;
+  font-style: italic;
+  margin: 0;
+}
+
+.flow-builder-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color, #334155);
+}
+
+/* Templates Grid */
+.flow-templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.flow-template-card {
+  background: var(--bg-primary, #0f172a);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.flow-template-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.flow-template-header h4 {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.flow-cat-badge {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.flow-cat-badge.is-aging {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.flow-cat-badge.is-quality {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.flow-cat-badge.is-governance {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+}
+
+.flow-cat-badge.is-hygiene {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+}
+
+.flow-template-desc {
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #94a3b8);
+  line-height: 1.45;
+  margin: 0 0 1rem;
+}
+
+/* Common Buttons */
+.flow-btn-primary {
+  background: var(--accent-color, #6366f1);
+  color: #fff;
+  border: none;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.flow-btn-primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.flow-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.flow-btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary, #f8fafc);
+  border: 1px solid var(--border-color, #334155);
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.flow-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.required-star {
+  color: #ef4444;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

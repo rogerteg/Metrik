@@ -36,6 +36,8 @@ export interface AppHeaderProps {
   isMikaOpen?: boolean;
   hasMikaAlerts?: boolean;
   onOpenExportModal?: () => void;
+  onOpenFlowRules?: () => void;
+  activeFlowRulesCount?: number;
 }
 
 /** Cabeçalho do aplicativo (extraído de App.tsx — P3/SRP). */
@@ -65,6 +67,8 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   isMikaOpen,
   hasMikaAlerts,
   onOpenExportModal,
+  onOpenFlowRules,
+  activeFlowRulesCount,
 }) => (
   <header className="app-header">
     <div className="brand-section" style={{ display: 'flex', alignItems: 'center' }}>
@@ -151,6 +155,34 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
           </svg>
           <span>Configurações</span>
         </button>
+
+        {onOpenFlowRules && (
+          <button
+            type="button"
+            className="btn btn-secondary btn-compact"
+            onClick={onOpenFlowRules}
+            aria-label="Regras de Fluxo e Automações"
+            title="Abrir Construtor de Regras de Fluxo e Automações"
+            data-testid="header-flow-rules-btn"
+          >
+            <span style={{ marginRight: 4 }}>⚡</span>
+            <span>Automações</span>
+            {typeof activeFlowRulesCount === 'number' && activeFlowRulesCount > 0 && (
+              <span
+                style={{
+                  marginLeft: 6,
+                  fontSize: '0.75rem',
+                  padding: '1px 6px',
+                  borderRadius: 10,
+                  background: 'var(--accent-color, #6366f1)',
+                  color: '#fff',
+                }}
+              >
+                {activeFlowRulesCount}
+              </span>
+            )}
+          </button>
+        )}
 
         <ThemeSelector currentTheme={theme} onSelectTheme={onSelectTheme} />
 

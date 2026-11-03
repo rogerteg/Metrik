@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useTaskCollection } from './hooks/useTaskCollection';
 import { useFlowMetrics } from './hooks/useFlowMetrics';
 import { useBoardFilters } from './hooks/useBoardFilters';
@@ -8,20 +8,21 @@ import { AppHeaderBar } from './components/App/AppHeaderBar';
 import { AppMainContent } from './components/App/AppMainContent';
 import { AppDialogsContainer } from './components/App/AppDialogsContainer';
 import { useColumnWidths } from './hooks/useColumnWidths';
-import { MIN_COLUMN_WIDTH } from './utils/columnGeometry';
 import { useTheme } from './hooks/useTheme';
 import { useTeamAccess } from './hooks/useTeamAccess';
 import { buildTasksCsv, buildSprintsCsv } from './utils/csvExport';
-import { useWorkspaces, DEFAULT_WORKSPACE_ID } from './hooks/useWorkspaces';
+import { useWorkspaces } from './hooks/useWorkspaces';
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCloudAutoSync } from './hooks/useCloudAutoSync';
 import { useMika } from './hooks/useMika';
 import { useCrossSquadLinking } from './hooks/useCrossSquadLinking';
 import { useGuardedTaskMove } from './hooks/useGuardedTaskMove';
 import { useAppModals } from './hooks/useAppModals';
-import { ExportReportModal } from './components/ExportReportModal';
-import { ExecutiveReportPrintView } from './components/ExecutiveReportPrintView';
-import { FlowReportSnapshot } from './types/reports';
+import { useBoardWorkspaceActions } from './hooks/useBoardWorkspaceActions';
+import { AppAutomationReportDialogs } from './components/App/AppAutomationReportDialogs';
+import { useFlowRules } from './hooks/useFlowRules';
+import { useFlowRulesTimer } from './hooks/useFlowRulesTimer';
+import { useColumnPolicies } from './hooks/useColumnPolicies';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -79,8 +80,6 @@ export const App: React.FC = () => {
 
   const workspacesData = useWorkspaces();
   const { settings, updateSettings } = useAppSettings();
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [headerPrintSnapshot, setHeaderPrintSnapshot] = useState<FlowReportSnapshot | null>(null);
 
   const { isSyncing: isCloudAutoSyncing, lastSyncAt: cloudLastSyncAt } = useCloudAutoSync({
     enabled: settings.cloudAutoSync ?? false,
@@ -108,56 +107,21 @@ export const App: React.FC = () => {
 
   const flowMetrics = useFlowMetrics(completedTasks, allBoardTasks);
 
-  const handleClearBoard = () => {
-    if (
-      window.confirm(
-        'Tem certeza de que deseja limpar todas as tarefas do quadro? Esta ação não pode ser desfeita.',
-      )
-    ) {
-      taskOps.clearTasks();
-    }
-  };
-
-  const handleFitColumnsToWindow = () => {
-    const n = board.columns.length;
-    if (n === 0) return;
-    const grid =
-      typeof document !== 'undefined'
-        ? (document.querySelector('.kanban-board-grid') as HTMLElement | null)
-        : null;
-    const available =
-      grid?.clientWidth ?? (typeof window !== 'undefined' ? window.innerWidth - 40 : 0);
-    const usable = available - 12 - 14 * (n - 1);
-    const width = Math.max(MIN_COLUMN_WIDTH, Math.floor(usable / n));
-    board.columns.forEach((column) => setColumnWidth(column.id, width));
-  };
-
-  const handleMoveBoardToWorkspace = useCallback(
-    (boardId: string, targetWorkspaceId: string | null) => {
-      workspacesData.workspaces.forEach((ws) => {
-        if (ws.boardIds.includes(boardId)) {
-          workspacesData.removeBoardFromWorkspace(ws.id, boardId);
-        }
-      });
-      if (targetWorkspaceId) {
-        workspacesData.addBoardToWorkspace(targetWorkspaceId, boardId);
-      }
-    },
-    [workspacesData],
-  );
-
-  const handleCreateBoard = useCallback(
-    (name: string, teamId?: string) => {
-      const created = createBoard(name, teamId);
-      const targetWorkspaceId =
-        workspacesData.activeWorkspaceId === 'all'
-          ? DEFAULT_WORKSPACE_ID
-          : workspacesData.activeWorkspaceId;
-      workspacesData.addBoardToWorkspace(targetWorkspaceId, created.id);
-      return created;
-    },
-    [createBoard, workspacesData],
-  );
+  const {
+    handleClearBoard,
+    handleFitColumnsToWindow,
+    handleMoveBoardToWorkspace,
+    handleCreateBoard,
+  } = useBoardWorkspaceActions({
+    workspaces: workspacesData.workspaces,
+    activeWorkspaceId: workspacesData.activeWorkspaceId,
+    addBoardToWorkspace: workspacesData.addBoardToWorkspace,
+    removeBoardFromWorkspace: workspacesData.removeBoardFromWorkspace,
+    createBoard,
+    columns: board.columns,
+    setColumnWidth,
+    clearTasks: taskOps.clearTasks,
+  });
 
   const { handleAddLink, handleRemoveLink } = useCrossSquadLinking({
     selectedTaskId: modals.selectedTaskId,
@@ -167,6 +131,9 @@ export const App: React.FC = () => {
     updateTask: taskOps.updateTask,
   });
 
+  const flowRulesData = useFlowRules(activeBoardId || '');
+  const columnPolicies = useColumnPolicies(activeBoardId || '');
+
   const { softBlockState, cancelSoftBlock, handleGuardedMoveTask, handleGuardedDropTask } =
     useGuardedTaskMove({
       allBoardTasks,
@@ -174,7 +141,22 @@ export const App: React.FC = () => {
       moveTask: taskOps.moveTask,
       reorderOrMoveTask: taskOps.reorderOrMoveTask,
       onToast: modals.setToastMessage,
+      flowRules: flowRulesData.rules,
+      boardId: activeBoardId || '',
+      updateTask: taskOps.updateTask,
+      recordRuleExecution: flowRulesData.recordExecution,
     });
+
+  useFlowRulesTimer({
+    enabled: !isGuest && Boolean(activeBoardId),
+    boardId: activeBoardId || '',
+    rules: flowRulesData.rules,
+    tasks: allBoardTasks,
+    columns: board.columns,
+    onApplyUpdates: taskOps.updateTask,
+    onRecordExecution: flowRulesData.recordExecution,
+    onToast: modals.setToastMessage,
+  });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -230,7 +212,9 @@ export const App: React.FC = () => {
         hasMikaAlerts={mika.insights.some(
           (i) => i.severity === 'warning' || i.severity === 'critical',
         )}
-        onOpenExportModal={() => setIsExportModalOpen(true)}
+        onOpenExportModal={modals.openExportModal}
+        onOpenFlowRules={modals.openFlowRulesModal}
+        activeFlowRulesCount={flowRulesData.activeRulesCount}
       />
 
       <AppMainContent
@@ -308,6 +292,8 @@ export const App: React.FC = () => {
           onDropTask: handleGuardedDropTask,
           onMoveTask: handleGuardedMoveTask,
           onSelectTask: modals.setSelectedTaskId,
+          policies: columnPolicies.policies,
+          onSavePolicy: columnPolicies.setPolicy,
         }}
       />
 
@@ -364,33 +350,29 @@ export const App: React.FC = () => {
         onCloseToast={modals.closeToast}
       />
 
-      {/* Modal de Exportação de Relatórios disparado pelo AppHeaderBar (Feature 051) */}
-      {board && (
-        <ExportReportModal
-          isOpen={isExportModalOpen}
-          onClose={() => setIsExportModalOpen(false)}
-          board={board as any}
-          tasks={allBoardTasks}
-          filteredTasks={Object.values(filterData.filteredBoard.tasks).flat()}
-          mikaInsights={mika.insights}
-          hasActiveFilters={filterData.hasActiveFilters}
-          activeDateFilterLabel={
-            filterData.hasActiveFilters
-              ? 'Filtros do Quadro Ativos'
-              : 'Todos os dados do quadro'
-          }
-          onGeneratePdf={(snapshot) => setHeaderPrintSnapshot(snapshot)}
-        />
-      )}
-
-      {/* Visualização de Impressão Executiva disparada pelo AppHeaderBar */}
-      {headerPrintSnapshot && (
-        <ExecutiveReportPrintView
-          snapshot={headerPrintSnapshot}
-          onClose={() => setHeaderPrintSnapshot(null)}
-          autoPrint={true}
-        />
-      )}
+      <AppAutomationReportDialogs
+        board={board}
+        allBoardTasks={allBoardTasks}
+        filteredTasks={Object.values(filterData.filteredBoard.tasks).flat()}
+        mikaInsights={mika.insights}
+        hasActiveFilters={filterData.hasActiveFilters}
+        isExportModalOpen={modals.isExportModalOpen}
+        onCloseExportModal={modals.closeExportModal}
+        headerPrintSnapshot={modals.headerPrintSnapshot}
+        onCloseHeaderPrint={() => modals.setHeaderPrintSnapshot(null)}
+        onGeneratePdf={(snapshot) => modals.setHeaderPrintSnapshot(snapshot)}
+        isFlowRulesModalOpen={modals.isFlowRulesModalOpen}
+        onCloseFlowRulesModal={modals.closeFlowRulesModal}
+        activeBoardId={activeBoardId || ''}
+        flowRules={flowRulesData.rules}
+        onAddFlowRule={flowRulesData.addRule}
+        onUpdateFlowRule={flowRulesData.updateRule}
+        onToggleFlowRule={flowRulesData.toggleRule}
+        onDeleteFlowRule={flowRulesData.deleteRule}
+        onDuplicateFlowRule={flowRulesData.duplicateRule}
+        onSetFlowRules={flowRulesData.setRules}
+        onToast={modals.setToastMessage}
+      />
     </div>
   );
 };

@@ -186,7 +186,7 @@ Responda EXCLUSIVAMENTE em formato JSON com a estrutura:
       parts: [{ text: userQuery.trim() }],
     });
 
-    const requestBody: Record<string, any> = {
+    const requestBody: Record<string, unknown> = {
       contents,
       generationConfig: {
         temperature: 0.4,

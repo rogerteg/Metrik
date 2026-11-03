@@ -9,6 +9,9 @@ import { clampColumnWidth, resolveColumnWidth } from '../utils/columnGeometry';
 import { isTaskBlocked } from '../utils/taskReorder';
 import { WipLimitBadge } from './WipLimitBadge';
 import { ReorderOptions } from '../types/dnd';
+import { ColumnPolicy } from '../types/columnPolicy';
+import { ColumnPolicyPopover } from './ColumnPolicy/ColumnPolicyPopover';
+import { ColumnPolicyModal } from './ColumnPolicy/ColumnPolicyModal';
 
 export interface ColumnProps {
   column: ColumnModel;
@@ -25,6 +28,9 @@ export interface ColumnProps {
   /** Resolve uma tarefa pelo id para validação preventiva de drop (Feature 025, Camada 3). */
   getTaskById?: (taskId: string) => TaskModel | undefined;
   onMoveColumn?: (sourceIndex: number, destinationIndex: number) => void;
+  policy?: ColumnPolicy;
+  onSavePolicy?: (columnId: string, data: { entryCriteria: string; exitCriteria: string }) => void;
+  isReadOnly?: boolean;
   children?: React.ReactNode;
 }
 
@@ -72,6 +78,9 @@ export const Column: React.FC<ColumnProps> = ({
   onDropTask,
   getTaskById,
   onMoveColumn,
+  policy,
+  onSavePolicy,
+  isReadOnly = false,
   children,
 }) => {
   const badgeClass = getBadgeClass(column.colorScheme);
@@ -97,25 +106,36 @@ export const Column: React.FC<ColumnProps> = ({
   const [isColumnDragging, setIsColumnDragging] = useState(false);
   const [columnDropIndicator, setColumnDropIndicator] = useState<'before' | 'after' | null>(null);
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+  const [isPolicyPopoverOpen, setIsPolicyPopoverOpen] = useState(false);
+  const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false);
 
   const colorPickerRef = useRef<HTMLDivElement>(null);
+  const policyRef = useRef<HTMLDivElement>(null);
   const dragDepthRef = useRef(0);
   const startXRef = useRef(0);
   const startWidthRef = useRef(0);
+
+  const hasPolicy = Boolean(
+    (policy?.entryCriteria && policy.entryCriteria.trim().length > 0) ||
+      (policy?.exitCriteria && policy.exitCriteria.trim().length > 0),
+  );
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (colorPickerRef.current && !colorPickerRef.current.contains(e.target as Node)) {
         setIsColorPickerOpen(false);
       }
+      if (policyRef.current && !policyRef.current.contains(e.target as Node)) {
+        setIsPolicyPopoverOpen(false);
+      }
     };
-    if (isColorPickerOpen) {
+    if (isColorPickerOpen || isPolicyPopoverOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isColorPickerOpen]);
+  }, [isColorPickerOpen, isPolicyPopoverOpen]);
 
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -335,6 +355,46 @@ export const Column: React.FC<ColumnProps> = ({
               {count}
             </span>
           )}
+
+          <div className="column-policy-wrapper" ref={policyRef} style={{ position: 'relative' }}>
+            <button
+              type="button"
+              className={`col-policy-indicator-btn ${hasPolicy ? 'has-policy' : ''}`}
+              onClick={() => setIsPolicyPopoverOpen((prev) => !prev)}
+              title={
+                hasPolicy
+                  ? 'Ver Políticas da Coluna (DoR / DoD)'
+                  : isReadOnly
+                    ? 'Sem políticas cadastradas'
+                    : 'Definir Políticas da Coluna (DoR / DoD)'
+              }
+              aria-label={`Políticas da coluna ${column.title}`}
+              data-testid={`col-policy-btn-${column.id}`}
+            >
+              <span>📋</span>
+            </button>
+
+            {isPolicyPopoverOpen && (
+              <ColumnPolicyPopover
+                isOpen={isPolicyPopoverOpen}
+                columnTitle={column.title}
+                policy={
+                  policy || {
+                    columnId: column.id,
+                    entryCriteria: '',
+                    exitCriteria: '',
+                    updatedAt: '',
+                  }
+                }
+                onClose={() => setIsPolicyPopoverOpen(false)}
+                onEdit={() => {
+                  setIsPolicyPopoverOpen(false);
+                  setIsPolicyModalOpen(true);
+                }}
+                isReadOnly={isReadOnly}
+              />
+            )}
+          </div>
         </div>
 
         <div className="column-header-actions">
@@ -474,6 +534,18 @@ export const Column: React.FC<ColumnProps> = ({
           aria-label={`Ajustar largura da coluna ${column.title}`}
           role="separator"
           aria-orientation="vertical"
+        />
+      )}
+
+      {isPolicyModalOpen && onSavePolicy && (
+        <ColumnPolicyModal
+          isOpen={isPolicyModalOpen}
+          columnId={column.id}
+          columnTitle={column.title}
+          initialEntryCriteria={policy?.entryCriteria}
+          initialExitCriteria={policy?.exitCriteria}
+          onSave={onSavePolicy}
+          onClose={() => setIsPolicyModalOpen(false)}
         />
       )}
     </section>

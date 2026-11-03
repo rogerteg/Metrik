@@ -4,6 +4,8 @@ import { ReorderOptions } from '../types/dnd';
 import { CrossSquadTaskSummary } from '../types/taskTypes';
 import { isTaskBlocked } from '../utils/taskReorder';
 import { getPendingBlockers } from '../utils/taskRelations';
+import { FlowRule } from '../types/flowRules';
+import { evaluateRulesForEvent } from '../utils/flowRulesEngine';
 
 export interface UseGuardedTaskMoveProps {
   allBoardTasks: TaskModel[];
@@ -11,6 +13,10 @@ export interface UseGuardedTaskMoveProps {
   moveTask: (taskId: string, targetColumnId: string) => void;
   reorderOrMoveTask: (options: ReorderOptions) => void;
   onToast: (message: string) => void;
+  flowRules?: FlowRule[];
+  boardId?: string;
+  updateTask?: (id: string, updates: Partial<TaskModel>) => void;
+  recordRuleExecution?: (ruleId: string) => void;
 }
 
 export interface SoftBlockState {
@@ -25,8 +31,41 @@ export function useGuardedTaskMove({
   moveTask,
   reorderOrMoveTask,
   onToast,
+  flowRules,
+  boardId,
+  updateTask,
+  recordRuleExecution,
 }: UseGuardedTaskMoveProps) {
   const [softBlockState, setSoftBlockState] = useState<SoftBlockState | null>(null);
+
+  const applyAutomationsForMove = useCallback(
+    (task: TaskModel, targetColumnId: string) => {
+      if (!flowRules || flowRules.length === 0 || !updateTask) return;
+      const targetCol = columns.find((c) => c.id === targetColumnId);
+      const updatedTask = { ...task, column: targetColumnId };
+      const results = evaluateRulesForEvent(
+        flowRules,
+        {
+          boardId: boardId || '',
+          event: 'card_moved',
+          fromColumnId: task.column,
+          toColumnId: targetColumnId,
+          toCategory: targetCol?.category,
+        },
+        updatedTask,
+        columns,
+      );
+
+      for (const res of results) {
+        updateTask(task.id, res.taskUpdates);
+        recordRuleExecution?.(res.ruleId);
+        for (const msg of res.toastMessages) {
+          onToast(msg);
+        }
+      }
+    },
+    [flowRules, updateTask, columns, boardId, recordRuleExecution, onToast],
+  );
 
   const handleGuardedMoveTask = useCallback(
     (taskId: string, targetColumnId: string) => {
@@ -46,6 +85,7 @@ export function useGuardedTaskMove({
             blockingTasks: pending,
             onConfirm: () => {
               moveTask(taskId, targetColumnId);
+              applyAutomationsForMove(task, targetColumnId);
               setSoftBlockState(null);
             },
           });
@@ -54,8 +94,11 @@ export function useGuardedTaskMove({
       }
 
       moveTask(taskId, targetColumnId);
+      if (task) {
+        applyAutomationsForMove(task, targetColumnId);
+      }
     },
-    [allBoardTasks, columns, moveTask, onToast],
+    [allBoardTasks, columns, moveTask, onToast, applyAutomationsForMove],
   );
 
   const handleGuardedDropTask = useCallback(
@@ -76,6 +119,7 @@ export function useGuardedTaskMove({
             blockingTasks: pending,
             onConfirm: () => {
               reorderOrMoveTask(options);
+              applyAutomationsForMove(task, options.targetColumn);
               setSoftBlockState(null);
             },
           });
@@ -84,8 +128,11 @@ export function useGuardedTaskMove({
       }
 
       reorderOrMoveTask(options);
+      if (task) {
+        applyAutomationsForMove(task, options.targetColumn);
+      }
     },
-    [allBoardTasks, columns, reorderOrMoveTask, onToast],
+    [allBoardTasks, columns, reorderOrMoveTask, onToast, applyAutomationsForMove],
   );
 
   const cancelSoftBlock = useCallback(() => {

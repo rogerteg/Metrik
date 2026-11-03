@@ -84,6 +84,26 @@ export const TaskBadges: React.FC<TaskBadgesProps> = ({
               {formatDateShort(task.dueDate!)}
             </span>
           )}
+          {task.tags?.includes('aging-alert') && (
+            <span
+              className="task-indicator-badge is-aging-alert"
+              title="Alerta de Aging: Item excedeu o tempo de fluxo esperado"
+              style={{
+                background: 'rgba(245, 158, 11, 0.18)',
+                color: '#f59e0b',
+                border: '1px solid rgba(245, 158, 11, 0.4)',
+                borderRadius: '4px',
+                fontSize: '0.6875rem',
+                padding: '1px 5px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '3px',
+                fontWeight: 600,
+              }}
+            >
+              ⏱️ Aging Crítico
+            </span>
+          )}
         </div>
       )}
 

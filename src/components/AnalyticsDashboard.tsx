@@ -31,6 +31,7 @@ import { MikaInsight } from '../types/mika';
 import { ExportReportModal } from './ExportReportModal';
 import { ExecutiveReportPrintView } from './ExecutiveReportPrintView';
 import { FlowReportSnapshot } from '../types/reports';
+import { ReportBoardLike } from '../utils/flowReportExporter';
 import './Analytics.css';
 
 export type ChartType = 'cfd' | 'throughput' | 'leadTime' | 'cycleTime';
@@ -345,9 +346,9 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, b
         <ExportReportModal
           isOpen={exportModalOpen}
           onClose={() => setExportModalOpen(false)}
-          board={board as any}
-          tasks={tasks as any}
-          filteredTasks={filteredTasks as any}
+          board={board as unknown as ReportBoardLike}
+          tasks={tasks}
+          filteredTasks={filteredTasks}
           mikaInsights={mikaInsights}
           activeDateFilterLabel={
             datasetConfig.timeWindow === 'all'

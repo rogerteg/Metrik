@@ -8,6 +8,7 @@ import { BoardTask } from '../BoardTask';
 import { UseBoardFiltersReturn } from '../../types/filter';
 import { ReorderOptions } from '../../types/dnd';
 import { UseTaskCollectionReturn } from '../../hooks/useTaskCollection';
+import { ColumnPoliciesMap } from '../../types/columnPolicy';
 
 export interface AppBoardViewProps {
   board: BoardState;
@@ -32,6 +33,8 @@ export interface AppBoardViewProps {
   onDropTask: (options: ReorderOptions) => void;
   onMoveTask: (taskId: string, targetColumnId: string) => void;
   onSelectTask: (taskId: string) => void;
+  policies?: ColumnPoliciesMap;
+  onSavePolicy?: (columnId: string, data: { entryCriteria: string; exitCriteria: string }) => void;
 }
 
 export const AppBoardView: React.FC<AppBoardViewProps> = ({
@@ -54,6 +57,8 @@ export const AppBoardView: React.FC<AppBoardViewProps> = ({
   onDropTask,
   onMoveTask,
   onSelectTask,
+  policies,
+  onSavePolicy,
 }) => {
   return (
     <>
@@ -100,6 +105,8 @@ export const AppBoardView: React.FC<AppBoardViewProps> = ({
         onMoveColumn={taskOps.reorderColumn}
         onOpenNewColumnModal={onOpenNewColumnModal}
         isReadOnly={isGuest}
+        policies={policies}
+        onSavePolicy={onSavePolicy}
         renderTask={(task, columnId) => (
           <BoardTask
             key={task.id}

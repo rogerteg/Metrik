@@ -3,6 +3,7 @@ import { BoardState, ColumnModel, TaskModel, MAX_COLUMNS } from '../types/kanban
 import { ReorderOptions } from '../types/dnd';
 import { resolveColumnWidth } from '../utils/columnGeometry';
 import { Column } from './Column';
+import { ColumnPoliciesMap } from '../types/columnPolicy';
 
 export interface BoardProps {
   board: BoardState;
@@ -19,6 +20,8 @@ export interface BoardProps {
   onOpenNewColumnModal?: () => void;
   renderTask?: (task: TaskModel, columnId: string) => React.ReactNode;
   isReadOnly?: boolean;
+  policies?: ColumnPoliciesMap;
+  onSavePolicy?: (columnId: string, data: { entryCriteria: string; exitCriteria: string }) => void;
 }
 
 export const Board: React.FC<BoardProps> = ({
@@ -36,6 +39,8 @@ export const Board: React.FC<BoardProps> = ({
   onOpenNewColumnModal,
   renderTask,
   isReadOnly = false,
+  policies,
+  onSavePolicy,
 }) => {
   const columns = board.columns || [];
   const isAtColumnLimit = columns.length >= MAX_COLUMNS;
@@ -108,6 +113,9 @@ export const Board: React.FC<BoardProps> = ({
               onDropTask={isReadOnly ? undefined : onDropTask}
               getTaskById={(id) => taskIndex.get(id)}
               onMoveColumn={isReadOnly ? undefined : onMoveColumn}
+              policy={policies?.[col.id]}
+              onSavePolicy={isReadOnly ? undefined : onSavePolicy}
+              isReadOnly={isReadOnly}
             >
               {isFilteredEmpty ? (
                 <div
