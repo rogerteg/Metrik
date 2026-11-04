@@ -1,26 +1,20 @@
 <!--
 Sync Impact Report:
-- Version change: 1.7.1 → 1.8.0
-- Bump rationale: MINOR — Inclusion of Core Principle X (Conversational AI Governance & Consultive Copilot Safety),
-  formalizing the operational, privacy, architectural, and data integrity guarantees of the Mika AI conversational copilot
-  (Features 048 and 052). Establishes non-negotiable rules for autonomous offline execution (Local-First Sovereignty),
-  purely consultive read-only safety (zero autonomous mutations), strict client-side privacy with FIFO bounded retention
-  (30 messages per board), and strict zero competitor brand leaks in synthesized dialogue.
-- Modified principles: None (Principles I through IX maintained with 100% fidelity).
-- Added sections:
-  - Core Principle X: Conversational AI Governance & Consultive Copilot Safety (NON-NEGOTIABLE).
+- Version change: 1.8.0 → 1.8.1
+- Bump rationale: PATCH — Refinement to Core Principle II (Code Quality & Modularity), explicitly formalizing the strict
+  ceiling of ≤ 400 lines per module enforced by tests/unit/moduleLineCountGuard.test.ts and AGENTS.md, alongside
+  updating factual project health evidence and ratification dates as of 2026-11-04 (150 test files, 926 tests, 55 delivered features).
+- Modified principles:
+  - Core Principle II: Code Quality & Modularity (clarified with explicit ≤ 400 lines limit and automated guard enforcement).
+- Added sections: None.
 - Removed sections: None.
-- Expanded sections:
-  - Compliance Review Expectations — explicitly includes compliance auditing for conversational AI agents, verifying
-    read-only safety, sub-10ms heuristic fallback resilience, and 30-message retention caps.
+- Expanded sections: None.
 - Evidence (measured, not theorised):
-  - Feature 052 (Mika Conversational AI Chat Copilot) implemented with 25/25 tasks verified.
-  - Heuristic engine `src/services/ai/mikaChatHeuristicEngine.ts` executes deterministic intent classification in <2ms offline.
-  - Client-side storage `src/services/ai/mikaChatStorageManager.ts` strictly caps history at 30 messages in FIFO sliding order.
-  - Interactive chips `#ID` delegate viewing safely to `onOpenTaskDetails` without mutating board state.
-  - Zero competitor brand leaks detected across the codebase, UI texts, prompts, and tests (Principle VII).
-  - 135 test files and 845 tests passing cleanly in Vitest (`npm run test`) with zero failures.
-  - TypeScript strict check (`npx tsc --noEmit`) passing with 0 errors.
+  - 100% of production modules comply with the ≤ 400 lines limit, verified by tests/unit/moduleLineCountGuard.test.ts (5/5 tests green).
+  - 150 test files and 926 tests passing cleanly in Vitest (`npm run test`) with zero failures and zero regressions.
+  - 55 specifications in specs/ audited and canonically ratified with `**Status**: Implemented & Verified`, verified by tests/unit/documentaryGovernance.test.ts and scripts/verify-spec-headers.mjs.
+  - Production build passing in < 3.5s via Vite 6 and TypeScript strict check (`npx tsc --noEmit`) with 0 errors.
+  - ESLint 9 passing with 0 errors and Prettier format check 100% compliant.
 - Follow-up TODOs: None (no placeholder is intentionally deferred).
 -->
 
@@ -33,6 +27,9 @@ All features, architectural updates, and non-trivial changes MUST start with a f
 
 ### II. Code Quality & Modularity
 Modules MUST be self-contained, single-purpose, and loosely coupled with clean interfaces. Code bases MUST maintain comprehensive inline documentation, clear boundaries, and zero circular dependencies.
+
+1. **Module Line Ceiling**: All production source files and stylesheets (`src/**/*.{ts,tsx,css}`) MUST strictly adhere to a maximum limit of 400 lines of code. Modules approaching this limit MUST be proactively decomposed into single-purpose sub-hooks, pure utility modules, or focused presentational components.
+2. **Automated Line Guard**: This ceiling is actively and deterministically enforced by the automated test gate `tests/unit/moduleLineCountGuard.test.ts`. Any commit or pull request introducing or expanding a file beyond 400 lines without a documented architectural exception violates this Constitution.
 
 ### III. Automated Verification & Testing
 
@@ -132,6 +129,7 @@ practices, ad-hoc conventions, and per-feature preferences.
   block completion until it is resolved or the Constitution is explicitly amended.
 - New complexity, abstraction layers, and dependencies MUST be justified against Principle V; an
   unjustified addition is a compliance failure, not a stylistic preference.
+- Module line ceilings MUST be strictly observed (≤ 400 lines), actively verified by `tests/unit/moduleLineCountGuard.test.ts`.
 - Delivered feature specifications (`spec.md`) MUST declare the canonical status `**Status**: Implemented & Verified (<date>)` under criterion FR-024. Specifications in active planning or development MUST declare `**Status**: Draft`.
 - All `[NEEDS CLARIFICATION]` markers in delivered feature specifications MUST be fully resolved prior to closing the feature lifecycle.
 - Quality and review checklists in `specs/*/checklists/*.md` MUST have all verified items audited (`- [x]`) or carry an explicit, formal Environment Block.
@@ -144,4 +142,4 @@ practices, ad-hoc conventions, and per-feature preferences.
 operative workflows, roles, and tooling for day-to-day development. They are subordinate to this
 Constitution; where they conflict, this Constitution prevails.
 
-**Version**: 1.8.0 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-11-02
+**Version**: 1.8.1 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-11-04
