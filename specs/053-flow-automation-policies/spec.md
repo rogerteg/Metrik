@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-02
 
-**Status**: Draft
+**Status**: Implemented & Verified (2026-11-02)
 
 **Input**: User description: "Automações de Fluxo & Políticas de Cartão (Flow Rules sem código): Criar motor visual e declarativo de regras de fluxo (Gatilho -> Condição -> Ação) para cartões e colunas do Kanban, permitindo governança ágil contínua, alertas de aging automáticos, aplicação de tags/prioridades e explicitação de políticas de entrada/saída por coluna de forma 100% local-first."
 

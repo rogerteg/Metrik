@@ -12,7 +12,7 @@
 **Domínio:** Gestão Ágil / Kanban e Analytics de Fluxo (Lean/Agile)
 **Propósito:** Quadro Kanban local-first com métricas de fluxo (Lead Time, Cycle Time, CFD, Monte Carlo, WIP Aging, Throughput), governança visual, multi-board e colaboração por squads.
 **Fase atual:** [ ] Greenfield  [x] Crescimento  [ ] Maturidade  [ ] Legado
-**Versão do pacote:** `0.1.0` (42 features especificadas em `specs/`).
+**Versão do pacote:** `0.3.0` (54 features especificadas e implementadas em `specs/`).
 
 ---
 
@@ -85,6 +85,11 @@
 | `TaskActivityLog` | `id`, `taskId`, `userId`, `userName`, `eventType`, `description`, `fromValue`, `toValue`, `timestamp` | trilha de auditoria da tarefa | Imutável |
 | `TaskLinkModel` | `id`, `targetTaskId`, `relationType`, `targetBoardId`, `targetTeamId`, `createdAt` | relação entre tarefas | Relações: `parent`/`child`/`blocks`/`is_blocked_by`/`relates_to` |
 | `SprintModel` | `id`, `name`, `goal?`, `status` (`planned`/`active`/`completed`), `startDate?`, `endDate?`, `createdAt`, `completedAt?` | pertence ao `BoardState`; tarefa referencia via `TaskModel.sprintId` | Feature 038; no máximo uma ativa por quadro |
+| `FlowRule` | `id`, `boardId`, `name`, `enabled`, `trigger`, `conditions`, `actions`, `executionCount`, `createdAt` | pertence a um `BoardModel` | Feature 053; motor de automações reativas sem código |
+| `ColumnPolicy` | `id`, `boardId`, `columnId`, `entryCriteria` (DoR), `exitCriteria` (DoD), `updatedAt` | pertence a uma `ColumnModel` | Feature 053; políticas explícitas de entrada/saída |
+| `SleConfig` | `boardId`, `customTargetDays`, `enableP50Alert`, `enableP95Alert`, `updatedAt` | configuração de SLE por quadro | Feature 054; parâmetros de sensibilidade e meta customizada |
+| `CardSlePrediction` | `taskId`, `agingDays`, `thresholds`, `effectiveTargetDays`, `riskLevel`, `daysToBreach`, `percentageOfTarget`, `label` | calculado para cartão em andamento | Feature 054; predição em tempo real de risco P50/P85/P95 |
+| `MikaChatMessage` | `id`, `sessionId`, `boardId`, `role`, `content`, `intent?`, `timestamp` | histórico de chat do quadro | Feature 052; assistente analítico com retenção FIFO $\le 30$ |
 | `User` / `Team` / `TeamMember` / `TeamInvitation` | papéis e membership | squads e acesso | |
 
 ---

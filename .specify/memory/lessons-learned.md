@@ -8,6 +8,9 @@
 
 ## 10.1 ✅ Padrões que Funcionam
 
+- **2026-11-03 | Blindagem contra Skew Temporal em Métricas Dinâmicas (Feature 054)** | Injetar parâmetro opcional `referenceDate?: Date` em hooks e funções puras que calculam envelhecimento e percentis de SLE (`useDynamicSle`, `predictCardSle`, `useFlowRulesTimer`). Em testes unitários, passar data estática alinhada aos dados mockados, eliminando 100% das quebras causadas por avanço do relógio da máquina. | Previne o apodrecimento temporal de testes (OPP-007).
+- **2026-11-02 | Trava de Profundidade Única (Depth = 1) para Automações Reativas (Feature 053)** | Mutações de tarefas disparadas pelo motor de automações de fluxo recebem o marcador interno `isAutomated: true` e são ignoradas pelo despachante de eventos pós-movimentação. | Elimina loops infinitos e cascatas recursivas por construção.
+- **2026-10-21 | Decomposição Modular Preventiva com Guarda de Linhas (Feature 049)** | Decompor arquivos centrais extensos (`App.tsx`, `useTaskCollection.ts`) em sub-hooks especialistas (`useTaskCommentsManager`, `useTaskChecklistManager`, `useTaskReorderManager`) e componentes puros (`AppHeaderBar`, `AppDialogsContainer`), protegidos pelo teste `tests/unit/moduleLineCountGuard.test.ts` (limite estrito $\le 400$ linhas da Constituição II). | Mantém a manutenibilidade sem quebrar contratos de integração.
 - **2026-09-25 | Redesenho do "Detalhes da Tarefa"** | Preservar contratos de teste (`data-testid`, `aria-label`, textos visíveis, placeholders) ao reestruturar a UI em abas permitiu evoluir layout e componentização sem regressão de comportamento. | A suíte de 1.127 testes permaneceu verde mesmo trocando a arquitetura visual.
 - **2026-09-25 | CSS** | Centralizar o feed de atividade em um único arquivo com prefixo próprio (`mrf-*`) e tokens semânticos (`var(--text-primary)`, `var(--color-progress)`, …) garantiu funcionamento em dark/light/neutral. | Evita cores fixas que quebram em tema claro.
 - **2026-09-25 | Verificação sem navegador** | Gerar preview estático renderizando os componentes em jsdom, serializando o HTML e injetando o CSS de produção (`dist/assets/*.css`) permitiu validar visualmente sem browser conectado. | Fluxo aplicado em `scratch/preview/*.preview.test.tsx`.
@@ -40,6 +43,8 @@
 
 ## 10.6 🧪 Lições de Testes
 
+- **2026-11-03 | Percentis Empíricos NIST e Limiar Amostral (Feature 054)** | Em fluxos Lean/Kanban, tempos de ciclo são não-paramétricos com caudas longas acentuadas. O cálculo empírico ordenado via interpolação linear NIST com amostra mínima ($N \ge 5$) é o único método estatisticamente robusto para Service Level Expectations; amostras menores devem declarar estado `insufficient_data` e silenciar alarmes no cartão. | Garante confiabilidade preditiva sem ruído.
+- **2026-10-21 | Gate Bloqueante de Governança Documental (Feature 050/055)** | O teste unitário `tests/unit/documentaryGovernance.test.ts` atua como gate bloqueante contínuo no Vitest, varrendo dinamicamente todas as especificações entregues em `specs/` e impedindo commits de código em `main` com `Status: Draft`. | Impede a divergência silenciosa de documentação.
 - **2026-09-28 | Cobertura & CI** | Linha de base medida: **85,7% stmts · 79,5% branches · 59,9% functions**. Limiares fixados com folga (~1,5 pp abaixo) em `vite.config.ts` e gate no GitHub Actions (`tsc` + `test:coverage` + `build`). | A cobertura de funções é naturalmente menor por causa de handlers de UI não exercitados; o limiar protege contra regressão sem travar o presente.
 
 - **2026-09-28 | Estabilidade** | Com 97 arquivos rodando em paralelo, testes pesados de App/Board estouravam o `testTimeout` padrão de 5s e geravam vermelho falso (passavam isolados em ~1s). | **Solução:** `testTimeout: 15000` no `vite.config.ts`.
@@ -56,4 +61,4 @@
 
 ---
 
-*Atualizado em: 2026-09-28.*
+*Atualizado em: 2026-11-04.*

@@ -9,14 +9,8 @@ const SPECS_DIR = path.join(ROOT_DIR, 'specs');
 describe('Documentary Governance Guard (Feature 050 - Roadmap Phase 2)', () => {
   // Test 1: OPP-010 / FR-001, FR-002, FR-003
   it('should ensure all delivered specs have canonical "Implemented & Verified" status and active specs remain Draft', () => {
-    const deliveredRange = [
-      ...Array.from({ length: 42 }, (_, i) => i + 1), // 001 to 042
-      44,
-      45,
-      46,
-      47, // 044 to 047
-    ];
-    const inProgressFeatures = [48, 49, 50]; // 048, 049, 050
+    const deliveredRange = Array.from({ length: 55 }, (_, i) => i + 1); // 001 to 055 (100% das features entregues na main)
+    const inProgressFeatures: number[] = []; // Nenhuma feature pendente como Draft
 
     const specDirs = fs
       .readdirSync(SPECS_DIR, { withFileTypes: true })

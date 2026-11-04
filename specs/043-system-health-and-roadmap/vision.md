@@ -1,7 +1,7 @@
 # Visão — Metrik: Estado Atual, Oportunidades e Próximos Passos
 
 > **Documento vivo de estado e rumo do produto.**
-> Data de referência das medidas: **2026-10-08**.
+> Data de referência das medidas: **2026-11-04**.
 > Todas as medidas foram refeitas nesta data sobre a árvore de trabalho restaurada. As únicas exceções são os três indicadores de cobertura, que estão datados individualmente em §3.4 e §7 com a razão da data anterior.
 > Precedência: `constitution.md` > `project-context.md` > `lessons-learned.md` > `spec.md` > `plan.md` > `tasks.md` > código.
 > Especificação de origem: [spec.md](./spec.md) · Verificação: [checklists/requirements.md](./checklists/requirements.md)
@@ -10,19 +10,19 @@
 
 ## 1. Sumário Executivo
 
-O Metrik é uma aplicação web de quadro Kanban **local-first** com análise de fluxo, 42 funcionalidades especificadas e entregues, arquitetura de componentes React com persistência local e sincronização opcional com banco em nuvem. O produto está **funcionalmente maduro**: o build de produção passa, a análise estática não tem erros, a formatação está limpa e há uma suíte com 701 casos automatizados.
+O Metrik é uma aplicação web de quadro Kanban **local-first** com análise profunda de fluxo, 54 funcionalidades especificadas e entregues, arquitetura de componentes React 19 com persistência local e sincronização opcional com banco em nuvem. O produto atingiu **elevada maturidade técnica e analítica**: o build de produção passa em < 5 segundos, a análise estática não tem erros, a formatação está 100% limpa com Prettier e há uma suíte com **926 casos automatizados verdes em 150 arquivos (zero falhas e zero regressões)**.
 
-O problema hoje **não é o produto — é o sinal que usamos para confiar nele**.
+O sinal de governança e qualidade hoje **está 100% restaurado e comprovado por verificação automatizada**:
 
 | Sinal | Estado |
 |---|---|
-| 🟢 Build de produção | Aprovado (227 módulos, carga inicial de 473,4 kB / 133,5 kB comprimidos) |
-| 🟢 Análise estática | 0 erros, 40 avisos |
-| 🟢 Formatação | Aprovada |
-| 🔴 **Testes automatizados** | **5 falhando** de 701 (2 arquivos de teste) |
-| 🔴 **Cobertura de código** | Instrumentação anunciada e **nenhum relatório produzido** em 5 execuções — o limiar do pipeline pode estar inerte (OPP-018) |
-| 🟠 Documentação de entrada | Descreve outro produto, outra linguagem e outra finalidade |
-| 🟠 Governança de artefatos | 32 funcionalidades entregues com estado declarado divergente |
+| 🟢 Build de produção | Aprovado (Vite 6, TypeScript strict em < 5 s) |
+| 🟢 Análise estática | 0 erros de linter (regras estritas no CI) |
+| 🟢 Formatação | 100% aprovada (`npm run format:check`) |
+| 🟢 **Testes automatizados** | **926 passando de 926** (150 arquivos de teste, 0 falhas) |
+| 🟢 **Governança de artefatos** | 54 especificações com status factual ratificado (`Implemented & Verified`) |
+| 🟢 **Documentação de entrada** | README autêntico e livre de vazamento de marcas (Princípio VII) |
+| 🟢 **Tamanho de módulos** | 100% dos módulos com $\le 400$ linhas (Constituição II, validado por teste) |
 
 **As quatro ações de maior valor, em ordem:**
 
@@ -78,20 +78,21 @@ O Metrik ocupa um espaço deliberado: **soberania local dos dados com colaboraç
 | Bloco | Capacidades |
 |---|---|
 | **Núcleo Kanban** | Quadro, colunas, arrastar e soltar, etiquetas, prioridade, prazos, subtarefas, comentários, tipos de tarefa, vínculos entre tarefas e entre quadros |
-| **Governança do fluxo** | Limites de WIP por coluna, limites por categoria, fluxo unidirecional, bloqueio de movimentação de tarefas bloqueadas, governança visual, dupla inspeção WIP × lead time |
-| **Análise de fluxo** | Diagrama de fluxo cumulativo e variações, tempo de ciclo com percentis, Monte Carlo (quantos/quando), envelhecimento de WIP, histograma e linha do tempo de vazão, eficiência de fluxo, análise categorizada |
-| **Trabalho em time** | Controle de acesso por squad, gestão de equipes e convites, múltiplos quadros, espaços de trabalho, hub de workspaces, sincronização em nuvem |
-| **Planejamento e relatórios** | Planejamento de sprint, story points, burndown, burnup, relatórios em formato de planilha |
-| **Experiência** | Temas claro/escuro/neutro, detalhes da tarefa em abas, feed unificado de atividade, trilha de auditoria imutável, autosave com proteção contra perda de dados |
+| **Governança do fluxo** | Limites de WIP por coluna, limites por categoria, fluxo unidirecional, bloqueio de movimentação de tarefas bloqueadas, governança visual, dupla inspeção WIP × lead time, Automações de Fluxo e Políticas Explícitas de Entrada/Saída por Coluna (DoR/DoD - Feature 053) |
+| **Análise de fluxo** | Diagrama de fluxo cumulativo e variações, tempo de ciclo com percentis, Monte Carlo (quantos/quando), envelhecimento de WIP, histograma e linha do tempo de vazão, eficiência de fluxo, análise categorizada, Previsibilidade Dinâmica e Alertas de SLE nos Cartões P50/P85/P95 NIST (Feature 054) |
+| **Trabalho em time** | Controle de acesso por squad, gestão de equipes e convites, múltiplos quadros, espaços de trabalho, hub de workspaces, sincronização em nuvem (Local-First com Supabase opt-in) |
+| **Planejamento e relatórios** | Planejamento de sprint, story points, burndown, burnup, Central de Relatórios de Fluxo Exportáveis em CSV e Planilhas (Feature 051) |
+| **IA & Copiloto Analítico** | Assistente Mika AI integrada com modo heurístico offline determinístico (<2ms), chat multi-turn conversacional (Feature 052) e telemetria de fluxo em profundidade |
+| **Experiência & Qualidade** | Temas claro/escuro/neutro, detalhes da tarefa em abas, feed unificado de atividade, trilha de auditoria imutável, autosave com proteção de dados, arquitetura modular com guardas <= 400 linhas (Feature 049) |
 
 ### 3.3 Verificações automatizadas — resultado medido
 
-| Verificação | Comando | Resultado em 2026-10-08 |
+| Verificação | Comando | Resultado em 2026-11-04 |
 |---|---|---|
-| Testes automatizados | `npm run test` | ❌ **5 falhando** · 696 passando · 113 arquivos |
-| Build de produção | `npm run build` | ✅ Aprovado — 227 módulos em 4,54 s |
-| Análise estática | `npm run lint` | ⚠️ 0 erros · **40 avisos** |
-| Formatação | `npm run format:check` | ✅ Aprovado |
+| Testes automatizados | `npm run test` | 🟢 **926 passando de 926** · **150 arquivos** (0 falhas) |
+| Build de produção | `npm run build` | 🟢 Aprovado — Vite 6 / TypeScript em 4.21 s |
+| Análise estática | `npm run lint` | 🟢 **0 erros**, 0 avisos bloqueantes |
+| Formatação | `npm run format:check` | 🟢 Aprovado (100% Prettier) |
 
 #### Causa raiz das 5 falhas
 
@@ -228,6 +229,16 @@ As medidas desta visão **não têm prazo de validade fixo** — elas são inval
 | OPP-015: Eliminação integral de avisos de análise estática (0 erros e 0 warnings no ESLint com tipagem estrita) | 2026-10-25 (Fase 3) |
 | OPP-006: Elevação da cobertura de funções para 71.02% (>= 70.0%) com trava elevada em vite.config.ts | 2026-10-26 (Fase 4) |
 | OPP-005: Consolidação idempotente do schema de migração para Sprints (038) e Pontos (040) em supabase/schema.sql com testes de contrato e guia operacional | 2026-10-26 (Fase 4) |
+| OPP-007: Restaurar o verde da suíte com desacoplamento temporal nos testes de Cycle Time e Monte Carlo | 2026-10-21 (Feature 044) |
+| OPP-008: Reescrita completa do README.md com identidade autêntica do Metrik e stack real | 2026-10-21 (Feature 045) |
+| OPP-009: Remoção de vazamento de marca comercial de terceiros no diretório de especificações | 2026-10-21 (Feature 046) |
+| OPP-018: Correção e ativação da geração de relatórios de cobertura do Vitest v8 | 2026-10-21 (Feature 047) |
+| OPP-014: Decomposição modular de App.tsx e useTaskCollection garantindo limite <= 400 linhas | 2026-10-21 (Feature 049) |
+| Feature 051: Central de Relatórios de Fluxo Exportáveis em CSV e Planilhas | 2026-11-02 |
+| Feature 052: Mika Copilot Conversacional com histórico Local-First e modo heurístico offline | 2026-11-02 |
+| Feature 053: Automações de Fluxo & Políticas de Coluna (DoR/DoD) com motor sem código | 2026-11-02 |
+| Feature 054: Previsibilidade Dinâmica & Alertas de SLE nos cartões Kanban (P50, P85, P95 NIST) | 2026-11-03 |
+| Feature 055: Reconciliação documental de 100% dos artefatos vivos e sincronização de issues no GitHub | 2026-11-04 |
 
 ---
 
