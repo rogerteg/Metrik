@@ -3,6 +3,7 @@ import {
   resolveBacklogScope,
   validateThroughputSample,
   calculateTargetDateProbability,
+  runBacklogMonteCarloForecast,
 } from '../../src/utils/monteCarloForecast';
 import { TaskModel } from '../../src/types/kanban';
 
@@ -200,6 +201,55 @@ describe('Monte Carlo Backlog Forecast Utility (Feature 056)', () => {
       expect(result.probability).toBe(0);
       expect(result.riskLevel).toBe('critical');
       expect(result.availableDays).toBeLessThanOrEqual(0);
+    });
+  });
+
+  describe('runBacklogMonteCarloForecast', () => {
+    const sufficientThroughput = [1, 2, 1, 0, 1, 1, 0, 2, 1, 0, 1, 3, 1, 2];
+    const fixedRef = new Date('2026-11-01T00:00:00Z');
+
+    it('runs simulation with sufficient sample and computes p50, p85, p95', () => {
+      const scope = resolveBacklogScope(mockTasks, { type: 'all' });
+      const result = runBacklogMonteCarloForecast({
+        scope,
+        throughputHistory: sufficientThroughput,
+        referenceDate: fixedRef,
+        targetDate: '2026-12-01',
+        trials: 500,
+        rng: () => 0.5,
+      });
+
+      expect(result.isSampleSufficient).toBe(true);
+      expect(result.p50.days).toBeGreaterThan(0);
+      expect(result.p85.days).toBeGreaterThanOrEqual(result.p50.days);
+      expect(result.p95.days).toBeGreaterThanOrEqual(result.p85.days);
+      expect(result.targetDateAnalysis).toBeDefined();
+    });
+
+    it('returns 100% probability when itemCount is 0 and targetDate is set', () => {
+      const scope = resolveBacklogScope(mockTasks, { type: 'all', selectedTaskIds: [] });
+      const result = runBacklogMonteCarloForecast({
+        scope,
+        throughputHistory: sufficientThroughput,
+        referenceDate: fixedRef,
+        targetDate: '2026-12-01',
+      });
+
+      expect(result.itemCount).toBe(0);
+      expect(result.targetDateAnalysis?.probability).toBe(100);
+      expect(result.targetDateAnalysis?.riskLevel).toBe('low');
+    });
+
+    it('returns baseline without running trials when sample is insufficient', () => {
+      const scope = resolveBacklogScope(mockTasks, { type: 'all' });
+      const result = runBacklogMonteCarloForecast({
+        scope,
+        throughputHistory: [1, 0, 0], // insufficient
+        referenceDate: fixedRef,
+      });
+
+      expect(result.isSampleSufficient).toBe(false);
+      expect(result.p50.days).toBe(0);
     });
   });
 });

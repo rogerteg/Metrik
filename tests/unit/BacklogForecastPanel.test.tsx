@@ -123,6 +123,43 @@ describe('BacklogForecastPanel component (Feature 056)', () => {
     expect(screen.getByTestId('target-date-risk-badge')).toBeInTheDocument();
   });
 
+  it('switches scope to sprint and tag, interacting with dropdowns and window select', () => {
+    render(<BacklogForecastPanel tasks={allTasksSufficient} referenceDate={fixedRefDate} />);
+
+    // Switch to sprint
+    const sprintBtn = screen.getByTestId('scope-btn-sprint');
+    fireEvent.click(sprintBtn);
+    expect(sprintBtn).toHaveClass('is-active');
+
+    const sprintSelect = screen.getByTestId('dropdown-sprints');
+    fireEvent.change(sprintSelect, { target: { value: 'sprint-2' } });
+    expect(sprintSelect).toHaveValue('sprint-2');
+
+    // Switch to tag
+    const tagBtn = screen.getByTestId('scope-btn-tag');
+    fireEvent.click(tagBtn);
+    expect(tagBtn).toHaveClass('is-active');
+
+    const tagSelect = screen.getByTestId('dropdown-tags');
+    fireEvent.change(tagSelect, { target: { value: 'frontend' } });
+    expect(tagSelect).toHaveValue('frontend');
+
+    // Switch back to all
+    const allBtn = screen.getByTestId('scope-btn-all');
+    fireEvent.click(allBtn);
+    expect(allBtn).toHaveClass('is-active');
+
+    // Change window days
+    const windowSelect = screen.getByTestId('select-window-days');
+    fireEvent.change(windowSelect, { target: { value: '60' } });
+    expect(windowSelect).toHaveValue('60');
+
+    // Change target date
+    const dateInput = screen.getByTestId('input-target-date');
+    fireEvent.change(dateInput, { target: { value: '2026-12-25' } });
+    expect(dateInput).toHaveValue('2026-12-25');
+  });
+
   it('allows granular inclusion/exclusion of tasks and displays select all / clear buttons', () => {
     render(
       <BacklogForecastPanel
