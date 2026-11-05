@@ -45,6 +45,7 @@ export interface TaskDetailsModalProps {
   ) => void;
   onRemoveLink?: (targetTaskId: string) => void;
   onNavigateToBoard?: (boardId: string) => void;
+  onNavigateToForecast?: (scopeType: 'initiative', scopeId: string) => void;
 }
 
 export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
@@ -72,6 +73,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   onAddLink,
   onRemoveLink,
   onNavigateToBoard,
+  onNavigateToForecast,
 }) => {
   const [localDueDate, setLocalDueDate] = useState(task.dueDate || '');
   const [localStartDate, setLocalStartDate] = useState(task.startDate || '');
@@ -261,6 +263,7 @@ export const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                 onAddLink={onAddLink}
                 onRemoveLink={onRemoveLink}
                 onNavigateToBoard={onNavigateToBoard}
+                onNavigateToForecast={onNavigateToForecast}
               />
             </div>
           )}

@@ -1,24 +1,35 @@
 import React, { useState, useMemo } from 'react';
 import { TaskModel } from '../types/kanban';
+import { CardSlePrediction } from '../types/sle';
+import { BacklogScopeType } from '../../specs/056-monte-carlo-backlog-forecast/contracts/backlog-forecast-contracts';
 import {
   extractDailyThroughput,
   runMonteCarloHowMany,
   runMonteCarloWhen,
 } from '../utils/monteCarlo';
 import { MonteCarloHistogramChart } from './charts/MonteCarloHistogramChart';
+import { BacklogForecastPanel } from './MonteCarlo/BacklogForecastPanel';
 
-export type MonteCarloMode = 'how-many' | 'when';
+export type MonteCarloMode = 'how-many' | 'when' | 'backlog';
 
 export interface MonteCarloSimulationViewProps {
   tasks: TaskModel[];
   initialBacklogCount?: number;
+  initialMode?: MonteCarloMode;
+  initialScopeType?: BacklogScopeType;
+  initialScopeId?: string;
+  slePredictions?: Record<string, CardSlePrediction>;
 }
 
 export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> = ({
   tasks,
   initialBacklogCount,
+  initialMode = 'how-many',
+  initialScopeType = 'all',
+  initialScopeId,
+  slePredictions,
 }) => {
-  const [mode, setMode] = useState<MonteCarloMode>('how-many');
+  const [mode, setMode] = useState<MonteCarloMode>(initialMode);
 
   // Parâmetros de Simulação
   const [historyDays, setHistoryDays] = useState<number>(30); // 30, 60, 90 ou 0 (tudo)
@@ -98,10 +109,27 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
           >
             📅 Quando Entregaremos? (When)
           </button>
+          <button
+            type="button"
+            className={`mode-toggle-btn ${mode === 'backlog' ? 'is-active' : ''}`}
+            onClick={() => setMode('backlog')}
+            role="tab"
+            aria-selected={mode === 'backlog'}
+            data-testid="mode-backlog-btn"
+          >
+            📦 Previsão de Backlog & Épicos
+          </button>
         </div>
       </div>
 
-      {isHistoryInsufficient ? (
+      {mode === 'backlog' ? (
+        <BacklogForecastPanel
+          tasks={tasks}
+          initialScopeType={initialScopeType}
+          initialScopeId={initialScopeId}
+          slePredictions={slePredictions}
+        />
+      ) : isHistoryInsufficient ? (
         <div className="monte-carlo-guidance-card" data-testid="monte-carlo-guidance">
           <div className="guidance-icon">💡</div>
           <div className="guidance-content">
@@ -159,14 +187,14 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
               ) : (
                 <div className="control-field">
                   <label htmlFor="item-count-input" className="control-label">
-                    Quantidade de Itens no Escopo:
+                    Tamanho do Lote (Itens a Entregar):
                   </label>
                   <div className="input-with-addons">
                     <input
                       id="item-count-input"
                       type="number"
                       min={1}
-                      max={1000}
+                      max={500}
                       value={itemCount}
                       onChange={(e) => setItemCount(Math.max(1, parseInt(e.target.value) || 1))}
                       className="form-control-input"
@@ -174,23 +202,28 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
                     />
                     <span className="input-addon">itens</span>
                   </div>
-                  {openTasksCount > 0 && (
+                  <div className="quick-presets">
                     <button
                       type="button"
-                      className="quick-fill-btn"
-                      onClick={() => setItemCount(openTasksCount)}
+                      onClick={() => setItemCount(openTasksCount > 0 ? openTasksCount : 10)}
+                      title="Usar número de itens abertos no board"
                       data-testid="use-open-tasks-btn"
                     >
-                      Usar backlog ativo ({openTasksCount} itens em aberto)
+                      {openTasksCount} em aberto
                     </button>
-                  )}
+                    <button type="button" onClick={() => setItemCount(10)}>
+                      10 itens
+                    </button>
+                    <button type="button" onClick={() => setItemCount(20)}>
+                      20 itens
+                    </button>
+                  </div>
                 </div>
               )}
 
-              {/* Configurações de Amostragem */}
               <div className="control-field">
                 <label htmlFor="history-days-select" className="control-label">
-                  Janela Histórica de Amostragem:
+                  Janela Histórica de Throughput:
                 </label>
                 <select
                   id="history-days-select"
@@ -199,17 +232,16 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
                   className="form-control-select"
                   data-testid="history-days-select"
                 >
-                  <option value={14}>Últimos 14 dias</option>
-                  <option value={30}>Últimos 30 dias (Recomendado)</option>
-                  <option value={60}>Últimos 60 dias</option>
-                  <option value={90}>Últimos 90 dias</option>
-                  <option value={0}>Todo o Histórico</option>
+                  <option value={30}>Últimos 30 dias (Mais recente / ágil)</option>
+                  <option value={60}>Últimos 60 dias (Estabilidade sazonal)</option>
+                  <option value={90}>Últimos 90 dias (Longo prazo)</option>
+                  <option value={0}>Todo o histórico do quadro</option>
                 </select>
               </div>
 
               <div className="control-field">
                 <label htmlFor="trials-select" className="control-label">
-                  Ensaios Simulados:
+                  Iterações Monte Carlo:
                 </label>
                 <select
                   id="trials-select"
@@ -218,15 +250,15 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
                   className="form-control-select"
                   data-testid="trials-select"
                 >
-                  <option value={1000}>1.000 ensaios</option>
-                  <option value={5000}>5.000 ensaios</option>
-                  <option value={10000}>10.000 ensaios (Padrão)</option>
+                  <option value={1000}>1.000 ensaios (Rápido)</option>
+                  <option value={10000}>10.000 ensaios (Recomendado)</option>
+                  <option value={50000}>50.000 ensaios (Máxima precisão)</option>
                 </select>
               </div>
             </div>
           </div>
 
-          {/* Cards de Resumo dos Percentis de Confiança */}
+          {/* Cards de Métricas Percentis */}
           {mode === 'how-many' && howManyResult && (
             <div className="monte-carlo-cards-grid" data-testid="how-many-cards">
               <div className="percentile-summary-card card-p50">
