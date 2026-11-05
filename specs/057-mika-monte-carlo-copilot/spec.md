@@ -2,8 +2,18 @@
 
 **Feature Branch**: `057-mika-monte-carlo-copilot`  
 **Created**: 2026-11-05  
-**Status**: Draft  
+**Status**: Clarified  
 **Input**: User description: "Opção 1 (Recomendada): Mika AI Copilot Preditivo de Monte Carlo"
+
+---
+
+## Clarifications
+
+### Session 2026-11-05
+
+- Q: Como a Mika AI deve responder quando o usuário fizer uma pergunta genérica sobre prazos (ex: *"Como estão as iniciativas?"* ou *"Quando entregamos os projetos?"*) havendo múltiplas iniciativas ativas no quadro? → A: Resumo Consolidado de Portfólio (Opção A): Listar todas as iniciativas ativas em tópicos objetivos, detalhando itens pendentes, percentil P85 com data projetada e indicador de risco (Baixo, Moderado, Alto ou Crítico).
+- Q: Como a Mika AI deve determinar a quantidade de dias para simular a capacidade de entrega (*"Quantos itens cabem?"*) quando a sprint ativa não possuir data final cadastrada ou quando a pergunta for geral? → A: Janela Padrão de 14 Dias Declarada (Opção A): Simular para 14 dias corridos, informando explicitamente na mensagem a premissa adotada (ex: *"Considerando uma sprint de 14 dias..."*) e permitindo ao usuário refinar com durações customizadas (ex: *"E para 7 dias?"*).
+- Q: Como o botão de ação consultiva (*CTA*) na resposta da Mika (ex: *"📊 Ver Simulação Completa no Painel"*) deve navegar o usuário para a aba de Previsão de Backlog? → A: Navegação com Fechamento do Drawer (Opção A): Fecha o drawer da Mika, navega para a aba de Previsão de Backlog no Analytics e pré-seleciona a iniciativa ou sprint em foco, maximizando a área útil para visualização dos gráficos.
 
 ---
 
@@ -20,8 +30,9 @@ Como gestor de fluxo, líder técnico ou membro da equipe, desejo conversar em l
 **Acceptance Scenarios**:
 
 1. **Given** um quadro com histórico de vazão suficiente ($N \ge 10$ dias de entregas) e uma Iniciativa com data meta cadastrada, **When** o usuário pergunta no chat *"Mika, quando terminamos a Iniciativa X?"*, **Then** a Mika responde detalhando: quantidade de itens pendentes, percentis P50 (otimista), P85 (recomendado) e P95 (conservador) com datas de calendário projetadas, a probabilidade percentual de cumprimento da data meta e a classificação de risco (Baixo, Moderado, Alto ou Crítico).
-2. **Given** um quadro onde o histórico de vazão possui menos de 10 dias com entregas ($N < 10$), **When** o usuário solicita uma previsão estocástica, **Then** a Mika inclui explicitamente a ressalva estatística NIST orientando que a margem de erro é elevada devido à amostragem reduzida.
-3. **Given** um usuário operando em ambiente offline ou sem chave de API externa, **When** envia perguntas sobre previsão de entrega, **Then** a resposta é gerada em sub-10ms pelo motor heurístico local sem lançar exceções ou degradar a interface.
+2. **Given** múltiplas iniciativas ativas no quadro, **When** o usuário faz uma pergunta genérica de portfólio (ex: *"Como estão as iniciativas?"* ou *"Quando entregamos os projetos?"*), **Then** a Mika gera um resumo consolidado em tópicos cobrindo cada iniciativa com itens pendentes, P85, data meta e selo de risco.
+3. **Given** um quadro onde o histórico de vazão possui menos de 10 dias com entregas ($N < 10$), **When** o usuário solicita uma previsão estocástica, **Then** a Mika inclui explicitamente a ressalva estatística NIST orientando que a margem de erro é elevada devido à amostragem reduzida.
+4. **Given** um usuário operando em ambiente offline ou sem chave de API externa, **When** envia perguntas sobre previsão de entrega, **Then** a resposta é gerada em sub-10ms pelo motor heurístico local sem lançar exceções ou degradar a interface.
 
 ---
 
@@ -35,8 +46,9 @@ Como Product Owner ou time de entrega, desejo perguntar à Mika quantos itens o 
 
 **Acceptance Scenarios**:
 
-1. **Given** um quadro com vazão histórica registrada, **When** o usuário pergunta *"Quantos itens cabem na próxima sprint?"*, **Then** a Mika calcula a simulação de capacidade para a duração padrão da sprint (14 dias ou duração configurada) e indica o número recomendado de itens para 50%, 85% e 95% de certeza.
-2. **Given** que a sprint atual já possui itens em andamento e pendentes, **When** o usuário pergunta *"A sprint atual vai atrasar?"*, **Then** a Mika avalia a probabilidade de conclusão de todos os itens restantes até a data de encerramento da sprint, emitindo recomendação de manutenção de escopo ou corte preventivo.
+1. **Given** um quadro com vazão histórica registrada, **When** o usuário pergunta *"Quantos itens cabem na próxima sprint?"* e a sprint não define data de término, **Then** a Mika calcula a capacidade para 14 dias corridos, declarando explicitamente essa premissa na resposta, e indica o número recomendado de itens para 50%, 85% e 95% de certeza.
+2. **Given** que o usuário pergunta por uma duração específica (ex: *"E para 7 dias?"* ou *"Quantos itens em 21 dias?"*), **When** a Mika processa a consulta, **Then** recalcula dinamicamente a capacidade estocástica para o período exato solicitado.
+3. **Given** que a sprint atual já possui itens em andamento e pendentes, **When** o usuário pergunta *"A sprint atual vai atrasar?"*, **Then** a Mika avalia a probabilidade de conclusão de todos os itens restantes até a data de encerramento da sprint, emitindo recomendação de manutenção de escopo ou corte preventivo.
 
 ---
 
@@ -51,7 +63,7 @@ Como usuário explorando o chat da Mika, desejo visualizar botões de sugestões
 **Acceptance Scenarios**:
 
 1. **Given** o drawer do chat da Mika aberto, **When** o usuário visualiza as opções de sugestões rápidas, **Then** são exibidas pílulas contextuais tais como *"🎲 Previsão da Iniciativa"*, *"📅 Risco de Prazo da Sprint"* e *"🎯 Capacidade (85% SLE)"*.
-2. **Given** uma resposta da Mika contendo diagnóstico de previsão de escopo, **When** a resposta é renderizada, **Then** inclui uma ação consultiva interativa *"📊 Ver Simulação Completa no Painel"* que navega para a aba de Previsão de Backlog com o escopo selecionado, sem mutar o quadro.
+2. **Given** uma resposta da Mika contendo diagnóstico de previsão de escopo, **When** o usuário clica na ação consultiva *"📊 Ver Simulação Completa no Painel"*, **Then** o sistema fecha o drawer da Mika, navega para a tela de Analytics na aba *"📦 Previsão de Backlog & Épicos"* e seleciona automaticamente o escopo da iniciativa ou sprint correspondente, sem mutar os dados do quadro.
 
 ---
 
@@ -76,14 +88,15 @@ Como usuário explorando o chat da Mika, desejo visualizar botões de sugestões
   - Backlog geral aberto com previsão global P85.
 - **FR-002**: O sistema DEVE estender o motor determinístico offline ([`mikaChatHeuristicEngine.ts`](file:///c:/Users/Rogerio%20Teixeira/OneDrive/Documentos/Antigravity/Metrik/src/services/ai/mikaChatHeuristicEngine.ts)) para reconhecer intenções semânticas de previsão estocástica:
   - *Previsão de Término / Quando Entregamos* (`forecast_when`, `forecast_initiative`).
+  - *Panorama Geral de Portfólio* (`forecast_initiatives_summary`): consolidação de todas as iniciativas ativas com contagem de pendências, P85 e selos de risco.
   - *Avaliação de Risco de Data Meta / Prazo* (`forecast_target_date`, `forecast_risk`).
-  - *Capacidade / Quantos Itens Cabem* (`forecast_capacity`, `forecast_how_many`).
+  - *Capacidade / Quantos Itens Cabem* (`forecast_capacity`, `forecast_how_many`), assumindo 14 dias como padrão caso não especificado e suportando extração de dias numéricos da query (ex: *"7 dias"*, *"21 dias"*).
 - **FR-003**: As respostas do motor heurístico local DEVEM ser executadas em menos de 10ms, sem chamadas externas, operando 100% offline em conformidade com os Princípios VIII e X da Constituição.
 - **FR-004**: Quando o provedor Gemini estiver habilitado e online, o prompt de sistema gerado em [`mikaContextBuilder.ts`](file:///c:/Users/Rogerio%20Teixeira/OneDrive/Documentos/Antigravity/Metrik/src/services/ai/mikaContextBuilder.ts) DEVE incluir a telemetria estocástica estruturada, instruindo a IA a responder em linguagem natural embasada nos dados de Monte Carlo.
 - **FR-005**: As respostas sobre previsões DEVEM incluir explicitamente a ressalva estatística NIST quando a amostra histórica for inferior a 10 dias com entregas ($N < 10$).
 - **FR-006**: Menções a tarefas nas respostas da Mika DEVEM continuar sendo renderizadas como chips interativos consultivos (`#ID`), permitindo ao usuário abrir o modal de detalhes sem mutar o quadro (Princípio X).
 - **FR-007**: O componente de chat ([`MikaChatInterface.tsx`](file:///c:/Users/Rogerio%20Teixeira/OneDrive/Documentos/Antigravity/Metrik/src/components/Mika/MikaChatInterface.tsx)) DEVE exibir pílulas de sugestões rápidas (*Quick Prompts*) voltadas para previsão estocástica quando o quadro possuir histórico de entregas.
-- **FR-008**: O assistente DEVE disponibilizar uma ação consultiva (*CTA*) na resposta que permita ao usuário navegar diretamente para a aba de Previsão de Backlog (`MonteCarloSimulationView`) com o escopo contextual pré-selecionado.
+- **FR-008**: O assistente DEVE disponibilizar uma ação consultiva (*CTA*) na resposta que permita ao usuário navegar diretamente para a aba de Previsão de Backlog (`MonteCarloSimulationView`) fechando o drawer lateral e aplicando o escopo contextual pré-selecionado (`initialScopeType`, `initialScopeId`).
 - **FR-009**: Todas as respostas, mensagens e telemetria DEVEM manter estrita conformidade com o Princípio VII (independência de marca, vocabulário próprio do Metrik e zero vazamento de concorrentes).
 - **FR-010**: Todos os arquivos criados ou modificados DEVEM respeitar o limite máximo estrito de 400 linhas de código (Princípio II), validado pelo `moduleLineCountGuard.test.ts`.
 
@@ -114,5 +127,5 @@ Como usuário explorando o chat da Mika, desejo visualizar botões de sugestões
 ## Assumptions
 
 - **A001**: As funções puras de previsão estocástica implementadas na Feature 056 ([`src/utils/monteCarloForecast.ts`](file:///c:/Users/Rogerio%20Teixeira/OneDrive/Documentos/Antigravity/Metrik/src/utils/monteCarloForecast.ts)) serão reutilizadas diretamente pelo construtor de telemetria da Mika, garantindo coerência matemática total entre a UI gráfica e as respostas textuais.
-- **A002**: A duração padrão da sprint para cálculos de capacidade é de 14 dias corridos, a menos que a sprint ativa possua datas de início e fim explicitamente cadastradas.
+- **A002**: A duração padrão da sprint para cálculos de capacidade é de 14 dias corridos, declarada na resposta, permitindo re-perguntas customizadas (ex: 7 dias, 21 dias).
 - **A003**: A integração da Mika é estritamente consultiva (Read-Only) em cumprimento à Constituição X, não realizando alterações automáticas em datas, escopos ou colunas.
