@@ -1,19 +1,16 @@
 <!--
 Sync Impact Report:
-- Version change: 1.8.0 → 1.8.1
-- Bump rationale: PATCH — Refinement to Core Principle II (Code Quality & Modularity), explicitly formalizing the strict
-  ceiling of ≤ 400 lines per module enforced by tests/unit/moduleLineCountGuard.test.ts and AGENTS.md, alongside
-  updating factual project health evidence and ratification dates as of 2026-11-04 (150 test files, 926 tests, 55 delivered features).
-- Modified principles:
-  - Core Principle II: Code Quality & Modularity (clarified with explicit ≤ 400 lines limit and automated guard enforcement).
+- Version change: 1.8.1 → 1.8.2
+- Bump rationale: PATCH — Atualização factual dos indicadores de saúde e integridade do projeto após a conclusão e verificação da Feature 056 (Simulação de Monte Carlo Preditiva de Backlog & Épicos), consolidando 153 arquivos de teste, 950 testes automatizados 100% verdes e 56 especificações no repositório.
+- Modified principles: None (principles remain strictly preserved).
 - Added sections: None.
 - Removed sections: None.
 - Expanded sections: None.
 - Evidence (measured, not theorised):
   - 100% of production modules comply with the ≤ 400 lines limit, verified by tests/unit/moduleLineCountGuard.test.ts (5/5 tests green).
-  - 150 test files and 926 tests passing cleanly in Vitest (`npm run test`) with zero failures and zero regressions.
-  - 55 specifications in specs/ audited and canonically ratified with `**Status**: Implemented & Verified`, verified by tests/unit/documentaryGovernance.test.ts and scripts/verify-spec-headers.mjs.
-  - Production build passing in < 3.5s via Vite 6 and TypeScript strict check (`npx tsc --noEmit`) with 0 errors.
+  - 153 test files and 950 tests passing cleanly in Vitest (`npm run test`) with zero failures and zero regressions.
+  - 56 specifications in specs/ tracked and aligned with project governance.
+  - Production build passing in < 3.8s via Vite 6 and TypeScript strict check (`npx tsc --noEmit`) with 0 errors.
   - ESLint 9 passing with 0 errors and Prettier format check 100% compliant.
 - Follow-up TODOs: None (no placeholder is intentionally deferred).
 -->
@@ -142,4 +139,4 @@ practices, ad-hoc conventions, and per-feature preferences.
 operative workflows, roles, and tooling for day-to-day development. They are subordinate to this
 Constitution; where they conflict, this Constitution prevails.
 
-**Version**: 1.8.1 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-11-04
+**Version**: 1.8.2 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-11-04

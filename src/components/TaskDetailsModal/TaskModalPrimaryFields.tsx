@@ -20,6 +20,7 @@ export const TaskModalPrimaryFields: React.FC<TaskModalPrimaryFieldsProps> = ({
   onAddLink,
   onRemoveLink,
   onNavigateToBoard,
+  onNavigateToForecast,
 }) => {
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [showMikaAssistant, setShowMikaAssistant] = useState(false);
@@ -59,7 +60,7 @@ export const TaskModalPrimaryFields: React.FC<TaskModalPrimaryFieldsProps> = ({
     <>
       {/* Initiative Progress Section */}
       {task.type === 'initiative' && (
-        <section className="td-initiative-card">
+        <section className="td-initiative-card" data-testid="initiative-progress-section">
           <div className="td-initiative-header">
             <span>Progresso da Iniciativa</span>
             <span className="td-initiative-progress-val">
@@ -73,6 +74,32 @@ export const TaskModalPrimaryFields: React.FC<TaskModalPrimaryFieldsProps> = ({
               style={{ width: `${initiativeProgress.percentage}%` }}
             />
           </div>
+          {onNavigateToForecast && (
+            <div style={{ marginTop: '0.625rem', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                className="scope-action-btn"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  cursor: 'pointer',
+                  padding: '0.35rem 0.65rem',
+                  borderRadius: '0.375rem',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  background: 'rgba(56, 189, 248, 0.1)',
+                  color: '#38bdf8',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                }}
+                onClick={() => onNavigateToForecast('initiative', task.id)}
+                data-testid="initiative-forecast-btn"
+                title="Executar simulação preditiva de Monte Carlo para esta iniciativa"
+              >
+                🎲 Prever Término
+              </button>
+            </div>
+          )}
         </section>
       )}
 

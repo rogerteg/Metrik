@@ -305,4 +305,27 @@ describe('TaskDetailsModal', () => {
       testScenarios: 'Dado um email sem @, quando submetido, então exibe erro.',
     });
   });
+
+  it('triggers onNavigateToForecast when initiative forecast button is clicked', () => {
+    const mockNavigate = vi.fn();
+    const initiativeTask: TaskModel = {
+      ...mockTask,
+      type: 'initiative',
+    };
+
+    render(
+      <TaskDetailsModal
+        task={initiativeTask}
+        isOpen={true}
+        onClose={mockOnClose}
+        onUpdateTask={mockOnUpdateTask}
+        onNavigateToForecast={mockNavigate}
+      />,
+    );
+
+    const forecastBtn = screen.getByTestId('initiative-forecast-btn');
+    expect(forecastBtn).toBeInTheDocument();
+    fireEvent.click(forecastBtn);
+    expect(mockNavigate).toHaveBeenCalledWith('initiative', 't1');
+  });
 });

@@ -54,7 +54,7 @@ const mockTasksWithHistory: TaskModel[] = [
   },
 ];
 
-describe('Feature 019: MonteCarloSimulationView UI', () => {
+describe('Feature 019 & 056: MonteCarloSimulationView UI', () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date('2026-09-10T12:00:00.000Z'));
@@ -119,5 +119,15 @@ describe('Feature 019: MonteCarloSimulationView UI', () => {
     fireEvent.click(forecastingTab);
     expect(screen.getByTestId('focused-forecasting-view')).toBeInTheDocument();
     expect(screen.getByTestId('monte-carlo-simulation-view')).toBeInTheDocument();
+  });
+
+  it('switches to Backlog & Epics forecast mode when user clicks mode-backlog-btn', () => {
+    render(<MonteCarloSimulationView tasks={mockTasksWithHistory} />);
+
+    const backlogBtn = screen.getByTestId('mode-backlog-btn');
+    fireEvent.click(backlogBtn);
+
+    expect(backlogBtn).toHaveClass('is-active');
+    expect(screen.getByTestId('backlog-forecast-panel')).toBeInTheDocument();
   });
 });

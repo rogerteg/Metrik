@@ -43,6 +43,7 @@ export interface TaskModalPrimaryFieldsProps {
   ) => void;
   onRemoveLink?: (targetTaskId: string) => void;
   onNavigateToBoard?: (boardId: string) => void;
+  onNavigateToForecast?: (scopeType: 'initiative', scopeId: string) => void;
 }
 
 export interface TaskModalActivityTabProps {
