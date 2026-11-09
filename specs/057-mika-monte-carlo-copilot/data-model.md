@@ -89,3 +89,4 @@ export type MikaQuickPromptCategory =
   | 'forecast_sprint'      // Nova
   | 'forecast_capacity';   // Nova
 ```
+

@@ -55,3 +55,4 @@
 2. **Deterministic String Normalization**: Uso de `normalizeQuery` (remoção de diacríticos e lowercase) para casamentos robustos no motor heurístico offline.
 3. **Resguardo Amostral NIST**: Alerta automático em todas as respostas preditivas quando $N < 10$ dias com entregas registradas.
 4. **Interactive Read-Only Chips**: Menções de tarefas como `#ID` continuam acionando `onOpenTaskDetails` sem efeitos colaterais.
+

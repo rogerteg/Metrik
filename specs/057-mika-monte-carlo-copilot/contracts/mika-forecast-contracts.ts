@@ -82,3 +82,4 @@ export type MikaMonteCarloIntentType =
   | 'forecast_sprint'
   | 'forecast_capacity'
   | 'forecast_general';
+
