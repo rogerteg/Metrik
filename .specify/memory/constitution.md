@@ -1,15 +1,15 @@
 <!--
 Sync Impact Report:
-- Version change: 1.8.1 → 1.8.2
-- Bump rationale: PATCH — Atualização factual dos indicadores de saúde e integridade do projeto após a conclusão e verificação da Feature 056 (Simulação de Monte Carlo Preditiva de Backlog & Épicos), consolidando 153 arquivos de teste, 950 testes automatizados 100% verdes e 56 especificações no repositório.
+- Version change: 1.8.2 → 1.8.3
+- Bump rationale: PATCH — Atualização factual dos indicadores de saúde e integridade do projeto após a conclusão e verificação da Feature 057 (Mika AI Copilot Preditivo de Monte Carlo), consolidando 159 arquivos de teste, 996 testes automatizados 100% verdes, cobertura de funções ≥ 70% e 57 especificações no repositório.
 - Modified principles: None (principles remain strictly preserved).
 - Added sections: None.
 - Removed sections: None.
 - Expanded sections: None.
 - Evidence (measured, not theorised):
   - 100% of production modules comply with the ≤ 400 lines limit, verified by tests/unit/moduleLineCountGuard.test.ts (5/5 tests green).
-  - 153 test files and 950 tests passing cleanly in Vitest (`npm run test`) with zero failures and zero regressions.
-  - 56 specifications in specs/ tracked and aligned with project governance.
+  - 159 test files and 996 tests passing cleanly in Vitest (`npm run test`) with zero failures and zero regressions, with 70.05% function test coverage.
+  - 57 specifications in specs/ tracked and aligned with project governance.
   - Production build passing in < 3.8s via Vite 6 and TypeScript strict check (`npx tsc --noEmit`) with 0 errors.
   - ESLint 9 passing with 0 errors and Prettier format check 100% compliant.
 - Follow-up TODOs: None (no placeholder is intentionally deferred).
@@ -139,4 +139,4 @@ practices, ad-hoc conventions, and per-feature preferences.
 operative workflows, roles, and tooling for day-to-day development. They are subordinate to this
 Constitution; where they conflict, this Constitution prevails.
 
-**Version**: 1.8.2 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-11-04
+**Version**: 1.8.3 | **Ratified**: 2026-09-08 | **Last Amended**: 2026-11-09

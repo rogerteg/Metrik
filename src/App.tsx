@@ -24,6 +24,7 @@ import { useFlowRules } from './hooks/useFlowRules';
 import { useFlowRulesTimer } from './hooks/useFlowRulesTimer';
 import { useColumnPolicies } from './hooks/useColumnPolicies';
 import { useDynamicSle } from './hooks/useDynamicSle';
+import { AnalyticsCategory } from './types/analytics';
 import './App.css';
 
 export const App: React.FC = () => {
@@ -61,6 +62,7 @@ export const App: React.FC = () => {
   const [view, setView] = useState<'workspaces' | 'board' | 'analytics' | 'manage' | 'settings'>(
     'board',
   );
+  const [analyticsCategory, setAnalyticsCategory] = useState<AnalyticsCategory | undefined>();
 
   const { theme, setTheme } = useTheme();
   const { columnWidths, setColumnWidth, resetColumnWidth, resetAllColumnWidths } =
@@ -75,6 +77,12 @@ export const App: React.FC = () => {
     columns: board.columns || [],
     tasks: allBoardTasks,
   });
+
+  const handleNavigateToForecast = () => {
+    mika.closeDrawer();
+    setAnalyticsCategory('forecasting');
+    setView('analytics');
+  };
 
   const { exportData, importData, exportCsv } = useDataPortability();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -273,6 +281,7 @@ export const App: React.FC = () => {
         }
         isCloudAutoSyncing={isCloudAutoSyncing}
         cloudLastSyncAt={cloudLastSyncAt}
+        initialAnalyticsCategory={analyticsCategory}
         onShowToast={modals.setToastMessage}
         sleConfig={sle.config}
         onUpdateSleConfig={sle.updateConfig}
@@ -352,6 +361,7 @@ export const App: React.FC = () => {
           workspacesData.createWorkspace(name, color || '#38bdf8', description)
         }
         mika={mika}
+        onNavigateToForecast={handleNavigateToForecast}
         toastMessage={modals.toastMessage}
         onCloseToast={modals.closeToast}
       />

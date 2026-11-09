@@ -5,7 +5,11 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MikaChatMessage, MikaQuickPrompt, MikaBoardTelemetryContext } from '../../types/mika';
+import {
+  MikaChatMessage,
+  MikaBoardTelemetryContext,
+  MikaForecastActionPayload,
+} from '../../types/mika';
 import { TaskModel } from '../../types/kanban';
 import {
   loadChatSession,
@@ -16,6 +20,7 @@ import { buildMikaSystemPrompt } from '../../services/ai/mikaContextBuilder';
 import { processMikaHeuristicChat } from '../../services/ai/mikaChatHeuristicEngine';
 import { mikaGeminiClient } from '../../services/ai/mikaGeminiClient';
 import { MikaMessageContent } from './MikaMessageContent';
+import { QUICK_PROMPTS } from './mikaQuickPrompts';
 import './MikaChatInterface.css';
 
 export interface MikaChatInterfaceProps {
@@ -23,43 +28,23 @@ export interface MikaChatInterfaceProps {
   boardTitle: string;
   telemetryContext: MikaBoardTelemetryContext;
   onOpenTaskDetails?: (taskId: string) => void;
+  onNavigateToForecast?: (
+    scopeType: 'initiative' | 'sprint' | 'all' | 'tag',
+    scopeId?: string,
+  ) => void;
   providerName?: string;
   apiKey?: string;
   availableTasks?: TaskModel[];
 }
 
-export const QUICK_PROMPTS: MikaQuickPrompt[] = [
-  {
-    id: 'qp-bottleneck',
-    label: '🚨 Onde está o gargalo?',
-    query: 'Onde está o principal gargalo do fluxo?',
-    category: 'bottleneck',
-  },
-  {
-    id: 'qp-blocked',
-    label: '🛑 Cartões bloqueados',
-    query: 'Quais tarefas estão bloqueadas?',
-    category: 'blocked',
-  },
-  {
-    id: 'qp-sle',
-    label: '🎯 SLE de 85%',
-    query: 'Qual é o nosso SLE de 85%?',
-    category: 'sle',
-  },
-  {
-    id: 'qp-throughput',
-    label: '📈 Previsão de entrega',
-    query: 'Qual é a nossa previsão de entrega e ritmo?',
-    category: 'throughput',
-  },
-];
+export { QUICK_PROMPTS };
 
 export const MikaChatInterface: React.FC<MikaChatInterfaceProps> = ({
   boardId,
   boardTitle,
   telemetryContext,
   onOpenTaskDetails,
+  onNavigateToForecast,
   providerName = 'Local-First (Offline)',
   apiKey,
   availableTasks = [],
@@ -117,6 +102,7 @@ export const MikaChatInterface: React.FC<MikaChatInterfaceProps> = ({
       let assistantText = '';
       let assistantProvider: 'gemini' | 'heuristic' = 'heuristic';
       let referencedTaskIds: string[] = [];
+      let action: MikaForecastActionPayload | undefined = undefined;
 
       const hasGeminiKey = Boolean(apiKey && apiKey.trim());
 
@@ -140,6 +126,7 @@ export const MikaChatInterface: React.FC<MikaChatInterfaceProps> = ({
           assistantText = `⚠️ *(Resposta gerada via Local-First por indisponibilidade momentânea da rede)*\n\n${localResult.content}`;
           assistantProvider = 'heuristic';
           referencedTaskIds = localResult.referencedTaskIds;
+          action = localResult.action;
         }
       } else {
         // Modo 100% Local-First Offline
@@ -147,6 +134,7 @@ export const MikaChatInterface: React.FC<MikaChatInterfaceProps> = ({
         assistantText = localResult.content;
         assistantProvider = 'heuristic';
         referencedTaskIds = localResult.referencedTaskIds;
+        action = localResult.action;
       }
 
       const assistantMessage: MikaChatMessage = {
@@ -156,6 +144,7 @@ export const MikaChatInterface: React.FC<MikaChatInterfaceProps> = ({
         timestamp: new Date().toISOString(),
         provider: assistantProvider,
         referencedTaskIds,
+        action,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -285,6 +274,8 @@ export const MikaChatInterface: React.FC<MikaChatInterfaceProps> = ({
                   content={msg.content}
                   onOpenTaskDetails={onOpenTaskDetails}
                   availableTaskIds={availableTaskIds}
+                  action={msg.action}
+                  onNavigateToForecast={onNavigateToForecast}
                 />
               )}
             </div>

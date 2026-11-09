@@ -4,17 +4,25 @@
  */
 
 import React from 'react';
+import { MikaForecastActionPayload } from '../../types/mika';
 
 export interface MikaMessageContentProps {
   content: string;
   onOpenTaskDetails?: (taskId: string) => void;
   availableTaskIds?: string[] | Set<string>;
+  action?: MikaForecastActionPayload;
+  onNavigateToForecast?: (
+    scopeType: 'initiative' | 'sprint' | 'all' | 'tag',
+    scopeId?: string,
+  ) => void;
 }
 
 export const MikaMessageContent: React.FC<MikaMessageContentProps> = ({
   content,
   onOpenTaskDetails,
   availableTaskIds,
+  action,
+  onNavigateToForecast,
 }) => {
   const taskSet = React.useMemo(() => {
     if (!availableTaskIds) return null;
@@ -51,7 +59,38 @@ export const MikaMessageContent: React.FC<MikaMessageContentProps> = ({
     });
   };
 
-  return <div className="mika-message-content-wrapper">{renderFormattedText(content)}</div>;
+  return (
+    <div className="mika-message-content-wrapper">
+      {renderFormattedText(content)}
+      {action && action.type === 'NAVIGATE_TO_FORECAST' && onNavigateToForecast && (
+        <div className="mika-action-cta-container" style={{ marginTop: '0.75rem' }}>
+          <button
+            type="button"
+            className="mika-forecast-action-btn"
+            onClick={() => onNavigateToForecast(action.scopeType, action.scopeId)}
+            title={action.label}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              padding: '0.45rem 0.85rem',
+              borderRadius: '0.5rem',
+              background:
+                'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.25) 100%)',
+              border: '1px solid rgba(139, 92, 246, 0.4)',
+              color: '#c4b5fd',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            {action.label}
+          </button>
+        </div>
+      )}
+    </div>
+  );
 };
 
 /**

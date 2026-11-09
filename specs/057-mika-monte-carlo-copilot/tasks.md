@@ -66,8 +66,8 @@
 
 **Purpose**: Estruturar contratos TypeScript e modelos de dados para telemetria estocástica e ações consultivas.
 
-- [ ] T001 Validar contratos TypeScript e modelos de dados em `specs/057-mika-monte-carlo-copilot/contracts/mika-forecast-contracts.ts`
-- [ ] T002 [P] Atualizar tipagens globais da Mika em `src/types/mika.ts` incluindo `MikaMonteCarloTelemetry`, `MikaForecastActionPayload` e extensões de `MikaChatMessage`
+- [X] T001 Validar contratos TypeScript e modelos de dados em `specs/057-mika-monte-carlo-copilot/contracts/mika-forecast-contracts.ts`
+- [X] T002 [P] Atualizar tipagens globais da Mika em `src/types/mika.ts` incluindo `MikaMonteCarloTelemetry`, `MikaForecastActionPayload` e extensões de `MikaChatMessage`
 
 ---
 
@@ -75,10 +75,10 @@
 
 **Purpose**: Construir o compilador de telemetria estocástica do quadro que servirá de base para todos os motores conversacionais.
 
-- [ ] T003 Escrever testes unitários para o compilador de telemetria estocástica em `tests/unit/mikaMonteCarloContext.test.ts` (Red Bar)
-- [ ] T004 Implementar o compilador modular `mikaMonteCarloContext.ts` em `src/services/ai/mikaMonteCarloContext.ts` (extração de vazão, validação NIST, agregação de iniciativas e sprint ativa)
-- [ ] T005 Integrar `mikaMonteCarloContext.ts` no gerador de snapshot `buildBoardTelemetryContext` em `src/services/ai/mikaContextBuilder.ts`
-- [ ] T006 Atualizar testes unitários de telemetria em `tests/unit/mikaContextBuilder.test.ts` (Green Bar)
+- [X] T003 Escrever testes unitários para o compilador de telemetria estocástica em `tests/unit/mikaMonteCarloContext.test.ts` (Red Bar)
+- [X] T004 Implementar o compilador modular `mikaMonteCarloContext.ts` em `src/services/ai/mikaMonteCarloContext.ts` (extração de vazão, validação NIST, agregação de iniciativas e sprint ativa)
+- [X] T005 Integrar `mikaMonteCarloContext.ts` no gerador de snapshot `buildBoardTelemetryContext` em `src/services/ai/mikaContextBuilder.ts`
+- [X] T006 Atualizar testes unitários de telemetria em `tests/unit/mikaContextBuilder.test.ts` (Green Bar)
 
 **Checkpoint**: Telemetria estocástica compilada e validada de forma puramente funcional e testável.
 
@@ -90,11 +90,11 @@
 
 **Independent Test**: Perguntar *"Mika, quando entregamos a Iniciativa X?"* ou *"Como estão os prazos das iniciativas?"* e validar que a Mika retorna percentis probabilísticos, datas estimadas e alerta NIST se $N < 10$.
 
-- [ ] T007 Escrever testes unitários para intenções de previsão de prazos e resumo de portfólio em `tests/unit/mikaMonteCarloHeuristics.test.ts` (Red Bar)
-- [ ] T008 Implementar o sub-motor heurístico de previsão estocástica em `src/services/ai/mikaMonteCarloHeuristics.ts` com templates de iniciativas, portfólio consolidado e resguardo NIST
-- [ ] T009 Conectar o roteamento de intenções de previsão no motor determinístico principal `src/services/ai/mikaChatHeuristicEngine.ts`
-- [ ] T010 Injetar a telemetria estocástica nas instruções de sistema do Gemini (`generateMikaSystemPrompt`) em `src/services/ai/mikaContextBuilder.ts`
-- [ ] T011 Adicionar testes de integração cobrindo consulta de iniciativas, fallback gracioso e chips `#ID` em `tests/unit/mikaChat.test.tsx`
+- [X] T007 Escrever testes unitários para intenções de previsão de prazos e resumo de portfólio em `tests/unit/mikaMonteCarloHeuristics.test.ts` (Red Bar)
+- [X] T008 Implementar o sub-motor heurístico de previsão estocástica em `src/services/ai/mikaMonteCarloHeuristics.ts` com templates de iniciativas, portfólio consolidado e resguardo NIST
+- [X] T009 Conectar o roteamento de intenções de previsão no motor determinístico principal `src/services/ai/mikaChatHeuristicEngine.ts`
+- [X] T010 Injetar a telemetria estocástica nas instruções de sistema do Gemini (`generateMikaSystemPrompt`) em `src/services/ai/mikaContextBuilder.ts`
+- [X] T011 Adicionar testes de integração cobrindo consulta de iniciativas, fallback gracioso e chips `#ID` em `tests/unit/mikaChat.test.tsx`
 
 **Checkpoint**: Histórias de previsão de iniciativas e portfólio 100% operacionais offline e com LLM.
 
@@ -106,10 +106,10 @@
 
 **Independent Test**: Perguntar *"Quantos itens cabem na próxima sprint?"* e *"A sprint atual vai atrasar?"* e validar resposta com estimativa estocástica e premissa de 14 dias declarada.
 
-- [ ] T012 Escrever testes unitários para intenções de capacidade How-Many e risco de sprint em `tests/unit/mikaMonteCarloHeuristics.test.ts`
-- [ ] T013 Implementar a simulação de capacidade How-Many para janela padrão de 14 dias e suporte a durações customizadas da query (ex: *"7 dias"*, *"21 dias"*) em `src/services/ai/mikaMonteCarloHeuristics.ts`
-- [ ] T014 Implementar avaliação de término e risco da sprint ativa com recomendações de escopo em `src/services/ai/mikaMonteCarloHeuristics.ts`
-- [ ] T015 Atualizar testes de integração do chat cobrindo capacidade e sprint em `tests/unit/mikaChat.test.tsx`
+- [X] T012 Escrever testes unitários para intenções de capacidade How-Many e risco de sprint em `tests/unit/mikaMonteCarloHeuristics.test.ts`
+- [X] T013 Implementar a simulação de capacidade How-Many para janela padrão de 14 dias e suporte a durações customizadas da query (ex: *"7 dias"*, *"21 dias"*) em `src/services/ai/mikaMonteCarloHeuristics.ts`
+- [X] T014 Implementar avaliação de término e risco da sprint ativa com recomendações de escopo em `src/services/ai/mikaMonteCarloHeuristics.ts`
+- [X] T015 Atualizar testes de integração do chat cobrindo capacidade e sprint em `tests/unit/mikaChat.test.tsx`
 
 **Checkpoint**: Capacidade estocástica de sprint operando e testada de forma independente.
 
@@ -121,11 +121,11 @@
 
 **Independent Test**: Clicar na pílula rápida de previsão e, na resposta, clicar em *"📊 Ver Simulação Completa no Painel"*, verificando que o drawer fecha e o painel de Previsão de Backlog abre com a iniciativa selecionada.
 
-- [ ] T016 Escrever testes unitários para Quick Prompts preditivos e botão de ação consultiva em `tests/unit/MikaChatInterface.test.tsx`
-- [ ] T017 Adicionar pílulas de sugestões rápidas preditivas no drawer em `src/components/Mika/MikaChatInterface.tsx`
-- [ ] T018 Implementar a renderização do botão de ação consultiva (*CTA*) em `src/components/Mika/MikaMessageContent.tsx`
-- [ ] T019 Propagar o callback `onNavigateToForecast` em `src/components/Mika/MikaDrawer.tsx` e `MikaChatInterface.tsx`
-- [ ] T020 Implementar o handler `handleNavigateToForecast` em `src/App.tsx` para fechar o drawer e navegar para a aba `'forecasting'` com o escopo pré-selecionado
+- [X] T016 Escrever testes unitários para Quick Prompts preditivos e botão de ação consultiva em `tests/unit/MikaChatInterface.test.tsx`
+- [X] T017 Adicionar pílulas de sugestões rápidas preditivas no drawer em `src/components/Mika/MikaChatInterface.tsx`
+- [X] T018 Implementar a renderização do botão de ação consultiva (*CTA*) em `src/components/Mika/MikaMessageContent.tsx`
+- [X] T019 Propagar o callback `onNavigateToForecast` em `src/components/Mika/MikaDrawer.tsx` e `MikaChatInterface.tsx`
+- [X] T020 Implementar o handler `handleNavigateToForecast` em `src/App.tsx` para fechar o drawer e navegar para a aba `'forecasting'` com o escopo pré-selecionado
 
 **Checkpoint**: Todas as 3 Histórias de Usuário integradas com interface visual polida e navegação funcional.
 
@@ -135,11 +135,11 @@
 
 **Purpose**: Garantir integridade modular, tipagem estrita, conformidade constitucional e validação end-to-end.
 
-- [ ] T021 [P] Validar o teto modular de $\le 400$ linhas por arquivo através de `tests/unit/moduleLineCountGuard.test.ts`
-- [ ] T022 Checagem estática de tipos TypeScript com `npx tsc --noEmit` e linting com `npm run lint`
-- [ ] T023 Validação de conformidade de formatação com `npm run format:check`
-- [ ] T024 Executar suíte completa de testes com cobertura (`npm run test:coverage`), garantindo $\ge 70\%$ de cobertura de funções e zero falhas
-- [ ] T025 Executar validação dos cenários manuais de uso conforme descrito em `specs/057-mika-monte-carlo-copilot/quickstart.md`
+- [X] T021 [P] Validar o teto modular de $\le 400$ linhas por arquivo através de `tests/unit/moduleLineCountGuard.test.ts`
+- [X] T022 Checagem estática de tipos TypeScript com `npx tsc --noEmit` e linting com `npm run lint`
+- [X] T023 Validação de conformidade de formatação com `npm run format:check`
+- [X] T024 Executar suíte completa de testes com cobertura (`npm run test:coverage`), garantindo $\ge 70\%$ de cobertura de funções e zero falhas
+- [X] T025 Executar validação dos cenários manuais de uso conforme descrito em `specs/057-mika-monte-carlo-copilot/quickstart.md`
 
 ---
 
@@ -151,3 +151,4 @@
 - **Phase 4 (User Story 2 - P2)**: Depende da Fase 2 e integra com as heurísticas da Fase 3.
 - **Phase 5 (User Story 3 - P3)**: Depende da Fase 3/4 para acionamento visual de ações e pílulas.
 - **Phase 6 (Polish)**: Depende da conclusão de todas as histórias.
+

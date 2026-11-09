@@ -107,6 +107,10 @@ export interface AppDialogsContainerProps {
 
   toastMessage: string | null;
   onCloseToast: () => void;
+  onNavigateToForecast?: (
+    scopeType: 'initiative' | 'sprint' | 'all' | 'tag',
+    scopeId?: string,
+  ) => void;
 }
 
 export const AppDialogsContainer: React.FC<AppDialogsContainerProps> = ({
@@ -167,6 +171,7 @@ export const AppDialogsContainer: React.FC<AppDialogsContainerProps> = ({
   mika,
   toastMessage,
   onCloseToast,
+  onNavigateToForecast,
 }) => {
   const selectedTask = selectedTaskId ? allBoardTasks.find((t) => t.id === selectedTaskId) : null;
 
@@ -313,6 +318,7 @@ export const AppDialogsContainer: React.FC<AppDialogsContainerProps> = ({
             boardTitle={currentBoardInfo.title}
             telemetryContext={telemetryContext}
             onOpenTaskDetails={onOpenTaskDetails}
+            onNavigateToForecast={onNavigateToForecast}
             availableTasks={allBoardTasks}
             apiKey={mika.preferences.apiKey}
           />
