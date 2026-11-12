@@ -123,3 +123,57 @@ export interface DatasetFilterConfig {
   /** Identificador de visualização salva ativa (opcional) */
   savedViewId?: string;
 }
+
+// ==========================================
+// Feature 058: Simulador Prescritivo de Alavancas de Fluxo & Custo do Atraso
+// ==========================================
+
+export type FlowLeverageCategory = 'cascade_unblock' | 'aging_swarming' | 'wip_reduction';
+
+export interface FlowLeverageItem {
+  id: string;
+  taskId: string;
+  taskTitle: string;
+  category: FlowLeverageCategory;
+  impactDaysP85: number;
+  dependentTaskCount: number;
+  dependentTaskIds: string[];
+  currentAgingDays: number;
+  rationale: string;
+  columnId?: string;
+  columnTitle?: string;
+}
+
+export interface CascadeImpactResult {
+  rootTaskId: string;
+  dependentTaskIds: string[];
+  maxDepth: number;
+  hasCycle: boolean;
+  cycleTaskIds?: string[];
+  estimatedDelayDaysP85: number;
+}
+
+export interface SimulatedPolicyScenario {
+  boardId: string;
+  scopeType: 'initiative' | 'sprint' | 'all' | 'tag';
+  scopeId?: string;
+  currentWipByColumn: Record<string, number>;
+  configuredLimits: Record<string, number | null>;
+  simulatedLimits: Record<string, number | null>;
+  swarmingEnabled: boolean;
+  currentCycleTimeP50: number;
+  currentCycleTimeP85: number;
+  simulatedCycleTimeP50: number;
+  simulatedCycleTimeP85: number;
+  deltaDaysP85: number;
+  averageDailyThroughput: number;
+  isSampleSufficient: boolean;
+}
+
+export interface TopLeveragesSummary {
+  boardId: string;
+  calculatedAt: string;
+  items: FlowLeverageItem[];
+  isSampleSufficient: boolean;
+  deliveryDaysCount: number;
+}

@@ -26,6 +26,7 @@ export interface MikaDrawerProps {
   onNavigateToForecast?: (
     scopeType: 'initiative' | 'sprint' | 'all' | 'tag',
     scopeId?: string,
+    mode?: 'date' | 'capacity' | 'leverage',
   ) => void;
   availableTasks?: TaskModel[];
   apiKey?: string;

@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { BoardState, TaskModel } from '../types/kanban';
+import { CardSlePrediction } from '../types/sle';
+import { BacklogScopeType } from '../../specs/056-monte-carlo-backlog-forecast/contracts/backlog-forecast-contracts';
 import {
   AnalyticsCategory,
   CycleTimeViewMode,
@@ -12,13 +14,15 @@ import { calculateBlockerClusters } from '../utils/blockerAnalytics';
 import { useAnalyticsData } from '../hooks/useAnalyticsData';
 import { useFlowMetrics } from '../hooks/useFlowMetrics';
 import { useCfdData } from '../hooks/useCfdData';
+import { rankTopLeverages } from '../utils/flowLeverageEngine';
 import { MetricsBar } from './MetricsBar';
 import { ThroughputChart } from './charts/ThroughputChart';
 import { ThroughputAnalyticsView } from './ThroughputAnalyticsView';
 import { LeadTimeScatter } from './charts/LeadTimeScatter';
 import { CumulativeFlowChart } from './charts/CumulativeFlowChart';
 import { CycleTimeScatterPlot } from './charts/CycleTimeScatterPlot';
-import { MonteCarloSimulationView } from './MonteCarloSimulationView';
+import { MonteCarloSimulationView, MonteCarloMode } from './MonteCarloSimulationView';
+import { TopLeveragesCard } from './MonteCarlo/TopLeveragesCard';
 import { WipAgingView } from './WipAgingView';
 import { AnalyticsNavHeader } from './AnalyticsNavHeader';
 import { DashboardSummaryCards } from './DashboardSummaryCards';
@@ -40,21 +44,32 @@ export interface AnalyticsDashboardProps {
   tasks: TaskModel[];
   board?: BoardState & { id?: string };
   initialCategory?: AnalyticsCategory;
+  initialScopeType?: BacklogScopeType;
+  initialScopeId?: string;
+  slePredictions?: Record<string, CardSlePrediction>;
+  initialForecastMode?: MonteCarloMode;
+  onSelectTask?: (taskId: string) => void;
+  onApplyWipLimit?: (columnId: string, newLimit: number) => void;
 }
 
-export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
-  tasks,
-  board,
-  initialCategory,
-}) => {
+export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = (props) => {
+  const {
+    tasks,
+    board,
+    initialCategory,
+    initialScopeType,
+    initialScopeId,
+    slePredictions,
+    initialForecastMode,
+    onSelectTask,
+    onApplyWipLimit,
+  } = props;
   const [activeCategory, setActiveCategory] = useState<AnalyticsCategory>(
     initialCategory || 'dashboard',
   );
 
   useEffect(() => {
-    if (initialCategory) {
-      setActiveCategory(initialCategory);
-    }
+    if (initialCategory) setActiveCategory(initialCategory);
   }, [initialCategory]);
   const [cycleTimeMode, setCycleTimeMode] = useState<CycleTimeViewMode>('scatter');
   const [blockerMode, setBlockerMode] = useState<BlockerViewMode>('clustering');
@@ -132,6 +147,17 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   const blockerSummary = useMemo(() => {
     return calculateBlockerClusters(filteredTasks);
   }, [filteredTasks]);
+
+  // Alavancas de fluxo prescritivas (Feature 058)
+  const topLeverages = useMemo(() => {
+    return rankTopLeverages({
+      boardId,
+      tasks: filteredTasks,
+      columns: board?.columns || [],
+      slePredictions,
+      deliveryDaysCount: completedTasks.length,
+    });
+  }, [boardId, board?.columns, filteredTasks, slePredictions, completedTasks.length]);
 
   // Dados para os gráficos de Throughput e Lead Time
   const { throughput, scatter, maxThroughput, maxLeadTime } = useAnalyticsData(completedTasks);
@@ -228,13 +254,29 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       {/* Visão 7: Previsões com Simulação Monte Carlo */}
       {activeCategory === 'forecasting' && (
         <div className="dashboard-focused-view" data-testid="focused-forecasting-view">
-          <MonteCarloSimulationView tasks={filteredTasks} />
+          <MonteCarloSimulationView
+            tasks={filteredTasks}
+            columns={board?.columns}
+            initialMode={initialForecastMode}
+            initialScopeType={initialScopeType}
+            initialScopeId={initialScopeId}
+            slePredictions={slePredictions}
+            onSelectTask={onSelectTask}
+            onApplyWipLimit={onApplyWipLimit}
+          />
         </div>
       )}
 
       {/* Visão 0: Dashboard Geral Consolidado */}
       {activeCategory === 'dashboard' && (
         <>
+          <div className="dashboard-metrics-row mb-3">
+            <TopLeveragesCard
+              summary={topLeverages}
+              onSelectTask={onSelectTask}
+              onNavigateToSimulator={() => setActiveCategory('forecasting')}
+            />
+          </div>
           <div className="dashboard-metrics-row">
             {/* Cartões de síntese executiva */}
             <DashboardSummaryCards
@@ -315,7 +357,6 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 isExpanded={true}
               />
             )}
-
             {expandedChart === 'throughput' && (
               <ThroughputChart
                 data={throughput}
@@ -324,7 +365,6 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 isExpanded={true}
               />
             )}
-
             {expandedChart === 'leadTime' && (
               <LeadTimeScatter
                 data={scatter}
@@ -333,7 +373,6 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 isExpanded={true}
               />
             )}
-
             {expandedChart === 'cycleTime' && (
               <CycleTimeScatterPlot
                 tasks={completedTasks}

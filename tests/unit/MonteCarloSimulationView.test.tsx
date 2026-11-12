@@ -130,4 +130,23 @@ describe('Feature 019 & 056: MonteCarloSimulationView UI', () => {
     expect(backlogBtn).toHaveClass('is-active');
     expect(screen.getByTestId('backlog-forecast-panel')).toBeInTheDocument();
   });
+
+  it('switches to Flow Leverage Simulator mode when user clicks mode-leverage-btn (Feature 058)', () => {
+    render(<MonteCarloSimulationView tasks={mockTasksWithHistory} />);
+
+    const leverageBtn = screen.getByTestId('mode-leverage-btn');
+    expect(leverageBtn).toBeInTheDocument();
+    fireEvent.click(leverageBtn);
+
+    expect(leverageBtn).toHaveClass('is-active');
+    expect(screen.getByText(/Simulador Prescritivo de Alavancas de Fluxo/i)).toBeInTheDocument();
+    expect(screen.getByText(/Modo Sandbox/i)).toBeInTheDocument();
+  });
+
+  it('renders leverage mode directly when initialMode is leverage', () => {
+    render(<MonteCarloSimulationView tasks={mockTasksWithHistory} initialMode="leverage" />);
+
+    expect(screen.getByTestId('mode-leverage-btn')).toHaveClass('is-active');
+    expect(screen.getByText(/Simulador Prescritivo de Alavancas de Fluxo/i)).toBeInTheDocument();
+  });
 });

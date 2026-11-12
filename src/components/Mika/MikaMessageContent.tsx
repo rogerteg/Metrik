@@ -14,6 +14,7 @@ export interface MikaMessageContentProps {
   onNavigateToForecast?: (
     scopeType: 'initiative' | 'sprint' | 'all' | 'tag',
     scopeId?: string,
+    mode?: 'date' | 'capacity' | 'leverage',
   ) => void;
 }
 
@@ -67,7 +68,13 @@ export const MikaMessageContent: React.FC<MikaMessageContentProps> = ({
           <button
             type="button"
             className="mika-forecast-action-btn"
-            onClick={() => onNavigateToForecast(action.scopeType, action.scopeId)}
+            onClick={() => {
+              if (action.mode !== undefined) {
+                onNavigateToForecast(action.scopeType, action.scopeId, action.mode);
+              } else {
+                onNavigateToForecast(action.scopeType, action.scopeId);
+              }
+            }}
             title={action.label}
             style={{
               display: 'inline-flex',

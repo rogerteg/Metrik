@@ -4,7 +4,8 @@
  * sprint ativa, capacidade e backlog geral.
  */
 
-import { TaskModel } from '../../types/kanban';
+import { TaskModel, ColumnModel } from '../../types/kanban';
+import { CardSlePrediction } from '../../types/sle';
 import {
   MikaMonteCarloTelemetry,
   MikaInitiativeForecastSummary,
@@ -17,6 +18,7 @@ import {
   validateThroughputSample,
   runBacklogMonteCarloForecast,
 } from '../../utils/monteCarloForecast';
+import { rankTopLeverages } from '../../utils/flowLeverageEngine';
 
 /**
  * Constrói o snapshot de telemetria estocástica de Monte Carlo para o contexto da Mika.
@@ -25,6 +27,9 @@ export function buildMikaMonteCarloTelemetry(
   tasks: TaskModel[],
   referenceDate: Date = new Date(),
   trials: number = 2000,
+  columns: ColumnModel[] = [],
+  boardId: string = 'default-board',
+  slePredictions: Record<string, CardSlePrediction> = {},
 ): MikaMonteCarloTelemetry {
   const refDateStr = referenceDate.toISOString().split('T')[0];
 
@@ -124,6 +129,15 @@ export function buildMikaMonteCarloTelemetry(
     trials,
   });
 
+  // 6. Alavancas de Fluxo (Feature 058)
+  const topLeverages = rankTopLeverages({
+    boardId,
+    tasks,
+    columns,
+    slePredictions,
+    deliveryDaysCount: throughputHistory.length,
+  });
+
   return {
     sampleValidation,
     initiatives,
@@ -132,5 +146,6 @@ export function buildMikaMonteCarloTelemetry(
     generalBacklogPendingCount: generalScope.pendingTasks.length,
     generalBacklogP85Days: generalForecast.p85.days,
     generalBacklogP85Date: generalForecast.p85.projectedDate || refDateStr,
+    topLeverages,
   };
 }

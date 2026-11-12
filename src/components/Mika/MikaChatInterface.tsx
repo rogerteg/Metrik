@@ -31,6 +31,7 @@ export interface MikaChatInterfaceProps {
   onNavigateToForecast?: (
     scopeType: 'initiative' | 'sprint' | 'all' | 'tag',
     scopeId?: string,
+    mode?: 'date' | 'capacity' | 'leverage',
   ) => void;
   providerName?: string;
   apiKey?: string;

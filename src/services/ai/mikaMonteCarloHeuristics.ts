@@ -55,13 +55,59 @@ export function matchMonteCarloForecastIntent(
     normalized.includes('projeto') ||
     normalized.includes('epico') ||
     normalized.includes('sprint') ||
-    normalized.includes('backlog');
+    normalized.includes('backlog') ||
+    normalized.includes('alavanca') ||
+    normalized.includes('destrav') ||
+    normalized.includes('focar') ||
+    normalized.includes('prioriz');
 
   if (!isForecastQuery || !mc) {
     return null;
   }
 
   const nistAlert = getNistWarning(context);
+
+  // 0. Intenção: Alavancas de Fluxo Prescritivas (Feature 058)
+  const isLeverageQuery =
+    normalized.includes('alavanca') ||
+    normalized.includes('destrav') ||
+    normalized.includes('o que focar') ||
+    normalized.includes('onde focar') ||
+    normalized.includes('o que priorizar') ||
+    normalized.includes('prioridades de hoje') ||
+    normalized.includes('acoes de hoje') ||
+    normalized.includes('gargalo prioritario');
+
+  if (isLeverageQuery) {
+    const leverages = mc.topLeverages;
+    const items = leverages?.items || [];
+    const referencedTaskIds = items.map((i) => i.taskId);
+
+    let content = '';
+    if (items.length === 0) {
+      content = `🎯 **Alavancas de Fluxo do Dia (Prescritivo)**\n\nNenhuma alavanca crítica detectada no momento! O fluxo está equilibrado e sem bloqueios retendo tarefas a jusante.${nistAlert}`;
+    } else {
+      const list = items
+        .map((item, idx) => {
+          return `${idx + 1}. #${item.taskId} **${item.taskTitle}**\n   - **Impacto**: Economia estimada de **~${item.impactDaysP85} dias** no P85\n   - **Ação**: ${item.rationale}`;
+        })
+        .join('\n\n');
+
+      content = `🎯 **Top ${items.length} Alavancas de Fluxo Prescritivas**\n\nAções de maior alavancagem estatística para acelerar a entrega hoje:\n\n${list}\n\n💡 Resolver esses gargalos prioritários gera o maior efeito multiplicador na redução do prazo P85.${nistAlert}`;
+    }
+
+    return {
+      content,
+      referencedTaskIds,
+      category: 'flow_leverage',
+      action: {
+        type: 'NAVIGATE_TO_FORECAST',
+        label: '📊 Abrir Simulador de Alavancas',
+        scopeType: 'all',
+        mode: 'leverage',
+      },
+    };
+  }
 
   // 1. Intenção: Capacidade / How Many (Quantos itens cabem na sprint/período)
   if (

@@ -47,4 +47,10 @@ export const QUICK_PROMPTS: MikaQuickPrompt[] = [
     query: 'Quantos itens cabem na próxima sprint?',
     category: 'forecast_capacity',
   },
+  {
+    id: 'qp-flow-leverage',
+    label: '🎯 Alavancas de Hoje',
+    query: 'Quais as alavancas de fluxo e o que destravar hoje?',
+    category: 'flow_leverage',
+  },
 ];

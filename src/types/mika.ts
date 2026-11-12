@@ -4,6 +4,7 @@
  */
 
 import { ThroughputSampleValidation } from '../utils/monteCarloForecast';
+import { TopLeveragesSummary } from './analytics';
 
 export type MikaInsightSeverity = 'info' | 'warning' | 'critical';
 export type MikaInsightCategory =
@@ -95,7 +96,8 @@ export type MikaQuickPromptCategory =
   | 'forecast_initiative'
   | 'forecast_sprint'
   | 'forecast_capacity'
-  | 'forecast_general';
+  | 'forecast_general'
+  | 'flow_leverage';
 
 export type TargetDateRiskLevel = 'low' | 'moderate' | 'high' | 'critical';
 
@@ -104,6 +106,7 @@ export interface MikaForecastActionPayload {
   label: string;
   scopeType: 'initiative' | 'sprint' | 'all' | 'tag';
   scopeId?: string;
+  mode?: 'date' | 'capacity' | 'leverage';
 }
 
 export interface MikaChatMessage {
@@ -173,6 +176,7 @@ export interface MikaMonteCarloTelemetry {
   generalBacklogPendingCount: number;
   generalBacklogP85Days: number;
   generalBacklogP85Date: string;
+  topLeverages?: TopLeveragesSummary;
 }
 
 export interface MikaBoardTelemetryContext {

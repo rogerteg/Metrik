@@ -1,8 +1,8 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTaskCollection } from './hooks/useTaskCollection';
 import { useFlowMetrics } from './hooks/useFlowMetrics';
 import { useBoardFilters } from './hooks/useBoardFilters';
-import { useDataPortability } from './hooks/useDataPortability';
+import { useBoardExportImport } from './hooks/useBoardExportImport';
 import { useBoards } from './hooks/useBoards';
 import { AppHeaderBar } from './components/App/AppHeaderBar';
 import { AppMainContent } from './components/App/AppMainContent';
@@ -10,7 +10,6 @@ import { AppDialogsContainer } from './components/App/AppDialogsContainer';
 import { useColumnWidths } from './hooks/useColumnWidths';
 import { useTheme } from './hooks/useTheme';
 import { useTeamAccess } from './hooks/useTeamAccess';
-import { buildTasksCsv, buildSprintsCsv } from './utils/csvExport';
 import { useWorkspaces } from './hooks/useWorkspaces';
 import { useAppSettings } from './hooks/useAppSettings';
 import { useCloudAutoSync } from './hooks/useCloudAutoSync';
@@ -63,7 +62,6 @@ export const App: React.FC = () => {
     'board',
   );
   const [analyticsCategory, setAnalyticsCategory] = useState<AnalyticsCategory | undefined>();
-
   const { theme, setTheme } = useTheme();
   const { columnWidths, setColumnWidth, resetColumnWidth, resetAllColumnWidths } =
     useColumnWidths(activeBoardId);
@@ -78,14 +76,30 @@ export const App: React.FC = () => {
     tasks: allBoardTasks,
   });
 
-  const handleNavigateToForecast = () => {
+  const [forecastScope, setForecastScope] = useState<{
+    scopeType?: 'initiative' | 'sprint' | 'all' | 'tag';
+    scopeId?: string;
+    mode?: 'how-many' | 'when' | 'backlog' | 'leverage';
+  }>({});
+
+  const handleNavigateToForecast = (
+    scopeType?: 'initiative' | 'sprint' | 'all' | 'tag',
+    scopeId?: string,
+    mode?: 'date' | 'capacity' | 'leverage',
+  ) => {
     mika.closeDrawer();
     setAnalyticsCategory('forecasting');
+    const fMode = mode === 'leverage' ? 'leverage' : mode === 'capacity' ? 'how-many' : 'backlog';
+    setForecastScope({ scopeType, scopeId, mode: fMode });
     setView('analytics');
   };
 
-  const { exportData, importData, exportCsv } = useDataPortability();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const exportImport = useBoardExportImport({
+    board,
+    activeBoardId,
+    allBoardTasks,
+    overwriteBoard: taskOps.overwriteBoard,
+  });
 
   const workspacesData = useWorkspaces();
   const { settings, updateSettings } = useAppSettings();
@@ -168,31 +182,6 @@ export const App: React.FC = () => {
     onToast: modals.setToastMessage,
   });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (
-      window.confirm(
-        'A importação irá substituir completamente o seu quadro atual. Deseja continuar?',
-      )
-    ) {
-      importData(
-        file,
-        (newBoard) => {
-          taskOps.overwriteBoard(newBoard);
-          if (fileInputRef.current) fileInputRef.current.value = '';
-        },
-        (errorMsg) => {
-          alert(errorMsg);
-          if (fileInputRef.current) fileInputRef.current.value = '';
-        },
-      );
-    } else {
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
-  };
-
   return (
     <div className="app-container" data-theme={theme}>
       <AppHeaderBar
@@ -210,10 +199,10 @@ export const App: React.FC = () => {
         onSelectUser={teamAccess.selectUser}
         onCreateUser={teamAccess.createUser}
         onOpenTeamsModal={modals.openTeamModal}
-        fileInputRef={fileInputRef}
-        onFileChange={handleFileChange}
-        onImportClick={() => fileInputRef.current?.click()}
-        onExport={() => exportData(board, activeBoardId)}
+        fileInputRef={exportImport.fileInputRef}
+        onFileChange={exportImport.handleFileChange}
+        onImportClick={() => exportImport.fileInputRef.current?.click()}
+        onExport={exportImport.handleExportData}
         onResetDemo={taskOps.resetToSeed}
         onClearBoard={handleClearBoard}
         isGuest={isGuest}
@@ -238,9 +227,7 @@ export const App: React.FC = () => {
         onOpenJoinCode={modals.openTeamModal}
         onRedirectFirstAllowed={() => {
           const firstAllowed = boards.find((b) => teamAccess.isBoardAccessible(b.teamId));
-          if (firstAllowed) {
-            switchBoard(firstAllowed.id);
-          }
+          if (firstAllowed) switchBoard(firstAllowed.id);
         }}
         workspaces={workspacesData.workspaces}
         activeWorkspaceId={workspacesData.activeWorkspaceId}
@@ -264,24 +251,17 @@ export const App: React.FC = () => {
         onCreateBoard={handleCreateBoard}
         onRenameBoard={renameBoard}
         onDeleteBoard={deleteBoard}
-        onExportData={() => exportData(board, activeBoardId)}
-        onImportData={() => fileInputRef.current?.click()}
+        onExportData={exportImport.handleExportData}
+        onImportData={() => exportImport.fileInputRef.current?.click()}
         onClearTasks={handleClearBoard}
-        onExportTasksCsv={() =>
-          exportCsv(
-            `metrik-tarefas-${new Date().toISOString().slice(0, 10)}.csv`,
-            buildTasksCsv(board),
-          )
-        }
-        onExportSprintsCsv={() =>
-          exportCsv(
-            `metrik-sprints-${new Date().toISOString().slice(0, 10)}.csv`,
-            buildSprintsCsv(board.sprints, allBoardTasks),
-          )
-        }
+        onExportTasksCsv={exportImport.handleExportTasks}
+        onExportSprintsCsv={exportImport.handleExportSprints}
         isCloudAutoSyncing={isCloudAutoSyncing}
         cloudLastSyncAt={cloudLastSyncAt}
         initialAnalyticsCategory={analyticsCategory}
+        initialForecastMode={forecastScope.mode}
+        initialScopeType={forecastScope.scopeType}
+        initialScopeId={forecastScope.scopeId}
         onShowToast={modals.setToastMessage}
         sleConfig={sle.config}
         onUpdateSleConfig={sle.updateConfig}
@@ -357,8 +337,8 @@ export const App: React.FC = () => {
         onCloseSprintManager={modals.closeSprintManager}
         isCreateWorkspaceModalOpen={modals.isCreateWorkspaceModalOpen}
         onCloseCreateWorkspaceModal={modals.closeCreateWorkspaceModal}
-        onCreateWorkspace={(name, color, description) =>
-          workspacesData.createWorkspace(name, color || '#38bdf8', description)
+        onCreateWorkspace={(name, color, desc) =>
+          workspacesData.createWorkspace(name, color || '#38bdf8', desc)
         }
         mika={mika}
         onNavigateToForecast={handleNavigateToForecast}
