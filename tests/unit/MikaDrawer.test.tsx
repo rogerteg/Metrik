@@ -75,4 +75,17 @@ describe('MikaDrawer', () => {
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(onCloseMock).toHaveBeenCalledTimes(1);
   });
+
+  it('renderiza o chat e permite fornecer onNavigateToForecast sem quebras', () => {
+    const onNavMock = vi.fn();
+    render(
+      <MikaDrawer
+        isOpen={true}
+        onClose={vi.fn()}
+        insights={mockInsights}
+        onNavigateToForecast={onNavMock}
+      />,
+    );
+    expect(screen.getByRole('textbox', { name: /Mensagem para a Mika AI/i })).toBeInTheDocument();
+  });
 });

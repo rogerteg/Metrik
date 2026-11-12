@@ -1,7 +1,9 @@
 /**
- * Tipos de domínio e modelos de dados para a Mika AI Flow Copilot (Feature 048)
- * Conforme especificações em specs/048-mika-ai-flow-copilot/data-model.md
+ * Tipos de domínio e modelos de dados para a Mika AI Flow Copilot (Feature 048 & 057)
+ * Conforme especificações em specs/048-mika-ai-flow-copilot/ e specs/057-mika-monte-carlo-copilot/
  */
+
+import { ThroughputSampleValidation } from '../utils/monteCarloForecast';
 
 export type MikaInsightSeverity = 'info' | 'warning' | 'critical';
 export type MikaInsightCategory =
@@ -79,12 +81,30 @@ export interface MikaCacheEntry {
 }
 
 // ==========================================
-// Feature 052: Mika Conversational AI Chat
+// Feature 052 & 057: Mika Conversational AI Chat & Monte Carlo Copilot
 // ==========================================
 
 export type MikaChatRole = 'user' | 'assistant' | 'system';
 export type MikaChatProvider = 'gemini' | 'heuristic';
-export type MikaQuickPromptCategory = 'bottleneck' | 'sle' | 'blocked' | 'throughput' | 'general';
+export type MikaQuickPromptCategory =
+  | 'bottleneck'
+  | 'sle'
+  | 'blocked'
+  | 'throughput'
+  | 'general'
+  | 'forecast_initiative'
+  | 'forecast_sprint'
+  | 'forecast_capacity'
+  | 'forecast_general';
+
+export type TargetDateRiskLevel = 'low' | 'moderate' | 'high' | 'critical';
+
+export interface MikaForecastActionPayload {
+  type: 'NAVIGATE_TO_FORECAST';
+  label: string;
+  scopeType: 'initiative' | 'sprint' | 'all' | 'tag';
+  scopeId?: string;
+}
 
 export interface MikaChatMessage {
   id: string;
@@ -93,6 +113,7 @@ export interface MikaChatMessage {
   timestamp: string;
   provider: MikaChatProvider;
   referencedTaskIds?: string[];
+  action?: MikaForecastActionPayload;
 }
 
 export interface MikaChatSession {
@@ -107,6 +128,51 @@ export interface MikaQuickPrompt {
   query: string;
   category: MikaQuickPromptCategory;
   icon?: string;
+}
+
+export interface MikaInitiativeForecastSummary {
+  id: string;
+  title: string;
+  pendingCount: number;
+  completedCount: number;
+  targetDate?: string;
+  p50Days: number;
+  p50Date: string;
+  p85Days: number;
+  p85Date: string;
+  p95Days: number;
+  p95Date: string;
+  targetProbability?: number;
+  riskLevel?: TargetDateRiskLevel;
+}
+
+export interface MikaSprintForecastSummary {
+  id: string;
+  title: string;
+  pendingCount: number;
+  completedCount: number;
+  targetDate?: string;
+  p85Days: number;
+  p85Date: string;
+  targetProbability?: number;
+  riskLevel?: TargetDateRiskLevel;
+}
+
+export interface MikaCapacityForecastSummary {
+  windowDays: number;
+  p50Items: number;
+  p85Items: number;
+  p95Items: number;
+}
+
+export interface MikaMonteCarloTelemetry {
+  sampleValidation: ThroughputSampleValidation;
+  initiatives: MikaInitiativeForecastSummary[];
+  activeSprint?: MikaSprintForecastSummary;
+  defaultCapacity14Days?: MikaCapacityForecastSummary;
+  generalBacklogPendingCount: number;
+  generalBacklogP85Days: number;
+  generalBacklogP85Date: string;
 }
 
 export interface MikaBoardTelemetryContext {
@@ -131,5 +197,6 @@ export interface MikaBoardTelemetryContext {
   throughputLast14Days: number;
   totalActiveTasks: number;
   totalCompletedTasks: number;
+  monteCarloTelemetry?: MikaMonteCarloTelemetry;
   generatedAt: string;
 }

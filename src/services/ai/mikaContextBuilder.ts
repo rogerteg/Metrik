@@ -1,11 +1,12 @@
 /**
- * mikaContextBuilder.ts - Extrator de telemetria do quadro e construtor de prompts (Feature 052)
- * Compila colunas, limites de WIP, tempo de permanência, tarefas bloqueadas, SLE P85 e regras de marca.
+ * mikaContextBuilder.ts - Extrator de telemetria do quadro e construtor de prompts (Feature 052 & 057)
+ * Compila colunas, limites de WIP, tempo de permanência, tarefas bloqueadas, SLE P85 e previsões de Monte Carlo.
  */
 
 import { ColumnModel, TaskModel } from '../../types/kanban';
 import { MikaBoardTelemetryContext } from '../../types/mika';
 import { calculatePercentile } from '../../utils/statistics';
+import { buildMikaMonteCarloTelemetry } from './mikaMonteCarloContext';
 
 /**
  * Constrói o snapshot de telemetria do quadro ativo a partir dos dados do estado
@@ -14,8 +15,9 @@ export function buildBoardTelemetryContext(
   board: { id: string; title: string },
   tasks: TaskModel[] = [],
   columns: ColumnModel[] = [],
+  referenceDate: Date = new Date(),
 ): MikaBoardTelemetryContext {
-  const now = Date.now();
+  const now = referenceDate.getTime();
   const columnMap = new Map<string, ColumnModel>();
   columns.forEach((col) => columnMap.set(col.id, col));
 
@@ -71,7 +73,6 @@ export function buildBoardTelemetryContext(
 
   // 3. Cálculo de SLE 85% do Tempo de Ciclo (tarefas concluídas)
   const doneColumnIds = new Set(columns.filter((c) => c.category === 'done').map((c) => c.id));
-
   const completedTasks = tasks.filter((t) => doneColumnIds.has(t.column) || Boolean(t.completedAt));
 
   const cycleTimesDays: number[] = [];
@@ -100,6 +101,9 @@ export function buildBoardTelemetryContext(
 
   const totalActiveTasks = tasks.length - completedTasks.length;
 
+  // 4. Telemetria Estocástica de Monte Carlo (Feature 057)
+  const monteCarloTelemetry = buildMikaMonteCarloTelemetry(tasks, referenceDate);
+
   return {
     boardId: board.id,
     boardTitle: board.title || 'Quadro Atual',
@@ -109,7 +113,8 @@ export function buildBoardTelemetryContext(
     throughputLast14Days,
     totalActiveTasks: Math.max(0, totalActiveTasks),
     totalCompletedTasks: completedTasks.length,
-    generatedAt: new Date().toISOString(),
+    monteCarloTelemetry,
+    generatedAt: new Date(now).toISOString(),
   };
 }
 
@@ -141,12 +146,60 @@ export function buildMikaSystemPrompt(context: MikaBoardTelemetryContext): strin
       ? `${context.cycleTimeP85Days} dias (85% das tarefas são concluídas neste período)`
       : 'Amostra insuficiente de tarefas concluídas para SLE estatístico.';
 
+  // Resumo de Monte Carlo para a IA Generativa (Feature 057)
+  let monteCarloSummary = 'Sem dados de simulação estocástica disponíveis.';
+  if (context.monteCarloTelemetry) {
+    const mc = context.monteCarloTelemetry;
+    const lines: string[] = [];
+
+    if (!mc.sampleValidation.isSampleSufficient) {
+      lines.push(
+        `⚠️ RESSALVA NIST: Amostra com apenas ${mc.sampleValidation.deliveryDays} dias de entregas. Margem de erro estatística elevada.`,
+      );
+    } else {
+      lines.push(
+        `Amostra NIST válida (${mc.sampleValidation.deliveryDays} dias com entregas registradas).`,
+      );
+    }
+
+    if (mc.initiatives.length > 0) {
+      lines.push('INICIATIVAS ATIVAS:');
+      mc.initiatives.forEach((init) => {
+        const probText =
+          init.targetProbability !== undefined
+            ? ` | Confiança Data Meta (${init.targetDate || 'sem data'}): ${init.targetProbability}% (${init.riskLevel || 'risco indefinido'})`
+            : '';
+        lines.push(
+          `- #${init.id} "${init.title}": ${init.pendingCount} pendentes, P85 em ${init.p85Days} dias (projeção: ${init.p85Date})${probText}`,
+        );
+      });
+    }
+
+    if (mc.activeSprint) {
+      lines.push(
+        `SPRINT ATIVA (${mc.activeSprint.title}): ${mc.activeSprint.pendingCount} pendentes, P85 em ${mc.activeSprint.p85Days} dias (projeção: ${mc.activeSprint.p85Date})`,
+      );
+    }
+
+    if (mc.defaultCapacity14Days) {
+      lines.push(
+        `CAPACIDADE 14 DIAS: P50: ${mc.defaultCapacity14Days.p50Items} itens, P85: ${mc.defaultCapacity14Days.p85Items} itens, P95: ${mc.defaultCapacity14Days.p95Items} itens`,
+      );
+    }
+
+    lines.push(
+      `BACKLOG GERAL: ${mc.generalBacklogPendingCount} pendentes, P85 total em ${mc.generalBacklogP85Days} dias.`,
+    );
+
+    monteCarloSummary = lines.join('\n');
+  }
+
   return `Você é a Mika, a copiloto analítica de IA nativa do Metrik, especialista em dinâmica de trabalho e métricas de fluxo Lean/Kanban.
 
 DIRETRIZES CONSTITUCIONAIS OBRIGATÓRIAS (Metrik Constitution):
 1. IDIOMA E TOM: Responda em Português do Brasil (pt-BR) com tom consultivo, amigável, técnico, conciso e focado em fluxo e previsibilidade.
-2. INDEPENDÊNCIA DE MARCA (Princípio VII): NUNCA mencione marcas ou produtos de concorrentes ou de terceiros (ex.: Jira, ClickUp, Trello, Businessmap, ActionableAgile, etc.). Use estritamente terminologia padronizada de fluxo e agilidade: Limites de WIP, Lei de Little, Tempo de Ciclo (Cycle Time), Lead Time, Expectativa de Nível de Serviço (SLE P85), Diagrama de Fluxo Cumulativo (CFD), Throughput e Simulação de Monte Carlo.
-3. PAPEL CONSULTIVO (Princípio IX): Você analisa dados, aponta anomalias e recomenda melhorias técnicas, mas opera em modo ESTRITAMENTE LEITURA (read-only). Você não tem poder de alterar cartões autonomamente.
+2. INDEPENDÊNCIA DE MARCA (Princípio VII): NUNCA mencione marcas ou produtos de concorrentes ou de terceiros. Use estritamente terminologia padronizada de fluxo e agilidade: Limites de WIP, Lei de Little, Tempo de Ciclo (Cycle Time), Lead Time, Expectativa de Nível de Serviço (SLE P85), Diagrama de Fluxo Cumulativo (CFD), Throughput e Simulação de Monte Carlo.
+3. PAPEL CONSULTIVO (Princípio IX & X): Você analisa dados, aponta anomalias e recomenda melhorias técnicas, mas opera em modo ESTRITAMENTE LEITURA (read-only). Você não tem poder de alterar cartões autonomamente.
 4. REFERÊNCIA A TAREFAS: Sempre que mencionar tarefas específicas no texto, cite no formato #ID (ex.: "#1", "#42") seguido do título resumido. A interface do Metrik transforma essa notação em um link interativo clicável que permite ao usuário inspecionar o cartão diretamente.
 5. FORMATAÇÃO: Use Markdown elegante (tópicos com marcadores, listas curtas e negrito em métricas-chave). Seja direta e evite rodeios prolixos.
 
@@ -155,6 +208,9 @@ TELEMETRIA ATUAL DO QUADRO ("${context.boardTitle}"):
 - Total de tarefas concluídas: ${context.totalCompletedTasks}
 - Throughput dos últimos 14 dias: ${context.throughputLast14Days} tarefas entregues
 - SLE de 85% do Tempo de Ciclo: ${sleText}
+
+PREVISÕES DE MONTE CARLO & CAPACIDADE (Feature 057):
+${monteCarloSummary}
 
 ESTADO DAS COLUNAS:
 ${columnsSummary}

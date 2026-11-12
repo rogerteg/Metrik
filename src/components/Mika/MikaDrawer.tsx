@@ -23,6 +23,10 @@ export interface MikaDrawerProps {
   boardTitle?: string;
   telemetryContext?: MikaBoardTelemetryContext;
   onOpenTaskDetails?: (taskId: string) => void;
+  onNavigateToForecast?: (
+    scopeType: 'initiative' | 'sprint' | 'all' | 'tag',
+    scopeId?: string,
+  ) => void;
   availableTasks?: TaskModel[];
   apiKey?: string;
 }
@@ -38,6 +42,7 @@ export const MikaDrawer: React.FC<MikaDrawerProps> = ({
   boardTitle = 'Quadro Atual',
   telemetryContext,
   onOpenTaskDetails,
+  onNavigateToForecast,
   availableTasks = [],
   apiKey,
 }) => {
@@ -184,6 +189,7 @@ export const MikaDrawer: React.FC<MikaDrawerProps> = ({
               boardTitle={boardTitle}
               telemetryContext={resolvedTelemetry}
               onOpenTaskDetails={onOpenTaskDetails}
+              onNavigateToForecast={onNavigateToForecast}
               providerName={providerName}
               apiKey={apiKey}
               availableTasks={availableTasks}

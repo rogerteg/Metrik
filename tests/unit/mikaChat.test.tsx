@@ -281,6 +281,113 @@ describe('Mika Chat Heuristic Engine (Offline / Local-First)', () => {
     expect(res.content).toContain('Olá! Sou a Mika');
     expect(res.content).toContain('Quadro de Engenharia');
   });
+
+  describe('Monte Carlo Integration (Feature 057)', () => {
+    const contextWithMonteCarlo: MikaBoardTelemetryContext = {
+      ...baseContext,
+      monteCarloTelemetry: {
+        sampleValidation: {
+          isSampleSufficient: true,
+          deliveryDays: 14,
+          totalDelivered: 10,
+        },
+        initiatives: [
+          {
+            id: 'init-1',
+            title: 'Portal Web',
+            pendingCount: 4,
+            completedCount: 2,
+            p50Days: 10,
+            p85Days: 18,
+            p95Days: 25,
+            p50Date: '2026-11-12',
+            p85Date: '2026-11-19',
+            p95Date: '2026-11-26',
+            targetDate: '2026-11-20',
+            targetProbability: 92.5,
+            riskLevel: 'low',
+          },
+          {
+            id: 'init-2',
+            title: 'App Mobile',
+            pendingCount: 10,
+            completedCount: 1,
+            p50Days: 20,
+            p85Days: 35,
+            p95Days: 45,
+            p50Date: '2026-11-25',
+            p85Date: '2026-12-10',
+            p95Date: '2026-12-20',
+            targetDate: '2026-11-30',
+            targetProbability: 35.0,
+            riskLevel: 'high',
+          },
+        ],
+        activeSprint: {
+          id: 'sprint-42',
+          title: 'Sprint 42',
+          targetDate: '2026-11-15',
+          pendingCount: 5,
+          completedCount: 3,
+          p85Days: 7,
+          p85Date: '2026-11-16',
+          targetProbability: 72.0,
+          riskLevel: 'moderate',
+        },
+        defaultCapacity14Days: {
+          windowDays: 14,
+          p50Items: 12,
+          p85Items: 8,
+          p95Items: 5,
+        },
+        generalBacklogPendingCount: 14,
+        generalBacklogP85Days: 28,
+        generalBacklogP85Date: '2026-12-07',
+      },
+    };
+
+    it('responde a consultas de iniciativa com percentis e ação de navegação (US1)', () => {
+      const res = processMikaHeuristicChat(
+        'Quando entregamos a iniciativa Portal Web?',
+        contextWithMonteCarlo,
+      );
+      expect(res.category).toBe('forecast_initiative');
+      expect(res.content).toContain('Portal Web');
+      expect(res.content).toContain('P85 (Recomendado/SLE)');
+      expect(res.referencedTaskIds).toContain('init-1');
+      expect(res.action).toBeDefined();
+      expect(res.action?.type).toBe('NAVIGATE_TO_FORECAST');
+      expect(res.action?.scopeType).toBe('initiative');
+      expect(res.action?.scopeId).toBe('init-1');
+    });
+
+    it('responde a consultas de capacidade informando premissa de 14 dias (US2 - Clarificação 2)', () => {
+      const res = processMikaHeuristicChat(
+        'Quantos itens cabem na próxima sprint?',
+        contextWithMonteCarlo,
+      );
+      expect(res.category).toBe('forecast_capacity');
+      expect(res.content).toContain('Capacidade de Entrega');
+      expect(res.content).toContain('14 dias');
+      expect(res.content).toContain('8 itens');
+    });
+
+    it('responde a consultas de risco da sprint ativa (US2)', () => {
+      const res = processMikaHeuristicChat('A sprint atual vai atrasar?', contextWithMonteCarlo);
+      expect(res.category).toBe('forecast_sprint');
+      expect(res.content).toContain('Sprint 42');
+      expect(res.content).toContain('Moderado');
+      expect(res.action?.scopeType).toBe('sprint');
+    });
+
+    it('responde a consultas de panorama geral de iniciativas (US1 - Clarificação 1)', () => {
+      const res = processMikaHeuristicChat('Como estão as iniciativas?', contextWithMonteCarlo);
+      expect(res.category).toBe('forecast_initiative');
+      expect(res.content).toContain('Panorama Consolidado de Iniciativas');
+      expect(res.content).toContain('Portal Web');
+      expect(res.content).toContain('App Mobile');
+    });
+  });
 });
 
 describe('Mika Gemini Client Multi-Turn Chat', () => {

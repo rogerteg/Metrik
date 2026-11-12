@@ -4,12 +4,18 @@
  * Opera 100% offline em < 10ms, sem chamadas externas nem consumo de tokens (Princípio VIII).
  */
 
-import { MikaBoardTelemetryContext, MikaQuickPromptCategory } from '../../types/mika';
+import {
+  MikaBoardTelemetryContext,
+  MikaQuickPromptCategory,
+  MikaForecastActionPayload,
+} from '../../types/mika';
+import { matchMonteCarloForecastIntent } from './mikaMonteCarloHeuristics';
 
 export interface MikaHeuristicChatResult {
   content: string;
   referencedTaskIds: string[];
   category: MikaQuickPromptCategory | 'general';
+  action?: MikaForecastActionPayload;
 }
 
 /**
@@ -30,6 +36,12 @@ export function processMikaHeuristicChat(
   query: string,
   context: MikaBoardTelemetryContext,
 ): MikaHeuristicChatResult {
+  // Intercepta intenções preditivas estocásticas de Monte Carlo (Feature 057)
+  const monteCarloResult = matchMonteCarloForecastIntent(query, context);
+  if (monteCarloResult) {
+    return monteCarloResult;
+  }
+
   const normalized = normalizeQuery(query);
   const referencedTaskIds: string[] = [];
 

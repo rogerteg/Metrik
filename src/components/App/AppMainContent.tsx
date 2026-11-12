@@ -8,6 +8,7 @@ import { ManageBoardsView } from '../ManageBoards/ManageBoardsView';
 import { RestrictedBoardFallback } from '../RestrictedBoardFallback';
 import { AppBoardView, AppBoardViewProps } from './AppBoardView';
 import { SleConfig } from '../../types/sle';
+import { AnalyticsCategory } from '../../types/analytics';
 
 const AnalyticsDashboard = lazy(() =>
   import('../AnalyticsDashboard').then((module) => ({
@@ -48,6 +49,7 @@ export interface AppMainContentProps {
   onRenameBoard: (boardId: string, newName: string) => void;
   onDeleteBoard: (boardId: string) => void;
   onExportData: () => void;
+  initialAnalyticsCategory?: AnalyticsCategory;
   onImportData: () => void;
   onClearTasks: () => void;
   onExportTasksCsv: () => void;
@@ -94,6 +96,7 @@ export const AppMainContent: React.FC<AppMainContentProps> = ({
   onRenameBoard,
   onDeleteBoard,
   onExportData,
+  initialAnalyticsCategory,
   onImportData,
   onClearTasks,
   onExportTasksCsv,
@@ -204,7 +207,11 @@ export const AppMainContent: React.FC<AppMainContentProps> = ({
         </div>
       }
     >
-      <AnalyticsDashboard board={boardViewProps.board} tasks={boardViewProps.allBoardTasks} />
+      <AnalyticsDashboard
+        board={boardViewProps.board}
+        tasks={boardViewProps.allBoardTasks}
+        initialCategory={initialAnalyticsCategory}
+      />
     </Suspense>
   );
 };

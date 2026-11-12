@@ -39,10 +39,23 @@ export type ChartType = 'cfd' | 'throughput' | 'leadTime' | 'cycleTime';
 export interface AnalyticsDashboardProps {
   tasks: TaskModel[];
   board?: BoardState & { id?: string };
+  initialCategory?: AnalyticsCategory;
 }
 
-export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ tasks, board }) => {
-  const [activeCategory, setActiveCategory] = useState<AnalyticsCategory>('dashboard');
+export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
+  tasks,
+  board,
+  initialCategory,
+}) => {
+  const [activeCategory, setActiveCategory] = useState<AnalyticsCategory>(
+    initialCategory || 'dashboard',
+  );
+
+  useEffect(() => {
+    if (initialCategory) {
+      setActiveCategory(initialCategory);
+    }
+  }, [initialCategory]);
   const [cycleTimeMode, setCycleTimeMode] = useState<CycleTimeViewMode>('scatter');
   const [blockerMode, setBlockerMode] = useState<BlockerViewMode>('clustering');
   const [datasetDrawerOpen, setDatasetDrawerOpen] = useState(false);
