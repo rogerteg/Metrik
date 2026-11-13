@@ -50,6 +50,9 @@ export interface AppMainContentProps {
   onDeleteBoard: (boardId: string) => void;
   onExportData: () => void;
   initialAnalyticsCategory?: AnalyticsCategory;
+  initialForecastMode?: 'how-many' | 'when' | 'backlog' | 'leverage';
+  initialScopeType?: 'initiative' | 'sprint' | 'all' | 'tag';
+  initialScopeId?: string;
   onImportData: () => void;
   onClearTasks: () => void;
   onExportTasksCsv: () => void;
@@ -97,6 +100,9 @@ export const AppMainContent: React.FC<AppMainContentProps> = ({
   onDeleteBoard,
   onExportData,
   initialAnalyticsCategory,
+  initialForecastMode,
+  initialScopeType,
+  initialScopeId,
   onImportData,
   onClearTasks,
   onExportTasksCsv,
@@ -211,6 +217,9 @@ export const AppMainContent: React.FC<AppMainContentProps> = ({
         board={boardViewProps.board}
         tasks={boardViewProps.allBoardTasks}
         initialCategory={initialAnalyticsCategory}
+        initialForecastMode={initialForecastMode}
+        initialScopeType={initialScopeType}
+        initialScopeId={initialScopeId}
       />
     </Suspense>
   );

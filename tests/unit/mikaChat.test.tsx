@@ -387,6 +387,46 @@ describe('Mika Chat Heuristic Engine (Offline / Local-First)', () => {
       expect(res.content).toContain('Portal Web');
       expect(res.content).toContain('App Mobile');
     });
+
+    it('responde a consultas de alavancas de fluxo do dia com ação CTA para o simulador (Feature 058)', () => {
+      const contextWithLeverage: MikaBoardTelemetryContext = {
+        ...contextWithMonteCarlo,
+        monteCarloTelemetry: {
+          ...contextWithMonteCarlo.monteCarloTelemetry!,
+          topLeverages: {
+            boardId: 'b1',
+            calculatedAt: '2026-11-01T10:00:00Z',
+            isSampleSufficient: true,
+            deliveryDaysCount: 15,
+            items: [
+              {
+                id: 'lev-1',
+                taskId: 't-block',
+                taskTitle: 'Bloqueio Gateway',
+                category: 'cascade_unblock',
+                impactDaysP85: 5,
+                dependentTaskCount: 2,
+                dependentTaskIds: ['t-1', 't-2'],
+                currentAgingDays: 4,
+                rationale:
+                  'Desbloquear este item destrava 2 tarefas a jusante e pode economizar ~5 dias no prazo P85.',
+              },
+            ],
+          },
+        },
+      };
+
+      const res = processMikaHeuristicChat(
+        'Quais as alavancas de fluxo de hoje?',
+        contextWithLeverage,
+      );
+      expect(res.category).toBe('flow_leverage');
+      expect(res.content).toContain('Top 1 Alavancas de Fluxo Prescritivas');
+      expect(res.content).toContain('#t-block');
+      expect(res.content).toContain('~5 dias');
+      expect(res.action?.type).toBe('NAVIGATE_TO_FORECAST');
+      expect(res.action?.mode).toBe('leverage');
+    });
   });
 });
 

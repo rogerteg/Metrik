@@ -101,8 +101,14 @@ export function buildBoardTelemetryContext(
 
   const totalActiveTasks = tasks.length - completedTasks.length;
 
-  // 4. Telemetria Estocástica de Monte Carlo (Feature 057)
-  const monteCarloTelemetry = buildMikaMonteCarloTelemetry(tasks, referenceDate);
+  // 4. Telemetria Estocástica de Monte Carlo (Feature 057) e Alavancas de Fluxo (Feature 058)
+  const monteCarloTelemetry = buildMikaMonteCarloTelemetry(
+    tasks,
+    referenceDate,
+    2000,
+    columns,
+    board.id,
+  );
 
   return {
     boardId: board.id,
@@ -190,6 +196,15 @@ export function buildMikaSystemPrompt(context: MikaBoardTelemetryContext): strin
     lines.push(
       `BACKLOG GERAL: ${mc.generalBacklogPendingCount} pendentes, P85 total em ${mc.generalBacklogP85Days} dias.`,
     );
+
+    if (mc.topLeverages && mc.topLeverages.items.length > 0) {
+      lines.push('ALAVANCAS DE FLUXO PRIORITÁRIAS (Feature 058):');
+      mc.topLeverages.items.forEach((item, idx) => {
+        lines.push(
+          `${idx + 1}. #${item.taskId} "${item.taskTitle}": economia estimada de ~${item.impactDaysP85}d no P85 (${item.rationale})`,
+        );
+      });
+    }
 
     monteCarloSummary = lines.join('\n');
   }

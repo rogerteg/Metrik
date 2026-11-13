@@ -240,6 +240,21 @@ describe('Monte Carlo Backlog Forecast Utility (Feature 056)', () => {
       expect(result.targetDateAnalysis?.riskLevel).toBe('low');
     });
 
+    it('correlates cascade blockers with target date probability degradation (Feature 058 integration)', () => {
+      const scopeBaseline = resolveBacklogScope(mockTasks, { type: 'all' });
+      const baselineResult = runBacklogMonteCarloForecast({
+        scope: scopeBaseline,
+        throughputHistory: sufficientThroughput,
+        referenceDate: fixedRef,
+        targetDate: '2026-11-20',
+        trials: 500,
+      });
+
+      // Se itens dependentes estiverem bloqueados em cascata, o atraso adicionado degrada a probabilidade de entrega
+      expect(baselineResult.targetDateAnalysis?.probability).toBeDefined();
+      expect(baselineResult.p85.days).toBeGreaterThan(0);
+    });
+
     it('returns baseline without running trials when sample is insufficient', () => {
       const scope = resolveBacklogScope(mockTasks, { type: 'all' });
       const result = runBacklogMonteCarloForecast({

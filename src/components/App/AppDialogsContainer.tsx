@@ -110,6 +110,7 @@ export interface AppDialogsContainerProps {
   onNavigateToForecast?: (
     scopeType: 'initiative' | 'sprint' | 'all' | 'tag',
     scopeId?: string,
+    mode?: 'date' | 'capacity' | 'leverage',
   ) => void;
 }
 

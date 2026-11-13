@@ -222,4 +222,57 @@ describe('mikaMonteCarloHeuristics (Feature 057)', () => {
     const result = matchMonteCarloForecastIntent('quando entregamos?', emptyContext);
     expect(result).toBeNull();
   });
+
+  describe('Flow Leverages Intent (Feature 058)', () => {
+    const contextWithLeverages: MikaBoardTelemetryContext = {
+      ...mockContextWithData,
+      monteCarloTelemetry: {
+        ...mockContextWithData.monteCarloTelemetry!,
+        topLeverages: {
+          boardId: 'b1',
+          calculatedAt: '2026-11-01T10:00:00Z',
+          isSampleSufficient: true,
+          deliveryDaysCount: 15,
+          items: [
+            {
+              id: 'lev-1',
+              taskId: 'task-99',
+              taskTitle: 'Desbloquear Gateway',
+              category: 'cascade_unblock',
+              impactDaysP85: 6,
+              dependentTaskCount: 2,
+              dependentTaskIds: ['task-100', 'task-101'],
+              currentAgingDays: 5,
+              rationale:
+                'Desbloquear este item destrava 2 tarefas a jusante e pode economizar ~6 dias no prazo P85.',
+            },
+          ],
+        },
+      },
+    };
+
+    it('matches flow leverage queries and returns prescriptive plan with CTA action mode leverage', () => {
+      const result = matchMonteCarloForecastIntent(
+        'quais as alavancas de hoje?',
+        contextWithLeverages,
+      );
+      expect(result).not.toBeNull();
+      expect(result?.category).toBe('flow_leverage');
+      expect(result?.referencedTaskIds).toContain('task-99');
+      expect(result?.content).toContain('#task-99');
+      expect(result?.content).toContain('~6 dias');
+      expect(result?.action).toBeDefined();
+      expect(result?.action?.mode).toBe('leverage');
+    });
+
+    it('matches "o que destravar primeiro" and returns leverage advice', () => {
+      const result = matchMonteCarloForecastIntent(
+        'o que destravar primeiro?',
+        contextWithLeverages,
+      );
+      expect(result).not.toBeNull();
+      expect(result?.category).toBe('flow_leverage');
+      expect(result?.content).toContain('Top 1 Alavancas de Fluxo Prescritivas');
+    });
+  });
 });

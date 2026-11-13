@@ -104,6 +104,41 @@ describe('mikaMonteCarloContext (Feature 057 - Foundational)', () => {
     // General backlog
     expect(telemetry.generalBacklogPendingCount).toBe(2); // card-1, card-3
     expect(telemetry.generalBacklogP85Days).toBeGreaterThan(0);
+
+    // Top Leverages (Feature 058)
+    expect(telemetry.topLeverages).toBeDefined();
+    expect(telemetry.topLeverages?.isSampleSufficient).toBe(true);
+  });
+
+  it('compiles top leverages when blocked tasks and cascade links exist', () => {
+    const tasksWithBlocked: TaskModel[] = [
+      ...allTasksSufficient,
+      {
+        id: 'blocker-x',
+        title: 'Bloqueador Crítico de API',
+        column: 'in_progress',
+        blocked: true,
+        blockedAt: '2026-10-25T10:00:00Z',
+        createdAt: '2026-10-20T10:00:00Z',
+        links: [
+          {
+            id: 'link-bx-1',
+            targetTaskId: 'card-1',
+            relationType: 'blocks',
+            targetBoardId: 'b1',
+            targetTeamId: 't1',
+            createdAt: '2026-10-25T10:00:00Z',
+          },
+        ],
+      },
+    ];
+
+    const telemetry = buildMikaMonteCarloTelemetry(tasksWithBlocked, fixedRefDate, 200);
+    expect(telemetry.topLeverages).toBeDefined();
+    expect(telemetry.topLeverages?.items.length).toBeGreaterThan(0);
+    expect(telemetry.topLeverages?.items[0].taskId).toBe('blocker-x');
+    expect(telemetry.topLeverages?.items[0].dependentTaskCount).toBe(1);
+    expect(telemetry.topLeverages?.items[0].impactDaysP85).toBeGreaterThan(0);
   });
 
   it('handles insufficient historical throughput gracefully with NIST warning', () => {

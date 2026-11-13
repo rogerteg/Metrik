@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { TaskModel } from '../types/kanban';
+import { TaskModel, ColumnModel } from '../types/kanban';
 import { CardSlePrediction } from '../types/sle';
 import { BacklogScopeType } from '../../specs/056-monte-carlo-backlog-forecast/contracts/backlog-forecast-contracts';
 import {
@@ -9,26 +9,36 @@ import {
 } from '../utils/monteCarlo';
 import { MonteCarloHistogramChart } from './charts/MonteCarloHistogramChart';
 import { BacklogForecastPanel } from './MonteCarlo/BacklogForecastPanel';
+import { FlowLeverageSimulatorPanel } from './MonteCarlo/FlowLeverageSimulatorPanel';
 
-export type MonteCarloMode = 'how-many' | 'when' | 'backlog';
+export type MonteCarloMode = 'how-many' | 'when' | 'backlog' | 'leverage';
 
 export interface MonteCarloSimulationViewProps {
   tasks: TaskModel[];
+  columns?: ColumnModel[];
   initialBacklogCount?: number;
   initialMode?: MonteCarloMode;
   initialScopeType?: BacklogScopeType;
   initialScopeId?: string;
   slePredictions?: Record<string, CardSlePrediction>;
+  isReadOnly?: boolean;
+  onApplyWipLimit?: (columnId: string, newLimit: number) => void;
+  onSelectTask?: (taskId: string) => void;
 }
 
-export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> = ({
-  tasks,
-  initialBacklogCount,
-  initialMode = 'how-many',
-  initialScopeType = 'all',
-  initialScopeId,
-  slePredictions,
-}) => {
+export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> = (props) => {
+  const {
+    tasks,
+    columns = [],
+    initialBacklogCount,
+    initialMode = 'how-many',
+    initialScopeType = 'all',
+    initialScopeId,
+    slePredictions,
+    isReadOnly = false,
+    onApplyWipLimit,
+    onSelectTask,
+  } = props;
   const [mode, setMode] = useState<MonteCarloMode>(initialMode);
 
   // Parâmetros de Simulação
@@ -119,10 +129,31 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
           >
             📦 Previsão de Backlog & Épicos
           </button>
+          <button
+            type="button"
+            className={`mode-toggle-btn ${mode === 'leverage' ? 'is-active' : ''}`}
+            onClick={() => setMode('leverage')}
+            role="tab"
+            aria-selected={mode === 'leverage'}
+            data-testid="mode-leverage-btn"
+          >
+            🎯 Alavancas de Fluxo
+          </button>
         </div>
       </div>
 
-      {mode === 'backlog' ? (
+      {mode === 'leverage' ? (
+        <FlowLeverageSimulatorPanel
+          tasks={tasks}
+          columns={columns}
+          scopeType={initialScopeType}
+          scopeId={initialScopeId}
+          slePredictions={slePredictions}
+          isReadOnly={isReadOnly}
+          onApplyWipLimit={onApplyWipLimit}
+          onSelectTask={onSelectTask}
+        />
+      ) : mode === 'backlog' ? (
         <BacklogForecastPanel
           tasks={tasks}
           initialScopeType={initialScopeType}
