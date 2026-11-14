@@ -217,10 +217,31 @@ O plano transforma os **requisitos** da spec em **decisões técnicas**. Define 
 
 Converte o plano em itens de trabalho discretos, acionáveis, testáveis e estimáveis.
 
-### 5.2 Estrutura Obrigatória do `tasks.md`
+### 5.2 Protocolo Obrigatório: Modelos de Raciocínio Analítico Pré-Tarefas
+
+> **REGRA MANDATÓRIA (Constituição VI do Metrik):** antes de criar, decompor ou refinar QUALQUER lista de tarefas, o agente DEVE produzir e registrar explicitamente:
+>
+> 1. **Primeiros Princípios** — invariantes irredutíveis do requisito; premissas acidentais eliminadas.
+> 2. **Pré-Mortem & Inversão** — como a implementação falha silenciosamente: race conditions, contratos quebrados, inconsistência de estado, falhas de autorização, edge cases.
+> 3. **Validação MECE** — tarefas mutuamente exclusivas e coletivamente exaustivas (100% dos critérios da spec cobertos, sem sobreposição de escopo).
+> 4. **Árvore de Decisão & Poda** — alternativas avaliadas e o trade-off que justificou descartar as inferiores.
+> 5. **Falsificabilidade & TDD (Red Bar First)** — teste objetivo que falha antes e passa deterministicamente depois, sem inspeção manual.
+> 6. **Triangulação Adversarial** — conformidade constitucional, YAGNI/simplicidade, modularidade e segurança.
+>
+> Tarefas geradas sem esta seção são nulas e violam a governança do projeto.
+
+### 5.3 Estrutura Obrigatória do `tasks.md`
 
 ```markdown
 # Tarefas — [Nome da Feature]
+
+## Modelos de Raciocínio Analítico Pré-Tarefas (Mandatório)
+### 1. Decomposição por Primeiros Princípios
+### 2. Análise Pré-Mortem & Inversão
+### 3. Validação MECE
+### 4. Árvore de Decisão & Poda
+### 5. Falsificabilidade & TDD (Red Bar First)
+### 6. Conformidade Constitucional
 
 ## Critérios de Conclusão Global
 <!-- A feature está PRONTA quando... -->
@@ -247,7 +268,7 @@ Converte o plano em itens de trabalho discretos, acionáveis, testáveis e estim
 <!-- Grafo de dependências: "2.1 requer 1.3 concluída" -->
 ```
 
-### 5.3 Anatomia de uma Boa Tarefa
+### 5.4 Anatomia de uma Boa Tarefa
 
 Uma tarefa bem definida tem:
 - **Entrada:** o que precisa existir para começar
@@ -258,7 +279,7 @@ Uma tarefa bem definida tem:
 **Exemplo ruim:** `Implementar autenticação`  
 **Exemplo bom:** `Implementar endpoint POST /auth/login que valida credenciais no banco via bcrypt, gera JWT com expiração de 24h, e retorna 401 com mensagem genérica em caso de falha (sem revelar se email ou senha estão errados)`
 
-### 5.4 Verificação Pré-Implementação
+### 5.5 Verificação Pré-Implementação
 
 Antes de começar a implementar, cruzar:
 - [ ] Cada critério de aceitação da spec tem ao menos uma tarefa correspondente?
@@ -760,4 +781,25 @@ Esta skill foi construída sintetizando:
 ---
 
 *Este arquivo é um artefato vivo. Atualize-o sempre que descobrir melhores práticas aplicáveis ao seu contexto de projeto.*
+
+---
+
+## 14. CONFIGURAÇÃO NESTE PROJETO (METRIK)
+
+> Ajuste local das referências genéricas acima para a convenção real deste repositório.
+
+| Referência genérica | Neste repositório |
+|---|---|
+| `openspec/constitution.md` | `.specify/memory/constitution.md` |
+| `openspec/project-context.md` | `.specify/memory/project-context.md` |
+| `openspec/lessons-learned.md` | `.specify/memory/lessons-learned.md` |
+| `openspec/specs/<dominio>/spec.md` | `specs/<NNN-feature>/spec.md` |
+| `openspec/changes/<id>/{proposal,spec,plan,tasks}.md` | `specs/<NNN-feature>/{proposal,spec,plan,tasks}.md` |
+| Templates de artefato | `.specify/templates/` (`spec-template.md`, `plan-template.md`, `tasks-template.md`, `checklist-template.md`, `constitution-template.md`) |
+
+**Gates executáveis obrigatórios (Constituição III):** `npm run test` (Vitest), `npx tsc --noEmit`, `npm run build`. Nenhuma tarefa é concluída com qualquer um deles vermelho.
+
+**Constituição II:** módulos de produção em `src/**/*.{ts,tsx,css}` não passam de 400 linhas, verificado por `tests/unit/moduleLineCountGuard.test.ts`.
+
+**Execução operacional:** quando o repositório usa SpecKit, as fases desta skill correspondem a `/speckit-specify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`, com `/speckit-analyze` e `/speckit-converge` como gates de consistência cruzada.
 
