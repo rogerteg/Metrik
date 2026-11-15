@@ -2,7 +2,7 @@
 
 **Feature Branch**: `058-flow-leverage-simulator`  
 **Created**: 2026-11-12  
-**Status**: Implemented & Verified  
+**Status**: Implemented & Verified (2026-11-12)  
 **Input**: User description: "O Próximo Passo que Tornará o Metrik Único no Mercado"
 
 ---

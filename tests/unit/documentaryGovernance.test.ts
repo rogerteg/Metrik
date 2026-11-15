@@ -8,8 +8,8 @@ const SPECS_DIR = path.join(ROOT_DIR, 'specs');
 
 describe('Documentary Governance Guard (Feature 050 - Roadmap Phase 2)', () => {
   // Test 1: OPP-010 / FR-001, FR-002, FR-003
-  it('should ensure all delivered specs have canonical "Implemented & Verified" status and active specs remain Draft', () => {
-    const deliveredRange = Array.from({ length: 55 }, (_, i) => i + 1); // 001 to 055 (100% das features entregues na main)
+  it('should ensure all delivered specs have canonical "Implemented & Verified (<date>)" status and active specs remain Draft', () => {
+    const deliveredRange = Array.from({ length: 58 }, (_, i) => i + 1); // 001 to 058 (100% das features entregues na main)
     const inProgressFeatures: number[] = []; // Nenhuma feature pendente como Draft
 
     const specDirs = fs
@@ -21,7 +21,7 @@ describe('Documentary Governance Guard (Feature 050 - Roadmap Phase 2)', () => {
         dirPath: path.join(SPECS_DIR, d.name),
       }));
 
-    const statusCanonicalRegex = /^\*\*Status\*\*:\s*Implemented & Verified/m;
+    const statusCanonicalRegex = /^\*\*Status\*\*:\s*Implemented & Verified \(\d{4}-\d{2}-\d{2}\)/m;
     const statusDraftRegex = /^\*\*Status\*\*:\s*Draft/m;
 
     const divergentDelivered: string[] = [];
