@@ -18,7 +18,6 @@ import { rankTopLeverages } from '../utils/flowLeverageEngine';
 import { MetricsBar } from './MetricsBar';
 import { ThroughputChart } from './charts/ThroughputChart';
 import { ThroughputAnalyticsView } from './ThroughputAnalyticsView';
-import { LeadTimeScatter } from './charts/LeadTimeScatter';
 import { CumulativeFlowChart } from './charts/CumulativeFlowChart';
 import { CycleTimeScatterPlot } from './charts/CycleTimeScatterPlot';
 import { MonteCarloSimulationView, MonteCarloMode } from './MonteCarloSimulationView';
@@ -26,12 +25,12 @@ import { TopLeveragesCard } from './MonteCarlo/TopLeveragesCard';
 import { WipAgingView } from './WipAgingView';
 import { AnalyticsNavHeader } from './AnalyticsNavHeader';
 import { DashboardSummaryCards } from './DashboardSummaryCards';
+import { AnalyticsExpandedChartModal } from './Analytics/AnalyticsExpandedChartModal';
 import { SleAnalyticsView } from './SleAnalyticsView';
 import { BlockerAnalyticsView } from './BlockerAnalyticsView';
 import { DatasetConfigurationDrawer } from './DatasetConfigurationDrawer';
 import { MikaInsightCard } from './Mika/MikaInsightCard';
-import { mikaService } from '../services/ai/mikaService';
-import { MikaInsight } from '../types/mika';
+import { useDashboardMikaInsights } from '../hooks/useDashboardMikaInsights';
 import { ExportReportModal } from './ExportReportModal';
 import { ExecutiveReportPrintView } from './ExecutiveReportPrintView';
 import { FlowReportSnapshot } from '../types/reports';
@@ -95,34 +94,13 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = (props) => 
     );
   }, [datasetConfig]);
 
-  // Estados e Carregamento de Diagnósticos da Mika Copilot (Feature 048)
-  const [mikaInsights, setMikaInsights] = useState<MikaInsight[]>([]);
-  const [mikaLoading, setMikaLoading] = useState(false);
-
   const boardId = board?.id || 'default-board';
   const columns = useMemo(() => board?.columns || [], [board?.columns]);
-
-  useEffect(() => {
-    let isMounted = true;
-    mikaService.getBoardInsights(boardId, columns, filteredTasks).then((insights) => {
-      if (isMounted) {
-        setMikaInsights(insights);
-      }
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, [boardId, columns, filteredTasks]);
-
-  const handleRefreshMika = async () => {
-    setMikaLoading(true);
-    try {
-      const refreshed = await mikaService.getBoardInsights(boardId, columns, filteredTasks, true);
-      setMikaInsights(refreshed);
-    } finally {
-      setMikaLoading(false);
-    }
-  };
+  const { mikaInsights, mikaLoading, handleRefreshMika } = useDashboardMikaInsights(
+    boardId,
+    columns,
+    filteredTasks,
+  );
 
   // Determinar tarefas concluídas com base na categoria 'done' das colunas do board (ou fallback column === 'done')
   const completedTasks = useMemo(() => {
@@ -173,6 +151,31 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = (props) => 
   const toggleExpand = (chart: ChartType) => {
     setExpandedChart((prev) => (prev === chart ? null : chart));
   };
+
+  const totalWip = useMemo(
+    () =>
+      filteredTasks.filter(
+        (t) =>
+          t.column === 'in_progress' ||
+          board?.columns.find((c) => c.id === t.column)?.category === 'in_progress',
+      ).length,
+    [filteredTasks, board?.columns],
+  );
+
+  const blockedRatePercentage = useMemo(
+    () =>
+      filteredTasks.length > 0
+        ? Math.round((blockerSummary.totalBlockedTasks / filteredTasks.length) * 100)
+        : 0,
+    [filteredTasks.length, blockerSummary.totalBlockedTasks],
+  );
+
+  const dateFilterLabel =
+    datasetConfig.timeWindow === 'all'
+      ? 'Todos os dados do quadro'
+      : datasetConfig.timeWindow === 'custom'
+        ? `Customizado: ${datasetConfig.customStartDate || ''} até ${datasetConfig.customEndDate || ''}`
+        : `Últimos ${datasetConfig.timeWindow} dias`;
 
   return (
     <div className="analytics-dashboard">
@@ -281,19 +284,9 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = (props) => 
             {/* Cartões de síntese executiva */}
             <DashboardSummaryCards
               sle={sleMetrics}
-              totalWip={
-                filteredTasks.filter(
-                  (t) =>
-                    t.column === 'in_progress' ||
-                    board?.columns.find((c) => c.id === t.column)?.category === 'in_progress',
-                ).length
-              }
+              totalWip={totalWip}
               recentThroughput={metrics.throughput}
-              blockedRatePercentage={
-                filteredTasks.length > 0
-                  ? Math.round((blockerSummary.totalBlockedTasks / filteredTasks.length) * 100)
-                  : 0
-              }
+              blockedRatePercentage={blockedRatePercentage}
               onNavigateToSle={() => setActiveCategory('sles')}
               onNavigateToWip={() => setActiveCategory('wip')}
               onNavigateToThroughput={() => setActiveCategory('throughput')}
@@ -338,51 +331,17 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = (props) => 
       )}
 
       {/* Modal / Overlay de Gráfico Expandido */}
-      {expandedChart && (
-        <div
-          className="chart-modal-backdrop"
-          onClick={() => setExpandedChart(null)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Visualização ampliada do gráfico"
-        >
-          <div className="chart-modal-content" onClick={(e) => e.stopPropagation()}>
-            {expandedChart === 'cfd' && (
-              <CumulativeFlowChart
-                data={cfd.points}
-                maxTotal={cfd.maxTotal}
-                isEmpty={cfd.isEmpty}
-                columns={board?.columns}
-                onToggleExpand={() => setExpandedChart(null)}
-                isExpanded={true}
-              />
-            )}
-            {expandedChart === 'throughput' && (
-              <ThroughputChart
-                data={throughput}
-                maxThroughput={maxThroughput}
-                onToggleExpand={() => setExpandedChart(null)}
-                isExpanded={true}
-              />
-            )}
-            {expandedChart === 'leadTime' && (
-              <LeadTimeScatter
-                data={scatter}
-                maxLeadTime={maxLeadTime}
-                onToggleExpand={() => setExpandedChart(null)}
-                isExpanded={true}
-              />
-            )}
-            {expandedChart === 'cycleTime' && (
-              <CycleTimeScatterPlot
-                tasks={completedTasks}
-                onToggleExpand={() => setExpandedChart(null)}
-                isExpanded={true}
-              />
-            )}
-          </div>
-        </div>
-      )}
+      <AnalyticsExpandedChartModal
+        expandedChart={expandedChart}
+        onClose={() => setExpandedChart(null)}
+        cfd={cfd}
+        columns={board?.columns}
+        throughput={throughput}
+        maxThroughput={maxThroughput}
+        scatter={scatter}
+        maxLeadTime={maxLeadTime}
+        completedTasks={completedTasks}
+      />
 
       {/* Gaveta Retrátil de Configuração do Conjunto de Dados */}
       <DatasetConfigurationDrawer
@@ -402,13 +361,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = (props) => 
           tasks={tasks}
           filteredTasks={filteredTasks}
           mikaInsights={mikaInsights}
-          activeDateFilterLabel={
-            datasetConfig.timeWindow === 'all'
-              ? 'Todos os dados do quadro'
-              : datasetConfig.timeWindow === 'custom'
-                ? `Customizado: ${datasetConfig.customStartDate || ''} até ${datasetConfig.customEndDate || ''}`
-                : `Últimos ${datasetConfig.timeWindow} dias`
-          }
+          activeDateFilterLabel={dateFilterLabel}
           hasActiveFilters={hasActiveDatasetFilters}
           onGeneratePdf={(snapshot) => setPrintSnapshot(snapshot)}
         />

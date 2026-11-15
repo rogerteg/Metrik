@@ -26,6 +26,13 @@ export interface MonteCarloSimulationViewProps {
   onSelectTask?: (taskId: string) => void;
 }
 
+const MODES: { id: MonteCarloMode; label: string; testId: string }[] = [
+  { id: 'how-many', label: '🎯 Quantos Itens? (How Many)', testId: 'mode-how-many-btn' },
+  { id: 'when', label: '📅 Quando Entregaremos? (When)', testId: 'mode-when-btn' },
+  { id: 'backlog', label: '📦 Previsão de Backlog & Épicos', testId: 'mode-backlog-btn' },
+  { id: 'leverage', label: '🎯 Alavancas de Fluxo', testId: 'mode-leverage-btn' },
+];
+
 export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> = (props) => {
   const {
     tasks,
@@ -99,46 +106,19 @@ export const MonteCarloSimulationView: React.FC<MonteCarloSimulationViewProps> =
         </div>
 
         <div className="monte-carlo-mode-toggle" role="tablist">
-          <button
-            type="button"
-            className={`mode-toggle-btn ${mode === 'how-many' ? 'is-active' : ''}`}
-            onClick={() => setMode('how-many')}
-            role="tab"
-            aria-selected={mode === 'how-many'}
-            data-testid="mode-how-many-btn"
-          >
-            🎯 Quantos Itens? (How Many)
-          </button>
-          <button
-            type="button"
-            className={`mode-toggle-btn ${mode === 'when' ? 'is-active' : ''}`}
-            onClick={() => setMode('when')}
-            role="tab"
-            aria-selected={mode === 'when'}
-            data-testid="mode-when-btn"
-          >
-            📅 Quando Entregaremos? (When)
-          </button>
-          <button
-            type="button"
-            className={`mode-toggle-btn ${mode === 'backlog' ? 'is-active' : ''}`}
-            onClick={() => setMode('backlog')}
-            role="tab"
-            aria-selected={mode === 'backlog'}
-            data-testid="mode-backlog-btn"
-          >
-            📦 Previsão de Backlog & Épicos
-          </button>
-          <button
-            type="button"
-            className={`mode-toggle-btn ${mode === 'leverage' ? 'is-active' : ''}`}
-            onClick={() => setMode('leverage')}
-            role="tab"
-            aria-selected={mode === 'leverage'}
-            data-testid="mode-leverage-btn"
-          >
-            🎯 Alavancas de Fluxo
-          </button>
+          {MODES.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              className={`mode-toggle-btn ${mode === m.id ? 'is-active' : ''}`}
+              onClick={() => setMode(m.id)}
+              role="tab"
+              aria-selected={mode === m.id}
+              data-testid={m.testId}
+            >
+              {m.label}
+            </button>
+          ))}
         </div>
       </div>
 
