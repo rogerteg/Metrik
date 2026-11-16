@@ -5,7 +5,7 @@
 [![React Version](https://img.shields.io/badge/React-19.0-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript Version](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite Version](https://img.shields.io/badge/Vite-6.1-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Test Suite](https://img.shields.io/badge/Tests-701%20passing-brightgreen?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Test Suite](https://img.shields.io/badge/Tests-1025%20passing-brightgreen?logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Test Coverage](https://img.shields.io/badge/Coverage-86%25-success)](https://vitest.dev/)
 [![Architecture: Local-First](https://img.shields.io/badge/Architecture-Local--First-blueviolet)](https://localfirstweb.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -67,7 +67,7 @@ Quando as credenciais de sincronização estão configuradas, o Metrik ativa um 
 | **Bundler & Dev Server** | [Vite 6](https://vitejs.dev/) | Build ultrarrápido com Hot Module Replacement (HMR) instantâneo |
 | **Backend Híbrido** | [Supabase](https://supabase.com/) | PostgreSQL gerenciado, autenticação e sincronização assíncrona |
 | **Estilização** | CSS Vanilla Puro | Design system com CSS Variables, sem dependências externas de UI ou frameworks pesados |
-| **Testes Unitários & Integração** | [Vitest 3](https://vitest.dev/) | Suíte de testes com 701 testes automatizados (100% verde) |
+| **Testes Unitários & Integração** | [Vitest 3](https://vitest.dev/) | Suíte de testes com 1025 testes automatizados em 163 arquivos (100% verde) |
 | **Testing Utilities** | [Testing Library](https://testing-library.com/) | Testes de componentes orientados ao comportamento real do usuário |
 | **Acessibilidade** | [jest-axe](https://github.com/nickcolley/jest-axe) | Validação automatizada de acessibilidade e conformidade com WCAG |
 | **Padronização & Linting** | [ESLint 9](https://eslint.org/) & [Prettier](https://prettier.io/) | Governança estrita de estilo e qualidade de código |
@@ -158,14 +158,17 @@ npm run supabase:migrate
 O Metrik adota como princípio basilar o **Spec-Driven Development (SDD)**, suportado pela ferramenta [SpecKit](https://github.com/rogerteg/Metrik/tree/main/.specify) e integrado ao ecossistema de agentes de IA:
 
 1. **Evolução Orientada a Especificações:** Nenhuma linha de código de produção é alterada sem que haja previamente uma especificação funcional (`spec.md`), plano técnico de arquitetura (`plan.md`) e lista atômica de tarefas (`tasks.md`) sob o diretório `specs/`.
-2. **Constituição do Projeto (`.specify/memory/constitution.md`):** Conjunto imutável de princípios arquiteturais que regem o ciclo de vida do software:
-   - **Princípio I (Paridade de Modelo):** Manutenção estrita de integridade entre schema local, tipos TypeScript e schemas relacionais.
-   - **Princípio II (Arquitetura Limpa):** Separação de responsabilidades e desacoplamento de detalhes de infraestrutura.
-   - **Princípio III (Verificação Automatizada e Gates Físicos):** Zero enfraquecimento de asserções; evidência física auditável dos testes antes da liberação.
-   - **Princípio IV (Falha Explícita):** Erros devem ser capturados e reportados explicitamente; proibição de falhas silenciosas.
-   - **Princípio V (Simplicidade & YAGNI):** Eliminação de abstrações prematuras e foco em soluções duráveis.
-   - **Princípio VI (Modelos de Raciocínio Analítico Pré-Tarefas):** Decomposição por Primeiros Princípios, Pré-Mortem, MECE e Árvore de Decisão documentados antes de listar qualquer tarefa de engenharia.
-   - **Princípio VII (Independência de Marcas Externas):** Zero vazamento de nomes de ferramentas de mercado concorrentes ou inspirações em caminhos, código ou documentação pública.
+2. **Constituição do Projeto (`.specify/memory/constitution.md`):** Conjunto imutável de 10 princípios fundamentais que regem o ciclo de vida do software:
+   - **Princípio I (Desenvolvimento Orientado por Especificação / SDD - Inegociável):** Toda feature, alteração arquitetural ou mudança não-trivial inicia obrigatoriamente com especificação (`spec.md`), plano técnico (`plan.md`) e lista atômica de tarefas (`tasks.md`) sob o diretório `specs/` antes da escrita de qualquer código de produção.
+   - **Princípio II (Qualidade de Código & Modularidade):** Módulos autocontidos, de responsabilidade única e baixo acoplamento. Teto mandatório de $\le 400$ linhas por arquivo de produção (`src/**/*.{ts,tsx,css}`), ativamente verificado por `tests/unit/moduleLineCountGuard.test.ts`, com baseline de dívida legada congelada sob catraca (*ratchet*).
+   - **Princípio III (Verificação Automatizada & Testes):** Zero tolerância a testes quebrados ou erros de compilação/tipagem (`npm test`, `npm run build`, `npx tsc --noEmit`). Proibição estrita de enfraquecer, pular ou deletar asserções; os gates de verificação devem provar factualmente o que anunciam (*Gates Must Prove Themselves*).
+   - **Princípio IV (Observabilidade & Logging Estruturado):** Falha rápida e explícita (*fail fast*), logging estruturado com prefixos estáveis e rastreáveis (`[Metrik]`, `[Metrik Guard]`) e proibição de engolir exceções silenciosamente.
+   - **Princípio V (Simplicidade & YAGNI):** Implementação da menor solução completa que satisfaça os requisitos especificados. Proibição de abstrações prematuras, especulações e complexidade desnecessária.
+   - **Princípio VI (Modelos de Raciocínio Analítico Pré-Tarefas - Inegociável):** Decomposição analítica obrigatória prévia à criação de tarefas cobrindo: Primeiros Princípios, Análise Pré-Mortem/Inversão, Validação MECE, Árvore de Decisão com Poda de Alternativas, Falsificabilidade/TDD (*Red-Bar First*) e Triangulação Constitucional Adversarial.
+   - **Princípio VII (Independência de Marca & Identidade Limpa - Inegociável):** O Metrik é um produto autônomo com design e terminologia canônica própria; proibição absoluta de vazamento de marcas de produtos concorrentes ou ferramentas externas em código, atributos DOM, comentários ou documentação pública.
+   - **Princípio VIII (Soberania Local-First, Sincronização Híbrida & Isolamento de Squads - Inegociável):** Operação cliente-side autônoma e completa em `localStorage` com zero latência; sincronização assíncrona opcional e não-bloqueante com Supabase; isolamento estrito de dados por squads via Team-Based Access Control (TBAC).
+   - **Princípio IX (Integridade de Dados, Persistência Intencional & Proteção de Rascunhos - Inegociável):** Zero perda silenciosa de dados do usuário; guardas de saída para alterações pendentes (*dirty state guard*), atalhos ergonômicos (`Ctrl+S`/`Esc`) e respeito rigoroso ao modo de persistência (manual vs automático).
+   - **Princípio X (Governança de IA Conversacional & Segurança do Copilot Consultivo - Inegociável):** O assistente analítico (Mika AI) opera 100% offline via heurísticas locais determinísticas com fallback transparente; caráter estritamente consultivo e somente-leitura (sem mutação autônoma de dados); histórico limitado a 30 mensagens FIFO por quadro no cliente.
 
 ### Fluxo Operacional SpecKit
 ```text
