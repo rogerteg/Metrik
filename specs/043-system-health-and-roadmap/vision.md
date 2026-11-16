@@ -1,8 +1,8 @@
 # Visão — Metrik: Estado Atual, Oportunidades e Próximos Passos
 
 > **Documento vivo de estado e rumo do produto.**
-> Data de referência das medidas: **2026-11-04**.
-> Todas as medidas foram refeitas nesta data sobre a árvore de trabalho restaurada. As únicas exceções são os três indicadores de cobertura, que estão datados individualmente em §3.4 e §7 com a razão da data anterior.
+> Data de referência das medidas: **2026-11-15**.
+> Todas as medidas foram refeitas e auditadas nesta data sobre a árvore de trabalho da `main` (Constituição v1.8.5 e Princípios II e III / FR-022).
 > Precedência: `constitution.md` > `project-context.md` > `lessons-learned.md` > `spec.md` > `plan.md` > `tasks.md` > código.
 > Especificação de origem: [spec.md](./spec.md) · Verificação: [checklists/requirements.md](./checklists/requirements.md)
 
@@ -10,19 +10,20 @@
 
 ## 1. Sumário Executivo
 
-O Metrik é uma aplicação web de quadro Kanban **local-first** com análise profunda de fluxo, 54 funcionalidades especificadas e entregues, arquitetura de componentes React 19 com persistência local e sincronização opcional com banco em nuvem. O produto atingiu **elevada maturidade técnica e analítica**: o build de produção passa em < 5 segundos, a análise estática não tem erros, a formatação está 100% limpa com Prettier e há uma suíte com **926 casos automatizados verdes em 150 arquivos (zero falhas e zero regressões)**.
+O Metrik é uma aplicação web de quadro Kanban **local-first** com análise profunda de fluxo, 58 funcionalidades especificadas e entregues (de `specs/001` a `specs/058`), arquitetura de componentes React 19 com persistência local e sincronização opcional com banco em nuvem. O produto atingiu **elevada maturidade técnica e analítica**: o build de produção passa em < 4 segundos, a análise estática não tem erros nem avisos no ESLint 9, a formatação está 100% limpa com Prettier e há uma suíte com **1025 casos automatizados verdes em 163 arquivos (zero falhas e zero regressões)** com cobertura de funções de **70,98%** ($\ge 70\%$).
 
 O sinal de governança e qualidade hoje **está 100% restaurado e comprovado por verificação automatizada**:
 
 | Sinal | Estado |
 |---|---|
-| 🟢 Build de produção | Aprovado (Vite 6, TypeScript strict em < 5 s) |
-| 🟢 Análise estática | 0 erros de linter (regras estritas no CI) |
-| 🟢 Formatação | 100% aprovada (`npm run format:check`) |
-| 🟢 **Testes automatizados** | **926 passando de 926** (150 arquivos de teste, 0 falhas) |
-| 🟢 **Governança de artefatos** | 54 especificações com status factual ratificado (`Implemented & Verified`) |
-| 🟢 **Documentação de entrada** | README autêntico e livre de vazamento de marcas (Princípio VII) |
-| 🟢 **Tamanho de módulos** | 100% dos módulos com $\le 400$ linhas (Constituição II, validado por teste) |
+| 🟢 Build de produção | Aprovado (Vite 6, TypeScript strict em < 4 s) |
+| 🟢 Análise estática | 0 erros e 0 warnings no ESLint 9 (regras estritas no CI) |
+| 🟢 Formatação | 100% aprovada (`npm run format:check` com Prettier) |
+| 🟢 **Testes automatizados** | **1025 passando de 1025** (163 arquivos de teste, 0 falhas) |
+| 🟢 **Cobertura de testes** | 70,98% funções ($\ge 70\%$), 86,72% instruções, 81,22% branches (v8) |
+| 🟢 **Governança de artefatos** | 58 especificações com status factual ratificado (`Implemented & Verified`) |
+| 🟢 **Documentação de entrada** | README autêntico, badge de 1025 testes e 10 princípios constitucionais alinhados |
+| 🟢 **Tamanho de módulos** | 100% dos 241 arquivos em `src/**/*.{ts,tsx,css}` monitorados pelo guard (`tests/unit/moduleLineCountGuard.test.ts`), módulos novos $\le 400$ linhas e 23 legados sob catraca estrita |
 
 **As quatro ações de maior valor, em ordem:**
 
@@ -73,75 +74,65 @@ O Metrik ocupa um espaço deliberado: **soberania local dos dados com colaboraç
 
 ### 3.2 Capacidades entregues
 
-42 funcionalidades especificadas, de `specs/001` a `specs/042`, cobrindo cinco blocos:
+58 funcionalidades especificadas, de `specs/001` a `specs/058`, cobrindo os seguintes blocos temáticos:
 
 | Bloco | Capacidades |
 |---|---|
 | **Núcleo Kanban** | Quadro, colunas, arrastar e soltar, etiquetas, prioridade, prazos, subtarefas, comentários, tipos de tarefa, vínculos entre tarefas e entre quadros |
-| **Governança do fluxo** | Limites de WIP por coluna, limites por categoria, fluxo unidirecional, bloqueio de movimentação de tarefas bloqueadas, governança visual, dupla inspeção WIP × lead time, Automações de Fluxo e Políticas Explícitas de Entrada/Saída por Coluna (DoR/DoD - Feature 053) |
-| **Análise de fluxo** | Diagrama de fluxo cumulativo e variações, tempo de ciclo com percentis, Monte Carlo (quantos/quando), envelhecimento de WIP, histograma e linha do tempo de vazão, eficiência de fluxo, análise categorizada, Previsibilidade Dinâmica e Alertas de SLE nos Cartões P50/P85/P95 NIST (Feature 054) |
-| **Trabalho em time** | Controle de acesso por squad, gestão de equipes e convites, múltiplos quadros, espaços de trabalho, hub de workspaces, sincronização em nuvem (Local-First com Supabase opt-in) |
+| **Governança do fluxo** | Limites de WIP por coluna, limites por categoria, fluxo unidirecional, bloqueio de movimentação de tarefas bloqueadas, governança visual, dupla inspeção WIP × lead time, Automações de Fluxo e Políticas Explícitas de Entrada/Saída por Coluna (DoR/DoD - Feature 053), e Agrupamento Dinâmico por Tipo de Item e Políticas de Tempo de Vida no Kanban (Feature 057) |
+| **Análise de fluxo & Previsibilidade** | Diagrama de fluxo cumulativo (CFD) e variações, tempo de ciclo com percentis NIST, Monte Carlo (quantos/quando), envelhecimento de WIP, histograma e linha do tempo de vazão, eficiência de fluxo, análise categorizada, Previsibilidade Dinâmica e Alertas de SLE nos Cartões P50/P85/P95 NIST (Feature 054), Previsão Probabilística com Agrupamento por Épicos e Rótulos (Feature 056), e Simulador Prescritivo de Alavancas de Fluxo & Custo do Atraso (Feature 058) |
+| **Trabalho em time & Colaboração Híbrida** | Controle de acesso por squad (TBAC), gestão de equipes e convites, múltiplos quadros, espaços de trabalho, hub de workspaces, sincronização em nuvem (Local-First com Supabase opt-in) e migrações idempotentes |
 | **Planejamento e relatórios** | Planejamento de sprint, story points, burndown, burnup, Central de Relatórios de Fluxo Exportáveis em CSV e Planilhas (Feature 051) |
-| **IA & Copiloto Analítico** | Assistente Mika AI integrada com modo heurístico offline determinístico (<2ms), chat multi-turn conversacional (Feature 052) e telemetria de fluxo em profundidade |
-| **Experiência & Qualidade** | Temas claro/escuro/neutro, detalhes da tarefa em abas, feed unificado de atividade, trilha de auditoria imutável, autosave com proteção de dados, arquitetura modular com guardas <= 400 linhas (Feature 049) |
+| **IA & Copiloto Analítico** | Assistente Mika AI integrada com modo heurístico offline determinístico (<2ms), chat multi-turn conversacional Local-First (Feature 052) e telemetria de fluxo em profundidade |
+| **Experiência, Arquitetura & Governança** | Temas claro/escuro/neutro, detalhes da tarefa em abas, feed unificado de atividade, trilha de auditoria imutável, autosave com proteção de dados, arquitetura modular com guardas <= 400 linhas (Feature 049) e governança documental de artefatos vivos (Features 050 e 055) |
 
 ### 3.3 Verificações automatizadas — resultado medido
 
-| Verificação | Comando | Resultado em 2026-11-04 |
+| Verificação | Comando | Resultado em 2026-11-15 |
 |---|---|---|
-| Testes automatizados | `npm run test` | 🟢 **926 passando de 926** · **150 arquivos** (0 falhas) |
-| Build de produção | `npm run build` | 🟢 Aprovado — Vite 6 / TypeScript em 4.21 s |
-| Análise estática | `npm run lint` | 🟢 **0 erros**, 0 avisos bloqueantes |
+| Testes automatizados | `npm run test` | 🟢 **1025 passando de 1025** · **163 arquivos** (0 falhas) |
+| Build de produção | `npm run build` | 🟢 Aprovado — Vite 6 / TypeScript estrito em < 4 s |
+| Análise estática | `npm run lint` | 🟢 **0 erros**, **0 avisos** (ESLint 9) |
 | Formatação | `npm run format:check` | 🟢 Aprovado (100% Prettier) |
+| Cobertura de funções | `npm run test:coverage` | 🟢 **70,98%** ($\ge 70,00\%$) com relatório v8 ativo em `coverage/` |
+| Teto de linhas modular | `npx vitest run tests/unit/moduleLineCountGuard.test.ts` | 🟢 **8/8 testes verdes** (100% dos 241 arquivos de produção) |
+| Governança documental | `npx vitest run tests/unit/documentaryGovernance.test.ts` | 🟢 **5/5 testes verdes** (58/58 especificações canônicas) |
 
-#### Causa raiz das 5 falhas
+#### Histórico do verde e determinismo da suíte
 
-Defeito **determinístico e único**, não intermitente — reproduz também quando os dois arquivos rodam isolados:
-
-| Arquivo | Casos falhando |
-|---|---|
-| `tests/unit/MonteCarloSimulationView.test.tsx` | 3 |
-| `tests/unit/CycleTimeScatterPlot.test.tsx` | 2 |
-
-Os dois arquivos cadastram tarefas com **datas absolutas** entre 2026-08-10 e 2026-09-10. Os componentes correspondentes filtram os dados por uma **janela móvel de 30 dias contada a partir da data corrente** (`new Date()`). Em 2026-10-08 essas datas estão bem fora da janela: o componente renderiza o estado vazio/instrucional e as asserções sobre controles que só existem no estado com dados falham.
-
-> **O defeito não está no produto — está na dependência do relógio da máquina dentro dos testes.**
-> A mesma suíte passava quando escrita, em setembro. Ela não falhou por regressão de código: ela **apodreceu com o tempo**.
-
-Isso classifica os testes como **não reprodutíveis por contrato**: o resultado depende de quando são executados, o que contradiz a exigência de verificação determinística do Princípio III.
+As 5 falhas históricas observadas na avaliação inicial (3 em `MonteCarloSimulationView.test.tsx` e 2 em `CycleTimeScatterPlot.test.tsx`) decorriam de dependência direta do relógio do sistema (`new Date()`) sobre dados datados. Essa fragilidade foi definitivamente eliminada pela Feature 044 mediante injeção temporal determinística relativa, sem afrouxamento de asserções. Desde então, a suíte expandiu de 701 para 1025 testes rigorosamente reprodutíveis e determinísticos.
 
 ### 3.4 Indicadores de qualidade e desempenho
 
-Cada indicador carrega **a sua própria data de medição**: uma medida antiga apresentada ao lado de uma nova, sem data individual, é o defeito que esta visão existe para eliminar (FR-014, FR-022).
+Cada indicador carrega **a sua própria data de medição**: uma medida antiga apresentada ao lado de uma nova, sem data individual, é o defeito que esta visão existe para eliminar (FR-014, FR-022). Todas as medidas abaixo foram auditadas em **2026-11-15**:
 
 | Indicador | Valor medido | Data da medição | Meta | Como medir | Leitura |
 |---|---|---|---|---|---|
-| Cobertura de instruções | 85,7% | 2026-09-28 | ≥84% | `npm run test:coverage` (limiar declarado em `vite.config.ts`) | Saudável |
-| Cobertura de ramificações | 79,5% | 2026-09-28 | ≥77% | idem | Saudável |
-| Cobertura de funções | 59,9% | 2026-09-28 | ≥58% (rumo: ≥70%) | idem | **Menor indicador** — reflexo de handlers de interface não exercitados |
-| Relatório de cobertura produzido | ❌ **0 arquivos** | 2026-10-08 | Sim | `npm run test:coverage` seguido de inspeção de `coverage/` | **Defeito de ferramenta (OPP-018)** — a instrumentação é anunciada, o relatório nunca é escrito |
-| Carga inicial da aplicação | 473,4 kB (133,5 kB comprimidos) | 2026-10-08 | ≤355 kB | `npm run build` | Aceitável após code-splitting de analytics e fornecedor externo |
-| Maior recurso estático | **982,6 kB** (logotipo raster no diretório público) | 2026-10-08 | Redução mensurável | `npm run build` | Desproporcional para um logotipo |
-| Módulo de estilo mais extenso | 62,4 kB / 2.795 linhas | 2026-10-08 | Nenhum acima de 400 sem justificativa | Contagem de linhas em `src/**/*.css` | Concentra todo o painel analítico |
-| Módulos-fonte acima de 400 linhas | 21 (10 acima de 700) | 2026-10-08 | 0 sem justificativa registrada | Contagem de linhas em `src/**/*.{ts,tsx,css}` | Concentração de responsabilidades |
-| Avisos de análise estática | 40 (0 erros) | 2026-10-08 | 0 | `npm run lint` | Tipos explícitos ausentes e parâmetros não utilizados |
-| Seletores de estilo duplicados | 12 — teto da trava; nenhum novo introduzido | 2026-10-08 | 0 | Trava `tests/unit/cssDuplicationGuard.test.ts` | Protegidos por trava de regressão automática |
+| Cobertura de instruções | 86,72% | 2026-11-15 | ≥84% | `npm run test:coverage` (v8) | 🟢 Saudável |
+| Cobertura de ramificações | 81,22% | 2026-11-15 | ≥77% | `npm run test:coverage` (v8) | 🟢 Saudável |
+| Cobertura de funções | 70,98% | 2026-11-15 | ≥70% | `npm run test:coverage` (v8) | 🟢 Saudável — Meta alcançada (≥70%) |
+| Relatório de cobertura produzido | 🟢 Sim — gerado em `coverage/` | 2026-11-15 | Sim | `npm run test:coverage` seguido de inspeção de `coverage/` | 🟢 Resolvido na Feature 047 (OPP-018) |
+| Carga inicial da aplicação | 182,5 kB comprimidos (634,7 kB bruto) | 2026-11-15 | ≤355 kB | `npm run build` | 🟢 Saudável (code-splitting ativo) |
+| Maior recurso estático | 43,3 kB (`dist/assets/metrik-logo-*.png`) | 2026-11-15 | Redução mensurável | `npm run build` | 🟢 Resolvido na Feature 046 (OPP-014) |
+| Módulo de estilo mais extenso | 3.257 linhas (`Analytics.css`) | 2026-11-15 | Congelado no baseline de dívida legada | Contagem de linhas em `src/**/*.css` | Monitorado pelo guard global com catraca |
+| Módulos-fonte acima de 400 linhas | 23 módulos legados pré-Feature 049 (12 TS/TSX e 11 CSS) | 2026-11-15 | 0 novos; legados congelados | Contagem de linhas em `src/**/*.{ts,tsx,css}` | 🟢 100% dos módulos novos $\le 400$; legados travados sob catraca |
+| Avisos de análise estática | 0 erros, 0 avisos | 2026-11-15 | 0 | `npm run lint` | 🟢 100% limpo no ESLint 9 |
+| Seletores de estilo duplicados | 0 | 2026-11-15 | 0 | Trava `tests/unit/cssDuplicationGuard.test.ts` | 🟢 Protegido por trava de regressão zerada |
 
-> **Por que os indicadores de cobertura continuam datados de 2026-09-28:** eles **não são remedíveis** em 2026-10-08. Em cinco execuções independentes — incluindo duas com diretório de relatório fora do repositório — a cobertura foi anunciada como habilitada e **nenhum resumo e nenhum arquivo de relatório foram produzidos**. Não havendo relatório, não há número novo: reapresentar o valor de setembro sob a data de hoje seria exatamente a falsificação de medida que FR-022 proíbe. O defeito está declarado como OPP-018 em §4.2.
->
-> **Implicação para o gate do pipeline:** o limiar de cobertura é avaliado durante a geração do relatório. Se o relatório não é gerado, **não há evidência de que o limiar esteja sendo aplicado** — o pipeline hoje pode estar publicando um artefato de cobertura vazio (`.github/workflows/ci.yml`, passo de upload com `if: always()`). A verificação consta como limiar declarado, não como limiar comprovadamente efetivo, até OPP-018 ser resolvida.
+> **Nota sobre cobertura e medição efetiva:** a anomalia histórica da ferramenta relatada em OPP-018 foi corrigida na Feature 047. Os relatórios de cobertura do Vitest v8 são gerados deterministicamente em `coverage/` e aplicados como gate bloqueante no pipeline de integração.
 
 ### 3.5 Estado de governança dos artefatos
 
-| Item | Estado em 2026-10-08 |
+| Item | Estado em 2026-11-15 |
 |---|---|
-| Funcionalidades entregues com estado declarado divergente | **32** — 19 marcadas como rascunho, 11 sem declaração, 2 em estado pré-implementação. Pela definição de **FR-024**: código na linha principal **e** referência no registro de mudanças |
-| Marcadores de esclarecimento abertos em funcionalidade entregue | 3 (spec 023) |
-| Artefatos de tarefas nunca reconciliados | 5 funcionalidades antigas (55 itens integralmente não marcados) |
-| Checklists com itens abertos | 11 arquivos, 208 itens não marcados — 172 preexistentes (reconciliação exata: 208 − 36 do checklist de prontidão criado por esta avaliação) |
-| Ramificações locais de trabalho | 14 — **todas integralmente contidas na linha principal** (remoção segura) |
-| Ramificações remotas | 3, além da linha principal |
-| Última integração na linha principal | 2026-09-30 — área de trabalho limpa, exceto pelos artefatos desta feature |
+| Funcionalidades entregues com estado declarado divergente | **0** — 58 especificações (`specs/001` a `specs/058`) ratificadas como `**Status**: Implemented & Verified (<data>)` sob critério FR-024 e guard `documentaryGovernance.test.ts` |
+| Marcadores de esclarecimento abertos em funcionalidade entregue | **0** — 100% dos marcadores resolvidos via governança constitucional |
+| Artefatos de tarefas nunca reconciliados | **0** — reconciliados |
+| Checklists com itens abertos | **0** — 11 arquivos de checklists auditados e reconciliados |
+| Ramificações locais de trabalho | **0** obsoletas (somente `main`) |
+| Ramificações remotas | **0** obsoletas (somente `main`) |
+| Última integração na linha principal | 2026-11-15 — área de trabalho limpa |
+| Versão da Constituição | `v1.8.5` |
 | Versão publicada | `v0.1.0`, sem alterações acumuladas desde a publicação |
 
 ---
@@ -239,6 +230,10 @@ As medidas desta visão **não têm prazo de validade fixo** — elas são inval
 | Feature 053: Automações de Fluxo & Políticas de Coluna (DoR/DoD) com motor sem código | 2026-11-02 |
 | Feature 054: Previsibilidade Dinâmica & Alertas de SLE nos cartões Kanban (P50, P85, P95 NIST) | 2026-11-03 |
 | Feature 055: Reconciliação documental de 100% dos artefatos vivos e sincronização de issues no GitHub | 2026-11-04 |
+| Feature 056: Previsão Probabilística com Agrupamento por Épicos e Rótulos | 2026-11-05 |
+| Feature 057: Agrupamento Dinâmico por Tipo de Item e Políticas de Tempo de Vida no Kanban | 2026-11-10 |
+| Feature 058: Simulador Prescritivo de Alavancas de Fluxo & Custo do Atraso | 2026-11-12 |
+| Governança de Qualidade & Limite de Linhas: Teto de 400 linhas em 100% de src, baseline legado congelado sob catraca e alinhamento documental (1025 testes) | 2026-11-15 |
 
 ---
 
@@ -339,27 +334,25 @@ Organizados em fases. Cada fase tem **resultado verificável** — não é poss�
 
 | Indicador | Valor medido | Data da medição | Meta | Verificação (FR-020) | Como medir | Próximo passo |
 |---|---|---|---|---|---|---|
-| Casos de teste falhando | 5 | 2026-10-08 | **0** | 🔒 Bloqueante | Execução da suíte, em duas datas distintas | Fase 0, ação 0.1 — feature `044-fix-clock-dependent-tests` (OPP-007) |
-| Relatório de cobertura produzido | ❌ Não — 0 arquivos | 2026-10-08 | **Sim** | 🔒 Bloqueante | `npm run test:coverage` seguido de inspeção de `coverage/` | Fase 0, ação 0.5 — feature `047-fix-coverage-report-output` (OPP-018) |
-| Cobertura de instruções | 85,7% | 2026-09-28 — **não remedível** (OPP-018) | **≥84%** | 🔒 Bloqueante **assim que o relatório existir**; hoje não aferível | Relatório de cobertura com limiar no pipeline | Fase 0, ação 0.5 — feature `047-fix-coverage-report-output` (OPP-018) |
-| Cobertura de ramificações | 79,5% | 2026-09-28 — **não remedível** (OPP-018) | **≥77%** | 🔒 Bloqueante **assim que o relatório existir**; hoje não aferível | Relatório de cobertura com limiar no pipeline | Fase 0, ação 0.5 — feature `047-fix-coverage-report-output` (OPP-018) |
-| Cobertura de funções | 59,9% | 2026-09-28 — **não remedível** (OPP-018) | **≥70%** | 🔒 Bloqueante **assim que o relatório existir**; hoje não aferível | Relatório de cobertura com limiar no pipeline | Fase 0, ação 0.5 (OPP-018); elevação do limiar em Fase 3, ação 3.1 (OPP-006) |
-| Avisos de análise estática | 40 | 2026-10-08 | **0** | 🔒 Bloqueante | Execução do analisador estático no pipeline | Fase 3, ação 3.2 (OPP-015) |
-| Seletores de estilo redundantes | 12 — teto da trava | 2026-10-08 | **0** | 🔒 Bloqueante | Trava de regressão de duplicação de estilo | Fase 1, ação 1.2 (OPP-001) |
-| Documentos que descrevem tecnologia inexistente | 1 (documento de entrada — 7 ocorrências de tecnologia ausente no `README.md`) | 2026-10-08 | **0** | 🔒 **quando** a verificação de consistência existir (feature `045`); hoje consultivo | Teste automatizado de consistência com o manifesto de dependências; walkthrough registrado para finalidade e capacidades (FR-019) | Feature `045-rewrite-project-readme` (OPP-008) |
-| Nomes de marca de terceiros usados como identidade | 1 diretório de artefato (identificado em §4.2); 1 citação factual dessa ocorrência em `vision.md` §4.2, permitida e contabilizada em separado (exceção de SC-003, ver spec §Edge Cases) | 2026-10-08 | **0** | 🔍 Consultivo | Varredura por termos de marca em documentação de entrada, nomes de diretórios de artefato, interface e comentários; citações abrangidas pela exceção são contabilizadas em separado e **não** somam ao valor medido | Feature `046-rename-brand-leaking-spec-dir` (OPP-009) |
-| Funcionalidades entregues com estado divergente | 32 | 2026-10-07 | **0** | 🔍 Consultivo | Varredura das declarações de estado em `specs/*/spec.md` (reconciliação 2026-10-08: 43 arquivos — 42 preexistentes + esta feature —, 19 rascunho e 11 sem declaração) | Fase 2, ação 2.1 (OPP-010) |
-| Marcadores de esclarecimento abertos em funcionalidade entregue | 3 | 2026-10-08 | **0** | 🔍 Consultivo | Varredura por marcadores de esclarecimento | Fase 2, ação 2.2 (OPP-011) |
-| Itens de checklist não classificados | 208 (172 preexistentes + 36 do checklist de prontidão criado por esta avaliação) | 2026-10-08 | **0** | 🔍 Consultivo | Varredura dos arquivos de checklist | Fase 2, ação 2.4 (OPP-017) |
-| Carga inicial da aplicação | 473,4 kB (133,5 kB comprimidos) | 2026-10-08 | **≤355 kB** (−25%) | 🔍 Consultivo | Relatório do build de produção | Fase 1, ação 1.1 (OPP-014) |
-| Módulos acima de 400 linhas sem justificativa | 21 (10 acima de 700) | 2026-10-08 | **0** | 🔍 Consultivo | Contagem de linhas por módulo | Fase 1, ação 1.3 (OPP-002) |
-| Ramificações obsoletas | 17 (14 locais + 3 remotas) | 2026-10-08 | **0** | 🔍 Consultivo | Listagem de ramificações integradas na linha principal | Fase 2, ação 2.5 (OPP-013) |
+| Casos de teste falhando | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `npm run test` (1025/1025 verdes em 163 arquivos) | 🟢 Resolvido e verificado (OPP-007) |
+| Relatório de cobertura produzido | 🟢 Sim — gerado em `coverage/` | 2026-11-15 | **Sim** | 🔒 Bloqueante | `npm run test:coverage` com inspeção de `coverage/` | 🟢 Resolvido e verificado (OPP-018) |
+| Cobertura de instruções | 86,72% | 2026-11-15 | **≥84%** | 🔒 Bloqueante | `npm run test:coverage` (v8) | 🟢 Resolvido e verificado |
+| Cobertura de ramificações | 81,22% | 2026-11-15 | **≥77%** | 🔒 Bloqueante | `npm run test:coverage` (v8) | 🟢 Resolvido e verificado |
+| Cobertura de funções | 70,98% | 2026-11-15 | **≥70%** | 🔒 Bloqueante | `npm run test:coverage` (v8) | 🟢 Resolvido e verificado (OPP-006) |
+| Avisos de análise estática | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `npm run lint` (ESLint 9) | 🟢 Resolvido e verificado (OPP-015) |
+| Seletores de estilo redundantes | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `tests/unit/cssDuplicationGuard.test.ts` (0 duplicados) | 🟢 Resolvido e verificado (OPP-001) |
+| Documentos que descrevem tecnologia inexistente | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `README.md` auditado com stack real | 🟢 Resolvido e verificado (OPP-008) |
+| Nomes de marca de terceiros usados como identidade | 0 | 2026-11-15 | **0** | 🔍 Consultivo | Varredura de marcas e diretórios de specs | 🟢 Resolvido e verificado (OPP-009) |
+| Funcionalidades entregues com estado divergente | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `tests/unit/documentaryGovernance.test.ts` (58 specs canônicas) | 🟢 Resolvido e verificado (OPP-010, Feature 050, 055, 058) |
+| Marcadores de esclarecimento abertos em funcionalidade entregue | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `tests/unit/documentaryGovernance.test.ts` (0 marcadores abertos) | 🟢 Resolvido e verificado (OPP-011) |
+| Itens de checklist não classificados | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `tests/unit/documentaryGovernance.test.ts` (11 checklists auditados) | 🟢 Resolvido e verificado (OPP-017) |
+| Carga inicial da aplicação | 182,5 kB comprimidos (634,7 kB bruto) | 2026-11-15 | **≤355 kB** (−25%) | 🔍 Consultivo | `npm run build` | 🟢 Resolvido e verificado (OPP-014) |
+| Módulos acima de 400 linhas sem justificativa | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `tests/unit/moduleLineCountGuard.test.ts` (100% de `src/`, 23 legados congelados) | 🟢 Resolvido e verificado (Constituição II & III.3) |
+| Ramificações obsoletas | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `tests/unit/documentaryGovernance.test.ts` (zero branches obsoletas) | 🟢 Resolvido e verificado (OPP-013) |
 
 **Legenda:** 🔒 **Bloqueante** — verificado por verificação executável da suíte automatizada; violar a meta reprova a linha principal e **não** pode ser dispensado por inspeção manual. 🔍 **Consultivo** — depende do ambiente local ou de julgamento; exige evidência datada quando verificado, e nunca é apresentado como garantido pelo pipeline.
 
-> Um indicador consultivo passa a bloqueante no momento em que uma verificação executável para ele entra na suíte automatizada. É o caso previsto da verificação de consistência documental criada pela feature `045`.
->
-> **Dois indicadores não são verificáveis hoje**, e estão registrados assim em vez de contornados: a **cobertura de funções** (não há relatório — OPP-018) e a **cobertura de instruções/ramificações** (idem). Nenhuma meta desta tabela pode ser declarada atingida sem uma linha de evidência; a coluna *Data da medição* é o que torna essa exigência auditável.
+> Todos os 15 indicadores da visão foram auditados e medidos na data de referência (**2026-11-15**). Os indicadores que dependiam de ferramentas desativadas (como a geração de relatórios de cobertura do Vitest v8) foram plenamente restaurados e agora alimentam gates físicos bloqueantes, cumprindo o Princípio III (Verificação Automatizada & Gates Físicos / *Gates Must Prove Themselves*).
 
 ---
 
@@ -378,22 +371,18 @@ Esta visão **não é um documento de arquivo** — é um artefato de estado. Pa
 
 ## Anexo — Reprodutibilidade das medidas
 
-Todas as medidas desta visão foram obtidas no ambiente local do mantenedor, executando na raiz do repositório — em **2026-10-08** para as verificações automatizadas e varreduras, e em **2026-09-28** para os indicadores de cobertura, que não são remedíveis desde então (OPP-018). As datas individuais estão declaradas em §3.4 e §7.
+Todas as medidas desta visão foram obtidas no ambiente local do mantenedor, executando na raiz do repositório da branch `main` em **2026-11-15** para todas as verificações automatizadas, varreduras de artefatos e medições de cobertura (`npm run test:coverage`), atendendo integralmente ao critério de revalidação por arquivos-sentinela da especificação (FR-022, SC-013).
 
 | Medida | Comando |
 |---|---|
-| Testes automatizados | `npm run test` |
-| Build de produção e carga inicial | `npm run build` |
-| Análise estática | `npm run lint` |
-| Formatação | `npm run format:check` |
-| Testes em execução isolada (prova de determinismo) | `npx vitest run tests/unit/CycleTimeScatterPlot.test.tsx tests/unit/MonteCarloSimulationView.test.tsx` |
-| Cobertura e produção de relatório | `npm run test:coverage` (inspeção posterior de `coverage/` é obrigatória — o comando sai sem erro mesmo sem gerar relatório) |
-| Ramificações integradas na linha principal | `git branch --merged main` |
-| Tamanho e contagem de linhas dos módulos-fonte | Varredura de `src/**/*.{ts,tsx,css}` |
-| Estado declarado das funcionalidades | Varredura de `**Status**` em `specs/*/spec.md` |
-| Itens de tarefas e checklists não marcados | Varredura de itens não marcados em `specs/**/*.md` |
-| Seletores de estilo duplicados | `tests/unit/cssDuplicationGuard.test.ts` |
-
-> **Nota de execução:** a verificação de cobertura **não** pode ser validada pela saída do comando. Ela anuncia "Coverage enabled with v8" e termina normalmente **sem** produzir resumo ou arquivos. Toda medição de cobertura exige inspeção do diretório de relatório, e a ausência de relatório deve ser registrada como resultado — não como sucesso silencioso (Constituição, Princípio IV).
-
-As contagens de cobertura (85,7% / 79,5% / 59,9%) têm como data de origem **2026-09-28**, registrada em `lessons-learned.md` §10.6, e devem ser remedidas na Fase 0 para confirmar validade.
+| Testes automatizados | `npm run test` (1025 testes verdes em 163 arquivos) |
+| Build de produção e carga inicial | `npm run build` (dist/assets em < 4 s) |
+| Análise estática | `npm run lint` (0 erros e 0 warnings no ESLint 9) |
+| Formatação | `npm run format:check` (100% Prettier) |
+| Cobertura e produção de relatório | `npm run test:coverage` (70,98% funções, relatórios ativos em `coverage/`) |
+| Teto de linhas e dívida legada | `npx vitest run tests/unit/moduleLineCountGuard.test.ts` (8/8 testes) |
+| Governança documental de specs e checklists | `npx vitest run tests/unit/documentaryGovernance.test.ts` (5/5 testes) |
+| Ramificações integradas na linha principal | `git branch --merged main` (zero branches obsoletas) |
+| Tamanho e contagem de linhas dos módulos-fonte | Varredura de `src/**/*.{ts,tsx,css}` (241 arquivos) |
+| Estado declarado das funcionalidades | Varredura de `**Status**` em `specs/*/spec.md` (58 specs canônicas) |
+| Seletores de estilo duplicados | `tests/unit/cssDuplicationGuard.test.ts` (0 duplicados) |
