@@ -5,6 +5,37 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-16
+
+### Added
+
+- **Feature 058**: Simulador Prescritivo de Alavancas de Fluxo & Custo do Atraso (`FlowLeverageSimulator`, cenários e simulações estocásticas).
+- **Feature 057**: Assistente Preditivo Mika Monte Carlo Copilot integrado ao chat conversacional com telemetria e agrupamento dinâmico no Kanban.
+- **Feature 056**: Previsão Probabilística de Backlog com Monte Carlo, agrupamento por épicos e rótulos (`MonteCarloBacklogForecast`).
+- **Feature 055**: Reconciliação documental de 100% dos artefatos vivos e sincronização de issues no GitHub.
+- **Feature 054**: Previsibilidade Dinâmica e Alertas de SLE nos cartões Kanban (P50, P85, P95 NIST).
+- **Feature 053**: Automações de Fluxo & Políticas de Entrada/Saída de Coluna (DoR/DoD) com motor sem código.
+- **Feature 052**: Mika AI Conversational Chat Copilot Local-First com motor heurístico determinístico offline.
+- **Feature 051**: Central de Relatórios de Fluxo Exportáveis em CSV e Planilhas (`ExportReportModal`).
+
+### Changed
+
+- **Governança de Linhas & Decomposição Modular (Princípio II)**: Decomposição de `AnalyticsDashboard.tsx` (381 linhas) e `MonteCarloSimulationView.tsx` (381 linhas) com extração de `AnalyticsExpandedChartModal.tsx` e `useDashboardMikaInsights.ts`.
+- **Enforçamento do Teto de 400 Linhas em 100% de `src/`**: Novo teste global `tests/unit/moduleLineCountGuard.test.ts` (8 testes verdes) que monitora 100% dos 241 arquivos de produção e estabelece baseline congelado de dívida técnica com catraca (*ratchet*) para os 23 arquivos legados pré-Feature 049.
+- **Alinhamento da Constituição**: Atualização para v1.8.5 com formalização do teto modular e evidência medida (163 arquivos de teste, 1025 testes verdes, 70.98% de cobertura de funções).
+
+### Fixed
+
+- **Governança Documental**: Atualização canônica de status para 58 especificações (`**Status**: Implemented & Verified`) e expansão do guard `documentaryGovernance.test.ts` para cobrir o intervalo completo de 58 specs.
+- **Remoção de Código Não-Especificado**: Reversão completa do gateway LLM experimental (Respan) sem especificação prévia (Princípio I).
+- **Remoção de Branch Remota Obsoleta**: Exclusão segura de `origin/056-monte-carlo-backlog-forecast` já mesclada na `main`.
+
+### Docs
+
+- **README.md**: Atualização do badge para 1025 testes automatizados aprovados e alinhamento dos 10 Princípios Constitucionais com a Constituição v1.8.5.
+- **Visão do Produto (`specs/043-system-health-and-roadmap/vision.md`)**: Remedição e revalidação completa em 2026-11-15 de todos os 15 indicadores físicos por arquivos-sentinela (FR-022, SC-013), confirmando 58 specs e 1025 testes verdes.
+- **Metodologia SDD**: Alinhamento da skill `sdd-spec-driven` com a Constituição VI e caminhos canônicos do Metrik.
+
 ## [0.3.0] - 2026-10-27
 
 ### Added
