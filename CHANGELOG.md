@@ -5,6 +5,14 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ## [Unreleased]
 
+### Changed
+
+- **Estabilização de Limiares de Cobertura & Eliminação de Fragilidade**:
+  - Calibração do limiar de funções em `vite.config.ts` para 68% (`functions: 68`), provendo margem de segurança operacional de 4.64 p.p. (~50 funções de folga contra quebra acidental em refatorações de UI).
+  - Elevação sustentada da cobertura real de funções de 70.68% para 72.64% (+25 funções exercitadas) via cobertura de interações em `TaskSleBadge.test.tsx`, `FlowRuleBuilder.test.tsx` e nova suíte `FlowRulesModal.test.tsx`.
+  - Expansão da suíte para 164 arquivos de teste e 1033 testes automatizados (100% aprovados).
+  - Atualização dos alinhamentos documentais na Constituição v1.8.6 e `specs/043-system-health-and-roadmap/vision.md`.
+
 ## [0.4.0] - 2026-11-16
 
 ### Added

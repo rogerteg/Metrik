@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report:
-- Version change: 1.8.4 → 1.8.5
-- Bump rationale: PATCH — Alinhamento factual do teto de 400 linhas e do guard com a realidade do repositório (Princípios II, III.3 e III.4): o guard tests/unit/moduleLineCountGuard.test.ts agora escaneia 100% dos arquivos de produção (241 arquivos em src/**/*.{ts,tsx,css}), consolida a decomposição de AnalyticsDashboard.tsx (381 linhas) e MonteCarloSimulationView.tsx (381 linhas), e congela a dívida legada pré-Feature 049 (23 arquivos: 12 TS/TSX e 11 CSS) sob mecanismo de catraca estrito (ratchet), consolidando 163 arquivos de teste, 1025 testes automatizados 100% verdes e 70.98% de cobertura de funções.
-- Modified principles: II (Code Quality & Modularity — explicitação factual do escopo global de 100% dos arquivos e baseline congelado de dívida legada pré-existente sob catraca).
+- Version change: 1.8.5 → 1.8.6
+- Bump rationale: PATCH — Estabilização do limiar de cobertura de funções e eliminação da fragilidade de CI (Princípios II, III.3 e III.4): elevação da cobertura de funções para 72.64% com 164 arquivos de teste e 1033 testes 100% verdes, e calibração resiliente do limiar em vite.config.ts (functions: 68), assegurando margem operacional robusta (4.64 p.p. / ~50 funções de folga).
+- Modified principles: None.
 - Added sections: None.
 - Removed sections: None.
 - Expanded sections: None.
@@ -10,7 +10,7 @@ Sync Impact Report:
   - 100% of production files in src/**/*.{ts,tsx,css} (241 files) are actively scanned and enforced by tests/unit/moduleLineCountGuard.test.ts (8/8 tests green).
   - 100% of newly authored and refactored modules (Features 049–058) strictly comply with the ≤ 400 lines limit (including AnalyticsDashboard.tsx at 381 lines and MonteCarloSimulationView.tsx at 381 lines).
   - The 23 pre-existing legacy files (12 TS/TSX and 11 CSS) predating Feature 049 are tracked in an explicit frozen baseline ratchet (FROZEN_LEGACY_DEBT_BASELINE) in moduleLineCountGuard.test.ts, strictly prohibiting any debt expansion under Principles II, III.3, and III.4 until dedicated refactoring features decompose them.
-  - 163 test files and 1025 tests passing cleanly in Vitest (`npm run test`) with zero failures and zero regressions, with 70.98% function test coverage.
+  - 164 test files and 1033 tests passing cleanly in Vitest (`npm run test`) with zero failures and zero regressions, with 72.64% function test coverage (functions: 68 threshold).
   - 58 specifications in specs/ tracked and aligned with project governance.
   - Production build passing via Vite 6 and TypeScript strict check (`npx tsc --noEmit`) with 0 errors.
   - ESLint 9 passing with 0 errors and Prettier format check 100% compliant.

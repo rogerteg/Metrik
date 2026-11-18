@@ -107,4 +107,34 @@ describe('FlowRuleBuilder Component', () => {
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
+
+  it('deve permitir manipular condições e remover ações dinamicamente', () => {
+    render(<FlowRuleBuilder columns={dummyColumns} onSave={vi.fn()} onCancel={vi.fn()} />);
+
+    // Adiciona condição
+    const addCondBtn = screen.getByRole('button', { name: /\+ adicionar condição/i });
+    fireEvent.click(addCondBtn);
+
+    // Atualiza campo, operador e valor
+    const conditionFieldSelect = screen.getByDisplayValue(/prioridade/i);
+    fireEvent.change(conditionFieldSelect, { target: { value: 'tags' } });
+
+    const conditionOperatorSelect = screen.getByDisplayValue(/é igual a/i);
+    fireEvent.change(conditionOperatorSelect, { target: { value: 'contains' } });
+
+    const conditionValueInput = screen.getByPlaceholderText(/valor\.\.\./i);
+    fireEvent.change(conditionValueInput, { target: { value: 'backend' } });
+
+    // Remove condição
+    const removeCondBtn = screen.getByTitle(/remover condição/i);
+    fireEvent.click(removeCondBtn);
+    expect(screen.queryByPlaceholderText(/valor\.\.\./i)).not.toBeInTheDocument();
+
+    // Adiciona e remove ação
+    const addActionBtn = screen.getByRole('button', { name: /adicionar ação/i });
+    fireEvent.click(addActionBtn);
+    const removeActionBtn = screen.getByTitle(/remover ação/i);
+    fireEvent.click(removeActionBtn);
+    expect(screen.queryByTitle(/remover ação/i)).not.toBeInTheDocument();
+  });
 });

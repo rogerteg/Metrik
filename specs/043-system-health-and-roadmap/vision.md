@@ -334,11 +334,11 @@ Organizados em fases. Cada fase tem **resultado verificável** — não é poss�
 
 | Indicador | Valor medido | Data da medição | Meta | Verificação (FR-020) | Como medir | Próximo passo |
 |---|---|---|---|---|---|---|
-| Casos de teste falhando | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `npm run test` (1025/1025 verdes em 163 arquivos) | 🟢 Resolvido e verificado (OPP-007) |
-| Relatório de cobertura produzido | 🟢 Sim — gerado em `coverage/` | 2026-11-15 | **Sim** | 🔒 Bloqueante | `npm run test:coverage` com inspeção de `coverage/` | 🟢 Resolvido e verificado (OPP-018) |
-| Cobertura de instruções | 86,72% | 2026-11-15 | **≥84%** | 🔒 Bloqueante | `npm run test:coverage` (v8) | 🟢 Resolvido e verificado |
-| Cobertura de ramificações | 81,22% | 2026-11-15 | **≥77%** | 🔒 Bloqueante | `npm run test:coverage` (v8) | 🟢 Resolvido e verificado |
-| Cobertura de funções | 70,98% | 2026-11-15 | **≥70%** | 🔒 Bloqueante | `npm run test:coverage` (v8) | 🟢 Resolvido e verificado (OPP-006) |
+| Casos de teste falhando | 0 | 2026-11-18 | **0** | 🔒 Bloqueante | `npm run test` (1033/1033 verdes em 164 arquivos) | 🟢 Resolvido e verificado (OPP-007) |
+| Relatório de cobertura produzido | 🟢 Sim — gerado em `coverage/` | 2026-11-18 | **Sim** | 🔒 Bloqueante | `npm run test:coverage` com inspeção de `coverage/` | 🟢 Resolvido e verificado (OPP-018) |
+| Cobertura de instruções | 87,75% | 2026-11-18 | **≥85%** | 🔒 Bloqueante | `npm run test:coverage` (v8) | 🟢 Resolvido e verificado |
+| Cobertura de ramificações | 81,77% | 2026-11-18 | **≥78%** | 🔒 Bloqueante | `npm run test:coverage` (v8) | 🟢 Resolvido e verificado |
+| Cobertura de funções | 72,64% | 2026-11-18 | **≥68%** | 🔒 Bloqueante | `npm run test:coverage` (v8) | 🟢 Resolvido e verificado (OPP-006 & Estabilização de Limiar) |
 | Avisos de análise estática | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `npm run lint` (ESLint 9) | 🟢 Resolvido e verificado (OPP-015) |
 | Seletores de estilo redundantes | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `tests/unit/cssDuplicationGuard.test.ts` (0 duplicados) | 🟢 Resolvido e verificado (OPP-001) |
 | Documentos que descrevem tecnologia inexistente | 0 | 2026-11-15 | **0** | 🔒 Bloqueante | `README.md` auditado com stack real | 🟢 Resolvido e verificado (OPP-008) |

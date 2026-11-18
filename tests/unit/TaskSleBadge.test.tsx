@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { TaskSleBadge } from '../../src/components/Task/TaskSleBadge';
 import { CardSlePrediction } from '../../src/types/sle';
 
@@ -97,5 +97,39 @@ describe('TaskSleBadge Component (Feature 054)', () => {
     const { container } = render(<TaskSleBadge prediction={prediction} showInsufficientNotice />);
     expect(container.firstChild).toBeInTheDocument();
     expect(screen.getByText(/Amostra insuficiente/i)).toBeInTheDocument();
+  });
+
+  it('opens popover on mouse enter, closes after mouse leave timeout, and handles focus/blur', () => {
+    vi.useFakeTimers();
+    const prediction = createPrediction({
+      riskLevel: 'risk_p85',
+      label: 'Risco SLE (P85)',
+    });
+
+    const { unmount } = render(<TaskSleBadge prediction={prediction} />);
+    const badge = screen.getByRole('status');
+    const containerWrapper = badge.parentElement!;
+
+    // Hover
+    fireEvent.mouseEnter(containerWrapper);
+    expect(screen.getByRole('tooltip')).toBeInTheDocument();
+
+    // Mouse leave
+    fireEvent.mouseLeave(containerWrapper);
+    act(() => {
+      vi.advanceTimersByTime(200);
+    });
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+
+    // Focus / Blur
+    fireEvent.focus(badge);
+    expect(screen.getByRole('tooltip')).toBeInTheDocument();
+
+    fireEvent.blur(badge);
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+
+    // Trigger cleanup on unmount
+    unmount();
+    vi.useRealTimers();
   });
 });
