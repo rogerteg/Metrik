@@ -27,6 +27,7 @@ describe('FlowRulesModal Component', () => {
       trigger: { type: 'card_moved', config: { targetColumnId: 'c2' } },
       conditions: [],
       actions: [{ id: 'a1', type: 'add_tag', payload: { tag: 'qa' } }],
+      executionCount: 0,
       createdAt: '2026-10-01T00:00:00Z',
       updatedAt: '2026-10-01T00:00:00Z',
     },

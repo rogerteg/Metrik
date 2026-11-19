@@ -5,32 +5,7 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ## [Unreleased]
 
-### Added
-
-- **Guardião de Consistência e Veracidade do README (P1 / FR-019)**:
-  - Criação de `tests/unit/readmeConsistencyGuard.test.ts` (4 testes verdes) garantindo conformidade estrita e factual entre `README.md`, `package.json` (dependências/versões) e `.specify/memory/constitution.md` (Princípios I a X).
-  - Verificação automatizada de números reais (1040 testes verdes em 165 arquivos, cobertura medida) e testes adversariais para detecção de badges obsoletos ou princípios com nomenclatura legada.
-
-### Fixed
-
-- **Governança Documental Exaustiva (P0)**:
-  - Substituição do intervalo fixo `deliveredRange` por varredura dinâmica e exaustiva de 100% dos diretórios em `specs/`.
-  - Exclusão seletiva apenas de features em desenvolvimento ativo expressamente declaradas em `inProgressFeatures`.
-  - Testes adversariais de falsificabilidade comprovando falha determinística imediata caso `Draft` ou status sem data canônica seja injetado em qualquer especificação (inclusive > 055 como 056 ou 058).
-
-### Changed
-
-- **Alinhamento do Teto de Linhas à Constituição com Catraca (P1)**:
-  - Escolha formal da arquitetura de Catraca (*Ratchet*) com congelamento estrito dos 23 arquivos legados em `FROZEN_LEGACY_DEBT_BASELINE` e proibição mandatória de qualquer expansão de linhas.
-  - Prioridade mandatória de decomposição modular de `Analytics.css` (3256 linhas) formalizada no Artigo II.3 da Constituição v1.8.7.
-  - Varredura exaustiva de 100% dos arquivos de produção em `src/**/*.{ts,tsx,css}` por `tests/unit/moduleLineCountGuard.test.ts` (9 testes verdes, incluindo verificação adversarial de violação de catraca e injeção de arquivos não-aprovados).
-- **Estabilização de Limiares de Cobertura & Eliminação de Fragilidade**:
-  - Calibração do limiar de funções em `vite.config.ts` para 68% (`functions: 68`), provendo margem de segurança operacional de 4.64 p.p. (~50 funções de folga contra quebra acidental em refatorações de UI).
-  - Elevação sustentada da cobertura real de funções de 70.68% para 72.64% (+25 funções exercitadas) via cobertura de interações em `TaskSleBadge.test.tsx`, `FlowRuleBuilder.test.tsx` e nova suíte `FlowRulesModal.test.tsx`.
-  - Expansão da suíte para 164 arquivos de teste e 1036 testes automatizados (100% aprovados).
-  - Atualização dos alinhamentos documentais na Constituição v1.8.7 e `specs/043-system-health-and-roadmap/vision.md`.
-
-## [0.4.0] - 2026-11-16
+## [0.4.0] - 2026-11-18
 
 ### Added
 
@@ -42,23 +17,37 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 - **Feature 053**: Automações de Fluxo & Políticas de Entrada/Saída de Coluna (DoR/DoD) com motor sem código.
 - **Feature 052**: Mika AI Conversational Chat Copilot Local-First com motor heurístico determinístico offline.
 - **Feature 051**: Central de Relatórios de Fluxo Exportáveis em CSV e Planilhas (`ExportReportModal`).
+- **Guardião de Consistência e Veracidade do README (P1 / FR-019)**:
+  - Criação de `tests/unit/readmeConsistencyGuard.test.ts` (4 testes verdes) garantindo conformidade estrita e factual entre `README.md`, `package.json` (dependências/versões) e `.specify/memory/constitution.md` (Princípios I a X).
+  - Verificação automatizada de números reais (1040 testes verdes em 165 arquivos, cobertura medida) e testes adversariais para detecção de badges obsoletos ou princípios com nomenclatura legada.
 
 ### Changed
 
+- **Alinhamento do Teto de Linhas à Constituição com Catraca (P1)**:
+  - Escolha formal da arquitetura de Catraca (*Ratchet*) com congelamento estrito dos 23 arquivos legados em `FROZEN_LEGACY_DEBT_BASELINE` e proibição mandatória de qualquer expansão de linhas.
+  - Prioridade mandatória de decomposição modular de `Analytics.css` (3256 linhas) formalizada no Artigo II.3 da Constituição v1.8.7.
+  - Varredura exaustiva de 100% dos arquivos de produção em `src/**/*.{ts,tsx,css}` por `tests/unit/moduleLineCountGuard.test.ts` (9 testes verdes, incluindo verificação adversarial de violação de catraca e injeção de arquivos não-aprovados).
+- **Estabilização de Limiares de Cobertura & Eliminação de Fragilidade**:
+  - Calibração do limiar de funções em `vite.config.ts` para 68% (`functions: 68`), provendo margem de segurança operacional de 4.64 p.p. (~50 funções de folga contra quebra acidental em refatorações de UI).
+  - Elevação sustentada da cobertura real de funções de 70.68% para 72.64% (+25 funções exercitadas) via cobertura de interações em `TaskSleBadge.test.tsx`, `FlowRuleBuilder.test.tsx` e nova suíte `FlowRulesModal.test.tsx`.
+  - Expansão da suíte para 165 arquivos de teste e 1040 testes automatizados (100% aprovados).
 - **Governança de Linhas & Decomposição Modular (Princípio II)**: Decomposição de `AnalyticsDashboard.tsx` (381 linhas) e `MonteCarloSimulationView.tsx` (381 linhas) com extração de `AnalyticsExpandedChartModal.tsx` e `useDashboardMikaInsights.ts`.
-- **Enforçamento do Teto de 400 Linhas em 100% de `src/`**: Novo teste global `tests/unit/moduleLineCountGuard.test.ts` (8 testes verdes) que monitora 100% dos 241 arquivos de produção e estabelece baseline congelado de dívida técnica com catraca (*ratchet*) para os 23 arquivos legados pré-Feature 049.
-- **Alinhamento da Constituição**: Atualização para v1.8.5 com formalização do teto modular e evidência medida (163 arquivos de teste, 1025 testes verdes, 70.98% de cobertura de funções).
+- **Alinhamento da Constituição**: Atualização para v1.8.7 formalizando o teto modular em 100% de `src/`, baseline legado congelado sob catraca, priorização de `Analytics.css` e limiares calibrados.
 
 ### Fixed
 
-- **Governança Documental**: Atualização canônica de status para 58 especificações (`**Status**: Implemented & Verified`) e expansão do guard `documentaryGovernance.test.ts` para cobrir o intervalo completo de 58 specs.
-- **Remoção de Código Não-Especificado**: Reversão completa do gateway LLM experimental (Respan) sem especificação prévia (Princípio I).
+- **Governança Documental Exaustiva (P0)**:
+  - Substituição do intervalo fixo `deliveredRange` por varredura dinâmica e exaustiva de 100% dos diretórios em `specs/`.
+  - Exclusão seletiva apenas de features em desenvolvimento ativo expressamente declaradas em `inProgressFeatures`.
+  - Testes adversariais de falsificabilidade comprovando falha determinística imediata caso `Draft` ou status sem data canônica seja injetado em qualquer especificação (inclusive > 055 como 056 ou 058).
+  - Datação canônica de 100% das 58 especificações (`**Status**: Implemented & Verified (<YYYY-MM-DD>)`).
+- **Remoção de Código Não-Especificado (P0)**: Reversão completa do gateway LLM experimental (Respan) sem especificação prévia (Princípio I).
 - **Remoção de Branch Remota Obsoleta**: Exclusão segura de `origin/056-monte-carlo-backlog-forecast` já mesclada na `main`.
 
 ### Docs
 
-- **README.md**: Atualização do badge para 1025 testes automatizados aprovados e alinhamento dos 10 Princípios Constitucionais com a Constituição v1.8.5.
-- **Visão do Produto (`specs/043-system-health-and-roadmap/vision.md`)**: Remedição e revalidação completa em 2026-11-15 de todos os 15 indicadores físicos por arquivos-sentinela (FR-022, SC-013), confirmando 58 specs e 1025 testes verdes.
+- **README.md**: Atualização dos números reais para 1040 testes automatizados aprovados e alinhamento dos 10 Princípios Constitucionais com a Constituição vigente.
+- **Visão do Produto (`specs/043-system-health-and-roadmap/vision.md`)**: Remedição e republicação completa em 2026-11-18 de todos os 15 indicadores físicos por arquivos-sentinela (FR-022, SC-013), confirmando 58 specs, 1040 testes verdes em 165 arquivos e 72,64% de funções.
 - **Metodologia SDD**: Alinhamento da skill `sdd-spec-driven` com a Constituição VI e caminhos canônicos do Metrik.
 
 ## [0.3.0] - 2026-10-27

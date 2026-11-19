@@ -93,6 +93,7 @@ export function validateReadmeConsistency(
   ];
 
   expectedPrinciples.forEach(({ roman, label }) => {
+    // Valida presença no README
     const regex = new RegExp(
       `Princípio ${roman}\\s*\\([^)]*${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
       'i',
@@ -100,6 +101,14 @@ export function validateReadmeConsistency(
     if (!regex.test(readmeContent)) {
       result.missingPrinciples.push(
         `Principle ${roman} (${label}) is missing or misnamed in README`,
+      );
+    }
+
+    // Valida presença canônica no constitution.md
+    const constitutionRegex = new RegExp(`###\\s*${roman}\\.`, 'i');
+    if (!constitutionRegex.test(constitutionContent)) {
+      result.missingPrinciples.push(
+        `Principle ${roman} (${label}) is missing from constitution.md`,
       );
     }
   });
