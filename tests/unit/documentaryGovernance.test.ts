@@ -6,12 +6,82 @@ import { execSync } from 'child_process';
 const ROOT_DIR = path.resolve(__dirname, '../../');
 const SPECS_DIR = path.join(ROOT_DIR, 'specs');
 
-describe('Documentary Governance Guard (Feature 050 - Roadmap Phase 2)', () => {
-  // Test 1: OPP-010 / FR-001, FR-002, FR-003
-  it('should ensure all delivered specs have canonical "Implemented & Verified (<date>)" status and active specs remain Draft', () => {
-    const deliveredRange = Array.from({ length: 58 }, (_, i) => i + 1); // 001 to 058 (100% das features entregues na main)
-    const inProgressFeatures: number[] = []; // Nenhuma feature pendente como Draft
+export interface SpecValidationResult {
+  divergentDelivered: string[];
+  divergentActive: string[];
+}
 
+export function validateSpecsGovernance(
+  specDirs: { num: number; name: string; dirPath: string }[],
+  inProgressFeatures: Set<number> = new Set(),
+  fileReader: (filePath: string) => string = (p) => fs.readFileSync(p, 'utf-8'),
+): SpecValidationResult {
+  const statusCanonicalRegex = /^\*\*Status\*\*:\s*Implemented & Verified \(\d{4}-\d{2}-\d{2}\)/m;
+  const statusDraftRegex = /^\*\*Status\*\*:\s*Draft/m;
+
+  const divergentDelivered: string[] = [];
+  const divergentActive: string[] = [];
+
+  specDirs.forEach((spec) => {
+    const specPath = path.join(spec.dirPath, 'spec.md');
+    if (!fs.existsSync(specPath)) {
+      if (inProgressFeatures.has(spec.num)) {
+        divergentActive.push(`Feature ${spec.name}: spec.md missing`);
+      } else {
+        divergentDelivered.push(`Feature ${spec.name}: spec.md missing`);
+      }
+      return;
+    }
+
+    const content = fileReader(specPath);
+    if (inProgressFeatures.has(spec.num)) {
+      if (!statusDraftRegex.test(content)) {
+        divergentActive.push(`In-progress feature ${spec.name} must have Status: Draft`);
+      }
+    } else {
+      if (!statusCanonicalRegex.test(content)) {
+        divergentDelivered.push(
+          `Feature ${spec.name}: status is not canonical "Implemented & Verified (<YYYY-MM-DD>)"`,
+        );
+      }
+    }
+  });
+
+  return { divergentDelivered, divergentActive };
+}
+
+describe('Documentary Governance Guard (Feature 050 - Roadmap Phase 2)', () => {
+  // Test 1: OPP-010 / FR-001, FR-002, FR-003 — Varredura Dinâmica Exaustiva
+  it('should ensure all delivered specs have canonical "Implemented & Verified (<date>)" status by exhaustive specs/ scan', () => {
+    const specDirs = fs
+      .readdirSync(SPECS_DIR, { withFileTypes: true })
+      .filter((d) => d.isDirectory() && /^\d{3}-/.test(d.name))
+      .map((d) => ({
+        num: parseInt(d.name.substring(0, 3), 10),
+        name: d.name,
+        dirPath: path.join(SPECS_DIR, d.name),
+      }))
+      .sort((a, b) => a.num - b.num);
+
+    expect(specDirs.length, 'O diretório specs/ deve conter especificações').toBeGreaterThan(0);
+
+    // Feature em curso declarada explicitamente (vazio na branch main estável)
+    const inProgressFeatures = new Set<number>([]);
+
+    const result = validateSpecsGovernance(specDirs, inProgressFeatures);
+
+    expect(
+      result.divergentDelivered,
+      `Found delivered specs with divergent status: \n${result.divergentDelivered.join('\n')}`,
+    ).toEqual([]);
+
+    expect(
+      result.divergentActive,
+      `Found active specs with divergent status: \n${result.divergentActive.join('\n')}`,
+    ).toEqual([]);
+  });
+
+  it('should immediately detect and fail if Draft is injected into spec > 055 (verificação adversarial do gate)', () => {
     const specDirs = fs
       .readdirSync(SPECS_DIR, { withFileTypes: true })
       .filter((d) => d.isDirectory() && /^\d{3}-/.test(d.name))
@@ -21,46 +91,44 @@ describe('Documentary Governance Guard (Feature 050 - Roadmap Phase 2)', () => {
         dirPath: path.join(SPECS_DIR, d.name),
       }));
 
-    const statusCanonicalRegex = /^\*\*Status\*\*:\s*Implemented & Verified \(\d{4}-\d{2}-\d{2}\)/m;
-    const statusDraftRegex = /^\*\*Status\*\*:\s*Draft/m;
-
-    const divergentDelivered: string[] = [];
-
-    deliveredRange.forEach((num) => {
-      const match = specDirs.find((d) => d.num === num);
-      if (!match) {
-        divergentDelivered.push(`Feature ${num}: Spec directory missing`);
-        return;
+    // Simula injeção de Status: Draft na spec 056 (> 055)
+    const mockFileReader = (filePath: string) => {
+      if (filePath.includes('056-monte-carlo-backlog-forecast')) {
+        return '# Spec 056\n**Status**: Draft\n## Descrição';
       }
-      const specPath = path.join(match.dirPath, 'spec.md');
-      if (!fs.existsSync(specPath)) {
-        divergentDelivered.push(`Feature ${match.name}: spec.md missing`);
-        return;
-      }
-      const content = fs.readFileSync(specPath, 'utf-8');
-      if (!statusCanonicalRegex.test(content)) {
-        divergentDelivered.push(`Feature ${match.name}: status is not "Implemented & Verified"`);
-      }
-    });
+      return fs.readFileSync(filePath, 'utf-8');
+    };
 
+    const result = validateSpecsGovernance(specDirs, new Set(), mockFileReader);
+    expect(result.divergentDelivered.length).toBeGreaterThanOrEqual(1);
     expect(
-      divergentDelivered,
-      `Found delivered specs with divergent status: \n${divergentDelivered.join('\n')}`,
-    ).toEqual([]);
+      result.divergentDelivered.some((msg) => msg.includes('056-monte-carlo-backlog-forecast')),
+    ).toBe(true);
+  });
 
-    inProgressFeatures.forEach((num) => {
-      const match = specDirs.find((d) => d.num === num);
-      if (match) {
-        const specPath = path.join(match.dirPath, 'spec.md');
-        if (fs.existsSync(specPath)) {
-          const content = fs.readFileSync(specPath, 'utf-8');
-          expect(
-            statusDraftRegex.test(content),
-            `In-progress feature ${match.name} should have Status: Draft`,
-          ).toBe(true);
-        }
+  it('should immediately detect and fail if undated Implemented & Verified is injected into spec 058 (verificação adversarial do gate)', () => {
+    const specDirs = fs
+      .readdirSync(SPECS_DIR, { withFileTypes: true })
+      .filter((d) => d.isDirectory() && /^\d{3}-/.test(d.name))
+      .map((d) => ({
+        num: parseInt(d.name.substring(0, 3), 10),
+        name: d.name,
+        dirPath: path.join(SPECS_DIR, d.name),
+      }));
+
+    // Simula injeção de Status sem data na spec 058
+    const mockFileReader = (filePath: string) => {
+      if (filePath.includes('058-flow-leverage-simulator')) {
+        return '# Spec 058\n**Status**: Implemented & Verified\n## Descrição';
       }
-    });
+      return fs.readFileSync(filePath, 'utf-8');
+    };
+
+    const result = validateSpecsGovernance(specDirs, new Set(), mockFileReader);
+    expect(result.divergentDelivered.length).toBeGreaterThanOrEqual(1);
+    expect(
+      result.divergentDelivered.some((msg) => msg.includes('058-flow-leverage-simulator')),
+    ).toBe(true);
   });
 
   // Test 2: OPP-011 / FR-004

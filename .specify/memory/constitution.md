@@ -10,7 +10,7 @@ Sync Impact Report:
   - 100% of production files in src/**/*.{ts,tsx,css} (241 files) are actively scanned and enforced by tests/unit/moduleLineCountGuard.test.ts (8/8 tests green).
   - 100% of newly authored and refactored modules (Features 049–058) strictly comply with the ≤ 400 lines limit (including AnalyticsDashboard.tsx at 381 lines and MonteCarloSimulationView.tsx at 381 lines).
   - The 23 pre-existing legacy files (12 TS/TSX and 11 CSS) predating Feature 049 are tracked in an explicit frozen baseline ratchet (FROZEN_LEGACY_DEBT_BASELINE) in moduleLineCountGuard.test.ts, strictly prohibiting any debt expansion under Principles II, III.3, and III.4 until dedicated refactoring features decompose them.
-  - 164 test files and 1033 tests passing cleanly in Vitest (`npm run test`) with zero failures and zero regressions, with 72.64% function test coverage (functions: 68 threshold).
+  - 164 test files and 1035 tests passing cleanly in Vitest (`npm run test`) with zero failures and zero regressions, with 72.64% function test coverage (functions: 68 threshold).
   - 58 specifications in specs/ tracked and aligned with project governance.
   - Production build passing via Vite 6 and TypeScript strict check (`npx tsc --noEmit`) with 0 errors.
   - ESLint 9 passing with 0 errors and Prettier format check 100% compliant.

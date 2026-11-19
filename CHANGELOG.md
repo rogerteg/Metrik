@@ -5,6 +5,13 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ## [Unreleased]
 
+### Fixed
+
+- **Governança Documental Exaustiva (P0)**:
+  - Substituição do intervalo fixo `deliveredRange` por varredura dinâmica e exaustiva de 100% dos diretórios em `specs/`.
+  - Exclusão seletiva apenas de features em desenvolvimento ativo expressamente declaradas em `inProgressFeatures`.
+  - Testes adversariais de falsificabilidade comprovando falha determinística imediata caso `Draft` ou status sem data canônica seja injetado em qualquer especificação (inclusive > 055 como 056 ou 058).
+
 ### Changed
 
 - **Estabilização de Limiares de Cobertura & Eliminação de Fragilidade**:
