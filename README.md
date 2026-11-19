@@ -5,7 +5,7 @@
 [![React Version](https://img.shields.io/badge/React-19.0-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript Version](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite Version](https://img.shields.io/badge/Vite-6.1-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Test Suite](https://img.shields.io/badge/Tests-1036%20passing-brightgreen?logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Test Suite](https://img.shields.io/badge/Tests-1040%20passing-brightgreen?logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Test Coverage](https://img.shields.io/badge/Coverage-88%25-success)](https://vitest.dev/)
 [![Architecture: Local-First](https://img.shields.io/badge/Architecture-Local--First-blueviolet)](https://localfirstweb.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -67,7 +67,7 @@ Quando as credenciais de sincronização estão configuradas, o Metrik ativa um 
 | **Bundler & Dev Server** | [Vite 6](https://vitejs.dev/) | Build ultrarrápido com Hot Module Replacement (HMR) instantâneo |
 | **Backend Híbrido** | [Supabase](https://supabase.com/) | PostgreSQL gerenciado, autenticação e sincronização assíncrona |
 | **Estilização** | CSS Vanilla Puro | Design system com CSS Variables, sem dependências externas de UI ou frameworks pesados |
-| **Testes Unitários & Integração** | [Vitest 3](https://vitest.dev/) | Suíte de testes com 1025 testes automatizados em 163 arquivos (100% verde) |
+| **Testes Unitários & Integração** | [Vitest 3](https://vitest.dev/) | Suíte com 1040 testes automatizados em 165 arquivos (100% verde) |
 | **Testing Utilities** | [Testing Library](https://testing-library.com/) | Testes de componentes orientados ao comportamento real do usuário |
 | **Acessibilidade** | [jest-axe](https://github.com/nickcolley/jest-axe) | Validação automatizada de acessibilidade e conformidade com WCAG |
 | **Padronização & Linting** | [ESLint 9](https://eslint.org/) & [Prettier](https://prettier.io/) | Governança estrita de estilo e qualidade de código |

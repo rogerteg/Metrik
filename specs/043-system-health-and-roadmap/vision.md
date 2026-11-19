@@ -334,7 +334,7 @@ Organizados em fases. Cada fase tem **resultado verificável** — não é poss�
 
 | Indicador | Valor medido | Data da medição | Meta | Verificação (FR-020) | Como medir | Próximo passo |
 |---|---|---|---|---|---|---|
-| Casos de teste falhando | 0 | 2026-11-18 | **0** | 🔒 Bloqueante | `npm run test` (1036/1036 verdes em 164 arquivos) | 🟢 Resolvido e verificado (OPP-007) |
+| Casos de teste falhando | 0 | 2026-11-18 | **0** | 🔒 Bloqueante | `npm run test` (1040/1040 verdes em 165 arquivos) | 🟢 Resolvido e verificado (OPP-007) |
 | Relatório de cobertura produzido | 🟢 Sim — gerado em `coverage/` | 2026-11-18 | **Sim** | 🔒 Bloqueante | `npm run test:coverage` com inspeção de `coverage/` | 🟢 Resolvido e verificado (OPP-018) |
 | Cobertura de instruções | 87,75% | 2026-11-18 | **≥85%** | 🔒 Bloqueante | `npm run test:coverage` (v8) | 🟢 Resolvido e verificado |
 | Cobertura de ramificações | 81,77% | 2026-11-18 | **≥78%** | 🔒 Bloqueante | `npm run test:coverage` (v8) | 🟢 Resolvido e verificado |

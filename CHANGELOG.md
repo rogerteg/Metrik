@@ -5,6 +5,12 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ## [Unreleased]
 
+### Added
+
+- **Guardião de Consistência e Veracidade do README (P1 / FR-019)**:
+  - Criação de `tests/unit/readmeConsistencyGuard.test.ts` (4 testes verdes) garantindo conformidade estrita e factual entre `README.md`, `package.json` (dependências/versões) e `.specify/memory/constitution.md` (Princípios I a X).
+  - Verificação automatizada de números reais (1040 testes verdes em 165 arquivos, cobertura medida) e testes adversariais para detecção de badges obsoletos ou princípios com nomenclatura legada.
+
 ### Fixed
 
 - **Governança Documental Exaustiva (P0)**:
@@ -187,6 +193,12 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 - split App.css into ordered feature CSS modules
 - remove legacy activity panel and duplicate timestamp formatter
 - clean up and streamline kanban card layout and QA section
+
+### Added
+
+- **Guardião de Consistência e Veracidade do README (P1 / FR-019)**:
+  - Criação de `tests/unit/readmeConsistencyGuard.test.ts` (4 testes verdes) garantindo conformidade estrita e factual entre `README.md`, `package.json` (dependências/versões) e `.specify/memory/constitution.md` (Princípios I a X).
+  - Verificação automatizada de números reais (1040 testes verdes em 165 arquivos, cobertura medida) e testes adversariais para detecção de badges obsoletos ou princípios com nomenclatura legada.
 
 ### Fixed
 
