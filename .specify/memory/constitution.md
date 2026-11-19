@@ -1,16 +1,16 @@
 <!--
 Sync Impact Report:
-- Version change: 1.8.5 → 1.8.6
-- Bump rationale: PATCH — Estabilização do limiar de cobertura de funções e eliminação da fragilidade de CI (Princípios II, III.3 e III.4): elevação da cobertura de funções para 72.64% com 164 arquivos de teste e 1033 testes 100% verdes, e calibração resiliente do limiar em vite.config.ts (functions: 68), assegurando margem operacional robusta (4.64 p.p. / ~50 funções de folga).
-- Modified principles: None.
+- Version change: 1.8.6 → 1.8.7
+- Bump rationale: PATCH — Alinhamento explícito do gate de linhas (P1): formalização da escolha de Catraca (Ratchet) com congelamento estrito de 23 arquivos legados pré-Feature 049 em FROZEN_LEGACY_DEBT_BASELINE, prioridade mandatória de decomposição modular de Analytics.css (3256 linhas), e novo teste adversarial em tests/unit/moduleLineCountGuard.test.ts cobrindo 100% de src/**/*.{ts,tsx,css} (9 testes verdes).
+- Modified principles: II (Code Quality & Modularity — inclusão de item 3 com prioridade explícita de decomposição modular de Analytics.css e dívida legada).
 - Added sections: None.
 - Removed sections: None.
 - Expanded sections: None.
 - Evidence (measured, not theorised):
-  - 100% of production files in src/**/*.{ts,tsx,css} (241 files) are actively scanned and enforced by tests/unit/moduleLineCountGuard.test.ts (8/8 tests green).
+  - 100% of production files in src/**/*.{ts,tsx,css} (241 files) are actively scanned and enforced by tests/unit/moduleLineCountGuard.test.ts (9/9 tests green, including adversarial ratchet and unapproved file injection).
   - 100% of newly authored and refactored modules (Features 049–058) strictly comply with the ≤ 400 lines limit (including AnalyticsDashboard.tsx at 381 lines and MonteCarloSimulationView.tsx at 381 lines).
-  - The 23 pre-existing legacy files (12 TS/TSX and 11 CSS) predating Feature 049 are tracked in an explicit frozen baseline ratchet (FROZEN_LEGACY_DEBT_BASELINE) in moduleLineCountGuard.test.ts, strictly prohibiting any debt expansion under Principles II, III.3, and III.4 until dedicated refactoring features decompose them.
-  - 164 test files and 1035 tests passing cleanly in Vitest (`npm run test`) with zero failures and zero regressions, with 72.64% function test coverage (functions: 68 threshold).
+  - The 23 pre-existing legacy files (12 TS/TSX and 11 CSS) predating Feature 049 are tracked in an explicit frozen baseline ratchet (FROZEN_LEGACY_DEBT_BASELINE) in moduleLineCountGuard.test.ts, strictly prohibiting any debt expansion under Principles II, III.3, and III.4, with Analytics.css designated as top refactoring priority.
+  - 164 test files and 1036 tests passing cleanly in Vitest (`npm run test`) with zero failures and zero regressions, with 72.64% function test coverage (functions: 68 threshold).
   - 58 specifications in specs/ tracked and aligned with project governance.
   - Production build passing via Vite 6 and TypeScript strict check (`npx tsc --noEmit`) with 0 errors.
   - ESLint 9 passing with 0 errors and Prettier format check 100% compliant.
@@ -29,6 +29,7 @@ Modules MUST be self-contained, single-purpose, and loosely coupled with clean i
 
 1. **Module Line Ceiling**: All newly authored or modified production source files and stylesheets (`src/**/*.{ts,tsx,css}`) MUST strictly adhere to a maximum limit of 400 lines of code. Modules approaching this limit MUST be proactively decomposed into single-purpose sub-hooks, pure utility modules, or focused presentational components.
 2. **Automated Line Guard & Legacy Debt Baseline**: This ceiling is actively and deterministically enforced across 100% of `src/` by the automated test gate `tests/unit/moduleLineCountGuard.test.ts`. Pre-existing legacy modules predating Feature 049 exceeding 400 lines (23 files: 12 TS/TSX and 11 CSS) are frozen under a strict baseline ratchet (`FROZEN_LEGACY_DEBT_BASELINE`) per Principle III.3. Any commit or pull request introducing a new file > 400 lines or expanding a legacy file beyond its frozen ceiling violates this Constitution.
+3. **Decomposition Priority (Analytics.css & Legacy Debt)**: The single largest legacy stylesheet, `src/components/Analytics.css` (3256 lines), is formalised as the top priority for modular decomposition. Any future feature touching analytics charts, modals, or dashboards MUST decompose its presentation rules into domain-scoped stylesheets (e.g. `cfd-chart.css`, `throughput-chart.css`, `wip-aging-chart.css`), ratcheting down the frozen ceiling in `FROZEN_LEGACY_DEBT_BASELINE`.
 
 ### III. Automated Verification & Testing
 

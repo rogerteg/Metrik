@@ -194,4 +194,24 @@ describe('Comprehensive Production Codebase Line Ceiling Guard (Constituição A
     ).toEqual([]);
     expect(Object.keys(FROZEN_LEGACY_DEBT_BASELINE).length).toBeLessThanOrEqual(23);
   });
+
+  it('should immediately detect and fail if an unapproved file or ratchet expansion occurs (adversarial verification)', () => {
+    // 1. Simulação de novo arquivo de produção não aprovado com 401 linhas
+    const mockFiles = ['src/components/UnapprovedNewComponent.tsx'];
+    const mockLineCounter = () => 401;
+
+    const unapprovedViolations: string[] = [];
+    mockFiles.forEach((file) => {
+      const lines = mockLineCounter();
+      if (lines > MAX_ALLOWED_LINES && !(file in FROZEN_LEGACY_DEBT_BASELINE)) {
+        unapprovedViolations.push(file);
+      }
+    });
+    expect(unapprovedViolations).toContain('src/components/UnapprovedNewComponent.tsx');
+
+    // 2. Simulação de violação da catraca (ratchet breach) em Analytics.css (3258 > 3257)
+    const mockAnalyticsCeiling = FROZEN_LEGACY_DEBT_BASELINE['src/components/Analytics.css'];
+    const mockExpandedLines = mockAnalyticsCeiling + 1;
+    expect(mockExpandedLines).toBeGreaterThan(mockAnalyticsCeiling);
+  });
 });

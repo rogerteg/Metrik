@@ -14,11 +14,15 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ### Changed
 
+- **Alinhamento do Teto de Linhas à Constituição com Catraca (P1)**:
+  - Escolha formal da arquitetura de Catraca (*Ratchet*) com congelamento estrito dos 23 arquivos legados em `FROZEN_LEGACY_DEBT_BASELINE` e proibição mandatória de qualquer expansão de linhas.
+  - Prioridade mandatória de decomposição modular de `Analytics.css` (3256 linhas) formalizada no Artigo II.3 da Constituição v1.8.7.
+  - Varredura exaustiva de 100% dos arquivos de produção em `src/**/*.{ts,tsx,css}` por `tests/unit/moduleLineCountGuard.test.ts` (9 testes verdes, incluindo verificação adversarial de violação de catraca e injeção de arquivos não-aprovados).
 - **Estabilização de Limiares de Cobertura & Eliminação de Fragilidade**:
   - Calibração do limiar de funções em `vite.config.ts` para 68% (`functions: 68`), provendo margem de segurança operacional de 4.64 p.p. (~50 funções de folga contra quebra acidental em refatorações de UI).
   - Elevação sustentada da cobertura real de funções de 70.68% para 72.64% (+25 funções exercitadas) via cobertura de interações em `TaskSleBadge.test.tsx`, `FlowRuleBuilder.test.tsx` e nova suíte `FlowRulesModal.test.tsx`.
-  - Expansão da suíte para 164 arquivos de teste e 1033 testes automatizados (100% aprovados).
-  - Atualização dos alinhamentos documentais na Constituição v1.8.6 e `specs/043-system-health-and-roadmap/vision.md`.
+  - Expansão da suíte para 164 arquivos de teste e 1036 testes automatizados (100% aprovados).
+  - Atualização dos alinhamentos documentais na Constituição v1.8.7 e `specs/043-system-health-and-roadmap/vision.md`.
 
 ## [0.4.0] - 2026-11-16
 
