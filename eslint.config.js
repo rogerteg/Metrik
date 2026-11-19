@@ -11,6 +11,7 @@ export default tseslint.config(
       'node_modules/**',
       'scratch/**',
       '.kilo/**',
+      '.freebuff/**',
       'specs/**',
       'venv/**',
       '**/*.config.js',

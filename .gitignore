@@ -24,3 +24,9 @@ Thumbs.db
 .vscode/
 .idea/
 scratch/
+
+# Agent Runtimes
+.freebuff/
+.freebuff/**
+.kilo/
+
