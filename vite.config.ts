@@ -7,11 +7,51 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        // Separa fornecedores grandes do bundle principal para melhorar o cache
-        // e reduzir o tamanho do chunk inicial.
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-supabase': ['@supabase/supabase-js'],
+        // Separa fornecedores grandes e subsistemas modulares do bundle principal
+        // para otimizar o carregamento e manter o chunk principal bem abaixo de 500 kB.
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('@supabase')) {
+              return 'vendor-supabase';
+            }
+            if (id.includes('react') || id.includes('scheduler')) {
+              return 'vendor-react';
+            }
+          }
+          if (
+            id.includes('src/components/FlowRules/') ||
+            id.includes('src/utils/flowRules') ||
+            id.includes('src/hooks/useFlowRules')
+          ) {
+            return 'feature-flow-rules';
+          }
+          if (
+            id.includes('src/components/Mika/') ||
+            id.includes('src/services/ai/') ||
+            id.includes('src/hooks/useMika')
+          ) {
+            return 'feature-mika';
+          }
+          if (
+            id.includes('src/components/WorkspaceHub/') ||
+            id.includes('src/components/ManageBoards/') ||
+            id.includes('src/components/Settings/')
+          ) {
+            return 'feature-workspace-management';
+          }
+          if (
+            id.includes('src/components/ExportReportModal') ||
+            id.includes('src/components/ExecutiveReportPrintView') ||
+            id.includes('src/utils/flowReportExporter')
+          ) {
+            return 'feature-reports';
+          }
+          if (
+            id.includes('src/components/SprintManagerModal') ||
+            id.includes('src/utils/sprint')
+          ) {
+            return 'feature-sprints';
+          }
         },
       },
     },

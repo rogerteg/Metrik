@@ -1,0 +1,155 @@
+/* Rich Tooltip */
+.scatter-rich-tooltip {
+  position: absolute;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+  z-index: 100;
+  pointer-events: none;
+  min-width: 200px;
+  max-width: 280px;
+}
+
+.tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.35rem;
+}
+
+.tooltip-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tooltip-blocked-badge {
+  font-size: 0.65rem;
+  color: #f43f5e;
+  background: rgba(244, 63, 94, 0.15);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tooltip-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tooltip-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.tooltip-k {
+  color: var(--text-tertiary);
+}
+
+.tooltip-v {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.tooltip-v.highlight-v {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.tooltip-v.text-alert {
+  color: #f43f5e;
+  font-weight: 600;
+}
+
+/* Empty state */
+.scatter-empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  max-width: 440px;
+}
+
+.empty-state-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.empty-state-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-state-desc {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Footer Legend */
+.scatter-footer-legend {
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 0.5rem;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.legend-dot.normal-dot {
+  background: #818cf8;
+  box-shadow: 0 0 4px rgba(129, 140, 248, 0.5);
+}
+
+.legend-dot.blocked-dot {
+  background: #f43f5e;
+  box-shadow: 0 0 4px rgba(244, 63, 94, 0.5);
+}
+
+.legend-line {
+  width: 16px;
+  height: 2px;
+  border-bottom: 2px dashed;
+}
+
+.legend-line.p50-line {
+  border-color: #38bdf8;
+}
+
+.legend-line.p85-line {
+  border-color: #f59e0b;
+}
+
+.legend-line.p95-line {
+  border-color: #ef4444;
+}

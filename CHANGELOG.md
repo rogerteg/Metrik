@@ -5,6 +5,25 @@ Todas as mudanças relevantes do Metrik. Formato: [Keep a Changelog]
 
 ## [Unreleased]
 
+### Added
+
+- **Feature 059: Quitação da Dívida Congelada (`specs/059-legacy-debt-liquidation`)**:
+  - Decomposição modular de `Analytics.css` (3256 linhas -> 18 linhas de manifesto de importação) em 12 folhas de estilo coesas em `src/components/analytics/` (`analytics-core.css`, `cycle-time-controls.css`, `cycle-time-chart.css`, `cycle-time-tooltip.css`, `cfd-chart.css`, `monte-carlo-view.css`, `monte-carlo-histogram.css`, `wip-aging-drawers.css`, `wip-aging-chart.css`, `throughput-chart.css`, `analytics-sles.css`, `blocker-analytics.css`, `dataset-drawer.css`), preservando a cascata original e respeitando o teto de 400 linhas.
+  - Decomposição modular de `CumulativeFlowChart.tsx` (821 linhas -> 354 linhas) através da extração do hook de coordenadas e subcomponentes focados em `src/components/charts/cfd/` (`useCfdPlotCoordinates.ts`, `CfdInspectionOverlay.tsx`, `CfdTooltip.tsx`, `CfdLegend.tsx`, `CfdAxesLabels.tsx`), preservando os 8/8 testes verdes.
+  - Quitação e remoção definitiva de `Analytics.css` e `CumulativeFlowChart.tsx` de `FROZEN_LEGACY_DEBT_BASELINE`, reduzindo o baseline de 23 para 21 arquivos legados, com 9/9 testes de catraca aprovados em `moduleLineCountGuard.test.ts`.
+- **Feature 060: Otimização do Payload de Entrada (`specs/060-entry-payload-optimization`)**:
+  - Otimização do logotipo raster `metrik-logo.png` de 982,6 kB para 20,9 kB (reamostragem 160x160), resultando em `< 30 kB` no bundle final compilado (`dist/assets/metrik-logo-*.png` com 20,96 kB).
+  - Criação de favicon vetorial SVG em `public/favicon.svg` (< 1 kB) integrado como favicon primário em `index.html`.
+  - Configuração de `manualChunks` modular em `vite.config.ts`, fragmentando dependências pesadas e reduzindo o chunk principal `index.js` de 634,7 kB para 237,9 kB (71,9 kB gzip), eliminando em definitivo o aviso de compilação do Vite de chunks > 500 kB.
+
+### Changed
+
+- **Governança Documental & Reconciliação do Roadmap (`specs/043-system-health-and-roadmap/vision.md`)**:
+  - Reconciliação de §4.1, §4.2 e §5 com §7, movendo OPP-001, OPP-002 e OPP-014 para o histórico auditável append-only em §4.3 com datação canônica de 2026-11-19.
+  - Fechamento formal de OPP-003 (aceite formal de bloqueio de ambiente para múltiplos motores de navegadores garantido por testes de invariantes de geometria nos testes unitários e de acessibilidade, Constituição III/IV).
+  - Fechamento formal de OPP-005 (migração de banco de dados em nuvem Supabase formalizada como capacidade opt-in Local-First, com schema idempotente e testes de contrato, Constituição VIII).
+  - Atualização do Anexo de Reprodutibilidade com os 15 indicadores físicos ativos em 2026-11-19, cobrindo 60 especificações canônicas, 21 legados congelados, 1040 testes verdes e chunk principal de 237,9 kB.
+
 ## [0.4.0] - 2026-11-18
 
 ### Added

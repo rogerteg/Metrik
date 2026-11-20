@@ -40,8 +40,7 @@ function getAllProductionFiles(dir: string, exts: string[]): string[] {
  * Apenas reduções são permitidas até que features específicas de refatoração decomponham cada módulo.
  */
 export const FROZEN_LEGACY_DEBT_BASELINE: Record<string, number> = {
-  // 12 Módulos TypeScript / TSX Legados
-  'src/components/charts/CumulativeFlowChart.tsx': 822,
+  // 11 Módulos TypeScript / TSX Legados (CumulativeFlowChart.tsx quitado na Feature 059)
   'src/components/TeamManagementModal.tsx': 604,
   'src/services/supabase/syncService.ts': 593,
   'src/components/Column.tsx': 554,
@@ -54,8 +53,7 @@ export const FROZEN_LEGACY_DEBT_BASELINE: Record<string, number> = {
   'src/components/Settings/CloudSyncTab.tsx': 425,
   'src/components/charts/WipAgingChart.tsx': 414,
 
-  // 11 Módulos CSS Legados
-  'src/components/Analytics.css': 3257,
+  // 10 Módulos CSS Legados (Analytics.css quitado na Feature 059)
   'src/styles/01-design-system-core.css': 1122,
   'src/components/TaskActivityFeed.css': 988,
   'src/components/ManageBoards/ManageBoards.css': 871,
@@ -192,7 +190,7 @@ describe('Comprehensive Production Codebase Line Ceiling Guard (Constituição A
       missingFiles,
       `Legacy baseline references non-existent files: ${JSON.stringify(missingFiles)}`,
     ).toEqual([]);
-    expect(Object.keys(FROZEN_LEGACY_DEBT_BASELINE).length).toBeLessThanOrEqual(23);
+    expect(Object.keys(FROZEN_LEGACY_DEBT_BASELINE).length).toBeLessThanOrEqual(21);
   });
 
   it('should immediately detect and fail if an unapproved file or ratchet expansion occurs (adversarial verification)', () => {
@@ -209,9 +207,10 @@ describe('Comprehensive Production Codebase Line Ceiling Guard (Constituição A
     });
     expect(unapprovedViolations).toContain('src/components/UnapprovedNewComponent.tsx');
 
-    // 2. Simulação de violação da catraca (ratchet breach) em Analytics.css (3258 > 3257)
-    const mockAnalyticsCeiling = FROZEN_LEGACY_DEBT_BASELINE['src/components/Analytics.css'];
-    const mockExpandedLines = mockAnalyticsCeiling + 1;
-    expect(mockExpandedLines).toBeGreaterThan(mockAnalyticsCeiling);
+    // 2. Simulação de violação da catraca (ratchet breach) em arquivo legado (ex: TeamManagementModal.tsx 605 > 604)
+    const sampleLegacyKey = Object.keys(FROZEN_LEGACY_DEBT_BASELINE)[0];
+    const mockCeiling = FROZEN_LEGACY_DEBT_BASELINE[sampleLegacyKey];
+    const mockExpandedLines = mockCeiling + 1;
+    expect(mockExpandedLines).toBeGreaterThan(mockCeiling);
   });
 });

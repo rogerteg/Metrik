@@ -1,0 +1,246 @@
+/* ==========================================================================
+   Feature 030: Blocker Analytics View (Clustering vs. Dynamics)
+   ========================================================================== */
+
+.blocker-analytics-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.blocker-view-controls {
+  display: flex;
+  align-items: center;
+}
+
+.blocker-mode-toggle-group {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  gap: 2px;
+}
+
+.blocker-mode-toggle-btn {
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.blocker-mode-toggle-btn:hover {
+  color: var(--text-primary);
+}
+
+.blocker-mode-toggle-btn.is-active {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.blocker-section-header {
+  margin-bottom: 1.25rem;
+}
+
+.blocker-section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.blocker-section-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0.3rem 0 0;
+}
+
+.blocker-clusters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.blocker-cluster-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cluster-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cluster-reason-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cluster-percentage-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #f43f5e;
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.cluster-progress-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cluster-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f43f5e, #fb7185);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.cluster-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.blocker-dynamics-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .blocker-dynamics-kpis {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dynamics-kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dynamics-kpi-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  font-weight: 600;
+}
+
+.dynamics-kpi-value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.dynamics-kpi-value.text-danger {
+  color: #f43f5e;
+}
+
+.dynamics-kpi-subtext {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.blocker-tasks-table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+}
+
+.blocker-table-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+}
+
+.blocker-table-wrapper {
+  overflow-x: auto;
+}
+
+.blocker-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.blocker-table th {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-tertiary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+
+.blocker-table td {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+}
+
+.blocker-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.blocker-pill.is-active-blocked {
+  background: rgba(244, 63, 94, 0.15);
+  color: #f43f5e;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+.blocker-pill.is-resolved {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.task-reason-cell {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.blocker-empty-state {
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px dashed var(--border-color);
+}
